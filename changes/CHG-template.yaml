@@ -1,0 +1,14 @@
+change_id: CHG-2026-001
+goal: describe the cross-repo change goal here
+protocol_sha: abc123
+client_sha: def456
+platform_sha: ghi789
+owner: hejiajiudeeyu
+risk_level: medium
+affected_scope:
+  - protocol
+  - client
+  - platform
+contracts_check: pending
+integration_check: pending
+notes: replace with integration notes

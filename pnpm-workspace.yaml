@@ -1,0 +1,5 @@
+packages:
+  - "repos/*"
+  - "repos/*/apps/*"
+  - "repos/*/packages/*"
+  - "repos/*/packages/transports/*"

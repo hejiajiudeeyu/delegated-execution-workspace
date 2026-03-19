@@ -1,0 +1,119 @@
+projects:
+  protocol/contracts:
+    repo: protocol
+    tags:
+      - layer:protocol
+    package_names:
+      - "@delexec/contracts"
+    allow_dependencies:
+      - protocol/contracts
+
+  shared/runtime-support:
+    repo: shared
+    tags:
+      - layer:shared
+    package_names:
+      - "@delexec/runtime-utils"
+      - "@delexec/sqlite-store"
+    allow_dependencies:
+      - protocol/contracts
+      - shared/runtime-support
+
+  client/runtime:
+    repo: client
+    tags:
+      - layer:client
+      - scope:runtime
+    package_names:
+      - "@delexec/buyer-controller-core"
+      - "@delexec/seller-runtime-core"
+      - "@delexec/buyer-controller"
+      - "@delexec/seller-controller"
+      - "@delexec/buyer-skill-adapter"
+    allow_dependencies:
+      - protocol/contracts
+      - shared/runtime-support
+      - client/runtime
+      - client/transports
+
+  client/transports:
+    repo: client
+    tags:
+      - layer:client
+      - scope:transport
+    package_names:
+      - "@delexec/transport-email"
+      - "@delexec/transport-emailengine"
+      - "@delexec/transport-gmail"
+      - "@delexec/transport-local"
+      - "@delexec/transport-relay-http"
+    allow_dependencies:
+      - protocol/contracts
+      - shared/runtime-support
+      - client/transports
+
+  client/ops:
+    repo: client
+    tags:
+      - layer:client
+      - scope:product
+    package_names:
+      - "@delexec/ops"
+      - "@delexec/ops-console"
+    allow_dependencies:
+      - protocol/contracts
+      - shared/runtime-support
+      - client/runtime
+      - client/transports
+      - client/ops
+
+  platform/data:
+    repo: platform
+    tags:
+      - layer:platform
+      - scope:data
+    package_names:
+      - "@delexec/postgres-store"
+    allow_dependencies:
+      - protocol/contracts
+      - shared/runtime-support
+      - platform/data
+
+  platform/api:
+    repo: platform
+    tags:
+      - layer:platform
+      - scope:api
+    package_names:
+      - "@delexec/platform-api"
+    allow_dependencies:
+      - protocol/contracts
+      - shared/runtime-support
+      - platform/data
+      - platform/api
+
+  platform/relay:
+    repo: platform
+    tags:
+      - layer:platform
+      - scope:relay
+    package_names:
+      - "@delexec/transport-relay"
+    allow_dependencies:
+      - protocol/contracts
+      - shared/runtime-support
+      - platform/relay
+
+  platform/gateway:
+    repo: platform
+    tags:
+      - layer:platform
+      - scope:gateway
+    package_names:
+      - "@delexec/platform-console-gateway"
+      - "@delexec/platform-console"
+    allow_dependencies:
+      - protocol/contracts
+      - shared/runtime-support
+      - platform/api
+      - platform/gateway

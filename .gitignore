@@ -1,0 +1,29 @@
+# Node
+node_modules/
+npm-debug.log*
+
+# Build and runtime artifacts
+dist/
+build/
+coverage/
+.tmp/
+.run/
+.nx/
+*.log
+
+# OS / IDE
+.DS_Store
+.vscode/*.code-workspace
+
+# Env files
+.env
+.env.local
+.env.*.local
+
+# Docker
+*.pid
+
+# Test artifacts
+tests/reports/latest.json
+
+_local_ref/

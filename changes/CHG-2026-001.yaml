@@ -1,0 +1,14 @@
+change_id: CHG-2026-001
+goal: establish the fourth-repository synthetic monorepo orchestration layer
+protocol_sha: c295f3d9a6cd8a48918637f3722de6655a9cfa52
+client_sha: 6ed2be3601d5aed66d1c23b360a4063e5c4887e9
+platform_sha: a4728bd69484d03b301bf052c95c160fdfc4b07d
+owner: hejiajiudeeyu
+risk_level: medium
+affected_scope:
+  - protocol
+  - client
+  - platform
+contracts_check: passed
+integration_check: passed
+notes: Submodule integrity, change bundle validation, boundary checks, contract checks, Nx project discovery, and source integration completed successfully on the recorded SHAs.

@@ -1,0 +1,95 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+env:
+  NX_DAEMON: "false"
+
+jobs:
+  submodule-integrity:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Init submodules
+        run: git submodule update --init --recursive
+      - name: Validate submodule SHA state
+        run: node tools/validate-submodules.mjs
+
+  workspace-install:
+    runs-on: ubuntu-latest
+    needs: submodule-integrity
+    steps:
+      - uses: actions/checkout@v5
+      - name: Init submodules
+        run: git submodule update --init --recursive
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+      - name: Enable Corepack
+        run: corepack enable
+      - name: Workspace install
+        run: corepack pnpm install --no-frozen-lockfile
+
+  nx-graph-and-affected:
+    runs-on: ubuntu-latest
+    needs: workspace-install
+    steps:
+      - uses: actions/checkout@v5
+      - name: Init submodules
+        run: git submodule update --init --recursive
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+      - name: Enable Corepack
+        run: corepack enable
+      - run: corepack pnpm install --no-frozen-lockfile
+      - run: corepack pnpm exec nx show projects
+      - run: corepack pnpm exec nx graph --affected --file=.nx/affected-graph.html
+
+  change-bundle-validate:
+    runs-on: ubuntu-latest
+    needs: workspace-install
+    steps:
+      - uses: actions/checkout@v5
+      - name: Init submodules
+        run: git submodule update --init --recursive
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+      - name: Enable Corepack
+        run: corepack enable
+      - run: corepack pnpm install --no-frozen-lockfile
+      - run: node tools/validate-change-bundle.mjs
+
+  contracts-check:
+    runs-on: ubuntu-latest
+    needs: workspace-install
+    steps:
+      - uses: actions/checkout@v5
+      - name: Init submodules
+        run: git submodule update --init --recursive
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+      - name: Enable Corepack
+        run: corepack enable
+      - run: corepack pnpm install --no-frozen-lockfile
+      - run: node tools/check-boundaries.mjs
+      - run: node tools/contracts-check.mjs
+
+  source-integration-check:
+    runs-on: ubuntu-latest
+    needs: workspace-install
+    steps:
+      - uses: actions/checkout@v5
+      - name: Init submodules
+        run: git submodule update --init --recursive
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+      - name: Enable Corepack
+        run: corepack enable
+      - run: corepack pnpm install --no-frozen-lockfile
+      - run: node tools/source-integration-check.mjs

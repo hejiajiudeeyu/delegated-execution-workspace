@@ -1,0 +1,33 @@
+{
+  "name": "delegated-execution-workspace",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Synthetic monorepo superproject for delegated execution cross-repo development orchestration",
+  "packageManager": "pnpm@10.11.0",
+  "scripts": {
+    "bootstrap": "corepack pnpm install",
+    "submodules:init": "git submodule update --init --recursive",
+    "submodules:sync": "git submodule sync --recursive && git submodule update --init --recursive",
+    "submodules:status": "node tools/validate-submodules.mjs",
+    "graph": "NX_DAEMON=false nx graph",
+    "affected:graph": "NX_DAEMON=false nx graph --affected",
+    "affected:test": "NX_DAEMON=false nx affected -t test",
+    "affected:integration": "NX_DAEMON=false nx affected -t integration",
+    "check:submodules": "node tools/validate-submodules.mjs",
+    "check:boundaries": "node tools/check-boundaries.mjs",
+    "check:bundles": "node tools/validate-change-bundle.mjs",
+    "test:contracts": "node tools/contracts-check.mjs",
+    "test:integration": "node tools/source-integration-check.mjs",
+    "dev:platform": "docker compose -f repos/platform/deploy/platform/docker-compose.yml --env-file repos/platform/deploy/platform/.env up -d --build",
+    "dev:platform:down": "docker compose -f repos/platform/deploy/platform/docker-compose.yml --env-file repos/platform/deploy/platform/.env down -v",
+    "dev:relay": "corepack pnpm --dir repos/platform --filter @delexec/transport-relay run start",
+    "dev:client:bootstrap": "corepack pnpm --dir repos/client --filter @delexec/ops run start -- bootstrap --platform http://127.0.0.1:8080",
+    "dev:client:status": "corepack pnpm --dir repos/client --filter @delexec/ops run start -- status",
+    "dev:approve-example": "node tools/approve-example.mjs",
+    "ci": "node tools/validate-submodules.mjs && node tools/validate-change-bundle.mjs && node tools/check-boundaries.mjs && node tools/contracts-check.mjs && node tools/source-integration-check.mjs"
+  },
+  "devDependencies": {
+    "nx": "^20.0.0",
+    "yaml": "^2.7.0"
+  }
+}
