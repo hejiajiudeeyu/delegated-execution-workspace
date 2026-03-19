@@ -9,7 +9,8 @@ Read in this order before changing behavior:
 1. `README.md`
 2. `docs/orchestration/cross-repo-change-process.md`
 3. `docs/orchestration/developer-workflow.md`
-4. `AGENTS.md`
+4. `docs/orchestration/agent-workflow.md`
+5. `AGENTS.md`
 
 ## Repository Boundary
 
@@ -32,6 +33,7 @@ This repository does not own:
 
 - `workspace:*` is only for development-time linking here, never for formal release.
 - Business changes must be made in the owning submodule under `repos/`.
+- Follow the required sequence: owning repo change -> submodule SHA update -> change bundle update -> fourth-repo validation.
 - Do not add schema, protocol fields, or runtime implementation here.
 - Do not duplicate source out of the formal repositories to create a new truth source.
 - Every cross-repo combination update must include a YAML change bundle.
@@ -44,9 +46,9 @@ This repository does not own:
 Minimum fourth-repo validation:
 
 ```bash
-pnpm check:submodules
-pnpm check:boundaries
-pnpm check:bundles
-pnpm test:contracts
-pnpm test:integration
+corepack pnpm run check:submodules
+corepack pnpm run check:boundaries
+corepack pnpm run check:bundles
+corepack pnpm run test:contracts
+corepack pnpm run test:integration
 ```

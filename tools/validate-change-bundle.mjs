@@ -1,9 +1,15 @@
 import fs from "node:fs";
 import path from "node:path";
+import { execFileSync } from "node:child_process";
 import YAML from "yaml";
 
 const ROOT = process.cwd();
 const changesDir = path.join(ROOT, "changes");
+const submoduleMap = {
+  protocol_sha: "repos/protocol",
+  client_sha: "repos/client",
+  platform_sha: "repos/platform"
+};
 const required = [
   "change_id",
   "goal",
@@ -44,6 +50,24 @@ for (const file of files) {
   if (!Array.isArray(body.affected_scope) || body.affected_scope.length === 0) {
     console.error(`[validate-change-bundle] ${file} affected_scope must be a non-empty array`);
     process.exit(1);
+  }
+
+  for (const [field, submodulePath] of Object.entries(submoduleMap)) {
+    const submoduleRoot = path.join(ROOT, submodulePath);
+    if (!fs.existsSync(path.join(submoduleRoot, ".git"))) {
+      console.error(`[validate-change-bundle] ${submodulePath} is not initialized`);
+      process.exit(1);
+    }
+
+    const actualSha = execFileSync("git", ["-C", submoduleRoot, "rev-parse", "HEAD"], {
+      encoding: "utf8"
+    }).trim();
+    if (body[field] !== actualSha) {
+      console.error(
+        `[validate-change-bundle] ${file} ${field}=${body[field]} does not match current ${submodulePath} SHA ${actualSha}`
+      );
+      process.exit(1);
+    }
   }
 }
 

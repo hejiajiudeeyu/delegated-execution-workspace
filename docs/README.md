@@ -12,6 +12,7 @@ Cross-repo change process, developer workflow, CI layering, and rollback procedu
 
 - [Cross-Repo Change Process](orchestration/cross-repo-change-process.md)
 - [Developer Workflow](orchestration/developer-workflow.md)
+- [Agent Workflow](orchestration/agent-workflow.md)
 - [CI Layering](orchestration/ci-layering.md)
 - [Rollback Playbook](orchestration/rollback-playbook.md)
 

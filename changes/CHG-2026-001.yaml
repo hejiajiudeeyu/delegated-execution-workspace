@@ -1,8 +1,8 @@
 change_id: CHG-2026-001
-goal: establish the fourth-repository synthetic monorepo orchestration layer
-protocol_sha: c295f3d9a6cd8a48918637f3722de6655a9cfa52
-client_sha: 6ed2be3601d5aed66d1c23b360a4063e5c4887e9
-platform_sha: a4728bd69484d03b301bf052c95c160fdfc4b07d
+goal: establish the fourth-repository synthetic monorepo orchestration layer and agent workflow enforcement
+protocol_sha: 66cd0ec8c4f61edc3ccc08b0fac09c4156d41044
+client_sha: 9855e69b168e28cdf4ed3f2277a3bd4d6c30a631
+platform_sha: a46aec55ac97a1a0780dfdf047a6cf7fa5977517
 owner: hejiajiudeeyu
 risk_level: medium
 affected_scope:
@@ -11,4 +11,4 @@ affected_scope:
   - platform
 contracts_check: passed
 integration_check: passed
-notes: Submodule integrity, change bundle validation, boundary checks, contract checks, Nx project discovery, and source integration completed successfully on the recorded SHAs.
+notes: Documentation, agent entrypoints, and bundle validation now enforce the owning-repo-first workflow. Submodule integrity, boundary checks, contract checks, and source integration passed on the recorded SHAs.
