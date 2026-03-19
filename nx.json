@@ -15,8 +15,8 @@
       "{workspaceRoot}/pnpm-workspace.yaml",
       "{workspaceRoot}/.npmrc",
       "{workspaceRoot}/tools/project-boundaries.yaml",
-      "{workspaceRoot}/docs/cross-repo-change-process.md",
-      "{workspaceRoot}/docs/developer-workflow.md"
+      "{workspaceRoot}/docs/orchestration/cross-repo-change-process.md",
+      "{workspaceRoot}/docs/orchestration/developer-workflow.md"
     ]
   },
   "targetDefaults": {

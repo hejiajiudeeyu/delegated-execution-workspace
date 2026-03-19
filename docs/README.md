@@ -4,6 +4,8 @@ This is the documentation root for the fourth-repo orchestration layer.
 
 Business documentation lives in the owning submodule repositories. This layer documents only orchestration, architecture decisions, and operational procedures.
 
+Chinese paired docs use `.zh-CN.md` and are the source of truth when bilingual docs differ.
+
 ## Orchestration
 
 Cross-repo change process, developer workflow, CI layering, and rollback procedures.
@@ -33,6 +35,13 @@ Step-by-step operational guides for common tasks.
 Architecture Decision Records (ADR) for significant design choices.
 
 - [ADR-001: Fourth Repo Purpose](decisions/001-fourth-repo-purpose.md)
+
+## Bilingual Convention
+
+Bilingual documentation pairing rules and translation workflow.
+
+- [Bilingual Convention](bilingual-convention.md)
+- [Bilingual Convention (Chinese)](bilingual-convention.zh-CN.md)
 
 ## Submodule Documentation
 
