@@ -7,8 +7,8 @@ This repository is a synthetic monorepo superproject for cross-repo development 
 Read in this order before changing behavior:
 
 1. `README.md`
-2. `docs/cross-repo-change-process.md`
-3. `docs/developer-workflow.md`
+2. `docs/orchestration/cross-repo-change-process.md`
+3. `docs/orchestration/developer-workflow.md`
 4. `AGENTS.md`
 
 ## Repository Boundary

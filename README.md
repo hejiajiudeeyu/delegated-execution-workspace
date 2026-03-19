@@ -47,7 +47,7 @@ All business changes still belong in the owning repository under `repos/`.
 - `repos/client` -> client product submodule
 - `repos/platform` -> self-hosted platform submodule
 - `changes/` -> change bundle YAML files
-- `docs/` -> workflow, CI layering, and Agent rules
+- `docs/` -> orchestration, architecture, runbooks, and decision records
 - `tools/` -> orchestration and validation scripts
 
 ## CI Responsibility Split
@@ -121,7 +121,12 @@ corepack pnpm run dev:client:bootstrap
 
 ## Documents
 
-- [Cross-Repo Change Process](/Users/hejiajiudeeyu/Documents/Projects/delegated-execution-dev/docs/cross-repo-change-process.md)
-- [Developer Workflow](/Users/hejiajiudeeyu/Documents/Projects/delegated-execution-dev/docs/developer-workflow.md)
-- [AGENTS.md](/Users/hejiajiudeeyu/Documents/Projects/delegated-execution-dev/AGENTS.md)
-- [CLAUDE.md](/Users/hejiajiudeeyu/Documents/Projects/delegated-execution-dev/CLAUDE.md)
+- [Documentation Index](docs/README.md)
+- [Cross-Repo Change Process](docs/orchestration/cross-repo-change-process.md)
+- [Developer Workflow](docs/orchestration/developer-workflow.md)
+- [CI Layering](docs/orchestration/ci-layering.md)
+- [System Overview](docs/architecture/system-overview.md)
+- [Boundary Rules](docs/architecture/boundary-rules.md)
+- [Local Dev Setup](docs/runbooks/local-dev-setup.md)
+- [AGENTS.md](AGENTS.md)
+- [CLAUDE.md](CLAUDE.md)
