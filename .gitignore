@@ -10,10 +10,13 @@ coverage/
 .run/
 .nx/
 *.log
+*.tsbuildinfo
+test-results/
+junit.xml
 
 # OS / IDE
 .DS_Store
-.vscode/*.code-workspace
+.vscode/
 
 # Env files
 .env
