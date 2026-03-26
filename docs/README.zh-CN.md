@@ -15,6 +15,7 @@
 
 - [跨仓变更流程](orchestration/cross-repo-change-process.md)
 - [开发者工作流](orchestration/developer-workflow.md)
+- [Agent 工作流](orchestration/agent-workflow.md)
 - [CI 分层](orchestration/ci-layering.md)
 - [回滚手册](orchestration/rollback-playbook.md)
 
@@ -22,9 +23,13 @@
 
 系统级架构、边界治理与集成路径文档。
 
+- [术语映射](architecture/terminology.md)
+- [术语升级 v2](architecture/terminology-upgrade-v2.md)
+- [术语迁移审计](architecture/terminology-migration-audit.md)
 - [系统概览](architecture/system-overview.md)
 - [边界规则](architecture/boundary-rules.md)
 - [集成路径](architecture/integration-path.md)
+- [镜像构建归属与 Marketplace API 契约](architecture/image-build-and-marketplace-contract.zh-CN.md)
 
 ## 运行手册（Runbooks）
 

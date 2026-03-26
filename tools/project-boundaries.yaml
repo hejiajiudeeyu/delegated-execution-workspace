@@ -25,11 +25,11 @@ projects:
       - layer:client
       - scope:runtime
     package_names:
-      - "@delexec/buyer-controller-core"
-      - "@delexec/seller-runtime-core"
-      - "@delexec/buyer-controller"
-      - "@delexec/seller-controller"
-      - "@delexec/buyer-skill-adapter"
+      - "@delexec/caller-controller-core"
+      - "@delexec/responder-runtime-core"
+      - "@delexec/caller-controller"
+      - "@delexec/responder-controller"
+      - "@delexec/caller-skill-adapter"
     allow_dependencies:
       - protocol/contracts
       - shared/runtime-support

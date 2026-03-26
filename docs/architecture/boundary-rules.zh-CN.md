@@ -13,7 +13,7 @@
 |---|---|
 | `protocol/contracts` | `@delexec/contracts` |
 | `shared/runtime-support` | `@delexec/runtime-utils`, `@delexec/sqlite-store` |
-| `client/runtime` | `@delexec/buyer-controller`, `@delexec/buyer-controller-core`, `@delexec/seller-controller`, `@delexec/seller-runtime-core` |
+| `client/runtime` | `@delexec/caller-controller`, `@delexec/caller-controller-core`, `@delexec/responder-controller`, `@delexec/responder-runtime-core` |
 | `client/transports` | `@delexec/transport-*` |
 | `client/ops` | `@delexec/ops` |
 | `platform/data` | `@delexec/postgres-store` |

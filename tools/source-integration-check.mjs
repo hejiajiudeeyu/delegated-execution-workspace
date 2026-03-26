@@ -79,12 +79,29 @@ function cleanupOpsProcesses() {
     "apps/ops/src/cli.js start",
     "apps/buyer-controller/src/server.js",
     "buyer-controller/src/server.js",
+    "apps/caller-controller/src/server.js",
+    "caller-controller/src/server.js",
     "apps/seller-controller/src/server.js",
     "seller-controller/src/server.js",
+    "apps/responder-controller/src/server.js",
+    "responder-controller/src/server.js",
     "apps/transport-relay/src/server.js",
     "transport-relay/src/server.js"
   ]) {
     spawnSync("pkill", ["-f", pattern], { stdio: "ignore" });
+  }
+
+  for (const port of [8079, 8081, 8082, 8090]) {
+    const listeners = spawnSync("lsof", ["-ti", `tcp:${port}`], { encoding: "utf8" });
+    if (listeners.status !== 0 || !listeners.stdout.trim()) {
+      continue;
+    }
+    for (const pid of listeners.stdout.trim().split(/\s+/)) {
+      if (!pid) {
+        continue;
+      }
+      spawnSync("kill", ["-TERM", pid], { stdio: "ignore" });
+    }
   }
 }
 
@@ -98,6 +115,7 @@ fs.writeFileSync(platformEnvPath, envText, "utf8");
 
 run(clientRoot, "npm", ["install"]);
 run(platformRoot, "npm", ["install"]);
+run(ROOT, "node", ["tools/sync-local-contracts.mjs"]);
 
 cleanupOpsProcesses();
 spawnSync("rm", ["-rf", path.join(os.homedir(), ".delexec")], { stdio: "ignore" });
@@ -148,14 +166,14 @@ const opsEnv = {
 
 run(clientRoot, "node", ["apps/ops/src/cli.js", "setup"], opsEnv);
 run(clientRoot, "node", ["apps/ops/src/cli.js", "auth", "register", "--email", "integration@example.com", "--platform", "http://127.0.0.1:8080"], opsEnv);
-run(clientRoot, "node", ["apps/ops/src/cli.js", "add-example-subagent"], opsEnv);
+run(clientRoot, "node", ["apps/ops/src/cli.js", "add-example-hotline"], opsEnv);
 run(clientRoot, "node", ["apps/ops/src/cli.js", "submit-review"], opsEnv);
-run(clientRoot, "node", ["apps/ops/src/cli.js", "enable-seller"], opsEnv);
+run(clientRoot, "node", ["apps/ops/src/cli.js", "enable-responder"], opsEnv);
 
 const setupState = JSON.parse(fs.readFileSync(path.join(os.homedir(), ".delexec/ops.config.json"), "utf8"));
-const sellerId = setupState.seller.seller_id;
+const responderId = setupState.responder.responder_id;
 
-run(ROOT, "node", ["tools/approve-example.mjs", sellerId], {
+run(ROOT, "node", ["tools/approve-example.mjs", responderId], {
   PLATFORM_API_KEY: "sk_admin_local_dev",
   PLATFORM_ADMIN_API_KEY: "sk_admin_local_dev"
 });

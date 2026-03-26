@@ -6,6 +6,7 @@
   "packageManager": "pnpm@10.11.0",
   "scripts": {
     "bootstrap": "corepack pnpm install",
+    "sync:local-contracts": "node tools/sync-local-contracts.mjs",
     "submodules:init": "git submodule update --init --recursive",
     "submodules:sync": "git submodule sync --recursive && git submodule update --init --recursive",
     "submodules:status": "node tools/validate-submodules.mjs",

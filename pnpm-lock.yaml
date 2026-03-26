@@ -31,11 +31,11 @@ importers:
         specifier: ^3.2.4
         version: 3.2.4(@types/node@25.5.0)(@vitest/ui@3.2.4)(happy-dom@20.8.4)(yaml@2.8.2)
 
-  repos/client/apps/buyer-controller:
+  repos/client/apps/caller-controller:
     dependencies:
-      '@delexec/buyer-controller-core':
+      '@delexec/caller-controller-core':
         specifier: 0.1.0
-        version: link:../../packages/buyer-controller-core
+        version: link:../../packages/caller-controller-core
       '@delexec/contracts':
         specifier: ^0.1.0
         version: link:../../../protocol/packages/contracts
@@ -61,28 +61,28 @@ importers:
         specifier: ^12.6.2
         version: 12.8.0
 
-  repos/client/apps/buyer-skill-adapter: {}
+  repos/client/apps/caller-skill-adapter: {}
 
   repos/client/apps/ops:
     dependencies:
-      '@delexec/buyer-controller':
+      '@delexec/caller-controller':
         specifier: 0.1.0
-        version: link:../buyer-controller
-      '@delexec/buyer-controller-core':
+        version: link:../caller-controller
+      '@delexec/caller-controller-core':
         specifier: 0.1.0
-        version: link:../../packages/buyer-controller-core
+        version: link:../../packages/caller-controller-core
       '@delexec/contracts':
         specifier: ^0.1.0
         version: link:../../../protocol/packages/contracts
+      '@delexec/responder-controller':
+        specifier: 0.1.0
+        version: link:../responder-controller
+      '@delexec/responder-runtime-core':
+        specifier: 0.1.0
+        version: link:../../packages/responder-runtime-core
       '@delexec/runtime-utils':
         specifier: 0.1.0
         version: link:../../packages/runtime-utils
-      '@delexec/seller-controller':
-        specifier: 0.1.0
-        version: link:../seller-controller
-      '@delexec/seller-runtime-core':
-        specifier: 0.1.0
-        version: link:../../packages/seller-runtime-core
       '@delexec/sqlite-store':
         specifier: 0.1.0
         version: link:../../packages/sqlite-store
@@ -105,17 +105,17 @@ importers:
         specifier: ^7.1.3
         version: 7.3.1(@types/node@25.5.0)(yaml@2.8.2)
 
-  repos/client/apps/seller-controller:
+  repos/client/apps/responder-controller:
     dependencies:
       '@delexec/contracts':
         specifier: ^0.1.0
         version: link:../../../protocol/packages/contracts
+      '@delexec/responder-runtime-core':
+        specifier: 0.1.0
+        version: link:../../packages/responder-runtime-core
       '@delexec/runtime-utils':
         specifier: 0.1.0
         version: link:../../packages/runtime-utils
-      '@delexec/seller-runtime-core':
-        specifier: 0.1.0
-        version: link:../../packages/seller-runtime-core
       '@delexec/sqlite-store':
         specifier: 0.1.0
         version: link:../../packages/sqlite-store
@@ -135,19 +135,19 @@ importers:
         specifier: ^12.6.2
         version: 12.8.0
 
-  repos/client/packages/buyer-controller-core:
+  repos/client/packages/caller-controller-core:
+    dependencies:
+      '@delexec/contracts':
+        specifier: ^0.1.0
+        version: link:../../../protocol/packages/contracts
+
+  repos/client/packages/responder-runtime-core:
     dependencies:
       '@delexec/contracts':
         specifier: ^0.1.0
         version: link:../../../protocol/packages/contracts
 
   repos/client/packages/runtime-utils: {}
-
-  repos/client/packages/seller-runtime-core:
-    dependencies:
-      '@delexec/contracts':
-        specifier: ^0.1.0
-        version: link:../../../protocol/packages/contracts
 
   repos/client/packages/sqlite-store:
     dependencies:

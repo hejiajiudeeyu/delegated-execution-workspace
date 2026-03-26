@@ -87,6 +87,12 @@ Bootstrap the workspace:
 corepack pnpm install
 ```
 
+Refresh local protocol contracts into client/platform validation installs:
+
+```bash
+corepack pnpm run sync:local-contracts
+```
+
 Initialize or sync submodules:
 
 ```bash
@@ -103,6 +109,11 @@ corepack pnpm run check:bundles
 corepack pnpm run test:contracts
 corepack pnpm run test:integration
 ```
+
+Notes:
+
+- Use the top-level `corepack pnpm install` as the default workspace install path.
+- Standalone `npm install` inside `repos/platform` may restore the last published `@delexec/contracts` tarball. Run `corepack pnpm run sync:local-contracts` or any fourth-repo validation command to relink the current local protocol package before checking cross-repo changes.
 
 Inspect the Nx workspace:
 
@@ -122,6 +133,8 @@ corepack pnpm run dev:client:bootstrap
 ## Documents
 
 - [Documentation Index](docs/README.md)
+- [Terminology Mapping](docs/architecture/terminology.md)
+- [Terminology Migration Audit](docs/architecture/terminology-migration-audit.md)
 - [Cross-Repo Change Process](docs/orchestration/cross-repo-change-process.md)
 - [Developer Workflow](docs/orchestration/developer-workflow.md)
 - [CI Layering](docs/orchestration/ci-layering.md)

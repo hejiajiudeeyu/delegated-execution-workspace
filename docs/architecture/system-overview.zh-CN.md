@@ -12,7 +12,7 @@
 | 仓库 | 角色 |
 |---|---|
 | `repos/protocol` | 协议与契约定义（`@delexec/contracts`） |
-| `repos/client` | 客户端运行时：buyer/seller 控制器、传输层、运维 CLI |
+| `repos/client` | 客户端运行时：caller/responder 控制器、传输层、运维 CLI |
 | `repos/platform` | 自托管平台：API、relay、console、部署配置 |
 
 ## 依赖流向

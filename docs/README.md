@@ -20,9 +20,13 @@ Cross-repo change process, developer workflow, CI layering, and rollback procedu
 
 System-level architecture, boundary governance, and integration path documentation.
 
+- [Terminology Mapping](architecture/terminology.md)
+- [Terminology Upgrade to v2](architecture/terminology-upgrade-v2.md)
+- [Terminology Migration Audit](architecture/terminology-migration-audit.md)
 - [System Overview](architecture/system-overview.md)
 - [Boundary Rules](architecture/boundary-rules.md)
 - [Integration Path](architecture/integration-path.md)
+- [Image Build Ownership & Marketplace API Contract](architecture/image-build-and-marketplace-contract.md)
 
 ## Runbooks
 
