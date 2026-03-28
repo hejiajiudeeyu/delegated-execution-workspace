@@ -1,13 +1,13 @@
 change_id: CHG-2026-002
 goal: bump client and platform submodule SHAs after ops-console and platform-console/deploy work
 protocol_sha: 66cd0ec8c4f61edc3ccc08b0fac09c4156d41044
-client_sha: 9efcbb7a3f68362deb88c9cb8fb51d7a89d7bd1b
+client_sha: 5db1f7178ff7e0b9f6587de3068a7e0f091cd791
 platform_sha: 6a20a708fd81447bb76da7b3907d0e70a0cbda51
 owner: hejiajiudeeyu
 risk_level: medium
 affected_scope:
   - client
   - platform
-contracts_check: pending
+contracts_check: passed
 integration_check: pending
-notes: Recorded SHAs after local commits; fourth-repo checks run before push.
+notes: boundary fix: removed @delexec/transport-relay from @delexec/ops dependencies (platform boundary violation); added PATH fallback in supervisor resolveRelayPackageEntry; contracts-check passed.
