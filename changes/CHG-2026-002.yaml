@@ -1,8 +1,8 @@
 change_id: CHG-2026-002
 goal: bump all three submodule SHAs; contracts rename SELLER/BUYER/SUBAGENT to RESPONDER/CALLER/HOTLINE
 protocol_sha: c1a84043a08d8795616e501e6cc9ef06ecf83bb4
-client_sha: 5db1f7178ff7e0b9f6587de3068a7e0f091cd791
-platform_sha: 6a20a708fd81447bb76da7b3907d0e70a0cbda51
+client_sha: 97078d3359c132457ce793707a4daa112c6be19e
+platform_sha: 9715eb1e28e99463870558c666b3299990e82399
 owner: hejiajiudeeyu
 risk_level: medium
 affected_scope:
@@ -11,4 +11,4 @@ affected_scope:
   - platform
 contracts_check: pending
 integration_check: pending
-notes: "boundary fix: removed @delexec/transport-relay from @delexec/ops dependencies; added PATH fallback in supervisor; contracts SELLER/BUYER/SUBAGENT renamed to RESPONDER/CALLER/HOTLINE"
+notes: "boundary fix: removed @delexec/transport-relay from @delexec/ops dependencies; added sibling-repo relay path lookup; contracts SELLER/BUYER/SUBAGENT renamed to RESPONDER/CALLER/HOTLINE; aligned responder defaults with platform bootstrap (foxlab→starlight); fixed heartbeat v2→v1 URL"
