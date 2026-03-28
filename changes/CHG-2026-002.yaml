@@ -1,6 +1,6 @@
 change_id: CHG-2026-002
 goal: bump all three submodule SHAs; contracts rename SELLER/BUYER/SUBAGENT to RESPONDER/CALLER/HOTLINE
-protocol_sha: 8ace41339386ee27273dd668da6c9129d47079b3
+protocol_sha: c1a84043a08d8795616e501e6cc9ef06ecf83bb4
 client_sha: 5db1f7178ff7e0b9f6587de3068a7e0f091cd791
 platform_sha: 6a20a708fd81447bb76da7b3907d0e70a0cbda51
 owner: hejiajiudeeyu
