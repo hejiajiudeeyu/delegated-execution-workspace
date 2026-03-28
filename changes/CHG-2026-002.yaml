@@ -1,13 +1,14 @@
 change_id: CHG-2026-002
-goal: bump client and platform submodule SHAs after ops-console and platform-console/deploy work
-protocol_sha: 66cd0ec8c4f61edc3ccc08b0fac09c4156d41044
+goal: bump all three submodule SHAs; contracts rename SELLER/BUYER/SUBAGENT to RESPONDER/CALLER/HOTLINE
+protocol_sha: 8ace41339386ee27273dd668da6c9129d47079b3
 client_sha: 5db1f7178ff7e0b9f6587de3068a7e0f091cd791
 platform_sha: 6a20a708fd81447bb76da7b3907d0e70a0cbda51
 owner: hejiajiudeeyu
 risk_level: medium
 affected_scope:
   - client
+  - protocol
   - platform
-contracts_check: passed
+contracts_check: pending
 integration_check: pending
 notes: boundary fix: removed @delexec/transport-relay from @delexec/ops dependencies (platform boundary violation); added PATH fallback in supervisor resolveRelayPackageEntry; contracts-check passed.
