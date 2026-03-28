@@ -24,16 +24,14 @@ jobs:
       - uses: actions/checkout@v5
         with:
           submodules: recursive
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.11.0
       - uses: actions/setup-node@v5
         with:
           node-version: 22
-      - name: Install pnpm via corepack
-        run: |
-          npm install -g corepack
-          corepack enable pnpm
-          corepack prepare pnpm@10.11.0 --activate
-      - name: Workspace install
-        run: pnpm install --no-frozen-lockfile
+          cache: pnpm
+      - run: pnpm install --no-frozen-lockfile
 
   nx-graph-and-affected:
     runs-on: ubuntu-latest
@@ -42,14 +40,13 @@ jobs:
       - uses: actions/checkout@v5
         with:
           submodules: recursive
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.11.0
       - uses: actions/setup-node@v5
         with:
           node-version: 22
-      - name: Install pnpm via corepack
-        run: |
-          npm install -g corepack
-          corepack enable pnpm
-          corepack prepare pnpm@10.11.0 --activate
+          cache: pnpm
       - run: pnpm install --no-frozen-lockfile
       - run: pnpm exec nx show projects
       - run: pnpm exec nx graph --affected --file=.nx/affected-graph.html
@@ -61,14 +58,13 @@ jobs:
       - uses: actions/checkout@v5
         with:
           submodules: recursive
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.11.0
       - uses: actions/setup-node@v5
         with:
           node-version: 22
-      - name: Install pnpm via corepack
-        run: |
-          npm install -g corepack
-          corepack enable pnpm
-          corepack prepare pnpm@10.11.0 --activate
+          cache: pnpm
       - run: pnpm install --no-frozen-lockfile
       - run: node tools/validate-change-bundle.mjs
 
@@ -79,14 +75,13 @@ jobs:
       - uses: actions/checkout@v5
         with:
           submodules: recursive
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.11.0
       - uses: actions/setup-node@v5
         with:
           node-version: 22
-      - name: Install pnpm via corepack
-        run: |
-          npm install -g corepack
-          corepack enable pnpm
-          corepack prepare pnpm@10.11.0 --activate
+          cache: pnpm
       - run: pnpm install --no-frozen-lockfile
       - run: node tools/check-boundaries.mjs
       - run: node tools/contracts-check.mjs
@@ -98,13 +93,12 @@ jobs:
       - uses: actions/checkout@v5
         with:
           submodules: recursive
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.11.0
       - uses: actions/setup-node@v5
         with:
           node-version: 22
-      - name: Install pnpm via corepack
-        run: |
-          npm install -g corepack
-          corepack enable pnpm
-          corepack prepare pnpm@10.11.0 --activate
+          cache: pnpm
       - run: pnpm install --no-frozen-lockfile
       - run: node tools/source-integration-check.mjs
