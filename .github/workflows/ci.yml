@@ -27,10 +27,13 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: 22
-      - name: Enable Corepack
-        run: corepack enable pnpm
+      - name: Install pnpm via corepack
+        run: |
+          npm install -g corepack
+          corepack enable pnpm
+          corepack prepare pnpm@10.11.0 --activate
       - name: Workspace install
-        run: corepack pnpm install --no-frozen-lockfile
+        run: pnpm install --no-frozen-lockfile
 
   nx-graph-and-affected:
     runs-on: ubuntu-latest
@@ -42,11 +45,14 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: 22
-      - name: Enable Corepack
-        run: corepack enable pnpm
-      - run: corepack pnpm install --no-frozen-lockfile
-      - run: corepack pnpm exec nx show projects
-      - run: corepack pnpm exec nx graph --affected --file=.nx/affected-graph.html
+      - name: Install pnpm via corepack
+        run: |
+          npm install -g corepack
+          corepack enable pnpm
+          corepack prepare pnpm@10.11.0 --activate
+      - run: pnpm install --no-frozen-lockfile
+      - run: pnpm exec nx show projects
+      - run: pnpm exec nx graph --affected --file=.nx/affected-graph.html
 
   change-bundle-validate:
     runs-on: ubuntu-latest
@@ -58,9 +64,12 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: 22
-      - name: Enable Corepack
-        run: corepack enable pnpm
-      - run: corepack pnpm install --no-frozen-lockfile
+      - name: Install pnpm via corepack
+        run: |
+          npm install -g corepack
+          corepack enable pnpm
+          corepack prepare pnpm@10.11.0 --activate
+      - run: pnpm install --no-frozen-lockfile
       - run: node tools/validate-change-bundle.mjs
 
   contracts-check:
@@ -73,9 +82,12 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: 22
-      - name: Enable Corepack
-        run: corepack enable pnpm
-      - run: corepack pnpm install --no-frozen-lockfile
+      - name: Install pnpm via corepack
+        run: |
+          npm install -g corepack
+          corepack enable pnpm
+          corepack prepare pnpm@10.11.0 --activate
+      - run: pnpm install --no-frozen-lockfile
       - run: node tools/check-boundaries.mjs
       - run: node tools/contracts-check.mjs
 
@@ -89,7 +101,10 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: 22
-      - name: Enable Corepack
-        run: corepack enable pnpm
-      - run: corepack pnpm install --no-frozen-lockfile
+      - name: Install pnpm via corepack
+        run: |
+          npm install -g corepack
+          corepack enable pnpm
+          corepack prepare pnpm@10.11.0 --activate
+      - run: pnpm install --no-frozen-lockfile
       - run: node tools/source-integration-check.mjs
