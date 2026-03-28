@@ -28,7 +28,7 @@ jobs:
         with:
           node-version: 22
       - name: Enable Corepack
-        run: corepack enable
+        run: corepack enable pnpm
       - name: Workspace install
         run: corepack pnpm install --no-frozen-lockfile
 
@@ -43,7 +43,7 @@ jobs:
         with:
           node-version: 22
       - name: Enable Corepack
-        run: corepack enable
+        run: corepack enable pnpm
       - run: corepack pnpm install --no-frozen-lockfile
       - run: corepack pnpm exec nx show projects
       - run: corepack pnpm exec nx graph --affected --file=.nx/affected-graph.html
@@ -59,7 +59,7 @@ jobs:
         with:
           node-version: 22
       - name: Enable Corepack
-        run: corepack enable
+        run: corepack enable pnpm
       - run: corepack pnpm install --no-frozen-lockfile
       - run: node tools/validate-change-bundle.mjs
 
@@ -74,7 +74,7 @@ jobs:
         with:
           node-version: 22
       - name: Enable Corepack
-        run: corepack enable
+        run: corepack enable pnpm
       - run: corepack pnpm install --no-frozen-lockfile
       - run: node tools/check-boundaries.mjs
       - run: node tools/contracts-check.mjs
@@ -90,6 +90,6 @@ jobs:
         with:
           node-version: 22
       - name: Enable Corepack
-        run: corepack enable
+        run: corepack enable pnpm
       - run: corepack pnpm install --no-frozen-lockfile
       - run: node tools/source-integration-check.mjs
