@@ -12,8 +12,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
-      - name: Init submodules
-        run: git submodule update --init --recursive
+        with:
+          submodules: recursive
       - name: Validate submodule SHA state
         run: node tools/validate-submodules.mjs
 
@@ -22,8 +22,8 @@ jobs:
     needs: submodule-integrity
     steps:
       - uses: actions/checkout@v5
-      - name: Init submodules
-        run: git submodule update --init --recursive
+        with:
+          submodules: recursive
       - uses: actions/setup-node@v5
         with:
           node-version: 22
@@ -37,8 +37,8 @@ jobs:
     needs: workspace-install
     steps:
       - uses: actions/checkout@v5
-      - name: Init submodules
-        run: git submodule update --init --recursive
+        with:
+          submodules: recursive
       - uses: actions/setup-node@v5
         with:
           node-version: 22
@@ -53,8 +53,8 @@ jobs:
     needs: workspace-install
     steps:
       - uses: actions/checkout@v5
-      - name: Init submodules
-        run: git submodule update --init --recursive
+        with:
+          submodules: recursive
       - uses: actions/setup-node@v5
         with:
           node-version: 22
@@ -68,8 +68,8 @@ jobs:
     needs: workspace-install
     steps:
       - uses: actions/checkout@v5
-      - name: Init submodules
-        run: git submodule update --init --recursive
+        with:
+          submodules: recursive
       - uses: actions/setup-node@v5
         with:
           node-version: 22
@@ -84,8 +84,8 @@ jobs:
     needs: workspace-install
     steps:
       - uses: actions/checkout@v5
-      - name: Init submodules
-        run: git submodule update --init --recursive
+        with:
+          submodules: recursive
       - uses: actions/setup-node@v5
         with:
           node-version: 22

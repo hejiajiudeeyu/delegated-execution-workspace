@@ -1,9 +1,9 @@
 [submodule "repos/client"]
 	path = repos/client
-	url = git@github.com:hejiajiudeeyu/delegated-execution-client.git
+	url = https://github.com/hejiajiudeeyu/delegated-execution-client.git
 [submodule "repos/platform"]
 	path = repos/platform
-	url = git@github.com:hejiajiudeeyu/delegated-execution-platform-selfhost.git
+	url = https://github.com/hejiajiudeeyu/delegated-execution-platform-selfhost.git
 [submodule "repos/protocol"]
 	path = repos/protocol
-	url = git@github.com:hejiajiudeeyu/delegated-execution-protocol.git
+	url = https://github.com/hejiajiudeeyu/delegated-execution-protocol.git
