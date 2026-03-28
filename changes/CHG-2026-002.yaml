@@ -6,9 +6,9 @@ platform_sha: 6a20a708fd81447bb76da7b3907d0e70a0cbda51
 owner: hejiajiudeeyu
 risk_level: medium
 affected_scope:
-  - client
   - protocol
+  - client
   - platform
 contracts_check: pending
 integration_check: pending
-notes: boundary fix: removed @delexec/transport-relay from @delexec/ops dependencies (platform boundary violation); added PATH fallback in supervisor resolveRelayPackageEntry; contracts-check passed.
+notes: "boundary fix: removed @delexec/transport-relay from @delexec/ops dependencies; added PATH fallback in supervisor; contracts SELLER/BUYER/SUBAGENT renamed to RESPONDER/CALLER/HOTLINE"
