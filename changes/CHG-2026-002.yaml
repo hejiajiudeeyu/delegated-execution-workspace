@@ -9,6 +9,6 @@ affected_scope:
   - protocol
   - client
   - platform
-contracts_check: pending
-integration_check: pending
+contracts_check: passed
+integration_check: passed
 notes: "boundary fix: removed @delexec/transport-relay from @delexec/ops dependencies; added sibling-repo relay path lookup; contracts SELLER/BUYER/SUBAGENT renamed to RESPONDER/CALLER/HOTLINE; aligned responder defaults with platform bootstrap (foxlab→starlight); fixed heartbeat v2→v1 URL"
