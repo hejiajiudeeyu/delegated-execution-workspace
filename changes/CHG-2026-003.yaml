@@ -1,0 +1,14 @@
+change_id: CHG-2026-003
+goal: validate local-only caller-skill MCP host integration for Codex, Cursor, and Claude Code
+protocol_sha: fac73ae223c23549ba8fffee77821a5120648415
+client_sha: c4673a644caca4a12315124ad5cb3143b4143ccc
+platform_sha: 6e5be1544b8b2fa0a2ac71c7fce12c56e8eada47
+owner: hejiajiudeeyu
+risk_level: medium
+affected_scope:
+  - protocol
+  - client
+  - platform
+contracts_check: passed
+integration_check: passed
+notes: "verified SHA combination for caller-skill local-only MCP validation work: local-only caller catalog fallback, MCP host validation for Codex/Cursor/Claude Code, and streamable_http guidance all passed fourth-repo checks."

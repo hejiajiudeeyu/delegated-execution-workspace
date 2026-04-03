@@ -58,8 +58,10 @@ projects:
       - layer:client
       - scope:product
     package_names:
+      - "delegated-execution-client"
       - "@delexec/ops"
       - "@delexec/ops-console"
+      - "@delexec/caller-skill-mcp-adapter"
     allow_dependencies:
       - protocol/contracts
       - shared/runtime-support
