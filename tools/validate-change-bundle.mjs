@@ -50,17 +50,21 @@ if (files.length === 0) {
 }
 
 // A change bundle is a historical snapshot of a verified (protocol, client, platform)
-// combination. We enforce two different rules depending on whether the bundle is
-// frozen (= already certified in HEAD) or non-frozen (= pending / new):
+// combination. Two rules apply:
 //
-//   Frozen  : its SHAs are the historical record. We do NOT compare them to current
-//             submodule heads, but we refuse any attempt to rewrite its SHAs or
-//             change_id in the working tree (see isFrozen/headBody check below).
+//   1. A bundle is a snapshot iff its own body is passed/passed. Snapshot SHAs
+//      are the historical record. We do NOT compare snapshot SHAs to current
+//      submodule heads. This covers both long-archived bundles and freshly
+//      added archival entries.
 //
-//   Non-frozen: it represents the candidate combination under validation right now,
-//             so its SHAs MUST equal the current submodule heads.
+//   2. A bundle is a candidate iff its own body is NOT passed/passed (i.e.
+//      at least one of contracts_check / integration_check is not "passed").
+//      Candidate SHAs MUST equal the current submodule heads, because this is
+//      the combination being validated right now.
 //
-// Brand-new bundles (not yet committed to HEAD) count as non-frozen.
+// Additionally, any bundle that was already passed/passed in HEAD is frozen:
+// its change_id and SHA fields may not be rewritten in the working tree.
+// The fix for a mistake in a frozen bundle is to open a new CHG, not edit it.
 
 for (const file of files) {
   if (file.toLowerCase().includes("template")) {
@@ -81,7 +85,6 @@ for (const file of files) {
 
   const relPath = path.posix.join("changes", file);
   const headText = readHeadVersion(relPath);
-  let frozenInHead = false;
   if (headText) {
     let headBody;
     try {
@@ -90,7 +93,6 @@ for (const file of files) {
       headBody = null;
     }
     if (headBody && isFrozen(headBody)) {
-      frozenInHead = true;
       for (const frozenField of FROZEN_FIELDS) {
         if (headBody[frozenField] !== body[frozenField]) {
           console.error(
@@ -102,7 +104,7 @@ for (const file of files) {
     }
   }
 
-  if (frozenInHead) {
+  if (isFrozen(body)) {
     continue;
   }
 
