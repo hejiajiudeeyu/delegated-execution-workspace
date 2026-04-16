@@ -32,7 +32,7 @@
     "dev:console": "corepack pnpm run dev:console:gateway & corepack pnpm run dev:console:ui",
     "dev:platform-console": "corepack pnpm run dev:console:gateway & corepack pnpm run dev:platform-console:ui",
     "dev:approve-example": "node tools/approve-example.mjs",
-    "test:agent-e2e": "AUTO_APPROVE=true python3 scripts/agent-e2e-test.py",
+    "test:agent-e2e": "AUTO_APPROVE=true python3 tools/agent-e2e/agent-e2e-test.py",
     "ci": "node tools/validate-submodules.mjs && node tools/validate-change-bundle.mjs && node tools/check-boundaries.mjs && node tools/contracts-check.mjs && node tools/source-integration-check.mjs"
   },
   "devDependencies": {

@@ -3,7 +3,7 @@ import { request } from "node:http";
 const adminApiKey = process.env.PLATFORM_ADMIN_API_KEY || "sk_admin_local_dev";
 const platformBaseUrl = process.env.PLATFORM_API_BASE_URL || "http://127.0.0.1:8080";
 const responderId = process.env.RESPONDER_ID || process.argv[2];
-const hotlineId = process.env.HOTLINE_ID || "local.summary.v1";
+const hotlineId = process.env.HOTLINE_ID || "local.delegated-execution.workspace-summary.v1";
 
 if (!responderId) {
   console.error("[approve-example] RESPONDER_ID or argv[2] is required");
