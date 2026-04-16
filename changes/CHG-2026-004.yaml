@@ -1,0 +1,12 @@
+change_id: CHG-2026-004
+goal: bump client SHA for responder runtime cwd/env + PDF profile and caller ops-console UX (approvals, access lists, runtime health)
+protocol_sha: fac73ae223c23549ba8fffee77821a5120648415
+client_sha: 402f3007403ae8dd31c84f1aac3ddf71e67dc0cc
+platform_sha: 6e5be1544b8b2fa0a2ac71c7fce12c56e8eada47
+owner: hejiajiudeeyu
+risk_level: low
+affected_scope:
+  - client
+contracts_check: passed
+integration_check: passed
+notes: "client-only bump. Backend: add-hotline/attach-project accept --cwd and repeatable --env KEY=VALUE; document_parse_pdf default contract profile; local_task_ tokens bypass platform introspection; /caller/global-policy served directly from ops state. UI: caller approvals and access-list pages split out, preferences becomes caller_policy editor, runtime page renders per-service health cards, AuthGuard uses declarative Navigate with deep-link preservation, vite dev proxy bypasses /caller for HTML navigations, example hotline id migrated to local.delegated-execution.workspace-summary.v1."
