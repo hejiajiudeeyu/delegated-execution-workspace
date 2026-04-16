@@ -49,6 +49,19 @@ if (files.length === 0) {
   process.exit(1);
 }
 
+// A change bundle is a historical snapshot of a verified (protocol, client, platform)
+// combination. We enforce two different rules depending on whether the bundle is
+// frozen (= already certified in HEAD) or non-frozen (= pending / new):
+//
+//   Frozen  : its SHAs are the historical record. We do NOT compare them to current
+//             submodule heads, but we refuse any attempt to rewrite its SHAs or
+//             change_id in the working tree (see isFrozen/headBody check below).
+//
+//   Non-frozen: it represents the candidate combination under validation right now,
+//             so its SHAs MUST equal the current submodule heads.
+//
+// Brand-new bundles (not yet committed to HEAD) count as non-frozen.
+
 for (const file of files) {
   if (file.toLowerCase().includes("template")) {
     continue;
@@ -68,6 +81,7 @@ for (const file of files) {
 
   const relPath = path.posix.join("changes", file);
   const headText = readHeadVersion(relPath);
+  let frozenInHead = false;
   if (headText) {
     let headBody;
     try {
@@ -76,6 +90,7 @@ for (const file of files) {
       headBody = null;
     }
     if (headBody && isFrozen(headBody)) {
+      frozenInHead = true;
       for (const frozenField of FROZEN_FIELDS) {
         if (headBody[frozenField] !== body[frozenField]) {
           console.error(
@@ -85,6 +100,10 @@ for (const file of files) {
         }
       }
     }
+  }
+
+  if (frozenInHead) {
+    continue;
   }
 
   for (const [field, submodulePath] of Object.entries(submoduleMap)) {
