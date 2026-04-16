@@ -59,16 +59,24 @@ corepack pnpm run test:integration
 ### 5. Start Local Source Integration
 
 ```bash
-# Terminal 1: Platform API + relay
+# Terminal 1: Platform API (docker) + standalone relay
 corepack pnpm run dev:platform
 corepack pnpm run dev:relay
 
-# Terminal 2: Client bootstrap
+# Terminal 2: Client bootstrap (registers example responder + hotline)
 corepack pnpm run dev:client:bootstrap
+
+# Terminal 3 (optional): Ops console UI for caller-side inspection
+corepack pnpm run dev:console   # gateway on :8079 + ops-console UI on :4174
 ```
 
-The platform console is served at `http://localhost:8080` by default.
-The ops console is served at `http://localhost:3000` by default.
+Default endpoints:
+
+- Platform API: `http://127.0.0.1:8080`
+- Transport relay: `http://127.0.0.1:8090`
+- Ops console gateway (supervisor): `http://127.0.0.1:8079`
+- Ops console UI (Vite dev server): `http://127.0.0.1:4174`
+- Platform console UI (Vite dev server, only via `dev:platform-console`): `http://127.0.0.1:4175`
 
 ## Platform-Specific Notes
 

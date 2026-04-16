@@ -1,7 +1,21 @@
 import fs from "node:fs";
 import path from "node:path";
-import { execFileSync } from "node:child_process";
+import { execFileSync, spawnSync } from "node:child_process";
 import YAML from "yaml";
+
+const FROZEN_FIELDS = ["change_id", "protocol_sha", "client_sha", "platform_sha"];
+
+function readHeadVersion(relPath) {
+  const result = spawnSync("git", ["show", `HEAD:${relPath}`], { encoding: "utf8" });
+  if (result.status !== 0) {
+    return null;
+  }
+  return result.stdout;
+}
+
+function isFrozen(body) {
+  return body.contracts_check === "passed" && body.integration_check === "passed";
+}
 
 const ROOT = process.cwd();
 const changesDir = path.join(ROOT, "changes");
@@ -50,6 +64,27 @@ for (const file of files) {
   if (!Array.isArray(body.affected_scope) || body.affected_scope.length === 0) {
     console.error(`[validate-change-bundle] ${file} affected_scope must be a non-empty array`);
     process.exit(1);
+  }
+
+  const relPath = path.posix.join("changes", file);
+  const headText = readHeadVersion(relPath);
+  if (headText) {
+    let headBody;
+    try {
+      headBody = YAML.parse(headText);
+    } catch {
+      headBody = null;
+    }
+    if (headBody && isFrozen(headBody)) {
+      for (const frozenField of FROZEN_FIELDS) {
+        if (headBody[frozenField] !== body[frozenField]) {
+          console.error(
+            `[validate-change-bundle] ${file} is frozen (contracts_check=passed, integration_check=passed in HEAD); ${frozenField} must not be rewritten from ${headBody[frozenField]} to ${body[frozenField]}. Open a new CHG instead.`
+          );
+          process.exit(1);
+        }
+      }
+    }
   }
 
   for (const [field, submodulePath] of Object.entries(submoduleMap)) {

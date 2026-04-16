@@ -6,14 +6,23 @@ Source integration is the baseline integration path required for fourth-repo cer
 
 ## Integration Components
 
+Baseline source-integration components (what `pnpm run test:integration` exercises):
+
 | Component | Repository | Role |
 |-----------|------------|------|
 | Platform API | `repos/platform` | Issues task tokens, manages hotline catalog, routes delivery |
-| Transport Relay | `repos/platform` | In-process relay for local transport |
-| Platform Console Gateway | `repos/platform` | WebSocket gateway for platform console UI |
+| Transport Relay | `repos/platform` | Standalone relay for local transport |
 | Caller Controller | `repos/client` | Submits task contracts, polls for results |
 | Responder Controller | `repos/client` | Receives tasks, executes, returns signed results |
 | `delexec-ops` CLI | `repos/client` | End-to-end operator tool for local orchestration |
+
+Optional UI components (not required for source-integration certification; started via separate scripts):
+
+| Component | Repository | Script | Role |
+|-----------|------------|--------|------|
+| Ops Console Gateway | `repos/platform` | `pnpm run dev:console:gateway` | Supervisor HTTP surface consumed by the ops console UI |
+| Ops Console UI | `repos/client` | `pnpm run dev:console:ui` | Caller-side React dashboard |
+| Platform Console UI | `repos/platform` | `pnpm run dev:platform-console:ui` | Operator-side React dashboard (only started via `deploy/public-stack` or `dev:platform-console`) |
 
 ## Integration Flow
 

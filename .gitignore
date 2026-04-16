@@ -30,3 +30,11 @@ junit.xml
 tests/reports/latest.json
 
 _local_ref/
+
+# Personal tooling metadata (not part of the workspace contract)
+.wiki-system.json
+
+# Stray artifacts from mis-typed pnpm/npm commands
+/delegated-execution-workspace@*
+/node
+
