@@ -38,3 +38,7 @@ _local_ref/
 /delegated-execution-workspace@*
 /node
 
+# Python bytecode from tools/agent-e2e and similar local python scripts
+__pycache__/
+*.pyc
+
