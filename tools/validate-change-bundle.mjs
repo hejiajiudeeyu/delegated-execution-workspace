@@ -2,8 +2,10 @@ import fs from "node:fs";
 import path from "node:path";
 import { execFileSync, spawnSync } from "node:child_process";
 import YAML from "yaml";
+import { assertOriginReachable } from "./lib/origin-reachable.mjs";
 
 const FROZEN_FIELDS = ["change_id", "protocol_sha", "client_sha", "platform_sha"];
+const SKIPPED = process.env.SKIP_ORIGIN_REACHABILITY === "1" || process.env.OFFLINE === "1";
 
 function readHeadVersion(relPath) {
   const result = spawnSync("git", ["show", `HEAD:${relPath}`], { encoding: "utf8" });
@@ -104,17 +106,24 @@ for (const file of files) {
     }
   }
 
-  if (isFrozen(body)) {
-    continue;
-  }
-
+  // Origin-reachability hygiene: every SHA referenced in any bundle must
+  // exist on origin. Snapshot bundles can otherwise drift into "phantom
+  // history" recording SHAs that never made it past one developer's clone.
   for (const [field, submodulePath] of Object.entries(submoduleMap)) {
     const submoduleRoot = path.join(ROOT, submodulePath);
     if (!fs.existsSync(path.join(submoduleRoot, ".git"))) {
       console.error(`[validate-change-bundle] ${submodulePath} is not initialized`);
       process.exit(1);
     }
+    assertOriginReachable(submoduleRoot, body[field], `${file} ${field}`);
+  }
 
+  if (isFrozen(body)) {
+    continue;
+  }
+
+  for (const [field, submodulePath] of Object.entries(submoduleMap)) {
+    const submoduleRoot = path.join(ROOT, submodulePath);
     const actualSha = execFileSync("git", ["-C", submoduleRoot, "rev-parse", "HEAD"], {
       encoding: "utf8"
     }).trim();
@@ -127,4 +136,8 @@ for (const file of files) {
   }
 }
 
-console.log("[validate-change-bundle] ok");
+if (SKIPPED) {
+  console.log("[validate-change-bundle] ok (origin reachability skipped)");
+} else {
+  console.log("[validate-change-bundle] ok");
+}
