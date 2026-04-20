@@ -1,5 +1,33 @@
 # Agent End-to-End Check (`tools/agent-e2e/`)
 
+> ⚠️ **Status (CHG-2026-007 baseline): script is stale.**
+>
+> The current caller-skill HTTP surface in `repos/client` exposes
+> `POST /skills/caller/search-hotlines-brief`,
+> `POST /skills/caller/search-hotlines-detailed`,
+> `GET /skills/caller/hotlines/:hotlineId`,
+> `POST /skills/caller/prepare-request`,
+> `POST /skills/caller/send-request`, and
+> `POST /skills/caller/requests/:requestId/report`.
+>
+> The script in this folder still calls the older
+> `/skills/remote-hotline/{catalog,preflight,invoke,policies/...,global-policy,
+> approvals/...,audit}` paths, so a fresh run aborts in step 1 with
+> `catalog_reachable: 0 hotlines` and `test_hotline_active: not found`.
+>
+> Treat this tool as quarantined until a refresh CHG lands in
+> `repos/client` that either (a) re-exposes the legacy `/skills/remote-hotline/*`
+> paths as a thin compatibility layer or (b) re-targets this script to the
+> current `/skills/caller/*` surface. Do not delete it — the assertion
+> ladder and the DeepSeek tool wiring are still useful as a baseline once
+> the endpoint mismatch is resolved.
+>
+> The MCP-host validation in
+> `docs/runbooks/caller-skill-mcp-integration.md` (the "golden four"
+> checks under "Validation ladder") still works against the current stack
+> and is the correct path to claim "agent-driven end-to-end works" in the
+> meantime.
+
 Fourth-repo owned scripted end-to-end validation for the caller-skill +
 caller-controller + platform + responder integration. One file, no
 dependencies beyond `python3` and the standard library plus a DeepSeek API

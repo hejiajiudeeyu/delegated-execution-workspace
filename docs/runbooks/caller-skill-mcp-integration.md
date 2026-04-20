@@ -37,18 +37,123 @@ of sync with this runbook. Bump the client submodule and open a new CHG.
 
 ## Authoritative per-host setup
 
-Do not copy the per-host setup here. It changes often and lives with the
-adapter code.
+The per-host config snippets below are operational defaults for the local
+dev stack. The truth source is the running supervisor — query it before
+copy-pasting so the values match your actual install:
 
-- `repos/client/docs/current/guides/caller-skill-codex-local-guide.md`
-- `repos/client/docs/current/guides/caller-skill-cursor-local-guide.md`
-- `repos/client/apps/caller-skill-mcp-adapter/README.md` (env vars, transport
-  resolution order)
+```bash
+curl -s http://127.0.0.1:8079/status \
+  | node -e "let d='';process.stdin.on('data',c=>d+=c);process.stdin.on('end',()=>{console.log(JSON.stringify(JSON.parse(d).runtime?.mcp_adapter?.spec, null, 2))})"
+```
 
-The guides cover Codex (`streamable_http` preferred, `stdio` fallback),
-Cursor, and the Claude Code MCP-capable mode. If Claude Code integration is
-still in draft, treat it as a Cursor-analog until the client-side guide
-lands.
+The `streamable_http.url` and `stdio.{command,args,env}` fields in that
+response are what each host config must reflect. If the supervisor reports
+`available: false`, fix the supervisor first; the host configs cannot
+recover from a dead adapter.
+
+Reference (in-repo, when present):
+
+- `repos/client/apps/caller-skill-mcp-adapter/README.md` — adapter env vars
+  and transport resolution order.
+- `repos/client/docs/current/guides/caller-skill-codex-local-guide.md` —
+  Codex-specific notes (currently absent in this combination; treat the
+  config snippet below as the working contract until that guide lands).
+- `repos/client/docs/current/guides/caller-skill-cursor-local-guide.md` —
+  Cursor-specific notes (also currently absent).
+
+If a host sees fewer or differently-named tools than the six listed above,
+the adapter version is out of sync with this runbook. Bump the client
+submodule and open a new CHG.
+
+### Codex CLI (`~/.codex/config.toml`)
+
+Codex prefers `streamable_http`; `stdio` is the local-debug fallback.
+
+```toml
+# Preferred — talks to the long-running adapter at 127.0.0.1:8092
+[mcp_servers.delexec_caller_skill]
+url = "http://127.0.0.1:8092/mcp"
+transport = "streamable_http"
+
+# Fallback — only when the streamable_http endpoint is down for debugging.
+# Comment out the streamable_http entry above before enabling this one.
+# [mcp_servers.delexec_caller_skill]
+# command = "/opt/homebrew/Cellar/node@22/22.22.0_1/bin/node"
+# args    = ["/Users/<you>/Documents/Projects/delegated-execution-dev/repos/client/apps/caller-skill-mcp-adapter/src/server.js"]
+# [mcp_servers.delexec_caller_skill.env]
+# CALLER_SKILL_BASE_URL = "http://127.0.0.1:8091"
+```
+
+Verify in Codex: open the MCP servers panel, confirm `delexec_caller_skill`
+shows the six `caller_skill.*` tools.
+
+### Cursor (`~/.cursor/mcp.json` or repo-level `.cursor/mcp.json`)
+
+Cursor's stable transport is `stdio`. Streamable HTTP support is tracked in
+the client design docs but not yet promoted to default.
+
+```json
+{
+  "mcpServers": {
+    "delexec-caller-skill": {
+      "command": "/opt/homebrew/Cellar/node@22/22.22.0_1/bin/node",
+      "args": [
+        "/Users/<you>/Documents/Projects/delegated-execution-dev/repos/client/apps/caller-skill-mcp-adapter/src/server.js"
+      ],
+      "env": {
+        "CALLER_SKILL_BASE_URL": "http://127.0.0.1:8091"
+      }
+    }
+  }
+}
+```
+
+Repo-level `.cursor/mcp.json` overrides user-level. Either restart Cursor
+or use the MCP panel's "Refresh" after editing.
+
+### Claude Code
+
+Claude Code accepts both transports. The CLI form is the most reliable
+because it survives settings.json schema drift.
+
+```bash
+# Streamable HTTP (preferred, matches Codex behavior)
+claude mcp add delexec-caller-skill \
+  --transport http \
+  --url http://127.0.0.1:8092/mcp
+
+# Stdio fallback
+claude mcp add delexec-caller-skill \
+  --transport stdio \
+  -- /opt/homebrew/Cellar/node@22/22.22.0_1/bin/node \
+     /Users/<you>/Documents/Projects/delegated-execution-dev/repos/client/apps/caller-skill-mcp-adapter/src/server.js
+```
+
+Equivalent JSON in `~/.claude/settings.json` (or per-project `.claude/settings.json`):
+
+```json
+{
+  "mcpServers": {
+    "delexec-caller-skill": {
+      "transport": "http",
+      "url": "http://127.0.0.1:8092/mcp"
+    }
+  }
+}
+```
+
+Run `claude mcp list` to confirm registration; the server should report
+`status: ok` and list the six `caller_skill.*` tools.
+
+### Substitutions you must edit
+
+- `<you>` — your home dir under `/Users/`.
+- `command` (`/opt/homebrew/.../node`) — paste from the supervisor `spec`
+  (it reflects whichever node binary the supervisor itself launched the
+  adapter with). Hard-coding `/usr/bin/node` will silently use a different
+  Node major and may break the SDK.
+- Port `8092` — only if you set `MCP_ADAPTER_PORT`. Default install uses
+  `8092`; the supervisor will report the active value.
 
 ## Fourth-repo boot sequence
 
