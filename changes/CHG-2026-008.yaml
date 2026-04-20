@@ -1,0 +1,12 @@
+change_id: CHG-2026-008
+goal: bump protocol SHA for @delexec/contracts@0.1.1 npm publish (P2.a) — publish workflow auth fix + provenance metadata
+protocol_sha: ae81c3a9b65a83844d2da2e8f7f6ed2a003a1fd5
+client_sha: f70bc8e818fbd0e9885680d8acb7010f48335369
+platform_sha: d9600fb96c2e2ddf395cc66e920ffd2bb2120ba8
+owner: hejiajiudeeyu
+risk_level: low
+affected_scope:
+  - protocol
+contracts_check: passed
+integration_check: passed
+notes: "protocol-only bump. Tagged release: @delexec/contracts@0.1.1 published to npm registry on 2026-04-20 with sigstore provenance (transparency log entry 1341642756). Three commit chain: c05569f wires NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }} into the publish step env (root cause of the previous E401 was that setup-node@v5's generated .npmrc dereferences ${NODE_AUTH_TOKEN} but the run step had no env block); 66ab0c2 adds repository.url/homepage/bugs/license=Apache-2.0 to packages/contracts/package.json so --provenance can verify the sigstore bundle against the source repo (fix for E422 'Failed to validate repository information'); ae81c3a removes the one-off auth diagnostic step now that publish is green. No code, schema, or template changes vs fac73ae — same 59 files, 60.9 kB tarball, sha 8986c429... -> b9054fc95... only because of the metadata diff. Caller-side dependency bumps (@delexec/contracts: ^0.1.0 -> ^0.1.1) are not required for this CHG; existing 0.1.0 consumers continue to work. NPM_TOKEN secret was rotated in delegated-execution-protocol GH repo before this run; the previous secret had silently expired (npm whoami returned E401 with a 40-char token present)."
