@@ -225,25 +225,56 @@ into MCP tools.
 ## Validation ladder
 
 1. Boot the stack (steps 1-3 above) and pass the three healthchecks.
-2. Run the scripted end-to-end check:
+2. Skip `tools/agent-e2e/` for now — the script is quarantined against
+   the legacy `/skills/remote-hotline/*` surface (see
+   `tools/agent-e2e/README.md`). Until that script is re-targeted, the
+   MCP-host loop below is the authoritative end-to-end check.
+3. Start the MCP adapter in the transport the host expects (the supervisor
+   keeps it running as `mcp-adapter` already; verify via
+   `curl -sf http://127.0.0.1:8092/healthz`).
+4. From the host, run the "golden four" checks. These are normative — last
+   verified end-to-end from Codex on 2026-04-20 against the
+   protocol/client/platform combination in `CHG-2026-008`:
 
-   ```bash
-   DEEPSEEK_API_KEY=... corepack pnpm run test:agent-e2e
-   ```
+   1. **Tool discovery** lists six tools. Most hosts (Codex included)
+      flatten the dot-namespaced names to underscores, so the on-host
+      tool ids are usually:
+      - `caller_skill_search_hotlines_brief`
+      - `caller_skill_search_hotlines_detailed`
+      - `caller_skill_read_hotline`
+      - `caller_skill_prepare_request`
+      - `caller_skill_send_request`
+      - `caller_skill_report_response`
 
-   This exercises the full catalog + preflight + invoke + approvals + audit
-   loop against the client-side surface. Failure here is a client-side bug,
-   not a fourth-repo bug.
+      The dot form (`caller_skill.search_hotlines_brief`) is the wire
+      name; either form should resolve. If a host shows fewer than six
+      tools, the adapter version is out of sync — bump the client
+      submodule and open a new CHG.
 
-3. Start the MCP adapter in the transport the host expects (see the per-host
-   guides).
-4. From the host, run the "golden four" checks:
-   - Tool discovery lists the six `caller_skill.*` tools.
-   - `search_hotlines_brief` returns at least the bundled example hotline
-     (`local.delegated-execution.workspace-summary.v1`).
-   - `prepare_request` returns a consent token.
-   - `send_request` + `report_response` complete without a platform token
-     issued for `local_task_*` ids.
+   2. **`search_hotlines_brief`** with `{"task_type": "text_summarize"}`
+      returns at least one item with
+      `hotline_id: "local.delegated-execution.workspace-summary.v1"` and
+      `source: "platform"`.
+
+   3. **`prepare_request`** for that hotline returns
+      `status: "ready"` plus a `prepared_request_id` and `expires_at`.
+      Approval-free local hotlines also return
+      `review: { required: false, status: "not_required" }` — there is no
+      separate `consent_token` field today; the prepared id itself is the
+      one-shot capability.
+
+   4. **`send_request` (`wait: true`)** terminates in `status: "SUCCEEDED"`
+      with a `request_id` matching `req_<uuid>`, plus a `result_package`
+      that carries `signature_algorithm: "Ed25519"`, a non-empty
+      `signer_public_key_pem`, `signature_base64`, and
+      `schema_valid: true`. **`report_response`** with that `request_id`
+      returns the same `result_package` byte-identical (same
+      `signature_base64`).
+
+   The bundled example responder is a stub — its `summary` echoes the
+   input `text` verbatim (164 ms typical). That is expected and still
+   counts as a pass: this loop validates wire integrity, not summary
+   quality.
 
 Only after all four pass should a CHG that touches the MCP adapter be marked
 `integration_check: passed`.
