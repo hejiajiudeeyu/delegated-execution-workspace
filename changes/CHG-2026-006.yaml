@@ -7,6 +7,6 @@ owner: hejiajiudeeyu
 risk_level: low
 affected_scope:
   - platform
-contracts_check: pending
-integration_check: pending
+contracts_check: passed
+integration_check: passed
 notes: "platform-only bump. platform-console: AuthGuard switches to declarative <Navigate state={{ next }}>, mirroring ops-console deep-link preservation; ErrorBoundary wraps the routes; global sonner Toaster mounted; AdminListPage gains a right-side detail Sheet (with mounted-hotlines table for responders, capabilities/tags/latest_review_test for hotlines); RequestsPage gains caller/responder/hotline/event_type filters, limit/offset pagination, and a detail Sheet that pulls /v1/requests/:id/events for a full event timeline; AuditPage gains q/action/actor/target filters + pagination + detail; ReviewsPage routes reject through a confirmation Sheet that captures an optional reason and posts it to the approve/reject endpoint; new Relay monitor page hits transport-relay healthz + per-receiver health. platform-console-gateway: new transport_relay.base_url config + /proxy/relay/* unauthenticated proxy with explicit RELAY_UNREACHABLE error. No platform-api / protocol changes; cancel/re-issue request and admin-policy editing remain blocked on platform-api endpoints that don't exist yet."

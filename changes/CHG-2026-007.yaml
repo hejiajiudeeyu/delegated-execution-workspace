@@ -1,0 +1,12 @@
+change_id: CHG-2026-007
+goal: bump client SHA for ops-console unit/DOM tests covering ErrorBoundary, AccessListsPage, CallerApprovalsPage (P2.b)
+protocol_sha: fac73ae223c23549ba8fffee77821a5120648415
+client_sha: f70bc8e818fbd0e9885680d8acb7010f48335369
+platform_sha: d9600fb96c2e2ddf395cc66e920ffd2bb2120ba8
+owner: hejiajiudeeyu
+risk_level: low
+affected_scope:
+  - client
+contracts_check: pending
+integration_check: pending
+notes: "client-only bump. Adds @testing-library/react devDep and wires the unit vitest config with @vitejs/plugin-react + an `@/` alias so .test.tsx files can render ops-console pages. New unit suites: ops-console.error-boundary.test.tsx (children path, render-error catch with stack pre + ops-console error log, reload button), ops-console.access-lists.test.tsx (load + manual-mode banner; add via input + button drives PUT /caller/global-policy; duplicate guard surfaces info toast and skips PUT; remove flow handles 500 + retry), ops-console.caller-approvals.test.tsx (pending card with risk/status badges/factors/expiry; approve POSTs /caller/approvals/:id/approve and toasts; status filter triggers a fresh GET; allow-hotline button reads /caller/global-policy then PUTs back with hotline appended). Full client unit suite: 100/100 passing. No protocol/platform changes."
