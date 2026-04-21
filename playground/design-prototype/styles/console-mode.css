@@ -1,0 +1,233 @@
+/**
+ * CALL ANYTHING — Console Mode Theme
+ *
+ * Scoped variant of the brand design language for delegated-execution
+ * console UIs (ops-console, platform-console).
+ *
+ * Activation: wrap any subtree in `<div class="console-mode">…</div>`.
+ * Inside that subtree, shadcn/ui tokens are remapped to console mode:
+ *   - paper background instead of pure white
+ *   - 4px radius for density (vs 10px shadcn default)
+ *   - ink #111 text, no soft grays
+ *   - brand semantic palette as accents
+ *   - canonical status colors from delexec-console-tokens.css
+ *
+ * Aesthetic: light brutalist. Active tabs / nav items / primary CTAs get
+ * a 1.5–2px ink border + 2px hard offset shadow + lift-on-hover; everything
+ * else stays flat for density.
+ *
+ * Backdrop: console mode KEEPS the brand "poster" pattern from the
+ * marketing site — but at heavily reduced strength (color tiles ≤ 8%,
+ * BrandIconShapes pattern ≤ 6%). Cards stay fully opaque white to anchor
+ * reading; chrome (header/sidebar) is half-transparent so the pattern
+ * shows through. See `<ConsoleBackdrop>` in console-shell.tsx — never
+ * paint the pattern at brand-site strength inside a console.
+ *
+ * Source of truth for tokens: src/styles/delexec-console-tokens.css
+ * Source of truth for activation: this file.
+ */
+
+@import "./delexec-console-tokens.css";
+
+/* ── Scoped shadcn token override ─────────────────────────────────────── */
+.console-mode {
+  /* surface */
+  --surface: var(--brand-paper);
+  --ink: var(--brand-ink);
+  --card: #ffffff;
+  --card-foreground: var(--brand-ink);
+  --popover: #ffffff;
+  --popover-foreground: var(--brand-ink);
+
+  /* primary action: ink on paper */
+  --primary: var(--brand-ink);
+  --primary-foreground: #ffffff;
+
+  /* secondary surfaces use the slightly darker paper */
+  --secondary: var(--brand-secondary);
+  --secondary-foreground: var(--brand-ink);
+  --muted: var(--brand-secondary);
+  --muted-foreground: var(--brand-muted);
+  --accent: var(--brand-secondary);
+  --accent-foreground: var(--brand-ink);
+
+  --destructive: var(--brand-red);
+  --destructive-foreground: #ffffff;
+
+  --border: rgba(17, 17, 17, 0.18);
+  --input: transparent;
+  --input-background: #ffffff;
+  --switch-background: #d6d0c0;
+  --ring: rgba(17, 17, 17, 0.4);
+
+  /* density: 4px default radius (was 10px) */
+  --radius: var(--c-radius);
+
+  /* brand chart palette stays the same */
+  --chart-1: var(--brand-green);
+  --chart-2: var(--brand-blue);
+  --chart-3: var(--brand-purple);
+  --chart-4: var(--brand-teal);
+  --chart-5: var(--brand-orange);
+
+  /* sidebar: a touch lighter than main to define the rail */
+  --sidebar: #fcfaf3;
+  --sidebar-foreground: var(--brand-ink);
+  --sidebar-primary: var(--brand-ink);
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: var(--brand-secondary);
+  --sidebar-accent-foreground: var(--brand-ink);
+  --sidebar-border: rgba(17, 17, 17, 0.16);
+  --sidebar-ring: rgba(17, 17, 17, 0.4);
+
+  /* density-friendly base font size */
+  font-size: 14px;
+  font-family: var(--c-font);
+  background: var(--surface);
+  color: var(--ink);
+}
+
+/* ── Console-scoped element resets ────────────────────────────────────── */
+.console-mode h1,
+.console-mode h2,
+.console-mode h3,
+.console-mode h4,
+.console-mode h5,
+.console-mode h6 {
+  font-family: var(--c-font);
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+}
+
+.console-mode code,
+.console-mode pre,
+.console-mode .console-mono {
+  font-family: var(--c-font-mono);
+  font-feature-settings: "ss01", "ss02";
+}
+
+.console-mode :focus-visible {
+  outline: 2px solid var(--brand-ink);
+  outline-offset: 2px;
+  border-radius: var(--c-radius-sm);
+}
+
+/* ── Light-brutalist accent kit ──────────────────────────────────────────
+ * Use these utility classes on the *signature* console elements only:
+ * - active tab, active sidebar item, primary CTA, kicker block
+ * Don't paint everything with these — density would die.
+ */
+.console-mode .c-ink-border {
+  border: 1.5px solid var(--brand-ink);
+}
+.console-mode .c-ink-border-2 {
+  border: 2px solid var(--brand-ink);
+}
+.console-mode .c-shadow-1 {
+  box-shadow: 2px 2px 0 0 var(--brand-ink);
+}
+.console-mode .c-shadow-2 {
+  box-shadow: 3px 3px 0 0 var(--brand-ink);
+}
+.console-mode .c-shadow-3 {
+  box-shadow: 4px 4px 0 0 var(--brand-ink);
+}
+.console-mode .c-lift {
+  transition: transform 120ms ease, box-shadow 120ms ease;
+}
+.console-mode .c-lift:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 3px 3px 0 0 var(--brand-ink);
+}
+.console-mode .c-lift-active:active {
+  transform: translate(0, 0);
+  box-shadow: 1px 1px 0 0 var(--brand-ink);
+}
+
+/* ── Canonical status pill ──────────────────────────────────────────────
+ * Always prefer these over ad-hoc Tailwind colors.
+ */
+.console-mode .c-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.125rem 0.5rem;
+  border-radius: var(--c-radius-sm);
+  font-size: 0.75rem;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.console-mode .c-status-success {
+  background: var(--c-status-success-bg);
+  color: var(--c-status-success-fg);
+}
+.console-mode .c-status-warn {
+  background: var(--c-status-warn-bg);
+  color: var(--c-status-warn-fg);
+}
+.console-mode .c-status-info {
+  background: var(--c-status-info-bg);
+  color: var(--c-status-info-fg);
+}
+.console-mode .c-status-error {
+  background: var(--c-status-error-bg);
+  color: var(--c-status-error-fg);
+}
+.console-mode .c-status-degraded {
+  background: var(--c-status-degraded-bg);
+  color: var(--c-status-degraded-fg);
+}
+.console-mode .c-status-neutral {
+  background: var(--brand-secondary);
+  color: var(--brand-muted);
+}
+
+/* Status dot — for stat cards / sidebar group labels */
+.console-mode .c-dot {
+  display: inline-block;
+  width: 0.375rem;
+  height: 0.375rem;
+  border-radius: 999px;
+  background: currentColor;
+}
+
+/* Brand semantic role color helpers (text + bg only). Use sparingly:
+ * sidebar group dot, tag chip, semantic accent stroke.
+ */
+.console-mode .c-role-protocol  { color: var(--brand-green);  }
+.console-mode .c-role-client    { color: var(--brand-blue);   }
+.console-mode .c-role-caller    { color: var(--brand-teal);   }
+.console-mode .c-role-responder { color: var(--brand-orange); }
+.console-mode .c-role-platform  { color: var(--brand-purple); }
+.console-mode .c-role-selfhost  { color: var(--brand-yellow); }
+
+/* Terminal viewport (Runtime / log streams) */
+.console-mode .c-terminal {
+  background: var(--c-terminal-bg);
+  color: var(--c-terminal-fg);
+  font-family: var(--c-font-mono);
+  font-size: 12px;
+  line-height: 1.5;
+  border-radius: var(--c-radius);
+  padding: 0.75rem 1rem;
+  overflow: auto;
+}
+
+/* Kicker eyebrow (small uppercase label above section titles, with side bar) */
+.console-mode .c-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--brand-muted);
+}
+.console-mode .c-kicker::before {
+  content: "";
+  width: 1.25rem;
+  height: 1.5px;
+  background: var(--brand-ink);
+}

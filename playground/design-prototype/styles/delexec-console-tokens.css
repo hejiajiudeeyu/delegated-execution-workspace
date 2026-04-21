@@ -1,0 +1,57 @@
+/**
+ * CALL ANYTHING — Console Mode Design Tokens
+ *
+ * This file defines the canonical shared design tokens for the
+ * delegated execution console UIs (ops-console, platform-console).
+ *
+ * Console mode is a functional variant of the brand's design language:
+ * - Solid, neutral backgrounds (not the brand's poster backdrop)
+ * - Brand semantic colors used as accent/status signals
+ * - Smaller radius for density (4px vs brand's 2px vs old consoles' 14–28px)
+ * - Space Grotesk throughout for visual consistency with brand site
+ *
+ * Canonical source: call-anything-brand-site/src/styles/delexec-console-tokens.css
+ * Copy this token block into each console's styles.css and keep in sync.
+ */
+
+/* ── Brand semantic palette (mirrors brand-scaffold.tsx brandPalette) ─── */
+:root {
+  --brand-green: #a3e635;   /* protocol */
+  --brand-blue: #3b82f6;    /* client */
+  --brand-teal: #14b8a6;    /* caller */
+  --brand-orange: #f97316;  /* responder */
+  --brand-purple: #8b5cf6;  /* platform */
+  --brand-yellow: #facc15;  /* selfhost */
+  --brand-pink: #ec4899;
+  --brand-red: #ef4444;
+  --brand-ink: #111111;
+  --brand-paper: #f7f2e8;
+  --brand-secondary: #ece6d7;
+  --brand-muted: #5f5a50;
+
+  /* ── Console-mode geometry ───────────────────────────────────────────── */
+  --c-radius: 4px;
+  --c-radius-sm: 2px;
+  --c-radius-lg: 8px;
+  --c-radius-pill: 999px;
+
+  /* ── Console-mode typography ─────────────────────────────────────────── */
+  --c-font: "Space Grotesk", "IBM Plex Sans", "Avenir Next", sans-serif;
+  --c-font-mono: "IBM Plex Mono", "JetBrains Mono", ui-monospace, monospace;
+
+  /* ── Shared status colors (semantic, not theme-dependent) ───────────── */
+  --c-status-success-bg: #d4ece1;
+  --c-status-success-fg: #1b5d48;
+  --c-status-warn-bg: #e8e0c8;
+  --c-status-warn-fg: #86611e;
+  --c-status-info-bg: #dde7ee;
+  --c-status-info-fg: #305367;
+  --c-status-error-bg: #f1ddd8;
+  --c-status-error-fg: #8a3f2a;
+  --c-status-degraded-bg: #f1e5cf;
+  --c-status-degraded-fg: #8a5d1f;
+
+  /* ── Terminal output ─────────────────────────────────────────────────── */
+  --c-terminal-bg: #111111;
+  --c-terminal-fg: #d9f0e8;
+}
