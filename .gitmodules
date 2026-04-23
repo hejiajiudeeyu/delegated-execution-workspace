@@ -7,3 +7,6 @@
 [submodule "repos/protocol"]
 	path = repos/protocol
 	url = https://github.com/hejiajiudeeyu/delegated-execution-protocol.git
+[submodule "repos/brand-site"]
+	path = repos/brand-site
+	url = https://github.com/hejiajiudeeyu/call-anything-brand-site.git
