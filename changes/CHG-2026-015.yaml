@@ -1,0 +1,12 @@
+change_id: CHG-2026-015
+goal: bump client SHA for current validation entry point documentation alignment
+protocol_sha: 3f036da107d17807f0518972feccce0e323f8eed
+client_sha: bdf6c2c14cdaccd56c2cb959091ac313ecee2c0f
+platform_sha: 18313db01016256cb504b01c3bfca8bb9668c066
+owner: hejiajiudeeyu
+risk_level: low
+affected_scope:
+  - client
+contracts_check: passed
+integration_check: passed
+notes: "client-only documentation alignment. The client checkout no longer claims historical test layers or scripts that are absent from the current tree. tests/README, testing strategy, and deployment guide docs now point readers to the real validation entry points: npm run test/unit/integration/packages inside repos/client, fourth-repo SHA certification at the workspace root, and fresh-home local smoke via node apps/ops/src/cli.js bootstrap/status/ui start. Verified on the pinned SHA combination by rerunning check:submodules, check:boundaries, check:bundles, test:contracts, and test:integration in the fourth-repo workspace after pushing client commit bdf6c2c to origin branch codex/ops-startup-lock."
