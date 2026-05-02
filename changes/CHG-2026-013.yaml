@@ -1,0 +1,12 @@
+change_id: CHG-2026-013
+goal: bump client SHA for ops cli integration isolation against ambient supervisor state
+protocol_sha: 3f036da107d17807f0518972feccce0e323f8eed
+client_sha: 9fcdfec3b655f09fb8381c32775757e8962fe59b
+platform_sha: 18313db01016256cb504b01c3bfca8bb9668c066
+owner: hejiajiudeeyu
+risk_level: low
+affected_scope:
+  - client
+contracts_check: passed
+integration_check: passed
+notes: "client-only test hardening. The ops-cli integration suite now reserves an isolated non-listening OPS_PORT_SUPERVISOR for CLI flows that are supposed to exercise local fallback behavior, preventing accidental attachment to an ambient or residual supervisor on the default port and removing false failures in submit-review, submit-draft, add-example-hotline, local-only auth register, and clean-room pack/install coverage. Verified on the pinned SHA combination by rerunning check:submodules, check:boundaries, check:bundles, test:contracts, and test:integration in the fourth-repo workspace after pushing client commit 9fcdfec to origin branch codex/ops-startup-lock. check:submodules completed with cached-remote fallback warnings for protocol/platform fetches, but the validator still certified the pinned refs as reachable from cached origin state."
