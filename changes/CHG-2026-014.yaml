@@ -1,0 +1,12 @@
+change_id: CHG-2026-014
+goal: bump client SHA for ops cli workspace ui start port fix
+protocol_sha: 3f036da107d17807f0518972feccce0e323f8eed
+client_sha: 1ecbb4f0d06418c9f373311c9d7caf2679297115
+platform_sha: 18313db01016256cb504b01c3bfca8bb9668c066
+owner: hejiajiudeeyu
+risk_level: low
+affected_scope:
+  - client
+contracts_check: passed
+integration_check: passed
+notes: "client-only runtime fix. During fresh-home local smoke validation, delexec-ops bootstrap succeeded but delexec-ops ui start timed out because the workspace UI launch path used pnpm run dev -- --host/--port, which forwarded a literal -- into vite and caused the requested host/port to be ignored. The CLI now launches the workspace console with pnpm exec vite so host/port reach vite directly, and ops-cli integration coverage now includes a real workspace_vite ui-start case on a requested port. Verified on the pinned SHA combination by rerunning check:submodules, check:boundaries, check:bundles, test:contracts, and test:integration in the fourth-repo workspace after pushing client commit 1ecbb4f to origin branch codex/ops-startup-lock. check:submodules completed with cached-remote fallback warnings for protocol fetches, but the validator still certified the pinned refs as reachable from cached origin state."
