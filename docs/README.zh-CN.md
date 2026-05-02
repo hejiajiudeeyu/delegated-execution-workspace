@@ -29,6 +29,7 @@
 - [系统概览](architecture/system-overview.md)
 - [边界规则](architecture/boundary-rules.md)
 - [集成路径](architecture/integration-path.md)
+- [main 就绪清单](architecture/main-readiness.zh-CN.md)
 - [镜像构建归属与 Marketplace API 契约](architecture/image-build-and-marketplace-contract.zh-CN.md)
 
 ## 运行手册（Runbooks）

@@ -1,0 +1,12 @@
+change_id: CHG-2026-016
+goal: record current main readiness boundary for the verified SHA combination
+protocol_sha: 3f036da107d17807f0518972feccce0e323f8eed
+client_sha: bdf6c2c14cdaccd56c2cb959091ac313ecee2c0f
+platform_sha: 18313db01016256cb504b01c3bfca8bb9668c066
+owner: hejiajiudeeyu
+risk_level: low
+affected_scope:
+  - fourth-repo
+contracts_check: passed
+integration_check: passed
+notes: "fourth-repo documentation closeout. Adds a paired main-readiness document under docs/architecture and links it from docs/README so the current main branch readiness boundary is explicit: local-first client path and certified source integration are verified, while billing, email-as-default-path, image-smoke paths, and broad historical E2E layers are not claimed as current readiness-closed surfaces. Verified by rerunning check:submodules, check:boundaries, check:bundles, test:contracts, and test:integration on the current pinned SHA combination after adding the readiness ledger entry."

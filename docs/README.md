@@ -26,6 +26,7 @@ System-level architecture, boundary governance, and integration path documentati
 - [System Overview](architecture/system-overview.md)
 - [Boundary Rules](architecture/boundary-rules.md)
 - [Integration Path](architecture/integration-path.md)
+- [Main Readiness](architecture/main-readiness.md)
 - [Image Build Ownership & Marketplace API Contract](architecture/image-build-and-marketplace-contract.md)
 
 ## Runbooks
