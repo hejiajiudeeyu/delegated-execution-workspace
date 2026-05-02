@@ -1,0 +1,12 @@
+change_id: CHG-2026-012
+goal: bump client SHA for ops supervisor managed-service startup race fix and regression coverage
+protocol_sha: 3f036da107d17807f0518972feccce0e323f8eed
+client_sha: 93aa770e7a3dc69304db32e566a2c0b1d683afbd
+platform_sha: 18313db01016256cb504b01c3bfca8bb9668c066
+owner: hejiajiudeeyu
+risk_level: low
+affected_scope:
+  - client
+contracts_check: passed
+integration_check: passed
+notes: "client-only fix. Ops supervisor now serializes per-service startup with an in-flight lock so concurrent ensureService/startManagedServices paths do not spawn duplicate skill-adapter, mcp-adapter, or responder processes during bootstrap/restart windows. Adds an ops-supervisor integration test that calls startManagedServices concurrently and asserts each managed service records a single service_started event. Verified on the pinned SHA combination by rerunning check:submodules, check:boundaries, check:bundles, test:contracts, and test:integration in the fourth-repo workspace after pushing client commit 93aa770 to origin branch codex/ops-startup-lock so reachability gates could certify the bundle."
