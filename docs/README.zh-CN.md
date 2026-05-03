@@ -37,6 +37,7 @@
 常见任务的分步操作指南。
 
 - [本地开发准备](runbooks/local-dev-setup.md)
+- [平台优先 / operator 优先 onboarding](runbooks/platform-first-operator-onboarding.zh-CN.md)
 - [故障排查](runbooks/troubleshooting.md)
 
 ## 决策记录（Decisions）

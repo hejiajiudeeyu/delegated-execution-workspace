@@ -34,6 +34,7 @@ System-level architecture, boundary governance, and integration path documentati
 Step-by-step operational guides for common tasks.
 
 - [Local Dev Setup](runbooks/local-dev-setup.md)
+- [Platform-First Operator Onboarding](runbooks/platform-first-operator-onboarding.md)
 - [Troubleshooting](runbooks/troubleshooting.md)
 
 ## Decisions

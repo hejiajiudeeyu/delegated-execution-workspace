@@ -1,0 +1,12 @@
+change_id: CHG-2026-017
+goal: document the current operator-first onboarding path as a fourth-repo runbook
+protocol_sha: 3f036da107d17807f0518972feccce0e323f8eed
+client_sha: bdf6c2c14cdaccd56c2cb959091ac313ecee2c0f
+platform_sha: 18313db01016256cb504b01c3bfca8bb9668c066
+owner: hejiajiudeeyu
+risk_level: low
+affected_scope:
+  - fourth-repo
+contracts_check: passed
+integration_check: passed
+notes: "fourth-repo runbook addition. Adds a paired platform-first operator onboarding guide under docs/runbooks and links it from docs/README. The runbook makes the current supported operator-first branches explicit: automatic approval when PLATFORM_ADMIN_API_KEY is available to client bootstrap, and the manual approval pause/resume path when it is not. Verified by rerunning check:submodules, check:boundaries, check:bundles, test:contracts, and test:integration on the current pinned SHA combination after adding the onboarding ledger entry."
