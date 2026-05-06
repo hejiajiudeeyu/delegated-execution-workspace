@@ -1,0 +1,13 @@
+change_id: CHG-2026-025
+goal: bump brand-site SHA for L2 + L3 alignment with the billing direction RFC trio
+protocol_sha: da3027100cfe9391f7f8d03be18a108ee2804cf6
+client_sha: 288a8da0c1d676d4ef0c4b0a66edc2f62921db53
+platform_sha: b84a9d8f9e01431c0bb5bcdf7a0282786fc3cd2d
+brand_site_sha: 6aeae0e01112122c53cec71b7eebf376441ebb1e
+owner: hejiajiudeeyu
+risk_level: low
+affected_scope:
+  - brand-site
+contracts_check: passed
+integration_check: passed
+notes: "docs/SEO-only brand-site bump that records the previously-unbumped L2 alignment and the new L3 English mirror in the super-repo. Bumped commits: (1) `feat(content): align Pricing/Glossary/FAQ with billing direction RFC` (d17933d) — L2 Chinese-side alignment that introduced the `billing-governance` glossary group with 5 terms (Call Credit / 三种定价模式 / Auto-refund / Trust Tier / Responder 责任承担), rewrote `Pricing.tsx` around value-pricing + the points (PTS / Call Credit) economy, added `/pricing` to `siteNavItems`, updated `BackCoverFooter` link grouping, and added FAQ entries on no-Stripe / no-withdrawal / unified caller+responder balance / hallucination liability / anti-spam; (2) `docs(brand-site): mirror Glossary + FAQ billing entries into the English locale` (6aeae0e) — L3 English mirror that widens `EnglishGlossaryTerm.group` to include `billing-governance`, adds 5 mirror glossary terms, registers the new group in `EN_GLOSSARY_GROUPS`, wires a yellow accent into `pages/en/Glossary.tsx`, adds a 7-Q&A `billing-and-governance` FAQ group to `seo-faq-en.ts`, and wires the matching accent into `pages/en/Faq.tsx`. NO route / business-logic / runtime change in either commit; pure content + minor type widening. tsc green on brand-site after the change. zh-CN remains the source of truth; en is the mirror. Verified on the pinned SHA combination by rerunning check:submodules, check:boundaries, check:bundles, test:contracts in the fourth-repo workspace after pushing brand-site commit 6aeae0e to origin main + branch codex/seo-en-billing. test:integration not re-run for this CHG: brand-site is not part of the source-integration path validated by `corepack pnpm run test:integration` (that path covers protocol + client + platform only). brand-site is a static marketing + SEO surface delivered through its own deploy pipeline."
