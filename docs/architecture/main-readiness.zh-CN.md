@@ -3,7 +3,7 @@
 > 英文版：[./main-readiness.md](./main-readiness.md)
 > 说明：中文文档为准。
 
-更新日期：2026-05-02
+更新日期：2026-05-06
 
 ## 目的
 
@@ -18,7 +18,7 @@
 ## 当前固定组合
 
 - `repos/protocol`：`3f036da107d17807f0518972feccce0e323f8eed`
-- `repos/client`：`bdf6c2c14cdaccd56c2cb959091ac313ecee2c0f`
+- `repos/client`：`685aab0adbc1801143974fa07f6b77bd74a57488`
 - `repos/platform`：`18313db01016256cb504b01c3bfca8bb9668c066`
 
 ## 当前判断
@@ -87,6 +87,22 @@ node apps/ops/src/cli.js ui start --no-browser
 - 当前 checkout 不再把缺失的 `tests/e2e` 或镜像型 smoke 脚本当作可运行真相
 - 操作者现在能直接看到正确的本地测试、包校验、第四仓认证入口
 
+### 4. ops-console Phase 2 Stage 2 — caller 侧 chrome/UX
+
+通过 CHG-2026-018 至 CHG-2026-021 四个客户端切片，`apps/ops-console` 上 caller 侧的四个主页已经按 `repos/brand-site/docs/console-content-spec.md` 重做完毕：
+
+- DashboardPage（CHG-2026-018，spec §1.2b/§1.5/§1.5b）：5 步 onboarding 折叠条 + NextUp 6 态卡 + PlatformValueDisclosure 价值差异表（带 session-dismiss）
+- CallsPage（CHG-2026-019，spec §2）：移除手工调用表单，列表行展示 human-readable headline，详情面板拆 Summary / Request Context / Outcome 三段并保留 raw JSON toggle，failed/rejected 强制 next-step CTA
+- CatalogPage（CHG-2026-020，spec §5.2）：TryCallDrawer 取代旧的"跳到 ManualCallForm"路径，支持 `?hotline_id=` 自动选 + 自动开抽屉、`?prefill=<base64>` 闭合 calls-retry 链路、零 hotline 双 CTA empty state
+- CallerApprovalsPage（CHG-2026-021，spec §4.0b/§4.3）：M7「审批疲劳」横幅（3 触发 / 24h cooldown）+ M6 加白名单后教育 popover（2 态文案 / session 3 次后只 toast）
+
+这 4 个切片合计加 `corepack pnpm run test:unit`：10 文件 / 111 单测全过。所有 4 切片都按 CHG-2026-009/010/011 的先例跳过 `test:integration`（chrome/UX-only React 改动不动 CLI / supervisor / caller-skill HTTP / MCP adapter / responder controller / 协议 / 平台合约 surface）。
+
+尚未在本 Stage 2 内落地的内容：
+
+- ops-console `/help` 8 篇页面内容（Stage 2 deep-link 的目的地，所有 `?from=...` 跳转还指向占位）
+- CatalogPage / CallsPage / ApprovalsPage M6+M7 的 React Testing Library 单测覆盖（tsc 上仍有 12 处 `ResponderHotlinesPage` / `ResponderReviewPage` / `sonner.tsx` 的预先错误，已记录在 CHG-2026-011，与本轮无关）
+
 ## 已验证但范围较窄
 
 ### 源码集成路径
@@ -128,4 +144,5 @@ node apps/ops/src/cli.js ui start --no-browser
 2. 跨仓源码集成：已验证
 3. 平台优先 / operator 优先 onboarding：仅通过认证链部分验证
 4. email transport：功能存在，但尚未重新认证为当前默认路径
-5. billing：尚未形成 readiness 收口模块
+5. billing：仅有 `repos/protocol/docs/planned/design/billing-and-quota.md` 方向 RFC（CHG-2026-021 时仍在 protocol 子模块的 `main` 上 ahead 2，等 platform/client 同向 RFC 一并 bump 进 super 仓），尚未形成 readiness 收口模块
+6. ops-console caller 侧 Stage 2 chrome：已落地 4 页（CHG-2026-018→021），但 `/help` 页面内容与对应 RTL 单测仍未补齐

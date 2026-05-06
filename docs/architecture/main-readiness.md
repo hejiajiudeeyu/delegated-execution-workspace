@@ -1,6 +1,6 @@
 # Main Readiness
 
-Updated: 2026-05-02
+Updated: 2026-05-06
 
 ## Purpose
 
@@ -15,7 +15,7 @@ The goal is not to describe every planned capability. The goal is to separate:
 ## Current Pinned Combination
 
 - `repos/protocol`: `3f036da107d17807f0518972feccce0e323f8eed`
-- `repos/client`: `bdf6c2c14cdaccd56c2cb959091ac313ecee2c0f`
+- `repos/client`: `685aab0adbc1801143974fa07f6b77bd74a57488`
 - `repos/platform`: `18313db01016256cb504b01c3bfca8bb9668c066`
 
 ## Readiness Verdict
@@ -84,6 +84,22 @@ What this fixes:
 - the checkout no longer claims missing `tests/e2e` or image-smoke scripts as current runnable truth
 - operators now have a correct first-stop list for local tests, package checks, and fourth-repo certification
 
+### 4. ops-console Phase 2 Stage 2 — caller-side chrome/UX
+
+CHG-2026-018 through CHG-2026-021 land the four caller-side pages of `apps/ops-console` against `repos/brand-site/docs/console-content-spec.md`:
+
+- DashboardPage (CHG-2026-018, spec §1.2b/§1.5/§1.5b): five-step onboarding strip, NextUp six-state card, PlatformValueDisclosure value-comparison table with session-based dismiss
+- CallsPage (CHG-2026-019, spec §2): manual-call form removed; list rows now carry human-readable headlines; detail panel split into Summary / Request Context / Outcome sections with raw-JSON toggles preserved; failed/rejected calls render mandatory next-step CTAs
+- CatalogPage (CHG-2026-020, spec §5.2): TryCallDrawer replaces the dead-end redirect to ManualCallForm; deep-link params `?hotline_id=` auto-select+auto-open the drawer, `?prefill=<base64>` closes the calls-retry loop, zero-hotlines empty state offers a dual CTA
+- CallerApprovalsPage (CHG-2026-021, spec §4.0b/§4.3): M7 approval-fatigue banner (three triggers / 24 h cooldown) and M6 post-whitelist education popover (two copy variants / suppressed after 3 popovers per session)
+
+`corepack pnpm run test:unit` covers 10 files / 111 tests across the four slices and stays green. All four slices skip `test:integration` per the precedent set by CHG-2026-009/010/011 — chrome/UX-only React refactors do not touch CLI / supervisor / caller-skill HTTP / MCP adapter / responder controller / protocol or platform contract surfaces.
+
+Out of scope for this Stage 2 batch:
+
+- ops-console `/help` content (the eight pages targeted by every `?from=…` deep link still resolve to a placeholder)
+- React Testing Library coverage for CatalogPage / CallsPage / ApprovalsPage M6+M7 (12 pre-existing `tsc` errors in `ResponderHotlinesPage` / `ResponderReviewPage` / `sonner.tsx` recorded in CHG-2026-011 are unchanged and unrelated to this batch)
+
 ## Verified But Narrowly Scoped
 
 ### Source integration path
@@ -125,4 +141,5 @@ The recommended next closeout item is a small follow-up readiness audit that lis
 2. cross-repo source integration: verified
 3. platform-first/operator-first onboarding: partially verified only through certification path
 4. email transport: feature-present but not yet re-certified as current default path
-5. billing: not yet established as a readiness-closed module
+5. billing: only the direction-setting RFC at `repos/protocol/docs/planned/design/billing-and-quota.md` exists today (still ahead 2 on the protocol submodule's `main` as of CHG-2026-021, awaiting the matching platform/client RFCs before being bumped into the super-repo); not yet a readiness-closed module
+6. ops-console caller-side Stage 2 chrome: four pages landed (CHG-2026-018→021), but `/help` content and the matching RTL coverage are still outstanding
