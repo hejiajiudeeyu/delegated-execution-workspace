@@ -53,6 +53,7 @@ Required commands:
 - `corepack pnpm run selfhost:doctor`
 - `corepack pnpm --silent run selfhost:doctor -- --json`
 - `corepack pnpm run selfhost:preflight`
+- `corepack pnpm --silent run selfhost:preflight -- --json`
 - `corepack pnpm run selfhost:status`
 - `corepack pnpm run selfhost:smoke`
 - `corepack pnpm run selfhost:security-review`
@@ -99,7 +100,9 @@ Acceptance:
 - status shows Docker compose state and health endpoints
 - smoke checks secret hygiene, compose config, and health endpoints
 - preflight checks secret hygiene, compose config, and routes before `up`,
-  without requiring services to be running
+  without requiring services to be running; `--json` preserves the same
+  exit-code semantics and returns machine-readable secret hygiene, compose
+  config, route, blocker, and safety-note fields without printing secret values
 - `selfhost:up` reuses the preflight gate by default; it does not continue
   when preflight fails unless `--force` is passed explicitly
 - logs can be filtered by service and tail length

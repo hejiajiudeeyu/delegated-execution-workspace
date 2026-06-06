@@ -649,9 +649,9 @@ function checkSecrets(profileName) {
   return ok;
 }
 
-function composeConfig(profileName, mode = "quiet") {
+function composeConfig(profileName, mode = "quiet", stdio = "inherit") {
   const args = mode === "print" ? ["config"] : ["config", "--quiet"];
-  return dockerCompose(profileName, args, "inherit");
+  return dockerCompose(profileName, args, stdio);
 }
 
 function printPlan(profileName) {
@@ -1078,6 +1078,61 @@ function printPreflightRoutes(profileName) {
   }
 }
 
+function preflightData(profileName) {
+  const { envPath } = profilePaths(profileName);
+  const suffix = commandProfileFlag(profileName);
+  const envExists = fs.existsSync(envPath);
+  const secretHygiene = envExists
+    ? secretFindings(fs.readFileSync(envPath, "utf8"), profileName).map((finding) => ({
+        key: finding.key,
+        ok: finding.ok,
+        status: finding.ok ? "set" : finding.message
+      }))
+    : [{ key: "secret hygiene", ok: false, status: `.env missing; run corepack pnpm run selfhost:init${suffix}` }];
+  const configResult = composeConfig(profileName, "quiet", "pipe");
+  const configOk = configResult.status === 0;
+  const blockers = secretHygiene
+    .filter((finding) => !finding.ok)
+    .map((finding) => `${finding.key}: ${finding.status}`);
+  if (!configOk) {
+    blockers.push("docker compose config failed");
+  }
+  return {
+    command: "selfhost:preflight",
+    profile: profileName,
+    ok: secretHygiene.every((finding) => finding.ok) && configOk,
+    secret_hygiene: secretHygiene,
+    compose_config: {
+      ok: configOk,
+      status: configOk ? "ok" : "fail",
+      exit_code: configResult.status ?? 1
+    },
+    routes: profileUrls(profileName).map(([label, url]) => ({ label, url })),
+    blockers: Array.from(new Set(blockers)),
+    notes: [
+      "runs docker compose config",
+      "does not start services",
+      "does not bind ports",
+      "does not print secret values"
+    ]
+  };
+}
+
+function printPreflightJson(profileName) {
+  const data = preflightData(profileName);
+  console.log(
+    JSON.stringify(
+      {
+        generated_at: new Date().toISOString(),
+        ...data
+      },
+      null,
+      2
+    )
+  );
+  return data.ok;
+}
+
 function publicOrigin(profileName) {
   const { envPath } = profilePaths(profileName);
   if (profileName !== "public-stack" || !fs.existsSync(envPath)) {
@@ -1478,6 +1533,9 @@ async function main() {
   }
 
   if (args.command === "preflight") {
+    if (args.json) {
+      process.exit(printPreflightJson(args.profile) ? 0 : 1);
+    }
     process.exit(preflightProfile(args.profile) ? 0 : 1);
   }
 

@@ -513,6 +513,24 @@ try {
   assert.ok(!unsafePreflight.stdout.includes(publicEnv.get("PLATFORM_ADMIN_API_KEY") || ""));
   assert.ok(!unsafePreflight.stdout.includes(publicEnv.get("PLATFORM_CONSOLE_BOOTSTRAP_SECRET") || ""));
 
+  const unsafePreflightJson = run(tmpRoot, ["preflight", "--profile", "public-stack", "--json"]);
+  assert.equal(unsafePreflightJson.status, 1, unsafePreflightJson.stderr || unsafePreflightJson.stdout);
+  const unsafePreflightBody = JSON.parse(unsafePreflightJson.stdout);
+  assert.equal(unsafePreflightBody.command, "selfhost:preflight");
+  assert.equal(unsafePreflightBody.profile, "public-stack");
+  assert.equal(unsafePreflightBody.ok, false);
+  assert.ok(Array.isArray(unsafePreflightBody.secret_hygiene));
+  assert.equal(
+    unsafePreflightBody.secret_hygiene.find((item) => item.key === "PUBLIC_SITE_ADDRESS").ok,
+    false
+  );
+  assert.equal(unsafePreflightBody.compose_config.status, "ok");
+  assert.match(unsafePreflightBody.blockers.join("\n"), /PUBLIC_SITE_ADDRESS/);
+  assert.ok(Array.isArray(unsafePreflightBody.routes));
+  assert.ok(Array.isArray(unsafePreflightBody.notes));
+  assert.ok(!unsafePreflightJson.stdout.includes(publicEnv.get("PLATFORM_ADMIN_API_KEY") || ""));
+  assert.ok(!unsafePreflightJson.stdout.includes(publicEnv.get("PLATFORM_CONSOLE_BOOTSTRAP_SECRET") || ""));
+
   const unsafeReview = run(tmpRoot, ["security-review", "--profile", "public-stack"]);
   assert.equal(unsafeReview.status, 1, unsafeReview.stderr || unsafeReview.stdout);
   assert.match(unsafeReview.stdout, /selfhost:security-review/);
@@ -616,6 +634,19 @@ try {
   assert.equal(safePreflight.status, 0, safePreflight.stderr || safePreflight.stdout);
   assert.match(safePreflight.stdout, /Public routes/);
   assert.match(safePreflight.stdout, /https:\/\/call.example.com/);
+
+  const safePreflightJson = run(tmpRoot, ["preflight", "--profile", "public-stack", "--json"]);
+  assert.equal(safePreflightJson.status, 0, safePreflightJson.stderr || safePreflightJson.stdout);
+  const safePreflightBody = JSON.parse(safePreflightJson.stdout);
+  assert.equal(safePreflightBody.command, "selfhost:preflight");
+  assert.equal(safePreflightBody.profile, "public-stack");
+  assert.equal(safePreflightBody.ok, true);
+  assert.equal(safePreflightBody.compose_config.status, "ok");
+  assert.deepEqual(safePreflightBody.blockers, []);
+  assert.match(JSON.stringify(safePreflightBody.routes), /https:\/\/call.example.com/);
+  assert.ok(Array.isArray(safePreflightBody.notes));
+  assert.ok(!safePreflightJson.stdout.includes(publicEnv.get("PLATFORM_ADMIN_API_KEY") || ""));
+  assert.ok(!safePreflightJson.stdout.includes(publicEnv.get("PLATFORM_CONSOLE_BOOTSTRAP_SECRET") || ""));
 
   const safeReview = run(tmpRoot, ["security-review", "--profile", "public-stack"]);
   assert.equal(safeReview.status, 0, safeReview.stderr || safeReview.stdout);

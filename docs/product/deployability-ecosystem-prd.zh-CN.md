@@ -81,6 +81,7 @@ CALL ANYTHING 现在的仓库边界是正确的：
 | Self-host profile 概要 | 第四仓 | `corepack pnpm run selfhost:summary`，以及用于概要卡片的 `--json` |
 | Self-host URL inventory | 第四仓 | `corepack pnpm run selfhost:urls`，以及用于 dashboard 和脚本的 `--json` |
 | Self-host 声明端口 inventory | 第四仓 | `corepack pnpm run selfhost:ports`，以及用于 dashboard 和脚本的 `--json` |
+| Self-host preflight gate | 第四仓 | `corepack pnpm run selfhost:preflight`，以及用于部署控制器的 `--json` |
 | Compose 生命周期 wrapper | 第四仓 | 委托到 `repos/platform/deploy/*` |
 | Published-image smoke wrapper | 第四仓 | 委托到 `repos/platform` 的 public-stack smoke |
 | Operator onboarding contract | 第四仓 | `operator:onboarding:check` 校验 public-stack/brand-site/runbook 一致性 |
@@ -104,7 +105,7 @@ CALL ANYTHING 现在的仓库边界是正确的：
 
 - fresh checkout 可以运行 `selfhost:profiles`、`selfhost:quickstart`、
   `selfhost:readiness -- --all`、`selfhost:readiness`、`selfhost:doctor`、
-  `selfhost:init`、`selfhost:summary`、`selfhost:status`、`dev:doctor`、
+  `selfhost:init`、`selfhost:summary`、`selfhost:preflight`、`selfhost:status`、`dev:doctor`、
   `test:agent-e2e`、`published-image:plan`、
   `selfhost:security-review` 和 `operator:onboarding:check`
 - platform billing operator 已有 admin-only API 和 Platform Console 页面，可做
@@ -152,6 +153,8 @@ CALL ANYTHING 现在的仓库边界是正确的：
   public-stack routes，并用 `--json` 供 dashboard 和部署脚本消费。
 - 增加 `selfhost:ports`，让 operator 在启动 profile 或暴露 public-stack 前先看清
   声明的 host ports，并用 `--json` 供 dashboard 和部署脚本消费。
+- 增加 `selfhost:preflight -- --json`，让部署控制器消费与 `selfhost:up` 启动前
+  相同的 secret hygiene、compose config、routes、blockers 和 safety notes gate。
 - 增加 `selfhost:summary`，让 operator 用一屏只读输出看清 deploy 路径、URLs、
   声明的 host ports、secret hygiene 状态和下一步命令。
 - 增加 `selfhost:doctor` 作为最早的只读部署诊断，覆盖本地工具、profile 文件、

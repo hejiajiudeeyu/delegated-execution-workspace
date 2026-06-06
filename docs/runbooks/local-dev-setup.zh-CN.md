@@ -107,6 +107,7 @@ corepack pnpm --silent run selfhost:urls -- --json
 corepack pnpm run selfhost:ports
 corepack pnpm --silent run selfhost:ports -- --json
 corepack pnpm run selfhost:preflight
+corepack pnpm --silent run selfhost:preflight -- --json
 corepack pnpm run selfhost:status
 corepack pnpm run selfhost:smoke
 ```
@@ -128,6 +129,7 @@ corepack pnpm --silent run selfhost:urls -- --profile public-stack --json
 corepack pnpm run selfhost:ports -- --profile public-stack
 corepack pnpm --silent run selfhost:ports -- --profile public-stack --json
 corepack pnpm run selfhost:preflight -- --profile public-stack
+corepack pnpm --silent run selfhost:preflight -- --profile public-stack --json
 corepack pnpm run selfhost:security-review -- --profile public-stack
 corepack pnpm run selfhost:status -- --profile public-stack
 corepack pnpm run selfhost:smoke -- --profile public-stack
@@ -135,6 +137,8 @@ corepack pnpm run selfhost:smoke -- --profile public-stack
 
 `selfhost:up` 会自动先运行同一组 preflight gate。若 public origin 或 secret
 hygiene 未通过，默认不会继续启动；只有显式传入 `--force` 才会绕过该阻断。
+`selfhost:preflight -- --json` 保持同一套 gate 和 exit-code 语义，同时输出机器可读
+的 secret hygiene、compose config、routes、blockers 和 notes，供 dashboard 或部署脚本消费。
 
 `selfhost:profiles` 是只读部署地图。它列出内置 profiles、用途、deploy 目录、
 service 数量、声明 host ports 和对应的 `selfhost:doctor` 命令，但不读取 `.env`

@@ -53,6 +53,7 @@
 - `corepack pnpm run selfhost:doctor`
 - `corepack pnpm --silent run selfhost:doctor -- --json`
 - `corepack pnpm run selfhost:preflight`
+- `corepack pnpm --silent run selfhost:preflight -- --json`
 - `corepack pnpm run selfhost:status`
 - `corepack pnpm run selfhost:smoke`
 - `corepack pnpm run selfhost:security-review`
@@ -93,7 +94,9 @@
   并保持相同 exit-code 语义
 - status 能显示 Docker compose 状态和 health endpoints
 - smoke 同时检查 secret hygiene、compose config 和 health endpoints
-- preflight 在 `up` 前检查 secret hygiene、compose config 和 routes，不要求服务已运行
+- preflight 在 `up` 前检查 secret hygiene、compose config 和 routes，不要求服务已运行；
+  `--json` 保持同一 exit-code 语义，并输出机器可读的 secret hygiene、compose
+  config、routes、blockers 和 safety notes，不打印 secret 值
 - `selfhost:up` 默认复用 preflight gate；未通过时不继续启动，除非显式 `--force`
 - logs 支持按 service 和 tail 行数过滤
 - summary 会输出一屏只读 profile 概要，包括 deploy 路径、URLs、声明的 host

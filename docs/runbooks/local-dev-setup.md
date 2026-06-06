@@ -126,6 +126,7 @@ corepack pnpm --silent run selfhost:urls -- --json
 corepack pnpm run selfhost:ports
 corepack pnpm --silent run selfhost:ports -- --json
 corepack pnpm run selfhost:preflight
+corepack pnpm --silent run selfhost:preflight -- --json
 corepack pnpm run selfhost:status
 corepack pnpm run selfhost:smoke
 ```
@@ -147,6 +148,7 @@ corepack pnpm --silent run selfhost:urls -- --profile public-stack --json
 corepack pnpm run selfhost:ports -- --profile public-stack
 corepack pnpm --silent run selfhost:ports -- --profile public-stack --json
 corepack pnpm run selfhost:preflight -- --profile public-stack
+corepack pnpm --silent run selfhost:preflight -- --profile public-stack --json
 corepack pnpm run selfhost:security-review -- --profile public-stack
 corepack pnpm run selfhost:status -- --profile public-stack
 corepack pnpm run selfhost:smoke -- --profile public-stack
@@ -154,7 +156,10 @@ corepack pnpm run selfhost:smoke -- --profile public-stack
 
 `selfhost:up` automatically runs the same preflight gate first. If public origin
 or secret hygiene checks fail, it will not start the profile by default; passing
-`--force` is the explicit override.
+`--force` is the explicit override. `selfhost:preflight -- --json` keeps the
+same gate and exit-code semantics while returning machine-readable secret
+hygiene, compose config, route, blocker, and note fields for dashboards or
+deployment scripts.
 
 `selfhost:profiles` is the read-only deployment map. It lists the built-in
 profiles, purpose, deploy directory, service count, declared host ports, and

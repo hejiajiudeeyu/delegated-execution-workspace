@@ -78,6 +78,7 @@ The ecosystem is "daily-deployable" when a fresh operator can:
 | Self-host profile summary | fourth repo | `corepack pnpm run selfhost:summary`, plus `--json` for overview cards |
 | Self-host URL inventory | fourth repo | `corepack pnpm run selfhost:urls`, plus `--json` for dashboards and scripts |
 | Self-host declared ports inventory | fourth repo | `corepack pnpm run selfhost:ports`, plus `--json` for dashboards and scripts |
+| Self-host preflight gate | fourth repo | `corepack pnpm run selfhost:preflight`, plus `--json` for deployment controllers |
 | Compose lifecycle wrapper | fourth repo | delegate to `repos/platform/deploy/*` |
 | Published-image smoke wrapper | fourth repo | delegate to `repos/platform` public-stack smoke |
 | Operator onboarding contract | fourth repo | `operator:onboarding:check` keeps public-stack, brand-site, and runbooks aligned |
@@ -101,7 +102,7 @@ Required baseline:
 
 - A fresh checkout can run `selfhost:profiles`, `selfhost:quickstart`,
   `selfhost:readiness -- --all`, `selfhost:readiness`, `selfhost:doctor`,
-  `selfhost:init`, `selfhost:summary`, `selfhost:status`,
+  `selfhost:init`, `selfhost:summary`, `selfhost:preflight`, `selfhost:status`,
   `dev:doctor`, `test:agent-e2e`, `published-image:plan`, `selfhost:security-review`, and
   `operator:onboarding:check`.
 - Platform billing operators have an admin-only API and Platform Console page
@@ -154,6 +155,9 @@ Required baseline:
 - Add `selfhost:ports` so operators can inspect declared host ports before
   starting a profile or exposing public-stack, with `--json` for dashboards
   and deployment scripts.
+- Add `selfhost:preflight -- --json` so deployment controllers can consume the
+  same secret hygiene, compose config, route, blocker, and safety-note gate that
+  `selfhost:up` uses before starting services.
 - Add `selfhost:summary` so operators can see deploy paths, URLs, declared
   host ports, secret hygiene status, and next commands in one read-only screen.
 - Add `selfhost:doctor` as the earliest read-only deployment diagnostic for

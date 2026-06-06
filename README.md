@@ -149,6 +149,7 @@ corepack pnpm run selfhost:ports
 corepack pnpm --silent run selfhost:ports -- --json
 corepack pnpm run selfhost:ops-report
 corepack pnpm run selfhost:preflight
+corepack pnpm --silent run selfhost:preflight -- --json
 corepack pnpm run selfhost:status
 corepack pnpm run selfhost:smoke
 corepack pnpm run selfhost:security-review
@@ -172,6 +173,7 @@ corepack pnpm run selfhost:ports -- --profile public-stack
 corepack pnpm --silent run selfhost:ports -- --profile public-stack --json
 corepack pnpm run selfhost:ops-report -- --profile public-stack
 corepack pnpm run selfhost:preflight -- --profile public-stack
+corepack pnpm --silent run selfhost:preflight -- --profile public-stack --json
 corepack pnpm run selfhost:security-review -- --profile public-stack
 corepack pnpm run selfhost:audit-export -- --profile public-stack
 corepack pnpm run selfhost:backup-validate -- --profile public-stack --backup-dir backups/selfhost/public-stack/<stamp>
