@@ -236,6 +236,9 @@ try {
   assert.match(opsReportText, /# Selfhost Ops Report/);
   assert.match(opsReportText, /profile: platform/);
   assert.match(opsReportText, /Platform API/);
+  assert.match(opsReportText, /## Ports/);
+  assert.match(opsReportText, /8080: platform-api/);
+  assert.match(opsReportText, /5432: postgres/);
   assert.match(opsReportText, /selfhost:security-review/);
   assert.match(opsReportText, /selfhost:backup-validate/);
   assert.match(opsReportText, /selfhost:restore-plan/);

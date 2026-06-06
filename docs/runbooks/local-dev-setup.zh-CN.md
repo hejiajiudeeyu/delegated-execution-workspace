@@ -157,8 +157,8 @@ endpoint，并把 JSON 证据写入 `exports/audit/<profile>/`；也可以用 `-
 指定路径。它会使用 admin key 发起请求，但不会把 key 打印到终端。
 
 `selfhost:ops-report` 会把 Markdown 交接报告写入 `exports/selfhost/<profile>/`；
-也可以用 `--output` 指定路径。报告包含 URLs、secret hygiene 状态和后续命令，
-但不会写入 raw secret 值。
+也可以用 `--output` 指定路径。报告包含 URLs、host ports、secret hygiene 状态和
+后续命令，但不会写入 raw secret 值。
 
 `selfhost:ports` 会打印选定 profile 声明的 host ports，但不会绑定 socket 或调用
 Docker。检查本地端口冲突时，应在 `selfhost:up` 前运行它。

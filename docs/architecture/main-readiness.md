@@ -18,14 +18,14 @@ repositories.
 - `repos/protocol`: `da3027100cfe9391f7f8d03be18a108ee2804cf6`
 - `repos/client`: `f1d6a2d8c9b83517cdf6ca9803b223847f880e9a`
 - `repos/platform`: `5961309c6b0ca4e8df22dbb5be92ac0845bf8d25`
-- `repos/brand-site`: `40888a59fe194b6369c8a15ca87f26a47c4078fa`
+- `repos/brand-site`: `d910de6cbc89ad70c1f49b340a2a3e6772707c48`
 
-The current bundle is `changes/CHG-2026-048.yaml`.
+The current bundle is `changes/CHG-2026-049.yaml`.
 
 ## Readiness Verdict
 
 The pinned combination is ready for daily fourth-repo development after
-CHG-2026-048:
+CHG-2026-049:
 
 - submodule SHA integrity is verified
 - boundary governance covers the new platform billing data package
@@ -43,7 +43,7 @@ CHG-2026-048:
   helper for the existing platform admin audit endpoint without printing admin
   keys
 - `selfhost:ops-report` is available as a non-secret Markdown operations
-  handoff report with URLs, secret hygiene status, and next commands
+  handoff report with URLs, host ports, secret hygiene status, and next commands
 - `selfhost:ports` is available as a non-destructive declared host-port list
   before an operator starts a self-host profile
 - `selfhost:backup-validate` is available as a non-destructive backup artifact
@@ -212,8 +212,8 @@ calls the existing platform admin audit endpoint, and writes the response as a
 local JSON artifact under `exports/audit/<profile>/` without printing the admin
 key;
 `corepack pnpm run selfhost:ops-report` writes a Markdown handoff report under
-`exports/selfhost/<profile>/` with URLs, secret hygiene status, and operator
-commands while omitting raw secret values;
+`exports/selfhost/<profile>/` with URLs, host ports, secret hygiene status, and
+operator commands while omitting raw secret values;
 `corepack pnpm run selfhost:ports` prints the selected profile's declared host
 ports without binding sockets, inspecting the local network, or calling Docker;
 `corepack pnpm run selfhost:backup-validate` checks a backup directory for

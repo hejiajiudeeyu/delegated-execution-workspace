@@ -180,7 +180,8 @@ prints that key.
 
 `selfhost:ops-report` writes a Markdown handoff report under
 `exports/selfhost/<profile>/` unless `--output` is provided. It includes URLs,
-secret hygiene status, and next commands, but never writes raw secret values.
+host ports, secret hygiene status, and next commands, but never writes raw
+secret values.
 
 `selfhost:ports` prints the declared host ports for the selected profile without
 binding sockets or calling Docker. Use it before `selfhost:up` when checking for

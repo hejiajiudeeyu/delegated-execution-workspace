@@ -663,7 +663,7 @@ function backupStampPlaceholder(profileName) {
 }
 
 function writeOpsReport(profileName, { output = null } = {}) {
-  const { dir, envPath } = profilePaths(profileName);
+  const { profile, dir, envPath } = profilePaths(profileName);
   const reportPath = path.resolve(ROOT, output || defaultOpsReportPath(profileName));
   const envExists = fs.existsSync(envPath);
   const findings = envExists ? secretFindings(fs.readFileSync(envPath, "utf8"), profileName) : [];
@@ -685,6 +685,10 @@ function writeOpsReport(profileName, { output = null } = {}) {
     "## URLs",
     "",
     ...profileUrls(profileName).map(([label, url]) => `- ${label}: ${url}`),
+    "",
+    "## Ports",
+    "",
+    ...(profile.ports || []).map(([port, service, role]) => `- ${port}: ${service} - ${role}`),
     "",
     "## Secret Hygiene",
     ""

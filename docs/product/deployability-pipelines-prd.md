@@ -76,8 +76,8 @@ Acceptance:
   prerequisites
 - audit export writes platform admin audit events to a local JSON artifact
   without printing admin keys
-- ops report writes a Markdown handoff artifact with URLs, secret hygiene
-  status, and operator commands without raw secret values
+- ops report writes a Markdown handoff artifact with URLs, host ports, secret
+  hygiene status, and operator commands without raw secret values
 - ports prints declared host port usage for the selected profile without
   binding sockets or calling Docker
 - backup validate checks `.env`, `postgres.sql`, and `compose.config.txt`

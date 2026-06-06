@@ -73,8 +73,8 @@
   config、route contract 和 backup / rotation / smoke 前置动作
 - audit export 会把 platform admin audit events 写成本地 JSON 证据，同时不打印
   admin key
-- ops report 会写出包含 URLs、secret hygiene 状态和 operator 命令的 Markdown
-  交接 artifact，但不包含 raw secret 值
+- ops report 会写出包含 URLs、host ports、secret hygiene 状态和 operator 命令的
+  Markdown 交接 artifact，但不包含 raw secret 值
 - ports 会打印选定 profile 声明的 host port 使用情况，但不绑定 socket 或调用 Docker
 - backup validate 会检查 `.env`、`postgres.sql` 和 `compose.config.txt` 的存在与大小，
   但不读取或打印 secret 值
