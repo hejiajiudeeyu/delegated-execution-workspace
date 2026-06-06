@@ -32,6 +32,13 @@
 - [main 就绪清单](architecture/main-readiness.zh-CN.md)
 - [镜像构建归属与 Marketplace API 契约](architecture/image-build-and-marketplace-contract.zh-CN.md)
 
+## 产品 PRD（Product PRDs）
+
+可部署性、管理体验和 operator 工作流的产品级 readiness 目标。
+
+- [可部署性生态 PRD](product/deployability-ecosystem-prd.zh-CN.md)
+- [可部署性管线 PRD](product/deployability-pipelines-prd.zh-CN.md)
+
 ## 运行手册（Runbooks）
 
 常见任务的分步操作指南。

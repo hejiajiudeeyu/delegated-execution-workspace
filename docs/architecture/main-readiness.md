@@ -1,34 +1,45 @@
 # Main Readiness
 
-Updated: 2026-05-06
+Updated: 2026-06-06
 
 ## Purpose
 
-This document records the current readiness judgment for the fourth-repo `main` branch.
+This document records the current readiness judgment for the fourth-repo `main`
+branch and its pinned submodule combination.
 
-The goal is not to describe every planned capability. The goal is to separate:
-
-- what has been verified as usable on the current pinned SHA combination
-- what is validated only through the fourth-repo certification path
-- what remains outside the current default product path and still needs its own readiness work
+The fourth repository is a compatibility ledger and orchestration workspace. A
+green readiness verdict here means the current protocol/client/platform SHA
+combination is usable for local cross-repo development and the certified source
+integration path. It does not replace the release gates owned by the formal
+repositories.
 
 ## Current Pinned Combination
 
-- `repos/protocol`: `3f036da107d17807f0518972feccce0e323f8eed`
-- `repos/client`: `685aab0adbc1801143974fa07f6b77bd74a57488`
-- `repos/platform`: `18313db01016256cb504b01c3bfca8bb9668c066`
+- `repos/protocol`: `da3027100cfe9391f7f8d03be18a108ee2804cf6`
+- `repos/client`: `c89be2070dfc04509b36ee962c7d3e73eed25906`
+- `repos/platform`: `dc7c654964707badbdda8d02d57a6b56b8cf11a5`
+
+The current bundle is `changes/CHG-2026-030.yaml`.
 
 ## Readiness Verdict
 
-`main` is currently usable for the local-first client path and for fourth-repo certified source integration.
+The pinned combination is ready for daily fourth-repo development after
+CHG-2026-030:
 
-That verdict is intentionally narrow. It does **not** mean every planned deployment shape, billing surface, email workflow, or historical test layer is already production-ready.
+- submodule SHA integrity is verified
+- boundary governance covers the new platform billing data package
+- change bundle validation passes
+- protocol/client/platform package and deploy-contract checks pass
+- the source integration path succeeds end to end
+- ops-console now has its first deployability-management explanation surface
 
-## Verified Usable Now
+This verdict is intentionally scoped. Billing P-1 M1.1 adds platform
+persistence and schema groundwork, but it does not make billing a complete
+end-user default path yet.
 
-### 1. Fourth-repo certification chain
+## Verified On 2026-06-06
 
-The required workspace certification commands pass on the pinned SHA combination:
+The required fourth-repo gates pass on the current pinned combination:
 
 ```bash
 corepack pnpm run check:submodules
@@ -38,108 +49,106 @@ corepack pnpm run test:contracts
 corepack pnpm run test:integration
 ```
 
-What this proves:
+Observed results:
 
-- submodule SHAs are consistent with the compatibility ledger
-- cross-repo boundary rules still hold
-- change bundles are present and structurally valid
-- contracts, package shape, deploy config resolution, and source integration checks pass
+- `check:submodules`: passed
+- `check:boundaries`: passed after adding `@delexec/billing-store` to
+  `platform/data`
+- `check:bundles`: passed with `CHG-2026-028`
+- `test:contracts`: passed, including `@delexec/billing-store` in platform
+  package validation
+- `test:integration`: passed with a successful request/response path
+- `test:agent-e2e`: passed after retargeting the script to the current
+  `/skills/caller/*` surface
+- `dev:doctor`: passed for the local daily agent/caller-skill stack
+- `selfhost:init` / `selfhost:urls`: added as the first self-host management
+  spine for generated env and profile discovery
+- `selfhost:smoke`: passed for the local `platform` profile; the
+  `public-stack` profile intentionally fails while the public origin remains
+  localhost or the stack is not running
+- `test:selfhost-kit`: passed with temp-profile coverage for env generation
+  and secret rotation dry-run/confirm behavior
+- `repos/client` `npm run test:unit`: passed with 13 test files and 122 tests,
+  including new Runtime deployability panel and Help deployability chapter
+  coverage
 
-### 2. Local-first fresh-home client path
+## What Is Usable Now
 
-A fresh `DELEXEC_HOME` local smoke was manually re-verified in this workspace on 2026-05-02.
+### Fourth-repo certification chain
 
-Verified path:
+The workspace can certify a protocol/client/platform SHA combination, record it
+as a change bundle, and verify it through the required local gates.
 
-```bash
-node apps/ops/src/cli.js bootstrap --email you@example.com
-node apps/ops/src/cli.js status
-node apps/ops/src/cli.js ui start --no-browser
-```
+### Source integration baseline
 
-What was directly observed:
-
-- `bootstrap` completed successfully from a clean home directory
-- caller local registration completed in `local_only` mode
-- the official example hotline was created locally
-- supervisor-managed services started and became healthy
-- the example request reached `SUCCEEDED`
-- `ui start` reopened correctly on the requested host/port after the workspace Vite launch fix
-
-### 3. Current validation/documentation entry points
-
-The most user-facing validation docs in `repos/client` now match the current checkout reality.
-
-Aligned documents include:
-
-- `repos/client/tests/README.md`
-- `repos/client/tests/README.zh-CN.md`
-- `repos/client/docs/current/testing/testing-strategy.md`
-- `repos/client/docs/current/testing/testing-strategy.zh-CN.md`
-- `repos/client/docs/current/guides/deployment-guide.md`
-- `repos/client/docs/current/guides/deployment-guide.zh-CN.md`
-
-What this fixes:
-
-- the checkout no longer claims missing `tests/e2e` or image-smoke scripts as current runnable truth
-- operators now have a correct first-stop list for local tests, package checks, and fourth-repo certification
-
-### 4. ops-console Phase 2 Stage 2 — caller-side chrome/UX
-
-CHG-2026-018 through CHG-2026-021 land the four caller-side pages of `apps/ops-console` against `repos/brand-site/docs/console-content-spec.md`:
-
-- DashboardPage (CHG-2026-018, spec §1.2b/§1.5/§1.5b): five-step onboarding strip, NextUp six-state card, PlatformValueDisclosure value-comparison table with session-based dismiss
-- CallsPage (CHG-2026-019, spec §2): manual-call form removed; list rows now carry human-readable headlines; detail panel split into Summary / Request Context / Outcome sections with raw-JSON toggles preserved; failed/rejected calls render mandatory next-step CTAs
-- CatalogPage (CHG-2026-020, spec §5.2): TryCallDrawer replaces the dead-end redirect to ManualCallForm; deep-link params `?hotline_id=` auto-select+auto-open the drawer, `?prefill=<base64>` closes the calls-retry loop, zero-hotlines empty state offers a dual CTA
-- CallerApprovalsPage (CHG-2026-021, spec §4.0b/§4.3): M7 approval-fatigue banner (three triggers / 24 h cooldown) and M6 post-whitelist education popover (two copy variants / suppressed after 3 popovers per session)
-
-`corepack pnpm run test:unit` covers 10 files / 111 tests across the four slices and stays green. All four slices skip `test:integration` per the precedent set by CHG-2026-009/010/011 — chrome/UX-only React refactors do not touch CLI / supervisor / caller-skill HTTP / MCP adapter / responder controller / protocol or platform contract surfaces.
-
-Out of scope for this Stage 2 batch:
-
-- ops-console `/help` content (the eight pages targeted by every `?from=…` deep link still resolve to a placeholder)
-- React Testing Library coverage for CatalogPage / CallsPage / ApprovalsPage M6+M7 (12 pre-existing `tsc` errors in `ResponderHotlinesPage` / `ResponderReviewPage` / `sonner.tsx` recorded in CHG-2026-011 are unchanged and unrelated to this batch)
-
-## Verified But Narrowly Scoped
-
-### Source integration path
-
-`corepack pnpm run test:integration` verifies the baseline source-integration path defined in [Integration Path](integration-path.md):
+`corepack pnpm run test:integration` validates the baseline source integration
+path defined in [Integration Path](integration-path.md):
 
 - platform API from `repos/platform`
 - standalone relay from `repos/platform`
 - source `delexec-ops` from `repos/client`
 - approval plus a full request/response success path
 
-This is stronger than a unit/integration-only claim, but it is still a certification path for source integration, not a blanket readiness claim for every deployment mode.
+### Billing P-1 M1.1 groundwork
 
-## Not Yet Re-Certified As Current Default Path
+The platform submodule now includes the first concrete billing implementation
+milestone:
 
-These areas should not be treated as already ready just because `main` is usable for the local-first baseline:
+- `@delexec/billing-store`
+- `002_p1_tenant_balance.sql`
+- unit and integration tests for billing persistence
+- platform package validation wiring
 
-- billing and quota behavior
+The fourth-repo boundary map treats this package as `platform/data`.
+
+### Agent-facing caller-skill smoke
+
+`corepack pnpm run test:agent-e2e` now validates the current
+`/skills/caller/*` progressive-disclosure surface without requiring an
+external LLM key. It covers manifest discovery, hotline search, hotline read,
+request preparation, request send, and response reporting against the bundled
+workspace-summary hotline.
+
+`corepack pnpm run dev:doctor` checks the local prerequisites and runtime
+health endpoints used by that daily path.
+
+`corepack pnpm run selfhost:smoke` now combines secret hygiene, compose config
+validation, and health endpoint checks. For public profiles, unsafe public
+origin settings are warnings/failures instead of being hidden behind a green
+status.
+
+### Console deployability management slice
+
+The ops-console Runtime page now shows a deployability readiness panel for the
+`platform`, `public-stack`, and `all-in-one` profiles, the recommended
+`selfhost:*` check sequence, and the safety boundary that status/smoke/logs do
+not print secret values.
+
+The Help page now has a dedicated Deployability chapter connecting profile
+choice, health, logs, secret hygiene, and the Runtime/Transport entry points.
+This is the first M3 explanation surface; dynamic adapter health, approval
+policy summary, and billing readiness status still need follow-up closeout.
+
+## Still Not Ready As A Default Daily Path
+
+These areas still need their own closeout before they should be treated as
+default day-to-day workflows:
+
+- one-command local stack bootstrap
+- profile-specific public-stack smoke beyond health/status
+- MCP host golden-four validation as an executable script
+- billing P-1 beyond M1.1, including API/read model/client-facing surfaces
+- dynamic adapter health, approval policy, and billing readiness in console
 - email transport as an end-user default path
-- image-based smoke and published-image validation paths
-- broad E2E layers previously described in older docs but absent from the current checkout
-- full platform/operator workflows as the first-use path for ordinary client onboarding
+- published-image smoke and deployment validation
+- platform-first/operator-first onboarding as the primary first-use path
 
-They may have code, partial tests, or older documentation, but they have not been re-established here as the default readiness baseline for `main`.
+## Current Caveat
 
-## Practical Boundary For Next Work
+The readiness verdict covers the pinned SHA combination and the fourth-repo
+gate results. It does not certify unrelated uncommitted edits inside a
+submodule working tree.
 
-Use this split when choosing the next project theme:
-
-- if the goal is to improve the current default product path, continue inside client usability, onboarding, local transport, and local UI ergonomics
-- if the goal is to expand supported deployment shapes, treat billing, email, and image/deploy validation as new readiness tracks with their own acceptance criteria
-- do not reopen historical test layers in docs unless the matching files and scripts are restored in the same checkout
-
-## Next Recommended Track
-
-The recommended next closeout item is a small follow-up readiness audit that lists, module by module:
-
-1. local-first client path: verified
-2. cross-repo source integration: verified
-3. platform-first/operator-first onboarding: partially verified only through certification path
-4. email transport: feature-present but not yet re-certified as current default path
-5. billing: only the direction-setting RFC at `repos/protocol/docs/planned/design/billing-and-quota.md` exists today (still ahead 2 on the protocol submodule's `main` as of CHG-2026-021, awaiting the matching platform/client RFCs before being bumped into the super-repo); not yet a readiness-closed module
-6. ops-console caller-side Stage 2 chrome: four pages landed (CHG-2026-018→021), but `/help` content and the matching RTL coverage are still outstanding
+Before promoting a final clean daily baseline, ensure `git status --short` is
+clean except for the intended fourth-repo changes and any explicitly owned
+submodule work.

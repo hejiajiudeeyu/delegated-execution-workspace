@@ -1,0 +1,12 @@
+change_id: CHG-2026-028
+goal: bump platform SHA for P-1 M1.1 billing-store schema and persistence implementation
+protocol_sha: da3027100cfe9391f7f8d03be18a108ee2804cf6
+client_sha: 8a6eae4565fda98ec3b96fce87d5f7454ecb4b6b
+platform_sha: dc7c654964707badbdda8d02d57a6b56b8cf11a5
+owner: hejiajiudeeyu
+risk_level: medium
+affected_scope:
+  - platform
+contracts_check: passed
+integration_check: passed
+notes: "Advances the platform submodule from the P-1 implementation RFC SHA to the first concrete P-1 M1.1 implementation SHA. The platform diff adds @delexec/billing-store, the 002_p1_tenant_balance.sql migration, unit and integration coverage for billing persistence, and package/deploy validation wiring. The fourth-repo boundary ledger is updated in the same change so the new platform data package is governed as platform/data rather than remaining uncovered. Verified on this exact protocol/client/platform combination on 2026-06-06 with: corepack pnpm run check:submodules, corepack pnpm run check:boundaries, corepack pnpm run check:bundles, corepack pnpm run test:contracts, and corepack pnpm run test:integration."

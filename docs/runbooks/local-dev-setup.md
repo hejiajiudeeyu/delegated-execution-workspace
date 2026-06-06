@@ -70,6 +70,42 @@ corepack pnpm run dev:client:bootstrap
 corepack pnpm run dev:console   # gateway on :8079 + ops-console UI on :4174
 ```
 
+Check the daily local stack health:
+
+```bash
+corepack pnpm run dev:doctor
+corepack pnpm run test:agent-e2e
+corepack pnpm run test:selfhost-kit
+```
+
+Initialize and inspect a self-host profile:
+
+```bash
+corepack pnpm run selfhost:init
+corepack pnpm run selfhost:plan
+corepack pnpm run selfhost:urls
+corepack pnpm run selfhost:status
+corepack pnpm run selfhost:smoke
+```
+
+For the public operator stack:
+
+```bash
+corepack pnpm run selfhost:init -- --profile public-stack
+corepack pnpm run selfhost:urls -- --profile public-stack
+corepack pnpm run selfhost:status -- --profile public-stack
+corepack pnpm run selfhost:smoke -- --profile public-stack
+```
+
+Operational helpers:
+
+```bash
+corepack pnpm run selfhost:logs -- --service platform-api --tail 80
+corepack pnpm run selfhost:backup-plan
+corepack pnpm run selfhost:rotate-plan
+corepack pnpm run selfhost:rotate -- --confirm
+```
+
 Default endpoints:
 
 - Platform API: `http://127.0.0.1:8080`

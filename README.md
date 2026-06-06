@@ -110,6 +110,28 @@ corepack pnpm run test:contracts
 corepack pnpm run test:integration
 ```
 
+Check whether the local daily agent/caller-skill development stack is ready:
+
+```bash
+corepack pnpm run dev:doctor
+corepack pnpm run test:agent-e2e
+corepack pnpm run test:selfhost-kit
+```
+
+Initialize and inspect a self-host profile:
+
+```bash
+corepack pnpm run selfhost:init
+corepack pnpm run selfhost:plan
+corepack pnpm run selfhost:urls
+corepack pnpm run selfhost:status
+corepack pnpm run selfhost:smoke
+
+# Public operator stack:
+corepack pnpm run selfhost:init -- --profile public-stack
+corepack pnpm run selfhost:status -- --profile public-stack
+```
+
 Notes:
 
 - Use the top-level `corepack pnpm install` as the default workspace install path.

@@ -51,3 +51,39 @@ corepack pnpm run dev:platform
 corepack pnpm run dev:relay
 corepack pnpm run dev:client:bootstrap
 ```
+
+检查日常本地栈健康状态：
+
+```bash
+corepack pnpm run dev:doctor
+corepack pnpm run test:agent-e2e
+corepack pnpm run test:selfhost-kit
+```
+
+初始化并检查 self-host profile：
+
+```bash
+corepack pnpm run selfhost:init
+corepack pnpm run selfhost:plan
+corepack pnpm run selfhost:urls
+corepack pnpm run selfhost:status
+corepack pnpm run selfhost:smoke
+```
+
+Public operator stack：
+
+```bash
+corepack pnpm run selfhost:init -- --profile public-stack
+corepack pnpm run selfhost:urls -- --profile public-stack
+corepack pnpm run selfhost:status -- --profile public-stack
+corepack pnpm run selfhost:smoke -- --profile public-stack
+```
+
+运维辅助命令：
+
+```bash
+corepack pnpm run selfhost:logs -- --service platform-api --tail 80
+corepack pnpm run selfhost:backup-plan
+corepack pnpm run selfhost:rotate-plan
+corepack pnpm run selfhost:rotate -- --confirm
+```

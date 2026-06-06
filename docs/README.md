@@ -29,6 +29,13 @@ System-level architecture, boundary governance, and integration path documentati
 - [Main Readiness](architecture/main-readiness.md)
 - [Image Build Ownership & Marketplace API Contract](architecture/image-build-and-marketplace-contract.md)
 
+## Product PRDs
+
+Product-level readiness targets for deployability, management, and operator workflows.
+
+- [Deployability Ecosystem PRD](product/deployability-ecosystem-prd.md)
+- [Deployability Pipeline PRDs](product/deployability-pipelines-prd.md)
+
 ## Runbooks
 
 Step-by-step operational guides for common tasks.

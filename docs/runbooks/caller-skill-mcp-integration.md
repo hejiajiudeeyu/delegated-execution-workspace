@@ -1,6 +1,7 @@
 # Caller Skill MCP Integration
 
-Status: Active. Last verified against CHG-2026-003 (protocol `fac73ae`, client `40dddb7`, platform `6e5be15`) and CHG-2026-004 (client `402f300`).
+Status: Active. Last verified against CHG-2026-028 (protocol `da302710`,
+client `8a6eae4`, platform `dc7c654`) on 2026-06-06.
 
 This runbook belongs to the fourth-repo. It explains how to validate the
 caller-skill MCP adapter end-to-end against the currently certified submodule
@@ -184,9 +185,10 @@ Verify before you point any host at the stack:
 curl -sf http://127.0.0.1:8080/healthz    # platform-api
 curl -sf http://127.0.0.1:8079/status     # ops supervisor
 curl -sf http://127.0.0.1:8091/healthz    # caller-skill adapter
+curl -sf http://127.0.0.1:8092/healthz    # MCP streamable_http adapter
 ```
 
-All three must return 2xx before starting the MCP adapter.
+All four must return 2xx before pointing an agent host at the stack.
 
 ## Transport selection
 
@@ -211,30 +213,34 @@ Supervisor (`http://127.0.0.1:8079`):
 
 Caller-skill adapter (`http://127.0.0.1:8091`):
 
-- `GET  /skills/remote-hotline/catalog?query=&capability=&task_type=`
-- `POST /skills/remote-hotline/preflight`
-- `POST /skills/remote-hotline/invoke`
-- `PUT  /skills/remote-hotline/policies/{hotline_id}`
-- `PUT  /skills/remote-hotline/global-policy`
-- `GET  /skills/remote-hotline/approvals/{approval_id}`
-- `GET  /skills/remote-hotline/audit?limit=N`
+- `GET  /skills/caller/manifest`
+- `POST /skills/caller/search-hotlines-brief`
+- `POST /skills/caller/search-hotlines-detailed`
+- `GET  /skills/caller/hotlines/:hotlineId`
+- `POST /skills/caller/prepare-request`
+- `POST /skills/caller/send-request`
+- `GET  /skills/caller/requests/:requestId/report`
 
 The MCP adapter itself does not add new HTTP endpoints; it only maps these
 into MCP tools.
 
 ## Validation ladder
 
-1. Boot the stack (steps 1-3 above) and pass the three healthchecks.
-2. Skip `tools/agent-e2e/` for now — the script is quarantined against
-   the legacy `/skills/remote-hotline/*` surface (see
-   `tools/agent-e2e/README.md`). Until that script is re-targeted, the
-   MCP-host loop below is the authoritative end-to-end check.
+1. Boot the stack (steps 1-3 above) and pass the four healthchecks.
+2. Run the deterministic fourth-repo caller-skill smoke:
+
+   ```bash
+   corepack pnpm run test:agent-e2e
+   ```
+
+   This validates supervisor health, caller-skill adapter health, MCP adapter
+   health, the six-action manifest, hotline search/read/prepare/send/report,
+   and the bundled workspace-summary hotline.
 3. Start the MCP adapter in the transport the host expects (the supervisor
    keeps it running as `mcp-adapter` already; verify via
    `curl -sf http://127.0.0.1:8092/healthz`).
-4. From the host, run the "golden four" checks. These are normative — last
-   verified end-to-end from Codex on 2026-04-20 against the
-   protocol/client/platform combination in `CHG-2026-008`:
+4. From the host, run the "golden four" checks. These are normative for
+   host-specific tool wiring:
 
    1. **Tool discovery** lists six tools. Most hosts (Codex included)
       flatten the dot-namespaced names to underscores, so the on-host
@@ -253,8 +259,7 @@ into MCP tools.
 
    2. **`search_hotlines_brief`** with `{"task_type": "text_summarize"}`
       returns at least one item with
-      `hotline_id: "local.delegated-execution.workspace-summary.v1"` and
-      `source: "platform"`.
+      `hotline_id: "local.delegated-execution.workspace-summary.v1"`.
 
    3. **`prepare_request`** for that hotline returns
       `status: "ready"` plus a `prepared_request_id` and `expires_at`.

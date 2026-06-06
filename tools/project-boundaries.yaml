@@ -75,6 +75,7 @@ projects:
       - layer:platform
       - scope:data
     package_names:
+      - "@delexec/billing-store"
       - "@delexec/postgres-store"
     allow_dependencies:
       - protocol/contracts
