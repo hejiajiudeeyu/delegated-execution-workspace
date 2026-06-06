@@ -75,7 +75,7 @@ The ecosystem is "daily-deployable" when a fresh operator can:
 | Published-image smoke wrapper | fourth repo | delegate to `repos/platform` public-stack smoke |
 | Operator onboarding contract | fourth repo | `operator:onboarding:check` keeps public-stack, brand-site, and runbooks aligned |
 | Public stack deploy manifests | `repos/platform` | existing `deploy/public-stack` |
-| Billing admin read model | `repos/platform` | admin-only tenant, balance, recharge, and ledger endpoints |
+| Billing admin read model | `repos/platform` | admin-only tenant, balance, recharge, and ledger endpoints plus Platform Console management page |
 | Runtime console | `repos/client` and `repos/platform` | status, logs, settings, approvals |
 | Brand explanation | `repos/brand-site` | deployability narrative and quick-start entry |
 
@@ -94,9 +94,9 @@ Required baseline:
 
 - A fresh checkout can run `selfhost:init`, `selfhost:status`, `dev:doctor`,
   `test:agent-e2e`, `published-image:plan`, and `operator:onboarding:check`.
-- Platform billing operators have an admin-only API for tenant setup, balance
-  inspection, manual recharge capture, and ledger browsing, while end-user
-  billing remains outside the ready verdict.
+- Platform billing operators have an admin-only API and Platform Console page
+  for tenant setup, balance inspection, manual recharge capture, and ledger
+  browsing, while end-user billing remains outside the ready verdict.
 - PRD, runbooks, README, and brand-site copy use the same named profiles.
 - Fourth-repo CI remains green after adding orchestration helpers.
 - Brand-site build remains green after messaging updates.
@@ -122,6 +122,8 @@ Required baseline:
 - Add operator-first public-stack onboarding checks.
 - Add a platform-owned billing admin read model before exposing client-facing
   billing workflows.
+- Expose that billing read model in Platform Console as an admin-only operator
+  page through the gateway proxy, without leaking admin keys to the browser.
 - Keep public-stack `/console/`, gateway session flow, and brand-site Operator
   Onboarding narrative aligned.
 

@@ -103,6 +103,9 @@ Acceptance:
 - settings page explains local/public mode and approval policies
 - logs page can guide users without dumping secrets
 - billing readiness is explicit instead of implied
+- Platform Console has an admin-only `/billing` page for tenant setup, balance
+  inspection, manual recharge capture, and ledger review through the gateway
+  proxy
 - public-stack `/console/` and gateway session flow are explained and
   validated as the operator's first-use entry point
 
@@ -188,3 +191,5 @@ Acceptance:
   route contract
 - this path still does not claim billing, email transport, or marketplace
   production readiness as complete
+- billing management evidence is limited to the admin-only Platform Console
+  page and must not be presented as end-user billing readiness

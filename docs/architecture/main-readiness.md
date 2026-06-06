@@ -17,14 +17,15 @@ repositories.
 
 - `repos/protocol`: `da3027100cfe9391f7f8d03be18a108ee2804cf6`
 - `repos/client`: `f1d6a2d8c9b83517cdf6ca9803b223847f880e9a`
-- `repos/platform`: `d1a0bfcafd64c7cce5391059c31a6af90a51f9eb`
+- `repos/platform`: `5961309c6b0ca4e8df22dbb5be92ac0845bf8d25`
+- `repos/brand-site`: `fa34119a07b8e0f824123157ade3d767308ebe9d`
 
-The current bundle is `changes/CHG-2026-041.yaml`.
+The current bundle is `changes/CHG-2026-042.yaml`.
 
 ## Readiness Verdict
 
 The pinned combination is ready for daily fourth-repo development after
-CHG-2026-041:
+CHG-2026-042:
 
 - submodule SHA integrity is verified
 - boundary governance covers the new platform billing data package
@@ -38,7 +39,8 @@ CHG-2026-041:
 - MCP host golden-four validation is available as an executable fourth-repo
   smoke and a deterministic unit-style harness
 - brand-site now has bilingual Deployability Profiles docs that explain the
-  deployment profiles, ready/planned boundaries, and secret-safety defaults
+  deployment profiles, ready/planned boundaries, secret-safety defaults, and
+  the operator-only Billing console slice
 - one-command local stack bootstrap is available through managed
   `dev:local:*` commands
 - published-image smoke now has a fourth-repo entry point that reviews
@@ -49,10 +51,13 @@ CHG-2026-041:
   brand-site narrative, and the source fallback runbook aligned
 - Billing P-1 now has an admin-only API/read-model slice for tenant creation,
   balance lookup, manual recharge capture, and ledger browsing
+- Platform Console now exposes that billing read model through an operator-only
+  `/billing` management page behind the gateway proxy
 
 This verdict is intentionally scoped. Billing P-1 M1.2 adds an admin-only
-platform API/read model on top of persistence and schema groundwork, but it does
-not make billing a complete client-facing or end-user default path yet.
+platform API/read model and an operator-only console surface on top of
+persistence and schema groundwork, but it does not make billing a complete
+client-facing or end-user default path yet.
 
 ## Verified On 2026-06-06
 
@@ -71,7 +76,7 @@ Observed results:
 - `check:submodules`: passed
 - `check:boundaries`: passed after adding `@delexec/billing-store` to
   `platform/data`
-- `check:bundles`: passed with `CHG-2026-041`
+- `check:bundles`: passed with `CHG-2026-042`
 - `test:contracts`: passed, including `@delexec/billing-store` in platform
   package validation and the `@delexec/platform-api` dependency graph
 - `test:integration`: passed with a successful request/response path
@@ -108,9 +113,14 @@ Observed results:
   onboarding plan, stale platform-guide detection, brand-site planned-copy
   detection, and secret-leak guard
 - `repos/brand-site` `npm run smoke:deployability-content`: passed for the
-  bilingual Deployability Profiles route/content contract
+  bilingual Deployability Profiles route/content contract, including the
+  admin-only Billing console narrative
 - `repos/brand-site` `npm run build`: passed, including client build, SSR
   build, and prerender output for the new deployability docs routes
+- `repos/platform` platform-console view-model unit test: passed for Billing
+  readiness, balance, and ledger summaries
+- `repos/platform/apps/platform-console` `npm run build`: passed for the
+  bundled Billing page route and sidebar entry
 - `repos/client` `npm run test:unit`: passed with 14 test files and 125 tests,
   including new Runtime deployability panel and Help deployability chapter
   coverage, Skill/MCP adapter runtime status coverage, and Preferences approval
@@ -146,6 +156,8 @@ milestones:
   manual recharge capture, and ledger browsing
 - platform API integration coverage for admin auth, tenant-miss error mapping,
   recharge capture, and ledger filtering
+- Platform Console `/billing` route for tenant setup, balance refresh, manual
+  recharge capture, and ledger review through the gateway `/proxy/*` path
 
 The fourth-repo boundary map treats this package as `platform/data`.
 
@@ -211,6 +223,11 @@ The Help page now has a dedicated Deployability chapter connecting profile
 choice, health, logs, secret hygiene, and the Runtime/Transport entry points.
 This is the first M3 explanation and runtime visibility surface.
 
+Platform Console now adds a concrete Billing management page for operators. It
+uses the existing console gateway proxy, so the browser calls `/proxy/*` while
+the gateway injects the stored admin key server-side. The page is intentionally
+marked admin-only and not production-default billing.
+
 ### Brand-site deployability narrative
 
 The brand-site docs now expose `/docs/deployability-profiles` and
@@ -218,9 +235,10 @@ The brand-site docs now expose `/docs/deployability-profiles` and
 Agent Loop, Selfhost Platform, Public Stack, and Management Console. The pages
 keep self-host messaging honest by labeling current paths as ready now:
 local loop, selfhost, public-stack safety checks, published-image smoke, and
-Operator Onboarding. Capabilities that are not ready remain outside the green
-path, and secrets, public origins, and billing readiness must not be hidden
-behind green status.
+Operator Onboarding. Management Console copy now also describes the admin-only
+Billing page as an operator surface, not as client-facing billing readiness.
+Capabilities that are not ready remain outside the green path, and secrets,
+public origins, and billing readiness must not be hidden behind green status.
 
 ## Still Not Ready As A Default Daily Path
 

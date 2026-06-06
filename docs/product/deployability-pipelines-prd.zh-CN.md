@@ -97,6 +97,8 @@
 - settings 页解释 local/public mode 和 approval policies
 - logs 页能引导定位问题，但不 dump secrets
 - billing readiness 是显式状态，而不是暗示已经 ready
+- Platform Console 有 admin-only `/billing` 页面，可通过 gateway proxy 做 tenant
+  setup、balance inspection、人工 recharge capture 和 ledger review
 - public-stack 的 `/console/` 和 gateway session flow 能作为 operator 首次进入点被解释和验证
 
 ## 管线 E：Brand Site
@@ -171,3 +173,5 @@
   credential、如何验证 gateway proxy
 - 文档与实际 public-stack route contract 不一致时，第四仓 check 失败
 - 这条路径仍不把 billing、email transport 或 marketplace production readiness 包装成已完成
+- billing 管理证据只覆盖 admin-only Platform Console 页面，不能被描述成终端用户
+  billing ready
