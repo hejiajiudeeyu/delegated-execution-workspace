@@ -1277,33 +1277,88 @@ function validateBackup(profileName, backupDir) {
   if (!backupDir) {
     throw new Error("--backup-dir is required for backup-validate");
   }
-  const normalizedBackupDir = backupDir.replace(/\/+$/, "");
-  const absoluteBackupDir = path.resolve(ROOT, normalizedBackupDir);
+  const data = backupValidateData(profileName, backupDir);
   console.log(`[selfhost:backup-validate] profile=${profileName}`);
   console.log("This command is non-destructive; it checks file presence and size only.");
-  console.log(`backup_dir=${normalizedBackupDir}`);
+  console.log(`backup_dir=${data.backup_dir}`);
 
-  let ok = true;
+  for (const file of data.files) {
+    if (file.status === "missing") {
+      const level = file.required ? "fail" : "warn";
+      console.log(`[${level}] ${file.name} missing`);
+      continue;
+    }
+    console.log(`[${file.ok ? "ok" : "fail"}] ${file.name} present (${file.size_bytes} bytes)`);
+  }
+  console.log(`[${data.ok ? "ok" : "fail"}] ${data.ok ? "ready for restore-plan review" : "backup artifact is incomplete"}`);
+  return data.ok;
+}
+
+function backupValidateData(profileName, backupDir) {
+  if (!backupDir) {
+    throw new Error("--backup-dir is required for backup-validate");
+  }
+  const normalizedBackupDir = backupDir.replace(/\/+$/, "");
+  const absoluteBackupDir = path.resolve(ROOT, normalizedBackupDir);
   const checks = [
     [".env", true],
     ["postgres.sql", true],
     ["compose.config.txt", false]
   ];
-  for (const [file, required] of checks) {
-    const filePath = path.join(absoluteBackupDir, file);
+  const files = checks.map(([name, required]) => {
+    const filePath = path.join(absoluteBackupDir, name);
     if (!fs.existsSync(filePath)) {
-      const level = required ? "fail" : "warn";
-      console.log(`[${level}] ${file} missing`);
-      ok &&= !required;
-      continue;
+      return {
+        name,
+        required,
+        ok: !required,
+        status: "missing",
+        size_bytes: 0
+      };
     }
     const stats = fs.statSync(filePath);
     const fileOk = stats.isFile() && stats.size > 0;
-    console.log(`[${fileOk ? "ok" : "fail"}] ${file} present (${stats.size} bytes)`);
-    ok &&= fileOk || !required;
-  }
-  console.log(`[${ok ? "ok" : "fail"}] ${ok ? "ready for restore-plan review" : "backup artifact is incomplete"}`);
-  return ok;
+    return {
+      name,
+      required,
+      ok: fileOk || !required,
+      status: fileOk ? "ok" : "invalid",
+      size_bytes: stats.size
+    };
+  });
+  const blockers = files
+    .filter((file) => file.required && !file.ok)
+    .map((file) => `${file.name} ${file.status}`);
+  return {
+    command: "selfhost:backup-validate",
+    profile: profileName,
+    ok: blockers.length === 0,
+    backup_dir: normalizedBackupDir,
+    files,
+    blockers,
+    next: `corepack pnpm run selfhost:restore-plan -- --profile ${profileName} --backup-dir ${normalizedBackupDir}`,
+    notes: [
+      "non-destructive",
+      "checks file presence and size only",
+      "does not read or print .env secret values",
+      "compose.config.txt is recommended but non-blocking"
+    ]
+  };
+}
+
+function printBackupValidateJson(profileName, backupDir) {
+  const data = backupValidateData(profileName, backupDir);
+  console.log(
+    JSON.stringify(
+      {
+        generated_at: new Date().toISOString(),
+        ...data
+      },
+      null,
+      2
+    )
+  );
+  return data.ok;
 }
 
 function defaultOpsReportPath(profileName) {
@@ -1738,6 +1793,9 @@ async function main() {
   }
 
   if (args.command === "backup-validate") {
+    if (args.json) {
+      process.exit(printBackupValidateJson(args.profile, args.backupDir) ? 0 : 1);
+    }
     process.exit(validateBackup(args.profile, args.backupDir) ? 0 : 1);
   }
 

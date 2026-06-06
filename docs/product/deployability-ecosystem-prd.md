@@ -80,6 +80,7 @@ The ecosystem is "daily-deployable" when a fresh operator can:
 | Self-host declared ports inventory | fourth repo | `corepack pnpm run selfhost:ports`, plus `--json` for dashboards and scripts |
 | Self-host preflight gate | fourth repo | `corepack pnpm run selfhost:preflight`, plus `--json` for deployment controllers |
 | Self-host security review | fourth repo | `corepack pnpm run selfhost:security-review`, plus `--json` for public exposure dashboards |
+| Self-host backup validation | fourth repo | `corepack pnpm run selfhost:backup-validate`, plus `--json` for recovery rehearsal scripts |
 | Compose lifecycle wrapper | fourth repo | delegate to `repos/platform/deploy/*` |
 | Published-image smoke wrapper | fourth repo | delegate to `repos/platform` public-stack smoke |
 | Operator onboarding contract | fourth repo | `operator:onboarding:check` keeps public-stack, brand-site, and runbooks aligned |
@@ -180,7 +181,9 @@ Required baseline:
   `selfhost:ports`, and `selfhost:ops-report` in the public-stack first-use path
   so the handoff sequence cannot drift back to terminal-only startup/smoke steps.
 - Add `selfhost:backup-validate` so restore rehearsal starts from a checked
-  backup directory shape without reading or printing `.env` secrets.
+  backup directory shape without reading or printing `.env` secrets. Add
+  `--json` so recovery rehearsal scripts can consume file status, blockers,
+  next restore-plan command, and safety notes.
 - Add `selfhost:restore-plan` so backup artifacts have a visible recovery
   rehearsal path before any destructive restore action.
 - Published-image smoke is first connected as a fourth-repo wrapper; formal

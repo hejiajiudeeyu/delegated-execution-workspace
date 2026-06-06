@@ -259,6 +259,35 @@ try {
   assert.match(backupValidate.stdout, /ready for restore-plan review/);
   assert.ok(!backupValidate.stdout.includes(env.get("PLATFORM_ADMIN_API_KEY") || ""));
 
+  const backupValidateJson = run(tmpRoot, ["backup-validate", "--backup-dir", "backups/selfhost/platform/sample", "--json"]);
+  assert.equal(backupValidateJson.status, 0, backupValidateJson.stderr || backupValidateJson.stdout);
+  const backupValidateBody = JSON.parse(backupValidateJson.stdout);
+  assert.equal(backupValidateBody.command, "selfhost:backup-validate");
+  assert.equal(backupValidateBody.profile, "platform");
+  assert.equal(backupValidateBody.ok, true);
+  assert.equal(backupValidateBody.backup_dir, "backups/selfhost/platform/sample");
+  assert.equal(backupValidateBody.files.find((item) => item.name === ".env").status, "ok");
+  assert.equal(backupValidateBody.files.find((item) => item.name === ".env").required, true);
+  assert.equal(backupValidateBody.files.find((item) => item.name === "postgres.sql").status, "ok");
+  assert.equal(backupValidateBody.files.find((item) => item.name === "compose.config.txt").required, false);
+  assert.deepEqual(backupValidateBody.blockers, []);
+  assert.match(backupValidateBody.next, /restore-plan/);
+  assert.ok(Array.isArray(backupValidateBody.notes));
+  assert.ok(!backupValidateJson.stdout.includes(env.get("PLATFORM_ADMIN_API_KEY") || ""));
+
+  const incompleteBackupDir = path.join(tmpRoot, "backups/selfhost/platform/incomplete");
+  fs.mkdirSync(incompleteBackupDir, { recursive: true });
+  fs.writeFileSync(path.join(incompleteBackupDir, ".env"), fs.readFileSync(envPath, "utf8"), "utf8");
+  const incompleteBackupJson = run(tmpRoot, ["backup-validate", "--backup-dir", "backups/selfhost/platform/incomplete", "--json"]);
+  assert.equal(incompleteBackupJson.status, 1, incompleteBackupJson.stderr || incompleteBackupJson.stdout);
+  const incompleteBackupBody = JSON.parse(incompleteBackupJson.stdout);
+  assert.equal(incompleteBackupBody.ok, false);
+  assert.equal(incompleteBackupBody.files.find((item) => item.name === "postgres.sql").status, "missing");
+  assert.equal(incompleteBackupBody.files.find((item) => item.name === "compose.config.txt").status, "missing");
+  assert.equal(incompleteBackupBody.files.find((item) => item.name === "compose.config.txt").required, false);
+  assert.match(incompleteBackupBody.blockers.join("\n"), /postgres\.sql missing/);
+  assert.ok(!incompleteBackupJson.stdout.includes(env.get("PLATFORM_ADMIN_API_KEY") || ""));
+
   const opsReportPath = path.join(tmpRoot, "exports/selfhost/platform/ops-report.md");
   const opsReport = run(tmpRoot, ["ops-report", "--output", opsReportPath]);
   assert.equal(opsReport.status, 0, opsReport.stderr || opsReport.stdout);

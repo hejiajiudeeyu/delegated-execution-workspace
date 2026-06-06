@@ -71,6 +71,7 @@ Required commands:
 - `corepack pnpm run selfhost:ops-report`
 - `corepack pnpm run selfhost:backup-plan`
 - `corepack pnpm run selfhost:backup-validate`
+- `corepack pnpm --silent run selfhost:backup-validate -- --backup-dir <dir> --json`
 - `corepack pnpm run selfhost:restore-plan`
 - `corepack pnpm run selfhost:rotate-plan`
 - `corepack pnpm run test:selfhost-kit`
@@ -126,7 +127,9 @@ Acceptance:
   binding sockets or calling Docker; `--json` returns the same declared port
   inventory for dashboards and scripts
 - backup validate checks `.env`, `postgres.sql`, and `compose.config.txt`
-  presence/size without reading or printing secret values
+  presence/size without reading or printing secret values; `--json` returns
+  machine-readable file status, blockers, next restore-plan command, and safety
+  notes for dashboards, CI, and recovery rehearsal scripts
 - restore plan prints a recovery rehearsal sequence for backup directories
   without stopping services or importing SQL
 - selfhost kit has automated coverage for env creation and secret rotation dry-run/confirm behavior

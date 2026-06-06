@@ -227,6 +227,7 @@ corepack pnpm run selfhost:security-review -- --profile public-stack
 corepack pnpm run selfhost:audit-export -- --profile public-stack
 corepack pnpm run selfhost:backup-plan
 corepack pnpm run selfhost:backup-validate -- --profile public-stack --backup-dir backups/selfhost/public-stack/<stamp>
+corepack pnpm --silent run selfhost:backup-validate -- --profile public-stack --backup-dir backups/selfhost/public-stack/<stamp> --json
 corepack pnpm run selfhost:restore-plan -- --profile public-stack --backup-dir backups/selfhost/public-stack/<stamp>
 corepack pnpm run selfhost:rotate-plan
 corepack pnpm run selfhost:rotate -- --confirm
@@ -250,7 +251,9 @@ inventory 时，使用 `--json` 形式。
 
 `selfhost:backup-validate` 会在恢复演练前检查 backup directory 里 `.env`、
 `postgres.sql` 和 `compose.config.txt` 的存在与大小。它不会读取或打印 `.env`
-里的 secret 值。
+里的 secret 值。当 dashboard、CI 或恢复演练脚本需要机器可读的文件状态、blockers
+和对应 restore-plan 命令时，使用
+`corepack pnpm --silent run selfhost:backup-validate ... --json`。
 
 `selfhost:restore-plan` 同样只输出计划。它会基于一个 backup directory 打印停机、
 `.env` 私下复核、`postgres.sql` 导入、重启和 smoke 验证顺序；不会复制文件、

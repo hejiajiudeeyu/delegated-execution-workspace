@@ -264,6 +264,7 @@ corepack pnpm run selfhost:security-review -- --profile public-stack
 corepack pnpm run selfhost:audit-export -- --profile public-stack
 corepack pnpm run selfhost:backup-plan
 corepack pnpm run selfhost:backup-validate -- --profile public-stack --backup-dir backups/selfhost/public-stack/<stamp>
+corepack pnpm --silent run selfhost:backup-validate -- --profile public-stack --backup-dir backups/selfhost/public-stack/<stamp> --json
 corepack pnpm run selfhost:restore-plan -- --profile public-stack --backup-dir backups/selfhost/public-stack/<stamp>
 corepack pnpm run selfhost:rotate-plan
 corepack pnpm run selfhost:rotate -- --confirm
@@ -291,7 +292,10 @@ the same declared port inventory.
 
 `selfhost:backup-validate` checks a backup directory for `.env`, `postgres.sql`,
 and `compose.config.txt` presence and size before restore rehearsal. It does not
-read or print `.env` values.
+read or print `.env` values. Use
+`corepack pnpm --silent run selfhost:backup-validate ... --json` when dashboards,
+CI, or recovery rehearsal scripts need machine-readable file status, blockers,
+and the matching restore-plan command.
 
 `selfhost:restore-plan` is also plan-only. It prints the downtime, `.env`
 review, `postgres.sql` import, restart, and smoke-validation sequence for a
