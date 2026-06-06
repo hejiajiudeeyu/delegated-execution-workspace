@@ -45,6 +45,7 @@ Required commands:
 - `corepack pnpm run selfhost:profiles`
 - `corepack pnpm --silent run selfhost:profiles -- --json`
 - `corepack pnpm run selfhost:quickstart`
+- `corepack pnpm --silent run selfhost:quickstart -- --json`
 - `corepack pnpm run selfhost:readiness -- --all`
 - `corepack pnpm --silent run selfhost:readiness -- --all --json`
 - `corepack pnpm run selfhost:readiness`
@@ -77,7 +78,8 @@ Acceptance:
   reading `.env` or touching Docker; `--json` returns the same profile selector
   data for consoles, dashboards, and scripts
 - quickstart prints the recommended copy-paste command sequence for the
-  selected profile without executing Docker, mutating files, or printing secrets
+  selected profile without executing Docker, mutating files, or printing
+  secrets; `--json` returns the same ordered sequence for consoles and scripts
 - readiness prints a read-only deployment overview for one profile, and
   `readiness --all` prints a built-in profile matrix; both combine profile file
   presence, `.env` status, secret hygiene, public-stack origin/route blockers,

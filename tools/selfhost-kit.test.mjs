@@ -335,6 +335,19 @@ try {
   assert.match(quickstart.stdout, /corepack pnpm run selfhost:smoke/);
   assert.ok(!quickstart.stdout.includes(env.get("PLATFORM_ADMIN_API_KEY") || ""));
 
+  const quickstartJson = run(tmpRoot, ["quickstart", "--json"]);
+  assert.equal(quickstartJson.status, 0, quickstartJson.stderr || quickstartJson.stdout);
+  const quickstartBody = JSON.parse(quickstartJson.stdout);
+  assert.equal(quickstartBody.command, "selfhost:quickstart");
+  assert.equal(quickstartBody.profile, "platform");
+  assert.ok(quickstartBody.generated_at);
+  assert.ok(Array.isArray(quickstartBody.commands));
+  assert.equal(quickstartBody.commands[0].command, "corepack pnpm run selfhost:profiles");
+  assert.match(quickstartBody.commands.map((item) => item.command).join("\n"), /corepack pnpm run selfhost:init/);
+  assert.match(quickstartBody.commands.map((item) => item.command).join("\n"), /corepack pnpm run selfhost:ops-report/);
+  assert.ok(Array.isArray(quickstartBody.safety));
+  assert.ok(!quickstartJson.stdout.includes(env.get("PLATFORM_ADMIN_API_KEY") || ""));
+
   const summary = run(tmpRoot, ["summary"]);
   assert.equal(summary.status, 0, summary.stderr || summary.stdout);
   assert.match(summary.stdout, /selfhost:summary/);
@@ -449,6 +462,18 @@ try {
   assert.match(publicQuickstart.stdout, /corepack pnpm run published-image:smoke -- --image-tag latest/);
   assert.ok(!publicQuickstart.stdout.includes(publicEnv.get("PLATFORM_ADMIN_API_KEY") || ""));
   assert.ok(!publicQuickstart.stdout.includes(publicEnv.get("PLATFORM_CONSOLE_BOOTSTRAP_SECRET") || ""));
+
+  const publicQuickstartJson = run(tmpRoot, ["quickstart", "--profile", "public-stack", "--json"]);
+  assert.equal(publicQuickstartJson.status, 0, publicQuickstartJson.stderr || publicQuickstartJson.stdout);
+  const publicQuickstartBody = JSON.parse(publicQuickstartJson.stdout);
+  assert.equal(publicQuickstartBody.profile, "public-stack");
+  assert.match(
+    publicQuickstartBody.commands.map((item) => item.command).join("\n"),
+    /corepack pnpm run selfhost:security-review -- --profile public-stack/
+  );
+  assert.match(publicQuickstartBody.commands.map((item) => item.command).join("\n"), /operator:onboarding:check/);
+  assert.ok(!publicQuickstartJson.stdout.includes(publicEnv.get("PLATFORM_ADMIN_API_KEY") || ""));
+  assert.ok(!publicQuickstartJson.stdout.includes(publicEnv.get("PLATFORM_CONSOLE_BOOTSTRAP_SECRET") || ""));
 
   const unsafeReadiness = run(tmpRoot, ["readiness", "--profile", "public-stack"]);
   assert.equal(unsafeReadiness.status, 1, unsafeReadiness.stderr || unsafeReadiness.stdout);

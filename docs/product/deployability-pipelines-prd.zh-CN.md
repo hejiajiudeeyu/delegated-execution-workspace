@@ -45,6 +45,7 @@
 - `corepack pnpm run selfhost:profiles`
 - `corepack pnpm --silent run selfhost:profiles -- --json`
 - `corepack pnpm run selfhost:quickstart`
+- `corepack pnpm --silent run selfhost:quickstart -- --json`
 - `corepack pnpm run selfhost:readiness -- --all`
 - `corepack pnpm --silent run selfhost:readiness -- --all --json`
 - `corepack pnpm run selfhost:readiness`
@@ -76,7 +77,7 @@
   ports 和对应 doctor 命令，但不读取 `.env` 或触碰 Docker；`--json` 返回同一组
   profile selector 数据，供 console、dashboard 和脚本消费
 - quickstart 打印选定 profile 的推荐复制粘贴命令序列，但不执行 Docker、不修改文件、
-  不打印 secrets
+  不打印 secrets；`--json` 返回同一组有序序列，供 console 和脚本消费
 - readiness 打印单个 profile 的只读部署总览，`readiness --all` 打印内置 profiles
   矩阵；两者都会合并 profile 文件存在性、`.env` 状态、secret hygiene、public-stack
   origin / route 阻断项、URLs、声明 host ports 和下一步命令，但不执行 Docker、不修改文件、

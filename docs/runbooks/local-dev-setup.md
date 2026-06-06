@@ -110,6 +110,7 @@ Initialize and inspect a self-host profile:
 corepack pnpm run selfhost:profiles
 corepack pnpm --silent run selfhost:profiles -- --json
 corepack pnpm run selfhost:quickstart
+corepack pnpm --silent run selfhost:quickstart -- --json
 corepack pnpm run selfhost:readiness -- --all
 corepack pnpm --silent run selfhost:readiness -- --all --json
 corepack pnpm run selfhost:readiness
@@ -128,6 +129,7 @@ For the public operator stack:
 
 ```bash
 corepack pnpm run selfhost:quickstart -- --profile public-stack
+corepack pnpm --silent run selfhost:quickstart -- --profile public-stack --json
 corepack pnpm run selfhost:readiness -- --profile public-stack
 corepack pnpm --silent run selfhost:readiness -- --profile public-stack --json
 corepack pnpm run selfhost:doctor -- --profile public-stack
@@ -154,7 +156,9 @@ parsing terminal prose.
 `selfhost:quickstart` prints the recommended command sequence for a selected
 profile without executing it. Use it when you want the shortest copy-paste
 path from profile discovery to doctor, init, summary, preflight, up, smoke, and
-handoff evidence.
+handoff evidence. Use `corepack pnpm --silent run selfhost:quickstart ... --json`
+when a console or script needs the same ordered command sequence without
+parsing terminal prose.
 
 `selfhost:readiness -- --all` prints a read-only readiness matrix for every
 built-in profile. `selfhost:readiness` prints the same kind of deployment

@@ -512,10 +512,8 @@ function printProfiles() {
   }
 }
 
-function printQuickstart(profileName) {
+function quickstartPlan(profileName) {
   const suffix = commandProfileFlag(profileName);
-  console.log(`[selfhost:quickstart] profile=${profileName}`);
-  console.log("This command prints a recommended sequence only; it does not run Docker or read secret values.");
   const commands = [
     "corepack pnpm run selfhost:profiles",
     `corepack pnpm run selfhost:doctor${suffix}`,
@@ -534,8 +532,37 @@ function printQuickstart(profileName) {
       "corepack pnpm run operator:onboarding:check"
     );
   }
-  commands.forEach((command, index) => {
-    console.log(`${index + 1}. ${command}`);
+  return {
+    command: "selfhost:quickstart",
+    profile: profileName,
+    commands: commands.map((command, index) => ({ step: index + 1, command })),
+    safety: [
+      "prints recommended commands only",
+      "does not run Docker",
+      "does not read or print secret values"
+    ]
+  };
+}
+
+function printQuickstartJson(profileName) {
+  console.log(
+    JSON.stringify(
+      {
+        generated_at: new Date().toISOString(),
+        ...quickstartPlan(profileName)
+      },
+      null,
+      2
+    )
+  );
+}
+
+function printQuickstart(profileName) {
+  const plan = quickstartPlan(profileName);
+  console.log(`[selfhost:quickstart] profile=${profileName}`);
+  console.log("This command prints a recommended sequence only; it does not run Docker or read secret values.");
+  plan.commands.forEach(({ step, command }) => {
+    console.log(`${step}. ${command}`);
   });
 }
 
@@ -1253,7 +1280,11 @@ async function main() {
   }
 
   if (args.command === "quickstart") {
-    printQuickstart(args.profile);
+    if (args.json) {
+      printQuickstartJson(args.profile);
+    } else {
+      printQuickstart(args.profile);
+    }
     return;
   }
 
