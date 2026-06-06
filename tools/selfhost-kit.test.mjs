@@ -165,6 +165,39 @@ function writeMinimalPublicStackProfile(root) {
   };
 }
 
+function writeMinimalAllInOneProfile(root) {
+  const dir = path.join(root, "repos/platform/deploy/all-in-one");
+  fs.mkdirSync(dir, { recursive: true });
+  fs.writeFileSync(
+    path.join(dir, ".env.example"),
+    [
+      "POSTGRES_DB=croc",
+      "POSTGRES_USER=croc",
+      "POSTGRES_PASSWORD=croc",
+      "DATABASE_URL=postgresql://croc:croc@postgres:5432/croc",
+      "TOKEN_SECRET=change-me-all-in-one-token-secret",
+      "PLATFORM_ADMIN_API_KEY=sk_admin_change_me",
+      ""
+    ].join("\n"),
+    "utf8"
+  );
+  fs.writeFileSync(
+    path.join(dir, "docker-compose.yml"),
+    [
+      "services:",
+      "  platform-api:",
+      "    image: alpine:3.20",
+      "    command: ['sh', '-c', 'sleep 60']",
+      ""
+    ].join("\n"),
+    "utf8"
+  );
+  return {
+    dir,
+    envPath: path.join(dir, ".env")
+  };
+}
+
 const tmpRoot = fs.mkdtempSync(path.join(os.tmpdir(), "delexec-selfhost-kit-test-"));
 try {
   const { envPath } = writeMinimalProfile(tmpRoot);
@@ -396,6 +429,20 @@ try {
   assert.match(unsafeReadiness.stdout, /selfhost:security-review -- --profile public-stack/);
   assert.ok(!unsafeReadiness.stdout.includes(publicEnv.get("PLATFORM_ADMIN_API_KEY") || ""));
   assert.ok(!unsafeReadiness.stdout.includes(publicEnv.get("PLATFORM_CONSOLE_BOOTSTRAP_SECRET") || ""));
+
+  writeMinimalAllInOneProfile(tmpRoot);
+  const readinessAll = run(tmpRoot, ["readiness", "--all"]);
+  assert.equal(readinessAll.status, 1, readinessAll.stderr || readinessAll.stdout);
+  assert.match(readinessAll.stdout, /selfhost:readiness/);
+  assert.match(readinessAll.stdout, /mode=all/);
+  assert.match(readinessAll.stdout, /platform: ok/);
+  assert.match(readinessAll.stdout, /public-stack: fail/);
+  assert.match(readinessAll.stdout, /all-in-one: fail/);
+  assert.match(readinessAll.stdout, /PUBLIC_SITE_ADDRESS/);
+  assert.match(readinessAll.stdout, /all-in-one: fail[\s\S]*env file missing/);
+  assert.match(readinessAll.stdout, /corepack pnpm run selfhost:readiness -- --profile public-stack/);
+  assert.ok(!readinessAll.stdout.includes(publicEnv.get("PLATFORM_ADMIN_API_KEY") || ""));
+  assert.ok(!readinessAll.stdout.includes(publicEnv.get("PLATFORM_CONSOLE_BOOTSTRAP_SECRET") || ""));
 
   const publicPorts = run(tmpRoot, ["ports", "--profile", "public-stack"]);
   assert.equal(publicPorts.status, 0, publicPorts.stderr || publicPorts.stdout);

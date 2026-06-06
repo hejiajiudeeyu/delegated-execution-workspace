@@ -44,6 +44,7 @@ Required commands:
 - `corepack pnpm run selfhost:init`
 - `corepack pnpm run selfhost:profiles`
 - `corepack pnpm run selfhost:quickstart`
+- `corepack pnpm run selfhost:readiness -- --all`
 - `corepack pnpm run selfhost:readiness`
 - `corepack pnpm run selfhost:doctor`
 - `corepack pnpm run selfhost:preflight`
@@ -73,7 +74,8 @@ Acceptance:
   reading `.env` or touching Docker
 - quickstart prints the recommended copy-paste command sequence for the
   selected profile without executing Docker, mutating files, or printing secrets
-- readiness prints a read-only deployment overview that combines profile file
+- readiness prints a read-only deployment overview for one profile, and
+  `readiness --all` prints a built-in profile matrix; both combine profile file
   presence, `.env` status, secret hygiene, public-stack origin/route blockers,
   URLs, declared host ports, and next commands without executing Docker,
   mutating files, probing the network, binding sockets, or printing secrets

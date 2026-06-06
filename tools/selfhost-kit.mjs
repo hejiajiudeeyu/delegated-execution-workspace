@@ -102,7 +102,7 @@ const SECRET_KEYS = new Set([
 ]);
 
 function usage() {
-  console.log(`Usage: node tools/selfhost-kit.mjs <command> [--profile profile] [--force] [--service name] [--tail lines]
+  console.log(`Usage: node tools/selfhost-kit.mjs <command> [--profile profile] [--all] [--force] [--service name] [--tail lines]
 
 Commands:
   init      Create or harden the selected profile .env file
@@ -154,12 +154,17 @@ function parseArgs(argv) {
     limit: "100",
     output: null,
     auditBaseUrl: null,
-    backupDir: null
+    backupDir: null,
+    all: false
   };
   for (let index = 3; index < argv.length; index += 1) {
     const value = argv[index];
     if (value === "--force") {
       args.force = true;
+      continue;
+    }
+    if (value === "--all") {
+      args.all = true;
       continue;
     }
     if (value === "--confirm") {
@@ -608,6 +613,80 @@ function printSummary(profileName) {
 
 function readinessItem(label, ok, detail = "") {
   console.log(`[${ok ? "ok" : "fail"}] ${label}${detail ? `: ${detail}` : ""}`);
+  return ok;
+}
+
+function silentPublicRouteContractOk(profileName) {
+  if (profileName !== "public-stack") {
+    return true;
+  }
+  const { caddyfilePath } = profilePaths(profileName);
+  if (!fs.existsSync(caddyfilePath)) {
+    return false;
+  }
+  const caddyfile = fs.readFileSync(caddyfilePath, "utf8");
+  return PUBLIC_STACK_ROUTE_CONTRACT.every(([, , caddyPattern]) => caddyfile.includes(caddyPattern));
+}
+
+function readinessSummary(profileName) {
+  const { dir, envExamplePath, envPath, composePath, caddyfilePath } = profilePaths(profileName);
+  const blockers = [];
+  if (!fs.existsSync(dir)) {
+    blockers.push("profile deploy dir missing");
+  }
+  if (!fs.existsSync(envExamplePath)) {
+    blockers.push(".env.example missing");
+  }
+  if (!fs.existsSync(composePath)) {
+    blockers.push("docker-compose.yml missing");
+  }
+  if (!fs.existsSync(envPath)) {
+    blockers.push("env file missing");
+  } else {
+    const findings = secretFindings(fs.readFileSync(envPath, "utf8"), profileName);
+    for (const finding of findings) {
+      if (!finding.ok) {
+        blockers.push(`${finding.key}: ${finding.message}`);
+      }
+    }
+  }
+  if (profileName === "public-stack") {
+    const origin = publicOrigin(profileName);
+    const hasPublicOriginFinding = blockers.some((blocker) => blocker.startsWith("PUBLIC_SITE_ADDRESS:"));
+    if ((!origin || origin.includes("localhost")) && !hasPublicOriginFinding) {
+      blockers.push(`PUBLIC_SITE_ADDRESS: ${origin}; set public origin before exposure`);
+    }
+    if (!fs.existsSync(caddyfilePath)) {
+      blockers.push("Caddyfile missing");
+    } else if (!silentPublicRouteContractOk(profileName)) {
+      blockers.push("public route contract mismatch");
+    }
+  }
+  return {
+    profileName,
+    ok: blockers.length === 0,
+    blockers: Array.from(new Set(blockers))
+  };
+}
+
+function readinessAllProfiles() {
+  console.log("[selfhost:readiness] mode=all");
+  console.log("This command is read-only; it does not call Docker, bind ports, probe the network, mutate files, or print secret values.");
+  const summaries = Object.keys(PROFILES).map((profileName) => readinessSummary(profileName));
+  for (const summary of summaries) {
+    console.log(`\n## ${summary.profileName}: ${summary.ok ? "ok" : "fail"}`);
+    if (summary.ok) {
+      console.log("- no readiness blockers found");
+    } else {
+      for (const blocker of summary.blockers) {
+        console.log(`- ${blocker}`);
+      }
+    }
+    const suffix = commandProfileFlag(summary.profileName);
+    console.log(`- next: corepack pnpm run selfhost:readiness${suffix}`);
+  }
+  const ok = summaries.every((summary) => summary.ok);
+  console.log(`[${ok ? "ok" : "fail"}] ${ok ? "all profiles passed readiness" : "one or more profiles have readiness blockers"}`);
   return ok;
 }
 
@@ -1104,6 +1183,9 @@ async function main() {
   }
 
   if (args.command === "readiness") {
+    if (args.all) {
+      process.exit(readinessAllProfiles() ? 0 : 1);
+    }
     process.exit(readinessProfile(args.profile) ? 0 : 1);
   }
 

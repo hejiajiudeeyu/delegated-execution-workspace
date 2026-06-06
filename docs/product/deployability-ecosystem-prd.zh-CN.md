@@ -75,7 +75,7 @@ CALL ANYTHING 现在的仓库边界是正确的：
 | Agent-facing smoke | 第四仓 | `corepack pnpm run test:agent-e2e` |
 | Self-host 部署地图 | 第四仓 | `corepack pnpm run selfhost:profiles` |
 | Self-host quickstart 序列 | 第四仓 | `corepack pnpm run selfhost:quickstart` |
-| Self-host readiness 总览 | 第四仓 | `corepack pnpm run selfhost:readiness` |
+| Self-host readiness 总览 | 第四仓 | `corepack pnpm run selfhost:readiness -- --all` |
 | Self-host 部署 doctor | 第四仓 | `corepack pnpm run selfhost:doctor` |
 | Self-host env 生成器 | 第四仓 | `corepack pnpm run selfhost:init` |
 | Self-host profile 概要 | 第四仓 | `corepack pnpm run selfhost:summary` |
@@ -101,8 +101,9 @@ CALL ANYTHING 现在的仓库边界是正确的：
 ## 8. 成功指标
 
 - fresh checkout 可以运行 `selfhost:profiles`、`selfhost:quickstart`、
-  `selfhost:readiness`、`selfhost:doctor`、`selfhost:init`、`selfhost:summary`、
-  `selfhost:status`、`dev:doctor`、`test:agent-e2e`、`published-image:plan`、
+  `selfhost:readiness -- --all`、`selfhost:readiness`、`selfhost:doctor`、
+  `selfhost:init`、`selfhost:summary`、`selfhost:status`、`dev:doctor`、
+  `test:agent-e2e`、`published-image:plan`、
   `selfhost:security-review` 和 `operator:onboarding:check`
 - platform billing operator 已有 admin-only API 和 Platform Console 页面，可做
   tenant setup、balance inspection、人工 recharge capture 和 ledger 浏览；终端用户
@@ -157,7 +158,7 @@ CALL ANYTHING 现在的仓库边界是正确的：
   安全复核和交接证据步骤。
 - 增加 `selfhost:readiness` 作为只读部署就绪总览，合并 profile 文件、`.env`
   状态、secret hygiene、public-stack origin / route 阻断项、URLs、声明 host ports
-  和下一步命令。
+  和下一步命令。增加 `selfhost:readiness -- --all` 作为内置多 profile readiness 矩阵。
 - 要求 operator onboarding contract 把 `selfhost:readiness`、`selfhost:ports` 和
   `selfhost:ops-report` 纳入 public-stack 首次使用路径，避免交接顺序退回只有终端启动和
   smoke 的状态。
