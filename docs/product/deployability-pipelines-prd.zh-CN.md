@@ -61,6 +61,7 @@
 - `corepack pnpm run selfhost:summary`
 - `corepack pnpm --silent run selfhost:summary -- --json`
 - `corepack pnpm run selfhost:urls`
+- `corepack pnpm --silent run selfhost:urls -- --json`
 - `corepack pnpm run selfhost:ports`
 - `corepack pnpm --silent run selfhost:ports -- --json`
 - `corepack pnpm run selfhost:logs`
@@ -103,6 +104,8 @@
   admin key
 - ops report 会写出包含 URLs、host ports、secret hygiene 状态和 operator 命令的
   Markdown 交接 artifact，但不包含 raw secret 值
+- urls 会打印选定 profile 的 URL inventory，但不调用 Docker、不绑定 socket、
+  不探测网络、不打印 secrets；`--json` 返回同一组 URL inventory，供 dashboard 和脚本消费
 - ports 会打印选定 profile 声明的 host port 使用情况，但不绑定 socket 或调用 Docker；
   `--json` 返回同一组声明端口 inventory，供 dashboard 和脚本消费
 - backup validate 会检查 `.env`、`postgres.sql` 和 `compose.config.txt` 的存在与大小，

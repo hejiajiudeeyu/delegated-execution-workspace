@@ -76,6 +76,7 @@ The ecosystem is "daily-deployable" when a fresh operator can:
 | Self-host deployment doctor | fourth repo | `corepack pnpm run selfhost:doctor` |
 | Self-host env generator | fourth repo | `corepack pnpm run selfhost:init` |
 | Self-host profile summary | fourth repo | `corepack pnpm run selfhost:summary`, plus `--json` for overview cards |
+| Self-host URL inventory | fourth repo | `corepack pnpm run selfhost:urls`, plus `--json` for dashboards and scripts |
 | Self-host declared ports inventory | fourth repo | `corepack pnpm run selfhost:ports`, plus `--json` for dashboards and scripts |
 | Compose lifecycle wrapper | fourth repo | delegate to `repos/platform/deploy/*` |
 | Published-image smoke wrapper | fourth repo | delegate to `repos/platform` public-stack smoke |
@@ -147,6 +148,9 @@ Required baseline:
 - Add `selfhost:ops-report` so operators can hand off a Markdown profile
   summary with URLs, host ports, safety posture, and next commands without
   secret values.
+- Add `selfhost:urls` so operators can inspect declared profile URLs and
+  public-stack routes before startup, with `--json` for dashboards and
+  deployment scripts.
 - Add `selfhost:ports` so operators can inspect declared host ports before
   starting a profile or exposing public-stack, with `--json` for dashboards
   and deployment scripts.

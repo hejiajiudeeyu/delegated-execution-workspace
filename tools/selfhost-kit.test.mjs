@@ -279,6 +279,29 @@ try {
   assert.ok(!opsReport.stdout.includes(env.get("PLATFORM_ADMIN_API_KEY") || ""));
   assert.ok(!opsReportText.includes(env.get("PLATFORM_ADMIN_API_KEY") || ""));
 
+  const urls = run(tmpRoot, ["urls"]);
+  assert.equal(urls.status, 0, urls.stderr || urls.stdout);
+  assert.match(urls.stdout, /selfhost:urls/);
+  assert.match(urls.stdout, /profile=platform/);
+  assert.match(urls.stdout, /Platform API/);
+  assert.match(urls.stdout, /http:\/\/127\.0\.0\.1:8080/);
+  assert.ok(!urls.stdout.includes(env.get("PLATFORM_ADMIN_API_KEY") || ""));
+
+  const urlsJson = run(tmpRoot, ["urls", "--json"]);
+  assert.equal(urlsJson.status, 0, urlsJson.stderr || urlsJson.stdout);
+  const urlsBody = JSON.parse(urlsJson.stdout);
+  assert.equal(urlsBody.command, "selfhost:urls");
+  assert.equal(urlsBody.profile, "platform");
+  assert.ok(urlsBody.generated_at);
+  assert.equal(urlsBody.deploy_dir, "repos/platform/deploy/platform");
+  assert.equal(urlsBody.env_path, "repos/platform/deploy/platform/.env");
+  assert.equal(urlsBody.env_status, "present");
+  assert.ok(Array.isArray(urlsBody.urls));
+  assert.equal(urlsBody.urls.find((item) => item.label === "Platform API").url, "http://127.0.0.1:8080");
+  assert.ok(Array.isArray(urlsBody.notes));
+  assert.match(urlsBody.notes.join("\n"), /does not probe the network/);
+  assert.ok(!urlsJson.stdout.includes(env.get("PLATFORM_ADMIN_API_KEY") || ""));
+
   const ports = run(tmpRoot, ["ports"]);
   assert.equal(ports.status, 0, ports.stderr || ports.stdout);
   assert.match(ports.stdout, /selfhost:ports/);

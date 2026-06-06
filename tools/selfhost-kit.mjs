@@ -450,13 +450,39 @@ async function checkHealth(profileName) {
   return ok;
 }
 
+function urlsData(profileName) {
+  const { dir, envPath } = profilePaths(profileName);
+  return {
+    command: "selfhost:urls",
+    profile: profileName,
+    deploy_dir: path.relative(ROOT, dir),
+    env_path: path.relative(ROOT, envPath),
+    env_status: fs.existsSync(envPath) ? "present" : "missing",
+    urls: profileUrls(profileName).map(([label, url]) => ({ label, url })),
+    notes: ["read-only", "does not call Docker", "does not bind ports", "does not probe the network"]
+  };
+}
+
+function printUrlsJson(profileName) {
+  console.log(
+    JSON.stringify(
+      {
+        generated_at: new Date().toISOString(),
+        ...urlsData(profileName)
+      },
+      null,
+      2
+    )
+  );
+}
+
 function printUrls(profileName) {
-  const { envPath } = profilePaths(profileName);
+  const { env_path, env_status, urls } = urlsData(profileName);
   console.log(`[selfhost:urls] profile=${profileName}`);
-  if (!fs.existsSync(envPath)) {
-    console.log(`[selfhost:urls] .env missing; run corepack pnpm run selfhost:init -- --profile ${profileName}`);
+  if (env_status === "missing") {
+    console.log(`[selfhost:urls] .env missing at ${env_path}; run corepack pnpm run selfhost:init -- --profile ${profileName}`);
   }
-  for (const [label, url] of profileUrls(profileName)) {
+  for (const { label, url } of urls) {
     console.log(`- ${label}: ${url}`);
   }
 }
@@ -1327,7 +1353,11 @@ async function main() {
   }
 
   if (args.command === "urls") {
-    printUrls(args.profile);
+    if (args.json) {
+      printUrlsJson(args.profile);
+    } else {
+      printUrls(args.profile);
+    }
     return;
   }
 

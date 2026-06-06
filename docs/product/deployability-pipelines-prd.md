@@ -61,6 +61,7 @@ Required commands:
 - `corepack pnpm run selfhost:summary`
 - `corepack pnpm --silent run selfhost:summary -- --json`
 - `corepack pnpm run selfhost:urls`
+- `corepack pnpm --silent run selfhost:urls -- --json`
 - `corepack pnpm run selfhost:ports`
 - `corepack pnpm --silent run selfhost:ports -- --json`
 - `corepack pnpm run selfhost:logs`
@@ -111,6 +112,9 @@ Acceptance:
   without printing admin keys
 - ops report writes a Markdown handoff artifact with URLs, host ports, secret
   hygiene status, and operator commands without raw secret values
+- urls prints the selected profile URL inventory without calling Docker,
+  binding sockets, probing the network, or printing secrets; `--json` returns
+  the same URL inventory for dashboards and scripts
 - ports prints declared host port usage for the selected profile without
   binding sockets or calling Docker; `--json` returns the same declared port
   inventory for dashboards and scripts

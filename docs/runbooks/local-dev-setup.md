@@ -121,6 +121,7 @@ corepack pnpm run selfhost:summary
 corepack pnpm --silent run selfhost:summary -- --json
 corepack pnpm run selfhost:plan
 corepack pnpm run selfhost:urls
+corepack pnpm --silent run selfhost:urls -- --json
 corepack pnpm run selfhost:ports
 corepack pnpm --silent run selfhost:ports -- --json
 corepack pnpm run selfhost:preflight
@@ -140,6 +141,7 @@ corepack pnpm run selfhost:init -- --profile public-stack
 corepack pnpm run selfhost:summary -- --profile public-stack
 corepack pnpm --silent run selfhost:summary -- --profile public-stack --json
 corepack pnpm run selfhost:urls -- --profile public-stack
+corepack pnpm --silent run selfhost:urls -- --profile public-stack --json
 corepack pnpm run selfhost:ports -- --profile public-stack
 corepack pnpm --silent run selfhost:ports -- --profile public-stack --json
 corepack pnpm run selfhost:preflight -- --profile public-stack
@@ -188,6 +190,11 @@ printing secret values. Use `corepack pnpm --silent run selfhost:summary ... --j
 when a dashboard or script needs the same overview card data without parsing
 terminal prose.
 
+`selfhost:urls` prints the selected profile's declared URLs without calling
+Docker, binding sockets, probing the network, or printing secret values. Use
+`corepack pnpm --silent run selfhost:urls ... --json` when dashboards or
+deployment scripts need the same URL inventory without parsing terminal prose.
+
 `selfhost:ports` prints the selected profile's declared host ports without
 binding sockets, calling Docker, or probing whether ports are free. Use
 `corepack pnpm --silent run selfhost:ports ... --json` when dashboards or
@@ -231,6 +238,8 @@ Operational helpers:
 
 ```bash
 corepack pnpm run selfhost:logs -- --service platform-api --tail 80
+corepack pnpm run selfhost:urls -- --profile public-stack
+corepack pnpm --silent run selfhost:urls -- --profile public-stack --json
 corepack pnpm run selfhost:ports -- --profile public-stack
 corepack pnpm --silent run selfhost:ports -- --profile public-stack --json
 corepack pnpm run selfhost:ops-report -- --profile public-stack
@@ -252,6 +261,11 @@ prints that key.
 `exports/selfhost/<profile>/` unless `--output` is provided. It includes URLs,
 host ports, secret hygiene status, and next commands, but never writes raw
 secret values.
+
+`selfhost:urls` prints the declared URLs for the selected profile without
+calling Docker or probing the network. Use it before `selfhost:up` when checking
+which local or public routes the profile expects, or use the `--json` form when
+a dashboard or script needs the same URL inventory.
 
 `selfhost:ports` prints the declared host ports for the selected profile without
 binding sockets or calling Docker. Use it before `selfhost:up` when checking for
