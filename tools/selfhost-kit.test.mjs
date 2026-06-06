@@ -364,6 +364,23 @@ try {
   assert.match(summary.stdout, /selfhost:ops-report/);
   assert.ok(!summary.stdout.includes(env.get("PLATFORM_ADMIN_API_KEY") || ""));
 
+  const summaryJson = run(tmpRoot, ["summary", "--json"]);
+  assert.equal(summaryJson.status, 0, summaryJson.stderr || summaryJson.stdout);
+  const summaryBody = JSON.parse(summaryJson.stdout);
+  assert.equal(summaryBody.command, "selfhost:summary");
+  assert.equal(summaryBody.profile, "platform");
+  assert.ok(summaryBody.generated_at);
+  assert.equal(summaryBody.deploy_dir, "repos/platform/deploy/platform");
+  assert.equal(summaryBody.env_status, "present");
+  assert.ok(Array.isArray(summaryBody.urls));
+  assert.ok(Array.isArray(summaryBody.ports));
+  assert.equal(summaryBody.ports.find((item) => item.port === "8080").service, "platform-api");
+  assert.ok(Array.isArray(summaryBody.secret_hygiene));
+  assert.equal(summaryBody.secret_hygiene.find((item) => item.key === "TOKEN_SECRET").status, "set");
+  assert.match(summaryBody.next_commands.join("\n"), /selfhost:preflight/);
+  assert.match(summaryBody.next_commands.join("\n"), /selfhost:ops-report/);
+  assert.ok(!summaryJson.stdout.includes(env.get("PLATFORM_ADMIN_API_KEY") || ""));
+
   const readiness = run(tmpRoot, ["readiness"]);
   assert.equal(readiness.status, 0, readiness.stderr || readiness.stdout);
   assert.match(readiness.stdout, /selfhost:readiness/);

@@ -118,6 +118,7 @@ corepack pnpm --silent run selfhost:readiness -- --json
 corepack pnpm run selfhost:doctor
 corepack pnpm run selfhost:init
 corepack pnpm run selfhost:summary
+corepack pnpm --silent run selfhost:summary -- --json
 corepack pnpm run selfhost:plan
 corepack pnpm run selfhost:urls
 corepack pnpm run selfhost:preflight
@@ -135,6 +136,7 @@ corepack pnpm --silent run selfhost:readiness -- --profile public-stack --json
 corepack pnpm run selfhost:doctor -- --profile public-stack
 corepack pnpm run selfhost:init -- --profile public-stack
 corepack pnpm run selfhost:summary -- --profile public-stack
+corepack pnpm --silent run selfhost:summary -- --profile public-stack --json
 corepack pnpm run selfhost:urls -- --profile public-stack
 corepack pnpm run selfhost:preflight -- --profile public-stack
 corepack pnpm run selfhost:security-review -- --profile public-stack
@@ -178,7 +180,9 @@ starting services, probing the network, or printing secret values.
 `selfhost:summary` is the read-only one-screen overview for a selected profile.
 It prints deploy paths, URLs, declared host ports, secret hygiene status, and
 next commands without calling Docker, binding sockets, probing the network, or
-printing secret values.
+printing secret values. Use `corepack pnpm --silent run selfhost:summary ... --json`
+when a dashboard or script needs the same overview card data without parsing
+terminal prose.
 
 `selfhost:security-review` is the non-destructive public exposure review. It
 reuses secret hygiene, compose config, and public route-contract checks, then

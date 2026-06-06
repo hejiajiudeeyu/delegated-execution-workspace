@@ -630,42 +630,82 @@ function commandProfileFlag(profileName) {
   return profileName === "platform" ? "" : ` -- --profile ${profileName}`;
 }
 
-function printSummary(profileName) {
+function summaryData(profileName) {
   const { profile, dir, envPath } = profilePaths(profileName);
   const envExists = fs.existsSync(envPath);
   const findings = envExists ? secretFindings(fs.readFileSync(envPath, "utf8"), profileName) : [];
   const suffix = commandProfileFlag(profileName);
+  return {
+    command: "selfhost:summary",
+    profile: profileName,
+    deploy_dir: path.relative(ROOT, dir),
+    env_path: path.relative(ROOT, envPath),
+    env_status: envExists ? "present" : "missing",
+    urls: profileUrls(profileName).map(([label, url]) => ({ label, url })),
+    ports: (profile.ports || []).map(([port, service, role]) => ({ port, service, role })),
+    secret_hygiene: envExists
+      ? findings.map((finding) => ({
+          key: finding.key,
+          ok: finding.ok,
+          status: finding.ok ? "set" : finding.message
+        }))
+      : [],
+    next_commands: [
+      `corepack pnpm run selfhost:preflight${suffix}`,
+      `corepack pnpm run selfhost:up${suffix}`,
+      `corepack pnpm run selfhost:smoke${suffix}`,
+      `corepack pnpm run selfhost:ops-report${suffix}`,
+      `corepack pnpm run selfhost:security-review${suffix}`
+    ],
+    notes: ["read-only", "does not call Docker", "does not bind ports", "does not print secret values"]
+  };
+}
+
+function printSummaryJson(profileName) {
+  console.log(
+    JSON.stringify(
+      {
+        generated_at: new Date().toISOString(),
+        ...summaryData(profileName)
+      },
+      null,
+      2
+    )
+  );
+}
+
+function printSummary(profileName) {
+  const summary = summaryData(profileName);
+  const suffix = commandProfileFlag(profileName);
 
   console.log(`[selfhost:summary] profile=${profileName}`);
-  console.log(`deploy_dir=${path.relative(ROOT, dir)}`);
-  console.log(`env=${path.relative(ROOT, envPath)}`);
-  console.log(`env_status=${envExists ? "present" : "missing"}`);
+  console.log(`deploy_dir=${summary.deploy_dir}`);
+  console.log(`env=${summary.env_path}`);
+  console.log(`env_status=${summary.env_status}`);
 
   console.log("\n## URLs");
-  for (const [label, url] of profileUrls(profileName)) {
+  for (const { label, url } of summary.urls) {
     console.log(`- ${label}: ${url}`);
   }
 
   console.log("\n## Ports");
-  for (const [port, service, role] of profile.ports || []) {
+  for (const { port, service, role } of summary.ports) {
     console.log(`- ${port}: ${service} - ${role}`);
   }
 
   console.log("\n## Secret hygiene");
-  if (!envExists) {
+  if (summary.env_status === "missing") {
     console.log(`- .env missing: run corepack pnpm run selfhost:init${suffix}`);
   } else {
-    for (const finding of findings) {
-      console.log(`- ${finding.key}: ${finding.ok ? "set" : finding.message}`);
+    for (const finding of summary.secret_hygiene) {
+      console.log(`- ${finding.key}: ${finding.status}`);
     }
   }
 
   console.log("\n## Next commands");
-  console.log(`- corepack pnpm run selfhost:preflight${suffix}`);
-  console.log(`- corepack pnpm run selfhost:up${suffix}`);
-  console.log(`- corepack pnpm run selfhost:smoke${suffix}`);
-  console.log(`- corepack pnpm run selfhost:ops-report${suffix}`);
-  console.log(`- corepack pnpm run selfhost:security-review${suffix}`);
+  for (const command of summary.next_commands) {
+    console.log(`- ${command}`);
+  }
   console.log("\nThis summary is read-only and does not call Docker, bind ports, or print secret values.");
 }
 
@@ -1289,7 +1329,11 @@ async function main() {
   }
 
   if (args.command === "summary") {
-    printSummary(args.profile);
+    if (args.json) {
+      printSummaryJson(args.profile);
+    } else {
+      printSummary(args.profile);
+    }
     return;
   }
 

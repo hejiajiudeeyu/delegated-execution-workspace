@@ -59,6 +59,7 @@
 - `corepack pnpm run selfhost:config`
 - `corepack pnpm run selfhost:plan`
 - `corepack pnpm run selfhost:summary`
+- `corepack pnpm --silent run selfhost:summary -- --json`
 - `corepack pnpm run selfhost:urls`
 - `corepack pnpm run selfhost:ports`
 - `corepack pnpm run selfhost:logs`
@@ -93,7 +94,7 @@
 - logs 支持按 service 和 tail 行数过滤
 - summary 会输出一屏只读 profile 概要，包括 deploy 路径、URLs、声明的 host
   ports、secret hygiene 状态和下一步命令，但不调用 Docker、不绑定 socket、不探测网络、
-  不打印 secret 值
+  不打印 secret 值；`--json` 返回同一组概要卡片数据，供 dashboard 和脚本消费
 - backup / rotation 在破坏性动作前先输出明确计划
 - security review 是非破坏性的公开暴露前 gate，会检查 secret hygiene、compose
   config、route contract 和 backup / rotation / smoke 前置动作

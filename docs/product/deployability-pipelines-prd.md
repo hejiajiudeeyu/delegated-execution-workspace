@@ -59,6 +59,7 @@ Required commands:
 - `corepack pnpm run selfhost:config`
 - `corepack pnpm run selfhost:plan`
 - `corepack pnpm run selfhost:summary`
+- `corepack pnpm --silent run selfhost:summary -- --json`
 - `corepack pnpm run selfhost:urls`
 - `corepack pnpm run selfhost:ports`
 - `corepack pnpm run selfhost:logs`
@@ -99,7 +100,8 @@ Acceptance:
 - logs can be filtered by service and tail length
 - summary prints a one-screen, read-only profile overview with deploy paths,
   URLs, declared host ports, secret hygiene status, and next commands without
-  calling Docker, binding sockets, probing the network, or printing secrets
+  calling Docker, binding sockets, probing the network, or printing secrets;
+  `--json` returns the same overview card data for dashboards and scripts
 - backup and rotation are explicit plans before destructive action
 - security review is a non-destructive public exposure gate that checks secret
   hygiene, compose config, route contracts, and backup/rotation/smoke
