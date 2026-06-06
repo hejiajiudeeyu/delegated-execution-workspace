@@ -57,6 +57,7 @@ Required commands:
 - `corepack pnpm run selfhost:status`
 - `corepack pnpm run selfhost:smoke`
 - `corepack pnpm run selfhost:security-review`
+- `corepack pnpm --silent run selfhost:security-review -- --json`
 - `corepack pnpm run selfhost:audit-export`
 - `corepack pnpm run selfhost:config`
 - `corepack pnpm run selfhost:plan`
@@ -143,7 +144,9 @@ Required behavior:
 - `selfhost:preflight -- --profile public-stack` checks public routes and
   exposure blockers before `up`
 - `selfhost:security-review -- --profile public-stack` checks the public
-  exposure contract without starting services
+  exposure contract without starting services; `--json` returns the same secret
+  hygiene, compose config, route contract, operational prerequisite, blocker,
+  and safety-note fields for dashboards and deployment controllers
 - `selfhost:up -- --profile public-stack` is blocked by preflight by default
   so unsafe public origins are not started accidentally
 - clear warning when `PUBLIC_SITE_ADDRESS` is still localhost

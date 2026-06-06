@@ -129,6 +129,8 @@ corepack pnpm run selfhost:preflight
 corepack pnpm --silent run selfhost:preflight -- --json
 corepack pnpm run selfhost:status
 corepack pnpm run selfhost:smoke
+corepack pnpm run selfhost:security-review
+corepack pnpm --silent run selfhost:security-review -- --json
 ```
 
 For the public operator stack:
@@ -150,6 +152,7 @@ corepack pnpm --silent run selfhost:ports -- --profile public-stack --json
 corepack pnpm run selfhost:preflight -- --profile public-stack
 corepack pnpm --silent run selfhost:preflight -- --profile public-stack --json
 corepack pnpm run selfhost:security-review -- --profile public-stack
+corepack pnpm --silent run selfhost:security-review -- --profile public-stack --json
 corepack pnpm run selfhost:status -- --profile public-stack
 corepack pnpm run selfhost:smoke -- --profile public-stack
 ```
@@ -214,7 +217,11 @@ terminal prose.
 `selfhost:security-review` is the non-destructive public exposure review. It
 reuses secret hygiene, compose config, and public route-contract checks, then
 prints the backup, rotation, and smoke commands to run before treating a public
-stack as exposure-ready. It does not print secret values.
+stack as exposure-ready. It does not print secret values. Use
+`corepack pnpm --silent run selfhost:security-review ... --json` when dashboards
+or deployment controllers need machine-readable secret hygiene, compose config,
+public route contract, operational prerequisite, blocker, and safety-note fields
+without parsing terminal prose.
 
 Validate published public-stack images:
 

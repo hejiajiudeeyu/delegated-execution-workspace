@@ -110,6 +110,8 @@ corepack pnpm run selfhost:preflight
 corepack pnpm --silent run selfhost:preflight -- --json
 corepack pnpm run selfhost:status
 corepack pnpm run selfhost:smoke
+corepack pnpm run selfhost:security-review
+corepack pnpm --silent run selfhost:security-review -- --json
 ```
 
 Public operator stack：
@@ -131,6 +133,7 @@ corepack pnpm --silent run selfhost:ports -- --profile public-stack --json
 corepack pnpm run selfhost:preflight -- --profile public-stack
 corepack pnpm --silent run selfhost:preflight -- --profile public-stack --json
 corepack pnpm run selfhost:security-review -- --profile public-stack
+corepack pnpm --silent run selfhost:security-review -- --profile public-stack --json
 corepack pnpm run selfhost:status -- --profile public-stack
 corepack pnpm run selfhost:smoke -- --profile public-stack
 ```
@@ -180,7 +183,10 @@ socket、探测网络或打印 secret 值。当 dashboard 或脚本需要同一�
 `selfhost:security-review` 是非破坏性的公开暴露前安全复核。它复用 secret
 hygiene、compose config 和 public route contract 检查，并打印 backup、rotation
 和 smoke 命令，帮助 operator 在把 public stack 视为 exposure-ready 前完成收口。
-该命令不打印 secret 值。
+该命令不打印 secret 值。当 dashboard 或部署控制器需要机器可读的 secret hygiene、
+compose config、public route contract、operational prerequisites、blockers 和
+safety notes，且不想解析终端文本时，使用
+`corepack pnpm --silent run selfhost:security-review ... --json`。
 
 验证已发布 public-stack 镜像：
 

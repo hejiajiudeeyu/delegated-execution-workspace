@@ -1078,17 +1078,21 @@ function printPreflightRoutes(profileName) {
   }
 }
 
-function preflightData(profileName) {
+function secretHygieneData(profileName) {
   const { envPath } = profilePaths(profileName);
   const suffix = commandProfileFlag(profileName);
   const envExists = fs.existsSync(envPath);
-  const secretHygiene = envExists
+  return envExists
     ? secretFindings(fs.readFileSync(envPath, "utf8"), profileName).map((finding) => ({
         key: finding.key,
         ok: finding.ok,
         status: finding.ok ? "set" : finding.message
       }))
     : [{ key: "secret hygiene", ok: false, status: `.env missing; run corepack pnpm run selfhost:init${suffix}` }];
+}
+
+function preflightData(profileName) {
+  const secretHygiene = secretHygieneData(profileName);
   const configResult = composeConfig(profileName, "quiet", "pipe");
   const configOk = configResult.status === 0;
   const blockers = secretHygiene
@@ -1142,6 +1146,46 @@ function publicOrigin(profileName) {
   return (entries.get("PUBLIC_SITE_ADDRESS") || "http://127.0.0.1").replace(/\/+$/, "");
 }
 
+function publicRouteContractData(profileName) {
+  if (profileName !== "public-stack") {
+    return {
+      ok: true,
+      status: "not_applicable",
+      origin: null,
+      caddyfile: null,
+      routes: []
+    };
+  }
+
+  const { caddyfilePath } = profilePaths(profileName);
+  const origin = publicOrigin(profileName);
+  const caddyfileExists = fs.existsSync(caddyfilePath);
+  const caddyfile = caddyfileExists ? fs.readFileSync(caddyfilePath, "utf8") : "";
+  const routes = PUBLIC_STACK_ROUTE_CONTRACT.map(([label, routePath, caddyPattern]) => {
+    const caddyRoute = caddyPattern.replace(/^handle(?:_path)?\s+/, "");
+    return {
+      label,
+      path: routePath,
+      url: `${origin}${routePath}`,
+      caddy_route: caddyRoute,
+      caddy_pattern: caddyPattern,
+      ok: caddyfileExists && caddyfile.includes(caddyPattern)
+    };
+  });
+  const ok = caddyfileExists && routes.every((route) => route.ok);
+  return {
+    ok,
+    status: ok ? "ok" : "fail",
+    origin,
+    caddyfile: {
+      ok: caddyfileExists,
+      path: path.relative(ROOT, caddyfilePath),
+      status: caddyfileExists ? "present" : "missing"
+    },
+    routes
+  };
+}
+
 function platformAdminBaseUrl(profileName, override = null) {
   if (override) {
     return override.replace(/\/+$/, "");
@@ -1157,27 +1201,21 @@ function checkPublicRouteContract(profileName) {
     return true;
   }
 
-  const { caddyfilePath } = profilePaths(profileName);
-  const origin = publicOrigin(profileName);
-  let ok = true;
+  const contract = publicRouteContractData(profileName);
   console.log("\nPublic route contract");
-  for (const [label, routePath] of PUBLIC_STACK_ROUTE_CONTRACT) {
-    console.log(`- ${label}: GET ${origin}${routePath}`);
+  for (const route of contract.routes) {
+    console.log(`- ${route.label}: GET ${route.url}`);
   }
 
-  if (!fs.existsSync(caddyfilePath)) {
-    console.log(`[fail] Caddyfile: ${path.relative(ROOT, caddyfilePath)} missing`);
+  if (!contract.caddyfile?.ok) {
+    console.log(`[fail] Caddyfile: ${contract.caddyfile?.path || "Caddyfile"} missing`);
     return false;
   }
 
-  const caddyfile = fs.readFileSync(caddyfilePath, "utf8");
-  for (const [, , caddyPattern] of PUBLIC_STACK_ROUTE_CONTRACT) {
-    const route = caddyPattern.replace(/^handle(?:_path)?\s+/, "");
-    const routeOk = caddyfile.includes(caddyPattern);
-    console.log(`[${routeOk ? "ok" : "fail"}] Caddyfile route ${route}`);
-    ok &&= routeOk;
+  for (const route of contract.routes) {
+    console.log(`[${route.ok ? "ok" : "fail"}] Caddyfile route ${route.caddy_route}`);
   }
-  return ok;
+  return contract.ok;
 }
 
 function preflightProfile(profileName) {
@@ -1344,6 +1382,81 @@ function writeOpsReport(profileName, { output = null } = {}) {
   console.log(`output=${path.relative(ROOT, reportPath)}`);
 }
 
+function securityReviewPrerequisites(profileName) {
+  return [
+    {
+      label: "backup-plan",
+      command: `corepack pnpm run selfhost:backup-plan -- --profile ${profileName}`
+    },
+    {
+      label: "rotate-plan",
+      command: `corepack pnpm run selfhost:rotate-plan -- --profile ${profileName}`
+    },
+    {
+      label: "smoke",
+      command: `corepack pnpm run selfhost:smoke -- --profile ${profileName}`
+    }
+  ];
+}
+
+function securityReviewData(profileName) {
+  const secretHygiene = secretHygieneData(profileName);
+  const configResult = composeConfig(profileName, "quiet", "pipe");
+  const configOk = configResult.status === 0;
+  const routeContract = publicRouteContractData(profileName);
+  const blockers = secretHygiene
+    .filter((finding) => !finding.ok)
+    .map((finding) => `${finding.key}: ${finding.status}`);
+  if (!configOk) {
+    blockers.push("docker compose config failed");
+  }
+  if (!routeContract.ok) {
+    if (routeContract.caddyfile && !routeContract.caddyfile.ok) {
+      blockers.push("Caddyfile missing");
+    } else {
+      blockers.push("public route contract mismatch");
+    }
+  }
+  const ok = secretHygiene.every((finding) => finding.ok) && configOk && routeContract.ok;
+  return {
+    command: "selfhost:security-review",
+    profile: profileName,
+    ok,
+    secret_hygiene: secretHygiene,
+    compose_config: {
+      ok: configOk,
+      status: configOk ? "ok" : "fail",
+      exit_code: configResult.status ?? 1
+    },
+    public_route_contract: routeContract,
+    operational_prerequisites: securityReviewPrerequisites(profileName),
+    blockers: Array.from(new Set(blockers)),
+    notes: [
+      "non-destructive",
+      "runs docker compose config",
+      "does not start services",
+      "does not bind ports",
+      "does not print secret values",
+      "logs/status/health output must stay secret-redacted"
+    ]
+  };
+}
+
+function printSecurityReviewJson(profileName) {
+  const data = securityReviewData(profileName);
+  console.log(
+    JSON.stringify(
+      {
+        generated_at: new Date().toISOString(),
+        ...data
+      },
+      null,
+      2
+    )
+  );
+  return data.ok;
+}
+
 function securityReviewProfile(profileName) {
   console.log(`[selfhost:security-review] profile=${profileName}`);
   console.log("This command is non-destructive; it reviews local files and compose output only.");
@@ -1359,9 +1472,9 @@ function securityReviewProfile(profileName) {
   const routeOk = checkPublicRouteContract(profileName);
 
   console.log("\nOperational prerequisites");
-  console.log(`- backup-plan: corepack pnpm run selfhost:backup-plan -- --profile ${profileName}`);
-  console.log(`- rotate-plan: corepack pnpm run selfhost:rotate-plan -- --profile ${profileName}`);
-  console.log(`- smoke: corepack pnpm run selfhost:smoke -- --profile ${profileName}`);
+  for (const prerequisite of securityReviewPrerequisites(profileName)) {
+    console.log(`- ${prerequisite.label}: ${prerequisite.command}`);
+  }
   console.log("- logs/status/health output must stay secret-redacted.");
 
   const ok = secretsOk && configOk && routeOk;
@@ -1604,6 +1717,9 @@ async function main() {
   }
 
   if (args.command === "security-review") {
+    if (args.json) {
+      process.exit(printSecurityReviewJson(args.profile) ? 0 : 1);
+    }
     process.exit(securityReviewProfile(args.profile) ? 0 : 1);
   }
 

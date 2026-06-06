@@ -540,6 +540,26 @@ try {
   assert.ok(!unsafeReview.stdout.includes(publicEnv.get("PLATFORM_ADMIN_API_KEY") || ""));
   assert.ok(!unsafeReview.stdout.includes(publicEnv.get("PLATFORM_CONSOLE_BOOTSTRAP_SECRET") || ""));
 
+  const unsafeReviewJson = run(tmpRoot, ["security-review", "--profile", "public-stack", "--json"]);
+  assert.equal(unsafeReviewJson.status, 1, unsafeReviewJson.stderr || unsafeReviewJson.stdout);
+  const unsafeReviewBody = JSON.parse(unsafeReviewJson.stdout);
+  assert.equal(unsafeReviewBody.command, "selfhost:security-review");
+  assert.equal(unsafeReviewBody.profile, "public-stack");
+  assert.equal(unsafeReviewBody.ok, false);
+  assert.equal(unsafeReviewBody.compose_config.status, "ok");
+  assert.equal(
+    unsafeReviewBody.secret_hygiene.find((item) => item.key === "PUBLIC_SITE_ADDRESS").ok,
+    false
+  );
+  assert.equal(unsafeReviewBody.public_route_contract.ok, true);
+  assert.match(JSON.stringify(unsafeReviewBody.public_route_contract.routes), /\/console\//);
+  assert.match(unsafeReviewBody.blockers.join("\n"), /PUBLIC_SITE_ADDRESS/);
+  assert.match(unsafeReviewBody.operational_prerequisites.map((item) => item.command).join("\n"), /backup-plan/);
+  assert.match(unsafeReviewBody.operational_prerequisites.map((item) => item.command).join("\n"), /rotate-plan/);
+  assert.ok(Array.isArray(unsafeReviewBody.notes));
+  assert.ok(!unsafeReviewJson.stdout.includes(publicEnv.get("PLATFORM_ADMIN_API_KEY") || ""));
+  assert.ok(!unsafeReviewJson.stdout.includes(publicEnv.get("PLATFORM_CONSOLE_BOOTSTRAP_SECRET") || ""));
+
   const unsafeDoctor = run(tmpRoot, ["doctor", "--profile", "public-stack"]);
   assert.equal(unsafeDoctor.status, 1, unsafeDoctor.stderr || unsafeDoctor.stdout);
   assert.match(unsafeDoctor.stdout, /selfhost:doctor/);
@@ -655,6 +675,21 @@ try {
   assert.match(safeReview.stdout, /ready for public exposure review/);
   assert.ok(!safeReview.stdout.includes(publicEnv.get("PLATFORM_ADMIN_API_KEY") || ""));
   assert.ok(!safeReview.stdout.includes(publicEnv.get("PLATFORM_CONSOLE_BOOTSTRAP_SECRET") || ""));
+
+  const safeReviewJson = run(tmpRoot, ["security-review", "--profile", "public-stack", "--json"]);
+  assert.equal(safeReviewJson.status, 0, safeReviewJson.stderr || safeReviewJson.stdout);
+  const safeReviewBody = JSON.parse(safeReviewJson.stdout);
+  assert.equal(safeReviewBody.command, "selfhost:security-review");
+  assert.equal(safeReviewBody.profile, "public-stack");
+  assert.equal(safeReviewBody.ok, true);
+  assert.equal(safeReviewBody.compose_config.status, "ok");
+  assert.equal(safeReviewBody.public_route_contract.ok, true);
+  assert.deepEqual(safeReviewBody.blockers, []);
+  assert.match(JSON.stringify(safeReviewBody.public_route_contract.routes), /https:\/\/call.example.com\/console\//);
+  assert.match(safeReviewBody.operational_prerequisites.map((item) => item.command).join("\n"), /smoke/);
+  assert.ok(Array.isArray(safeReviewBody.notes));
+  assert.ok(!safeReviewJson.stdout.includes(publicEnv.get("PLATFORM_ADMIN_API_KEY") || ""));
+  assert.ok(!safeReviewJson.stdout.includes(publicEnv.get("PLATFORM_CONSOLE_BOOTSTRAP_SECRET") || ""));
 
   const publicSmoke = run(tmpRoot, ["smoke", "--profile", "public-stack"]);
   assert.equal(publicSmoke.status, 1, publicSmoke.stderr || publicSmoke.stdout);

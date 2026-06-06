@@ -82,6 +82,7 @@ CALL ANYTHING 现在的仓库边界是正确的：
 | Self-host URL inventory | 第四仓 | `corepack pnpm run selfhost:urls`，以及用于 dashboard 和脚本的 `--json` |
 | Self-host 声明端口 inventory | 第四仓 | `corepack pnpm run selfhost:ports`，以及用于 dashboard 和脚本的 `--json` |
 | Self-host preflight gate | 第四仓 | `corepack pnpm run selfhost:preflight`，以及用于部署控制器的 `--json` |
+| Self-host security review | 第四仓 | `corepack pnpm run selfhost:security-review`，以及用于公开暴露 dashboard 的 `--json` |
 | Compose 生命周期 wrapper | 第四仓 | 委托到 `repos/platform/deploy/*` |
 | Published-image smoke wrapper | 第四仓 | 委托到 `repos/platform` 的 public-stack smoke |
 | Operator onboarding contract | 第四仓 | `operator:onboarding:check` 校验 public-stack/brand-site/runbook 一致性 |
@@ -144,7 +145,8 @@ CALL ANYTHING 现在的仓库边界是正确的：
 - 增加 backup/restore、secret rotation、audit export、public-stack security review gates。
 - 先补一个非破坏性的 `selfhost:security-review` gate，在公网暴露前验证 secret
   hygiene、compose config、public route contract，以及 backup / rotation / smoke
-  这些 operator 前置动作。
+  这些 operator 前置动作。增加 `--json`，让 dashboard 和部署控制器不解析终端文本也能消费
+  同一组 public exposure blockers 和 safety notes。
 - 增加 `selfhost:audit-export`，让 operator 能把 platform admin audit events 保存成
   本地 JSON 证据，同时不在终端打印 admin key。
 - 增加 `selfhost:ops-report`，让 operator 可以交接一份 Markdown profile 摘要，

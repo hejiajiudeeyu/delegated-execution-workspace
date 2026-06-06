@@ -57,6 +57,7 @@
 - `corepack pnpm run selfhost:status`
 - `corepack pnpm run selfhost:smoke`
 - `corepack pnpm run selfhost:security-review`
+- `corepack pnpm --silent run selfhost:security-review -- --json`
 - `corepack pnpm run selfhost:audit-export`
 - `corepack pnpm run selfhost:config`
 - `corepack pnpm run selfhost:plan`
@@ -130,7 +131,9 @@
 - 输出 public route 列表
 - `selfhost:preflight -- --profile public-stack` 在 `up` 前检查 public routes 和暴露前阻断项
 - `selfhost:security-review -- --profile public-stack` 在不启动服务的情况下检查
-  public exposure contract
+  public exposure contract；`--json` 返回同一组 secret hygiene、compose config、
+  route contract、operational prerequisites、blockers 和 safety notes，供 dashboard
+  和部署控制器消费
 - `selfhost:up -- --profile public-stack` 默认受 preflight 阻断，防止 unsafe public origin 被直接启动
 - 当 `PUBLIC_SITE_ADDRESS` 仍是 localhost 时给出明确 warning
 - 当 public origin 仍不安全时，public-stack smoke 应失败
