@@ -1231,18 +1231,82 @@ function preflightProfile(profileName) {
 }
 
 function printBackupPlan(profileName) {
-  const stamp = new Date().toISOString().replace(/[:.]/g, "-");
-  const backupDir = `backups/selfhost/${profileName}/${stamp}`;
+  const data = backupPlanData(profileName);
   console.log(`[selfhost:backup-plan] profile=${profileName}`);
   console.log("This command prints a plan only; it does not copy data.");
-  console.log(`1. mkdir -p ${backupDir}`);
-  console.log(`2. cp ${path.relative(ROOT, profilePaths(profileName).envPath)} ${backupDir}/.env`);
-  console.log("3. Store the copied .env in a private encrypted location.");
-  if (["platform", "public-stack", "all-in-one"].includes(profileName)) {
-    console.log(`4. docker compose --env-file .env exec postgres pg_dump -U "$POSTGRES_USER" "$POSTGRES_DB" > ${backupDir}/postgres.sql`);
+  for (const step of data.steps) {
+    console.log(`${step.step}. ${step.detail}${step.command ? `: ${step.command}` : ""}`);
   }
-  console.log("5. Record image tags and compose config:");
-  console.log(`   corepack pnpm run selfhost:config -- --profile ${profileName} > ${backupDir}/compose.config.txt`);
+}
+
+function backupPlanData(profileName) {
+  const stamp = new Date().toISOString().replace(/[:.]/g, "-");
+  const backupDir = `backups/selfhost/${profileName}/${stamp}`;
+  const envPath = path.relative(ROOT, profilePaths(profileName).envPath);
+  const steps = [
+    {
+      step: 1,
+      action: "create-backup-directory",
+      detail: "Create backup directory",
+      command: `mkdir -p ${backupDir}`
+    },
+    {
+      step: 2,
+      action: "copy-env-privately",
+      detail: "Copy the selected profile .env into the backup artifact",
+      command: `cp ${envPath} ${backupDir}/.env`
+    },
+    {
+      step: 3,
+      action: "store-env-privately",
+      detail: "Store the copied .env in a private encrypted location."
+    }
+  ];
+  if (["platform", "public-stack", "all-in-one"].includes(profileName)) {
+    steps.push({
+      step: 4,
+      action: "dump-postgres",
+      detail: "Export PostgreSQL data",
+      command: `docker compose --env-file .env exec postgres pg_dump -U "$POSTGRES_USER" "$POSTGRES_DB" > ${backupDir}/postgres.sql`
+    });
+  }
+  steps.push({
+    step: steps.length + 1,
+    action: "record-compose-config",
+    detail: "Record image tags and compose config",
+    command: `corepack pnpm run selfhost:config -- --profile ${profileName} > ${backupDir}/compose.config.txt`
+  });
+  return {
+    command: "selfhost:backup-plan",
+    profile: profileName,
+    ok: true,
+    backup_dir: backupDir,
+    env_path: envPath,
+    steps,
+    next: `corepack pnpm run selfhost:backup-validate -- --profile ${profileName} --backup-dir ${backupDir}`,
+    notes: [
+      "plan-only",
+      "does not copy files",
+      "does not dump the database",
+      "does not read or print .env secret values",
+      "store .env backups privately because they may contain secret values"
+    ]
+  };
+}
+
+function printBackupPlanJson(profileName) {
+  const data = backupPlanData(profileName);
+  console.log(
+    JSON.stringify(
+      {
+        generated_at: new Date().toISOString(),
+        ...data
+      },
+      null,
+      2
+    )
+  );
+  return data.ok;
 }
 
 function printRotatePlan(profileName) {
@@ -1877,6 +1941,10 @@ async function main() {
   }
 
   if (args.command === "backup-plan") {
+    if (args.json) {
+      printBackupPlanJson(args.profile);
+      return;
+    }
     printBackupPlan(args.profile);
     return;
   }

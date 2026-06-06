@@ -70,6 +70,7 @@
 - `corepack pnpm run selfhost:logs`
 - `corepack pnpm run selfhost:ops-report`
 - `corepack pnpm run selfhost:backup-plan`
+- `corepack pnpm --silent run selfhost:backup-plan -- --json`
 - `corepack pnpm run selfhost:backup-validate`
 - `corepack pnpm --silent run selfhost:backup-validate -- --backup-dir <dir> --json`
 - `corepack pnpm run selfhost:restore-plan`
@@ -116,6 +117,9 @@
   不探测网络、不打印 secrets；`--json` 返回同一组 URL inventory，供 dashboard 和脚本消费
 - ports 会打印选定 profile 声明的 host port 使用情况，但不绑定 socket 或调用 Docker；
   `--json` 返回同一组声明端口 inventory，供 dashboard 和脚本消费
+- backup plan 会打印手动备份 checklist，但不复制文件、不 dump 数据库、不读取 secret
+  值；`--json` 返回同一组 backup directory、有序 plan steps、下一步
+  backup-validate 命令和 safety notes，供 dashboard、CI 和恢复演练脚本消费
 - backup validate 会检查 `.env`、`postgres.sql` 和 `compose.config.txt` 的存在与大小，
   但不读取或打印 secret 值；`--json` 返回机器可读的 file status、blockers、下一步
   restore-plan 命令和 safety notes，供 dashboard、CI 和恢复演练脚本消费

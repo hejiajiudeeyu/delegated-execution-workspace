@@ -62,6 +62,9 @@ CHG-2026-057:
   readiness matrix, and `selfhost:readiness` remains available as the selected
   profile readiness overview; both support `--json` under `corepack pnpm --silent run`
   for machine-readable automation with the same exit-code semantics
+- `selfhost:backup-plan` is available as a non-destructive backup checklist, and
+  supports `--json` for machine-readable backup directory, ordered steps, next
+  validation command, and safety notes
 - `selfhost:backup-validate` is available as a non-destructive backup artifact
   shape check before restore rehearsal
 - `selfhost:restore-plan` is available as a non-destructive recovery rehearsal
@@ -265,6 +268,9 @@ ports without binding sockets, inspecting the local network, or calling Docker;
 overview with deploy paths, URLs, declared host ports, secret hygiene status,
 and next commands without calling Docker, binding sockets, probing the network,
 or printing secret values;
+`corepack pnpm run selfhost:backup-plan` prints the backup directory, private
+`.env` copy step, PostgreSQL dump command, and compose-config capture command
+without copying files, dumping the database, or reading secret values;
 `corepack pnpm run selfhost:backup-validate` checks a backup directory for
 `.env`, `postgres.sql`, and `compose.config.txt` presence and size without
 reading or printing `.env` secret values;
@@ -326,9 +332,9 @@ Billing page as an operator surface, not as client-facing billing readiness, and
 the public-stack command examples include `selfhost:security-review`,
 `selfhost:audit-export`, `selfhost:profiles`, `selfhost:quickstart`, `selfhost:readiness -- --all`, `selfhost:readiness`, `selfhost:readiness -- --json`, `selfhost:doctor`, `selfhost:summary`, `selfhost:ports`,
 `selfhost:ops-report`,
-`selfhost:backup-validate`, and `selfhost:restore-plan` as pre-exposure safety,
+`selfhost:backup-plan`, `selfhost:backup-validate`, and `selfhost:restore-plan` as pre-exposure safety,
 evidence, quickstart sequencing, human-readable and machine-readable readiness overview, port visibility, handoff-report,
-backup-artifact validation, and recovery-rehearsal commands. Capabilities that
+backup planning, backup-artifact validation, and recovery-rehearsal commands. Capabilities that
 are not ready remain outside the
 green path, and secrets, public origins, and billing readiness must not be
 hidden behind green status.

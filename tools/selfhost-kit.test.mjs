@@ -234,6 +234,25 @@ try {
   assert.equal(backupPlan.status, 0, backupPlan.stderr || backupPlan.stdout);
   assert.match(backupPlan.stdout, /This command prints a plan only/);
 
+  const backupPlanJson = run(tmpRoot, ["backup-plan", "--json"]);
+  assert.equal(backupPlanJson.status, 0, backupPlanJson.stderr || backupPlanJson.stdout);
+  const backupPlanBody = JSON.parse(backupPlanJson.stdout);
+  assert.equal(backupPlanBody.command, "selfhost:backup-plan");
+  assert.equal(backupPlanBody.profile, "platform");
+  assert.equal(backupPlanBody.ok, true);
+  assert.ok(backupPlanBody.generated_at);
+  assert.match(backupPlanBody.backup_dir, /^backups\/selfhost\/platform\//);
+  assert.equal(backupPlanBody.env_path, "repos/platform/deploy/platform/.env");
+  assert.ok(Array.isArray(backupPlanBody.steps));
+  assert.match(backupPlanBody.steps.map((item) => item.command || item.detail).join("\n"), /mkdir -p backups\/selfhost\/platform\//);
+  assert.match(backupPlanBody.steps.map((item) => item.command || item.detail).join("\n"), /cp repos\/platform\/deploy\/platform\/\.env/);
+  assert.match(backupPlanBody.steps.map((item) => item.command || item.detail).join("\n"), /pg_dump/);
+  assert.match(backupPlanBody.steps.map((item) => item.command || item.detail).join("\n"), /selfhost:config/);
+  assert.match(backupPlanBody.next, /backup-validate/);
+  assert.ok(Array.isArray(backupPlanBody.notes));
+  assert.match(backupPlanBody.notes.join("\n"), /plan-only/);
+  assert.ok(!backupPlanJson.stdout.includes(env.get("PLATFORM_ADMIN_API_KEY") || ""));
+
   const restorePlan = run(tmpRoot, ["restore-plan", "--backup-dir", "backups/selfhost/platform/sample"]);
   assert.equal(restorePlan.status, 0, restorePlan.stderr || restorePlan.stdout);
   assert.match(restorePlan.stdout, /selfhost:restore-plan/);

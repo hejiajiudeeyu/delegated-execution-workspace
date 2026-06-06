@@ -83,6 +83,7 @@ CALL ANYTHING 现在的仓库边界是正确的：
 | Self-host 声明端口 inventory | 第四仓 | `corepack pnpm run selfhost:ports`，以及用于 dashboard 和脚本的 `--json` |
 | Self-host preflight gate | 第四仓 | `corepack pnpm run selfhost:preflight`，以及用于部署控制器的 `--json` |
 | Self-host security review | 第四仓 | `corepack pnpm run selfhost:security-review`，以及用于公开暴露 dashboard 的 `--json` |
+| Self-host backup planning | 第四仓 | `corepack pnpm run selfhost:backup-plan`，以及用于恢复演练脚本的 `--json` |
 | Self-host backup validation | 第四仓 | `corepack pnpm run selfhost:backup-validate`，以及用于恢复演练脚本的 `--json` |
 | Self-host restore rehearsal | 第四仓 | `corepack pnpm run selfhost:restore-plan`，以及用于恢复演练脚本的 `--json` |
 | Compose 生命周期 wrapper | 第四仓 | 委托到 `repos/platform/deploy/*` |
@@ -175,6 +176,9 @@ CALL ANYTHING 现在的仓库边界是正确的：
 - 要求 operator onboarding contract 把 `selfhost:readiness`、`selfhost:ports` 和
   `selfhost:ops-report` 纳入 public-stack 首次使用路径，避免交接顺序退回只有终端启动和
   smoke 的状态。
+- 增加 `selfhost:backup-plan -- --json`，让 dashboard、CI 和恢复演练脚本能消费生成的
+  backup directory、有序备份步骤、下一步校验命令和 safety notes，同时不复制文件、
+  不 dump 数据库、不读取 secret 值。
 - 增加 `selfhost:backup-validate`，让恢复演练先基于已检查的 backup directory
   形状开始，同时不读取或打印 `.env` secrets。增加 `--json`，让恢复演练脚本消费
   file status、blockers、下一步 restore-plan 命令和 safety notes。

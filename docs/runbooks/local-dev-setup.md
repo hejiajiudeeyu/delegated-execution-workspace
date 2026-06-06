@@ -262,7 +262,8 @@ corepack pnpm --silent run selfhost:ports -- --profile public-stack --json
 corepack pnpm run selfhost:ops-report -- --profile public-stack
 corepack pnpm run selfhost:security-review -- --profile public-stack
 corepack pnpm run selfhost:audit-export -- --profile public-stack
-corepack pnpm run selfhost:backup-plan
+corepack pnpm run selfhost:backup-plan -- --profile public-stack
+corepack pnpm --silent run selfhost:backup-plan -- --profile public-stack --json
 corepack pnpm run selfhost:backup-validate -- --profile public-stack --backup-dir backups/selfhost/public-stack/<stamp>
 corepack pnpm --silent run selfhost:backup-validate -- --profile public-stack --backup-dir backups/selfhost/public-stack/<stamp> --json
 corepack pnpm run selfhost:restore-plan -- --profile public-stack --backup-dir backups/selfhost/public-stack/<stamp>
@@ -290,6 +291,13 @@ a dashboard or script needs the same URL inventory.
 binding sockets or calling Docker. Use it before `selfhost:up` when checking for
 local port conflicts, or use the `--json` form when a dashboard or script needs
 the same declared port inventory.
+
+`selfhost:backup-plan` is plan-only. It prints the backup directory, `.env`
+copy step, PostgreSQL dump command, and compose-config capture command without
+copying files, dumping the database, or reading secret values. Use
+`corepack pnpm --silent run selfhost:backup-plan ... --json` when dashboards,
+CI, or recovery rehearsal scripts need the same ordered plan and next
+backup-validate command without parsing terminal prose.
 
 `selfhost:backup-validate` checks a backup directory for `.env`, `postgres.sql`,
 and `compose.config.txt` presence and size before restore rehearsal. It does not

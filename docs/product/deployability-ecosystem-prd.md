@@ -80,6 +80,7 @@ The ecosystem is "daily-deployable" when a fresh operator can:
 | Self-host declared ports inventory | fourth repo | `corepack pnpm run selfhost:ports`, plus `--json` for dashboards and scripts |
 | Self-host preflight gate | fourth repo | `corepack pnpm run selfhost:preflight`, plus `--json` for deployment controllers |
 | Self-host security review | fourth repo | `corepack pnpm run selfhost:security-review`, plus `--json` for public exposure dashboards |
+| Self-host backup planning | fourth repo | `corepack pnpm run selfhost:backup-plan`, plus `--json` for recovery rehearsal scripts |
 | Self-host backup validation | fourth repo | `corepack pnpm run selfhost:backup-validate`, plus `--json` for recovery rehearsal scripts |
 | Self-host restore rehearsal | fourth repo | `corepack pnpm run selfhost:restore-plan`, plus `--json` for recovery rehearsal scripts |
 | Compose lifecycle wrapper | fourth repo | delegate to `repos/platform/deploy/*` |
@@ -181,6 +182,10 @@ Required baseline:
 - Require the operator onboarding contract to include `selfhost:readiness`,
   `selfhost:ports`, and `selfhost:ops-report` in the public-stack first-use path
   so the handoff sequence cannot drift back to terminal-only startup/smoke steps.
+- Add `selfhost:backup-plan -- --json` so dashboards, CI, and recovery rehearsal
+  scripts can consume the generated backup directory, ordered backup steps, next
+  validation command, and safety notes without copying files, dumping the
+  database, or reading secret values.
 - Add `selfhost:backup-validate` so restore rehearsal starts from a checked
   backup directory shape without reading or printing `.env` secrets. Add
   `--json` so recovery rehearsal scripts can consume file status, blockers,

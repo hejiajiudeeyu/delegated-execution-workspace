@@ -70,6 +70,7 @@ Required commands:
 - `corepack pnpm run selfhost:logs`
 - `corepack pnpm run selfhost:ops-report`
 - `corepack pnpm run selfhost:backup-plan`
+- `corepack pnpm --silent run selfhost:backup-plan -- --json`
 - `corepack pnpm run selfhost:backup-validate`
 - `corepack pnpm --silent run selfhost:backup-validate -- --backup-dir <dir> --json`
 - `corepack pnpm run selfhost:restore-plan`
@@ -127,6 +128,10 @@ Acceptance:
 - ports prints declared host port usage for the selected profile without
   binding sockets or calling Docker; `--json` returns the same declared port
   inventory for dashboards and scripts
+- backup plan prints the manual backup checklist without copying files,
+  dumping the database, or reading secret values; `--json` returns the same
+  backup directory, ordered plan steps, next backup-validate command, and
+  safety notes for dashboards, CI, and recovery rehearsal scripts
 - backup validate checks `.env`, `postgres.sql`, and `compose.config.txt`
   presence/size without reading or printing secret values; `--json` returns
   machine-readable file status, blockers, next restore-plan command, and safety

@@ -155,6 +155,8 @@ corepack pnpm run selfhost:smoke
 corepack pnpm run selfhost:security-review
 corepack pnpm --silent run selfhost:security-review -- --json
 corepack pnpm run selfhost:audit-export
+corepack pnpm run selfhost:backup-plan
+corepack pnpm --silent run selfhost:backup-plan -- --json
 corepack pnpm run selfhost:backup-validate -- --backup-dir backups/selfhost/platform/<stamp>
 corepack pnpm --silent run selfhost:backup-validate -- --backup-dir backups/selfhost/platform/<stamp> --json
 corepack pnpm run selfhost:restore-plan -- --backup-dir backups/selfhost/platform/<stamp>
@@ -180,6 +182,8 @@ corepack pnpm --silent run selfhost:preflight -- --profile public-stack --json
 corepack pnpm run selfhost:security-review -- --profile public-stack
 corepack pnpm --silent run selfhost:security-review -- --profile public-stack --json
 corepack pnpm run selfhost:audit-export -- --profile public-stack
+corepack pnpm run selfhost:backup-plan -- --profile public-stack
+corepack pnpm --silent run selfhost:backup-plan -- --profile public-stack --json
 corepack pnpm run selfhost:backup-validate -- --profile public-stack --backup-dir backups/selfhost/public-stack/<stamp>
 corepack pnpm --silent run selfhost:backup-validate -- --profile public-stack --backup-dir backups/selfhost/public-stack/<stamp> --json
 corepack pnpm run selfhost:restore-plan -- --profile public-stack --backup-dir backups/selfhost/public-stack/<stamp>

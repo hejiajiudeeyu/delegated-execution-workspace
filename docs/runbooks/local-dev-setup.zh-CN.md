@@ -225,7 +225,8 @@ corepack pnpm --silent run selfhost:ports -- --profile public-stack --json
 corepack pnpm run selfhost:ops-report -- --profile public-stack
 corepack pnpm run selfhost:security-review -- --profile public-stack
 corepack pnpm run selfhost:audit-export -- --profile public-stack
-corepack pnpm run selfhost:backup-plan
+corepack pnpm run selfhost:backup-plan -- --profile public-stack
+corepack pnpm --silent run selfhost:backup-plan -- --profile public-stack --json
 corepack pnpm run selfhost:backup-validate -- --profile public-stack --backup-dir backups/selfhost/public-stack/<stamp>
 corepack pnpm --silent run selfhost:backup-validate -- --profile public-stack --backup-dir backups/selfhost/public-stack/<stamp> --json
 corepack pnpm run selfhost:restore-plan -- --profile public-stack --backup-dir backups/selfhost/public-stack/<stamp>
@@ -249,6 +250,12 @@ endpoint，并把 JSON 证据写入 `exports/audit/<profile>/`；也可以用 `-
 `selfhost:ports` 会打印选定 profile 声明的 host ports，但不会绑定 socket 或调用
 Docker。检查本地端口冲突时，应在 `selfhost:up` 前运行它；当 dashboard 或脚本需要同一组声明端口
 inventory 时，使用 `--json` 形式。
+
+`selfhost:backup-plan` 只输出计划。它会打印 backup directory、`.env` 复制步骤、
+PostgreSQL dump 命令和 compose config 记录命令；不会复制文件、dump 数据库或读取
+secret 值。当 dashboard、CI 或恢复演练脚本需要同一组有序计划和下一步
+backup-validate 命令，且不想解析终端文本时，使用
+`corepack pnpm --silent run selfhost:backup-plan ... --json`。
 
 `selfhost:backup-validate` 会在恢复演练前检查 backup directory 里 `.env`、
 `postgres.sql` 和 `compose.config.txt` 的存在与大小。它不会读取或打印 `.env`
