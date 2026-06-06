@@ -143,6 +143,7 @@ corepack pnpm run selfhost:init
 corepack pnpm run selfhost:summary
 corepack pnpm --silent run selfhost:summary -- --json
 corepack pnpm run selfhost:plan
+corepack pnpm --silent run selfhost:plan -- --json
 corepack pnpm run selfhost:urls
 corepack pnpm --silent run selfhost:urls -- --json
 corepack pnpm run selfhost:ports
@@ -175,6 +176,8 @@ corepack pnpm --silent run selfhost:doctor -- --profile public-stack --json
 corepack pnpm run selfhost:init -- --profile public-stack
 corepack pnpm run selfhost:summary -- --profile public-stack
 corepack pnpm --silent run selfhost:summary -- --profile public-stack --json
+corepack pnpm run selfhost:plan -- --profile public-stack
+corepack pnpm --silent run selfhost:plan -- --profile public-stack --json
 corepack pnpm run selfhost:urls -- --profile public-stack
 corepack pnpm --silent run selfhost:urls -- --profile public-stack --json
 corepack pnpm run selfhost:ports -- --profile public-stack

@@ -78,6 +78,7 @@ CALL ANYTHING 现在的仓库边界是正确的：
 | Self-host readiness 总览 | 第四仓 | `corepack pnpm run selfhost:readiness -- --all`，以及自动化使用的 `corepack pnpm --silent run ... --json` |
 | Self-host 部署 doctor | 第四仓 | `corepack pnpm run selfhost:doctor`，以及用于诊断面板的 `--json` |
 | Self-host env 生成器 | 第四仓 | `corepack pnpm run selfhost:init` |
+| Self-host profile plan | 第四仓 | `corepack pnpm run selfhost:plan`，以及用于生成文档和 dashboard 的 `--json` |
 | Self-host profile 概要 | 第四仓 | `corepack pnpm run selfhost:summary`，以及用于概要卡片的 `--json` |
 | Self-host URL inventory | 第四仓 | `corepack pnpm run selfhost:urls`，以及用于 dashboard 和脚本的 `--json` |
 | Self-host 声明端口 inventory | 第四仓 | `corepack pnpm run selfhost:ports`，以及用于 dashboard 和脚本的 `--json` |
@@ -152,6 +153,8 @@ CALL ANYTHING 现在的仓库边界是正确的：
   hygiene、compose config、public route contract，以及 backup / rotation / smoke
   这些 operator 前置动作。增加 `--json`，让 dashboard 和部署控制器不解析终端文本也能消费
   同一组 public exposure blockers 和 safety notes。
+- 增加 `selfhost:plan -- --json`，让生成文档、dashboard 和脚本能消费与终端输出一致的
+  只读 profile purpose、services、URLs 和 safety checks。
 - 增加 `selfhost:audit-export`，让 operator 能把 platform admin audit events 保存成
   本地 JSON 证据，同时不在终端打印 admin key。
 - 增加 `selfhost:ops-report`，让 operator 可以交接一份 Markdown profile 摘要，

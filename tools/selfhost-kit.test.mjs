@@ -440,6 +440,40 @@ try {
   assert.match(portsBody.notes.join("\n"), /does not bind ports/);
   assert.ok(!portsJson.stdout.includes(env.get("PLATFORM_ADMIN_API_KEY") || ""));
 
+  const plan = run(tmpRoot, ["plan"]);
+  assert.equal(plan.status, 0, plan.stderr || plan.stdout);
+  assert.match(plan.stdout, /selfhost:plan/);
+  assert.match(plan.stdout, /profile=platform/);
+  assert.match(plan.stdout, /deploy_dir=repos\/platform\/deploy\/platform/);
+  assert.match(plan.stdout, /Services:/);
+  assert.match(plan.stdout, /platform-api/);
+  assert.match(plan.stdout, /URLs:/);
+  assert.match(plan.stdout, /Platform API/);
+  assert.match(plan.stdout, /Safety checks:/);
+  assert.match(plan.stdout, /selfhost:init/);
+  assert.ok(!plan.stdout.includes(env.get("PLATFORM_ADMIN_API_KEY") || ""));
+
+  const planJson = run(tmpRoot, ["plan", "--json"]);
+  assert.equal(planJson.status, 0, planJson.stderr || planJson.stdout);
+  const planBody = JSON.parse(planJson.stdout);
+  assert.equal(planBody.command, "selfhost:plan");
+  assert.equal(planBody.profile, "platform");
+  assert.ok(planBody.generated_at);
+  assert.equal(planBody.purpose, "private platform control plane");
+  assert.equal(planBody.deploy_dir, "repos/platform/deploy/platform");
+  assert.equal(planBody.env_path, "repos/platform/deploy/platform/.env");
+  assert.ok(Array.isArray(planBody.services));
+  assert.equal(planBody.services.find((item) => item.name === "platform-api").role, "control-plane API for catalog, tokens, requests, metrics");
+  assert.ok(Array.isArray(planBody.urls));
+  assert.equal(planBody.urls.find((item) => item.label === "Platform API").url, "http://127.0.0.1:8080");
+  assert.ok(Array.isArray(planBody.safety_checks));
+  assert.match(planBody.safety_checks.join("\n"), /selfhost:init/);
+  assert.match(planBody.safety_checks.join("\n"), /selfhost:preflight/);
+  assert.match(planBody.safety_checks.join("\n"), /never prints secret values/);
+  assert.ok(Array.isArray(planBody.notes));
+  assert.match(planBody.notes.join("\n"), /read-only/);
+  assert.ok(!planJson.stdout.includes(env.get("PLATFORM_ADMIN_API_KEY") || ""));
+
   const profiles = run(tmpRoot, ["profiles"]);
   assert.equal(profiles.status, 0, profiles.stderr || profiles.stdout);
   assert.match(profiles.stdout, /selfhost:profiles/);

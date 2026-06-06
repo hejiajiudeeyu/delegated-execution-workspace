@@ -18,14 +18,14 @@ repositories.
 - `repos/protocol`: `da3027100cfe9391f7f8d03be18a108ee2804cf6`
 - `repos/client`: `f1d6a2d8c9b83517cdf6ca9803b223847f880e9a`
 - `repos/platform`: `5961309c6b0ca4e8df22dbb5be92ac0845bf8d25`
-- `repos/brand-site`: `8d245f1d5d8ab8a7955fdd3f6fea47381472f7f3`
+- `repos/brand-site`: `694bc2acd82a580743b8f3db17616295c8b65ad2`
 
-The current bundle is `changes/CHG-2026-057.yaml`.
+The current bundle is `changes/CHG-2026-073.yaml`.
 
 ## Readiness Verdict
 
 The pinned combination is ready for daily fourth-repo development after
-CHG-2026-057:
+CHG-2026-073:
 
 - submodule SHA integrity is verified
 - boundary governance covers the new platform billing data package
@@ -56,6 +56,9 @@ CHG-2026-057:
 - `selfhost:profiles` is available as a read-only deployment map for built-in
   profiles, deploy directories, services, declared host ports, and matching
   doctor commands
+- `selfhost:plan` is available as a selected-profile deployment map with
+  purpose, deploy paths, services, URLs, safety checks, and notes, and supports
+  `--json` for generated docs, dashboards, and management scripts
 - `selfhost:quickstart` is available as a read-only copy-paste command sequence
   for a selected profile, including public-stack safety review and handoff
   evidence steps
@@ -115,7 +118,7 @@ Observed results:
 - `check:submodules`: passed
 - `check:boundaries`: passed after adding `@delexec/billing-store` to
   `platform/data`
-- `check:bundles`: passed with `CHG-2026-057`
+- `check:bundles`: passed with `CHG-2026-073`
 - `test:contracts`: passed, including `@delexec/billing-store` in platform
   package validation and the `@delexec/platform-api` dependency graph
 - `test:integration`: passed with a successful request/response path
@@ -124,10 +127,11 @@ Observed results:
 - `dev:doctor`: passed for the local daily agent/caller-skill stack
 - `selfhost:profiles` / `selfhost:quickstart` / `selfhost:readiness -- --all` /
   `selfhost:readiness` / `selfhost:doctor` / `selfhost:init` /
-  `selfhost:summary` / `selfhost:urls` / `selfhost:preflight`: added as the
+  `selfhost:plan` / `selfhost:summary` / `selfhost:urls` / `selfhost:preflight`: added as the
   first self-host management spine for profile discovery, copy-paste startup
   sequencing, read-only readiness matrix and selected-profile overview,
-  deployment diagnostics, generated env, one-screen profile overview, URL
+  deployment diagnostics, generated env, selected-profile deployment maps,
+  one-screen profile overview, URL
   discovery, and pre-`up` route, compose config, and secret hygiene checks
 - `selfhost:smoke`: passed for the local `platform` profile; the
   `public-stack` profile now also prints and validates the edge route contract,
@@ -241,6 +245,11 @@ commands without reading `.env`, inspecting Docker, or printing secret values;
 command sequence for the selected profile, including public-stack security,
 published-image, onboarding, and handoff evidence steps when applicable, without
 running Docker, mutating files, reading `.env`, or printing secret values;
+`corepack pnpm run selfhost:plan` prints the selected profile's read-only
+deployment map: purpose, deploy directory, env path, services, URLs, safety
+checks, and notes. It does not call Docker, mutate files, probe the network, or
+print secret values; `--json` emits the same map for generated docs, dashboards,
+and management scripts;
 `corepack pnpm run selfhost:readiness -- --all` prints a read-only readiness
 matrix for every built-in profile; `corepack pnpm run selfhost:readiness` prints
 the selected-profile deployment overview. Both combine profile files, `.env`
@@ -340,8 +349,8 @@ Billing page as an operator surface, not as client-facing billing readiness, and
 the public-stack command examples include `selfhost:security-review`,
 `selfhost:audit-export`, `selfhost:profiles`, `selfhost:quickstart`, `selfhost:readiness -- --all`, `selfhost:readiness`, `selfhost:readiness -- --json`, `selfhost:doctor`, `selfhost:summary`, `selfhost:ports`,
 `selfhost:ops-report`,
-`selfhost:backup-plan`, `selfhost:backup-validate`, `selfhost:restore-plan`, and `selfhost:rotate-plan` as pre-exposure safety,
-evidence, quickstart sequencing, human-readable and machine-readable readiness overview, port visibility, handoff-report,
+`selfhost:plan`, `selfhost:plan -- --json`, `selfhost:backup-plan`, `selfhost:backup-validate`, `selfhost:restore-plan`, and `selfhost:rotate-plan` as pre-exposure safety,
+evidence, quickstart sequencing, human-readable and machine-readable readiness overview, selected-profile deployment maps, port visibility, handoff-report,
 machine-readable handoff, backup planning, backup-artifact validation, recovery-rehearsal, and rotation-planning commands. Capabilities that
 are not ready remain outside the
 green path, and secrets, public origins, and billing readiness must not be

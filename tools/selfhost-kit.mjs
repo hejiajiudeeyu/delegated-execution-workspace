@@ -655,27 +655,65 @@ function composeConfig(profileName, mode = "quiet", stdio = "inherit") {
 }
 
 function printPlan(profileName) {
-  const { profile, dir, envPath } = profilePaths(profileName);
+  const data = planData(profileName);
   console.log(`[selfhost:plan] profile=${profileName}`);
-  console.log(`deploy_dir=${path.relative(ROOT, dir)}`);
-  console.log(`env=${path.relative(ROOT, envPath)}`);
+  console.log(`deploy_dir=${data.deploy_dir}`);
+  console.log(`env=${data.env_path}`);
   console.log("\nServices:");
-  for (const [name, role] of profile.services || []) {
-    console.log(`- ${name}: ${role}`);
+  for (const service of data.services) {
+    console.log(`- ${service.name}: ${service.role}`);
   }
   console.log("\nURLs:");
-  for (const [label, url] of profileUrls(profileName)) {
-    console.log(`- ${label}: ${url}`);
+  for (const url of data.urls) {
+    console.log(`- ${url.label}: ${url.url}`);
   }
   console.log("\nSafety checks:");
-  console.log("- run selfhost:init before first up");
-  console.log("- run selfhost:preflight before up");
-  console.log("- run selfhost:smoke after up");
-  console.log("- rotate secrets before public exposure");
-  console.log("- keep .env out of git; this tool never prints secret values");
-  if (profileName === "public-stack") {
-    console.log("- set PUBLIC_SITE_ADDRESS to the real public origin before exposure");
+  for (const check of data.safety_checks) {
+    console.log(`- ${check}`);
   }
+}
+
+function planData(profileName) {
+  const { profile, dir, envPath } = profilePaths(profileName);
+  const safetyChecks = [
+    "run selfhost:init before first up",
+    "run selfhost:preflight before up",
+    "run selfhost:smoke after up",
+    "rotate secrets before public exposure",
+    "keep .env out of git; this tool never prints secret values"
+  ];
+  if (profileName === "public-stack") {
+    safetyChecks.push("set PUBLIC_SITE_ADDRESS to the real public origin before exposure");
+  }
+  return {
+    command: "selfhost:plan",
+    profile: profileName,
+    purpose: profile.purpose,
+    deploy_dir: path.relative(ROOT, dir),
+    env_path: path.relative(ROOT, envPath),
+    services: (profile.services || []).map(([name, role]) => ({ name, role })),
+    urls: profileUrls(profileName).map(([label, url]) => ({ label, url })),
+    safety_checks: safetyChecks,
+    notes: [
+      "read-only",
+      "does not call Docker",
+      "does not bind ports",
+      "does not print secret values"
+    ]
+  };
+}
+
+function printPlanJson(profileName) {
+  console.log(
+    JSON.stringify(
+      {
+        generated_at: new Date().toISOString(),
+        ...planData(profileName)
+      },
+      null,
+      2
+    )
+  );
 }
 
 function commandProfileFlag(profileName) {
@@ -1942,6 +1980,10 @@ async function main() {
   }
 
   if (args.command === "plan") {
+    if (args.json) {
+      printPlanJson(args.profile);
+      return;
+    }
     printPlan(args.profile);
     return;
   }

@@ -75,6 +75,7 @@ The ecosystem is "daily-deployable" when a fresh operator can:
 | Self-host readiness overview | fourth repo | `corepack pnpm run selfhost:readiness -- --all`, plus `corepack pnpm --silent run ... --json` for automation |
 | Self-host deployment doctor | fourth repo | `corepack pnpm run selfhost:doctor`, plus `--json` for diagnostic panels |
 | Self-host env generator | fourth repo | `corepack pnpm run selfhost:init` |
+| Self-host profile plan | fourth repo | `corepack pnpm run selfhost:plan`, plus `--json` for generated docs and dashboards |
 | Self-host profile summary | fourth repo | `corepack pnpm run selfhost:summary`, plus `--json` for overview cards |
 | Self-host URL inventory | fourth repo | `corepack pnpm run selfhost:urls`, plus `--json` for dashboards and scripts |
 | Self-host declared ports inventory | fourth repo | `corepack pnpm run selfhost:ports`, plus `--json` for dashboards and scripts |
@@ -152,6 +153,9 @@ Required baseline:
   backup/rotation/smoke prerequisites before public exposure. Add `--json` so
   dashboards and deployment controllers can consume the same public exposure
   blockers and safety notes without parsing terminal prose.
+- Add `selfhost:plan -- --json` so generated docs, dashboards, and scripts can
+  consume the same read-only profile purpose, services, URLs, and safety checks
+  that operators see in terminal output.
 - Add `selfhost:audit-export` so operators can save platform admin audit events
   as local JSON evidence without printing admin keys.
 - Add `selfhost:ops-report` so operators can hand off a Markdown profile

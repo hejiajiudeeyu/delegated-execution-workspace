@@ -121,6 +121,7 @@ corepack pnpm run selfhost:init
 corepack pnpm run selfhost:summary
 corepack pnpm --silent run selfhost:summary -- --json
 corepack pnpm run selfhost:plan
+corepack pnpm --silent run selfhost:plan -- --json
 corepack pnpm run selfhost:urls
 corepack pnpm --silent run selfhost:urls -- --json
 corepack pnpm run selfhost:ports
@@ -145,6 +146,8 @@ corepack pnpm --silent run selfhost:doctor -- --profile public-stack --json
 corepack pnpm run selfhost:init -- --profile public-stack
 corepack pnpm run selfhost:summary -- --profile public-stack
 corepack pnpm --silent run selfhost:summary -- --profile public-stack --json
+corepack pnpm run selfhost:plan -- --profile public-stack
+corepack pnpm --silent run selfhost:plan -- --profile public-stack --json
 corepack pnpm run selfhost:urls -- --profile public-stack
 corepack pnpm --silent run selfhost:urls -- --profile public-stack --json
 corepack pnpm run selfhost:ports -- --profile public-stack
@@ -202,6 +205,12 @@ next commands without calling Docker, binding sockets, probing the network, or
 printing secret values. Use `corepack pnpm --silent run selfhost:summary ... --json`
 when a dashboard or script needs the same overview card data without parsing
 terminal prose.
+
+`selfhost:plan` is the read-only deployment map for a selected profile. It prints
+the profile purpose, services, URLs, and safety checks without calling Docker or
+printing secret values. Use `corepack pnpm --silent run selfhost:plan ... --json`
+when generated docs, dashboards, or scripts need the same profile explanation
+data.
 
 `selfhost:urls` prints the selected profile's declared URLs without calling
 Docker, binding sockets, probing the network, or printing secret values. Use
