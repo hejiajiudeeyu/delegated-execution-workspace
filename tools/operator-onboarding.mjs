@@ -106,9 +106,25 @@ function validateContracts() {
 
   record(
     "source operator branch runbook",
-    includesAll(runbook, ["Branch A", "Branch B", "awaiting_admin_approval", "node tools/approve-example.mjs", "Success Criteria"]) &&
-      includesAll(runbookZh, ["分支 A", "分支 B", "awaiting_admin_approval", "node tools/approve-example.mjs", "成功标准"]),
-    "automatic and manual approval branches remain documented"
+    includesAll(runbook, [
+      "Branch A",
+      "Branch B",
+      "awaiting_admin_approval",
+      "node tools/approve-example.mjs",
+      "corepack pnpm run selfhost:ports -- --profile public-stack",
+      "corepack pnpm run selfhost:ops-report -- --profile public-stack",
+      "Success Criteria"
+    ]) &&
+      includesAll(runbookZh, [
+        "分支 A",
+        "分支 B",
+        "awaiting_admin_approval",
+        "node tools/approve-example.mjs",
+        "corepack pnpm run selfhost:ports -- --profile public-stack",
+        "corepack pnpm run selfhost:ops-report -- --profile public-stack",
+        "成功标准"
+      ]),
+    "automatic and manual approval branches plus public-stack handoff commands remain documented"
   );
 
   const brandHasOperatorNarrative =
@@ -126,6 +142,7 @@ function printPlan() {
   console.log("[operator:onboarding:plan] public-stack first-use path");
   console.log("\n1. Preflight the public operator stack");
   console.log("   corepack pnpm run selfhost:init -- --profile public-stack");
+  console.log("   corepack pnpm run selfhost:ports -- --profile public-stack");
   console.log("   corepack pnpm run selfhost:preflight -- --profile public-stack");
   console.log("   corepack pnpm run selfhost:urls -- --profile public-stack");
   console.log("\n2. Start and inspect the operator surface");
@@ -134,6 +151,7 @@ function printPlan() {
   console.log("   use /gateway/session/setup then /gateway/credentials/platform-admin");
   console.log("\n3. Smoke the public routes and published images");
   console.log("   corepack pnpm run selfhost:smoke -- --profile public-stack");
+  console.log("   corepack pnpm run selfhost:ops-report -- --profile public-stack");
   console.log("   corepack pnpm run published-image:plan");
   console.log("   corepack pnpm run published-image:smoke -- --image-tag <tag>");
   console.log("\n4. Validate docs and onboarding contract");

@@ -83,12 +83,32 @@ function writeFixture(root, overrides = {}) {
   writeFile(
     root,
     "docs/runbooks/platform-first-operator-onboarding.md",
-    "Branch A\nBranch B\nawaiting_admin_approval\nnode tools/approve-example.mjs\nSuccess Criteria\n"
+    overrides.runbook ||
+      [
+        "Branch A",
+        "Branch B",
+        "awaiting_admin_approval",
+        "node tools/approve-example.mjs",
+        "corepack pnpm run selfhost:ports -- --profile public-stack",
+        "corepack pnpm run selfhost:ops-report -- --profile public-stack",
+        "Success Criteria",
+        ""
+      ].join("\n")
   );
   writeFile(
     root,
     "docs/runbooks/platform-first-operator-onboarding.zh-CN.md",
-    "分支 A\n分支 B\nawaiting_admin_approval\nnode tools/approve-example.mjs\n成功标准\n"
+    overrides.runbookZh ||
+      [
+        "分支 A",
+        "分支 B",
+        "awaiting_admin_approval",
+        "node tools/approve-example.mjs",
+        "corepack pnpm run selfhost:ports -- --profile public-stack",
+        "corepack pnpm run selfhost:ops-report -- --profile public-stack",
+        "成功标准",
+        ""
+      ].join("\n")
   );
   writeFile(
     root,
@@ -126,6 +146,8 @@ try {
   assert.match(plan.stdout, /\[operator:onboarding:plan\]/);
   assert.match(plan.stdout, /public-stack first-use path/);
   assert.match(plan.stdout, /\/console\//);
+  assert.match(plan.stdout, /corepack pnpm run selfhost:ports -- --profile public-stack/);
+  assert.match(plan.stdout, /corepack pnpm run selfhost:ops-report -- --profile public-stack/);
   assert.match(plan.stdout, /corepack pnpm run selfhost:preflight -- --profile public-stack/);
   assert.match(plan.stdout, /corepack pnpm run published-image:smoke/);
   assert.match(plan.stdout, /corepack pnpm run operator:onboarding:check/);
@@ -134,8 +156,22 @@ try {
   const check = run(tmpRoot, ["check"]);
   assert.equal(check.status, 0, check.stderr || check.stdout);
   assert.match(check.stdout, /public-stack console contract/);
+  assert.match(check.stdout, /source operator branch runbook/);
   assert.match(check.stdout, /brand-site operator narrative/);
   assert.ok(!check.stdout.includes("sk_admin_must_not_leak"));
+
+  const missingOpsRoot = fs.mkdtempSync(path.join(os.tmpdir(), "delexec-operator-onboarding-missing-ops-"));
+  try {
+    writeFixture(missingOpsRoot, {
+      runbook: "Branch A\nBranch B\nawaiting_admin_approval\nnode tools/approve-example.mjs\nSuccess Criteria\n",
+      runbookZh: "分支 A\n分支 B\nawaiting_admin_approval\nnode tools/approve-example.mjs\n成功标准\n"
+    });
+    const missingOps = run(missingOpsRoot, ["check"]);
+    assert.equal(missingOps.status, 1, missingOps.stderr || missingOps.stdout);
+    assert.match(missingOps.stdout + missingOps.stderr, /source operator branch runbook/);
+  } finally {
+    fs.rmSync(missingOpsRoot, { recursive: true, force: true });
+  }
 
   const staleRoot = fs.mkdtempSync(path.join(os.tmpdir(), "delexec-operator-onboarding-stale-"));
   try {

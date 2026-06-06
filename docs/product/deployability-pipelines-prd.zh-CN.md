@@ -177,19 +177,21 @@
 
 必备行为：
 
-- plan 给出 public-stack first-use 顺序：preflight、`up`、打开 `/console/`、
-  gateway session setup、credential persistence、route smoke、published-image smoke
+- plan 给出 public-stack first-use 顺序：生成 env、声明端口盘点、preflight、`up`、
+  打开 `/console/`、gateway session setup、credential persistence、route smoke、
+  不含 secrets 的 ops 交接报告、published-image smoke
 - check 校验 public-stack `Caddyfile`、compose 和 README 对 `/console/`、
   `/gateway/*`、`PLATFORM_CONSOLE_BOOTSTRAP_SECRET` 的契约一致
 - check 校验 platform operator guide 不再声称 `platform-console` 未打包
-- check 校验第四仓 source operator runbook 仍覆盖自动审批与人工审批停顿两条分支
+- check 校验第四仓 source operator runbook 仍覆盖自动审批与人工审批停顿两条分支，
+  并包含 public-stack 的 `selfhost:ports` 与 `selfhost:ops-report` 交接命令
 - check 校验 brand-site Deployability Profiles 把 Operator Onboarding 标成可验证路径，
   而不是 planned
 
 验收：
 
 - operator 不需要先读完整协议，就能知道 public-stack 首次打开哪里、如何写入 admin
-  credential、如何验证 gateway proxy
+  credential、声明了哪些 ports、如何生成不含 secrets 的交接报告、如何验证 gateway proxy
 - 文档与实际 public-stack route contract 不一致时，第四仓 check 失败
 - 这条路径仍不把 billing、email transport 或 marketplace production readiness 包装成已完成
 - billing 管理证据只覆盖 admin-only Platform Console 页面，不能被描述成终端用户

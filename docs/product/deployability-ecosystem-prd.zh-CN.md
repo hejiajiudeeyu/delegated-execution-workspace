@@ -140,6 +140,8 @@ CALL ANYTHING 现在的仓库边界是正确的：
   其中包含 URLs、host ports、安全状态和后续命令，但不包含 secret 值。
 - 增加 `selfhost:ports`，让 operator 在启动 profile 或暴露 public-stack 前先看清
   声明的 host ports。
+- 要求 operator onboarding contract 把 `selfhost:ports` 和 `selfhost:ops-report`
+  纳入 public-stack 首次使用路径，避免交接顺序退回只有终端启动和 smoke 的状态。
 - 增加 `selfhost:backup-validate`，让恢复演练先基于已检查的 backup directory
   形状开始，同时不读取或打印 `.env` secrets。
 - 增加 `selfhost:restore-plan`，让 backup artifact 在任何破坏性恢复动作前有一条

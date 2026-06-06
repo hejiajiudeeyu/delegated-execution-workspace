@@ -141,6 +141,9 @@ Required baseline:
   secret values.
 - Add `selfhost:ports` so operators can inspect declared host ports before
   starting a profile or exposing public-stack.
+- Require the operator onboarding contract to include `selfhost:ports` and
+  `selfhost:ops-report` in the public-stack first-use path so the handoff
+  sequence cannot drift back to terminal-only startup/smoke steps.
 - Add `selfhost:backup-validate` so restore rehearsal starts from a checked
   backup directory shape without reading or printing `.env` secrets.
 - Add `selfhost:restore-plan` so backup artifacts have a visible recovery

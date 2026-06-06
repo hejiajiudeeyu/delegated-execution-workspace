@@ -33,9 +33,11 @@
 
 ```bash
 corepack pnpm run selfhost:init -- --profile public-stack
+corepack pnpm run selfhost:ports -- --profile public-stack
 corepack pnpm run selfhost:preflight -- --profile public-stack
 corepack pnpm run selfhost:up -- --profile public-stack
 corepack pnpm run selfhost:smoke -- --profile public-stack
+corepack pnpm run selfhost:ops-report -- --profile public-stack
 corepack pnpm run published-image:smoke -- --image-tag latest
 corepack pnpm run operator:onboarding:check
 ```
@@ -46,6 +48,9 @@ corepack pnpm run operator:onboarding:check
 - `/gateway/session/setup` 初始化 gateway 本地密钥存储
 - `/gateway/credentials/platform-admin` 持久化 platform admin credential
 - `/gateway/proxy/v2/admin/hotlines` 证明已认证 gateway proxy 可用
+- `selfhost:ports` 在服务公开绑定前展示声明的 host ports
+- `selfhost:ops-report` 写出不含 secrets 的 Markdown 交接报告，包含 URLs、
+  host ports、secret hygiene 状态和下一步命令
 - `operator:onboarding:check` 确认 platform docs、public-stack route contract、
   brand-site 叙事和 source fallback runbook 仍然一致
 

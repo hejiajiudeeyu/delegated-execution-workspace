@@ -32,9 +32,11 @@ source integration loop.
 
 ```bash
 corepack pnpm run selfhost:init -- --profile public-stack
+corepack pnpm run selfhost:ports -- --profile public-stack
 corepack pnpm run selfhost:preflight -- --profile public-stack
 corepack pnpm run selfhost:up -- --profile public-stack
 corepack pnpm run selfhost:smoke -- --profile public-stack
+corepack pnpm run selfhost:ops-report -- --profile public-stack
 corepack pnpm run published-image:smoke -- --image-tag latest
 corepack pnpm run operator:onboarding:check
 ```
@@ -45,6 +47,9 @@ Expected result:
 - `/gateway/session/setup` initializes the gateway local secret store
 - `/gateway/credentials/platform-admin` persists the platform admin credential
 - `/gateway/proxy/v2/admin/hotlines` proves the authenticated gateway proxy
+- `selfhost:ports` shows declared host ports before services bind publicly
+- `selfhost:ops-report` writes a non-secret Markdown handoff report with URLs,
+  host ports, secret hygiene status, and next commands
 - `operator:onboarding:check` confirms the platform docs, public-stack route
   contract, brand-site narrative, and source fallback runbook still agree
 
