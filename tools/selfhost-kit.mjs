@@ -948,10 +948,19 @@ function readinessProfile(profileName) {
   return ok;
 }
 
-function doctorItem(label, ok, detail = "", level = "fail") {
-  const status = ok ? "ok" : level;
-  console.log(`[${status}] ${label}${detail ? `: ${detail}` : ""}`);
-  return ok || level === "warn";
+function doctorCheck(label, ok, detail = "", level = "fail") {
+  return {
+    label,
+    ok,
+    status: ok ? "ok" : level,
+    detail,
+    blocking: !ok && level !== "warn"
+  };
+}
+
+function printDoctorCheck(check) {
+  console.log(`[${check.status}] ${check.label}${check.detail ? `: ${check.detail}` : ""}`);
+  return !check.blocking;
 }
 
 function commandAvailable(command, args = ["--version"]) {
@@ -966,53 +975,99 @@ function commandAvailable(command, args = ["--version"]) {
   };
 }
 
-function doctorProfile(profileName) {
+function doctorData(profileName) {
   const { dir, envExamplePath, envPath, composePath } = profilePaths(profileName);
   const suffix = commandProfileFlag(profileName);
-  let ok = true;
+  const nodeCheck = commandAvailable(process.execPath, ["--version"]);
+  const corepackCheck = commandAvailable("corepack", ["--version"]);
+  const dockerCheck = commandAvailable("docker", ["--version"]);
+  const envExists = fs.existsSync(envPath);
+  const localTools = [
+    doctorCheck("node runtime", nodeCheck.ok, nodeCheck.detail),
+    doctorCheck("corepack", corepackCheck.ok, corepackCheck.detail),
+    doctorCheck("docker cli", dockerCheck.ok, dockerCheck.detail, "warn")
+  ];
+  const profileFiles = [
+    doctorCheck("profile deploy dir", fs.existsSync(dir), path.relative(ROOT, dir)),
+    doctorCheck(".env.example", fs.existsSync(envExamplePath), path.relative(ROOT, envExamplePath)),
+    doctorCheck("docker-compose.yml", fs.existsSync(composePath), path.relative(ROOT, composePath)),
+    doctorCheck(".env", envExists, envExists ? path.relative(ROOT, envPath) : `missing; run corepack pnpm run selfhost:init${suffix}`)
+  ];
+  const secretHygiene = envExists
+    ? secretFindings(fs.readFileSync(envPath, "utf8"), profileName).map((finding) => ({
+        key: finding.key,
+        ok: finding.ok,
+        status: finding.ok ? "set" : finding.message
+      }))
+    : [{ key: "secret hygiene", ok: false, status: `.env missing; run corepack pnpm run selfhost:init${suffix}` }];
+  const nextCommands = [
+    `corepack pnpm run selfhost:init${suffix}`,
+    `corepack pnpm run selfhost:summary${suffix}`,
+    `corepack pnpm run selfhost:preflight${suffix}`,
+    `corepack pnpm run selfhost:up${suffix}`
+  ];
+  const ok =
+    localTools.every((check) => !check.blocking) &&
+    profileFiles.every((check) => !check.blocking) &&
+    secretHygiene.every((finding) => finding.ok);
 
+  return {
+    command: "selfhost:doctor",
+    profile: profileName,
+    ok,
+    local_tools: localTools,
+    profile_files: profileFiles,
+    secret_hygiene: secretHygiene,
+    next_commands: nextCommands,
+    notes: ["read-only", "does not call docker compose", "does not start services", "does not probe the network", "does not print secret values"]
+  };
+}
+
+function printDoctorJson(profileName) {
+  const data = doctorData(profileName);
+  console.log(
+    JSON.stringify(
+      {
+        generated_at: new Date().toISOString(),
+        ...data
+      },
+      null,
+      2
+    )
+  );
+  return data.ok;
+}
+
+function doctorProfile(profileName) {
+  const data = doctorData(profileName);
   console.log(`[selfhost:doctor] profile=${profileName}`);
   console.log("This command is read-only; it does not call docker compose, start services, probe the network, or print secret values.");
 
   console.log("\n## Local tools");
-  const nodeCheck = commandAvailable(process.execPath, ["--version"]);
-  ok &&= doctorItem("node runtime", nodeCheck.ok, nodeCheck.detail);
-  const corepackCheck = commandAvailable("corepack", ["--version"]);
-  ok &&= doctorItem("corepack", corepackCheck.ok, corepackCheck.detail);
-  const dockerCheck = commandAvailable("docker", ["--version"]);
-  doctorItem("docker cli", dockerCheck.ok, dockerCheck.detail, "warn");
+  for (const check of data.local_tools) {
+    printDoctorCheck(check);
+  }
 
   console.log("\n## Profile files");
-  ok &&= doctorItem("profile deploy dir", fs.existsSync(dir), path.relative(ROOT, dir));
-  ok &&= doctorItem(".env.example", fs.existsSync(envExamplePath), path.relative(ROOT, envExamplePath));
-  ok &&= doctorItem("docker-compose.yml", fs.existsSync(composePath), path.relative(ROOT, composePath));
-  const envExists = fs.existsSync(envPath);
-  ok &&= doctorItem(".env", envExists, envExists ? path.relative(ROOT, envPath) : `missing; run corepack pnpm run selfhost:init${suffix}`);
+  for (const check of data.profile_files) {
+    printDoctorCheck(check);
+  }
 
   console.log("\n## Secret hygiene");
-  if (!envExists) {
-    ok = false;
-    console.log(`[fail] secret hygiene: .env missing; run corepack pnpm run selfhost:init${suffix}`);
-  } else {
-    const findings = secretFindings(fs.readFileSync(envPath, "utf8"), profileName);
-    const failed = findings.filter((finding) => !finding.ok);
-    for (const finding of findings) {
-      console.log(`[${finding.ok ? "ok" : "fail"}] ${finding.key}: ${finding.ok ? "set" : finding.message}`);
-    }
-    ok &&= failed.length === 0;
-    if (failed.length === 0) {
-      console.log("[ok] secret hygiene: deployable values are set");
-    }
+  for (const finding of data.secret_hygiene) {
+    console.log(`[${finding.ok ? "ok" : "fail"}] ${finding.key}: ${finding.status}`);
+  }
+  if (data.secret_hygiene.length > 0 && data.secret_hygiene.every((finding) => finding.ok)) {
+    console.log("[ok] secret hygiene: deployable values are set");
   }
 
   console.log("\n## Next commands");
-  console.log(`- corepack pnpm run selfhost:init${suffix}`);
-  console.log(`- corepack pnpm run selfhost:summary${suffix}`);
-  console.log(`- corepack pnpm run selfhost:preflight${suffix}`);
-  console.log(`- corepack pnpm run selfhost:up${suffix}`);
+  for (const command of data.next_commands) {
+    console.log(`- ${command}`);
+  }
 
-  console.log(`[${ok ? "ok" : "fail"}] ${ok ? "doctor passed" : "doctor found deployment blockers"}`);
-  return ok;
+  console.log(`[${data.ok ? "ok" : "fail"}] ${data.ok ? "doctor passed" : "doctor found deployment blockers"}`);
+  return data.ok;
 }
 
 function printPreflightRoutes(profileName) {
@@ -1411,6 +1466,9 @@ async function main() {
   }
 
   if (args.command === "doctor") {
+    if (args.json) {
+      process.exit(printDoctorJson(args.profile) ? 0 : 1);
+    }
     process.exit(doctorProfile(args.profile) ? 0 : 1);
   }
 

@@ -51,6 +51,7 @@ Required commands:
 - `corepack pnpm run selfhost:readiness`
 - `corepack pnpm --silent run selfhost:readiness -- --json`
 - `corepack pnpm run selfhost:doctor`
+- `corepack pnpm --silent run selfhost:doctor -- --json`
 - `corepack pnpm run selfhost:preflight`
 - `corepack pnpm run selfhost:status`
 - `corepack pnpm run selfhost:smoke`
@@ -92,7 +93,9 @@ Acceptance:
   same single-profile or all-profile readiness checks
 - doctor checks local tool visibility, profile files, `.env` presence, and
   secret/public-origin hygiene without calling `docker compose`, starting
-  services, probing the network, or printing secrets
+  services, probing the network, or printing secrets; `--json` returns the same
+  checks, blocker status, and next commands for dashboards and scripts with the
+  same exit-code semantics
 - status shows Docker compose state and health endpoints
 - smoke checks secret hygiene, compose config, and health endpoints
 - preflight checks secret hygiene, compose config, and routes before `up`,

@@ -460,6 +460,25 @@ try {
   assert.match(doctor.stdout, /corepack pnpm run selfhost:summary/);
   assert.ok(!doctor.stdout.includes(env.get("PLATFORM_ADMIN_API_KEY") || ""));
 
+  const doctorJson = run(tmpRoot, ["doctor", "--json"]);
+  assert.equal(doctorJson.status, 0, doctorJson.stderr || doctorJson.stdout);
+  const doctorBody = JSON.parse(doctorJson.stdout);
+  assert.equal(doctorBody.command, "selfhost:doctor");
+  assert.equal(doctorBody.profile, "platform");
+  assert.equal(doctorBody.ok, true);
+  assert.ok(doctorBody.generated_at);
+  assert.ok(Array.isArray(doctorBody.local_tools));
+  assert.equal(doctorBody.local_tools.find((item) => item.label === "node runtime").status, "ok");
+  assert.equal(doctorBody.local_tools.find((item) => item.label === "docker cli").blocking, false);
+  assert.ok(Array.isArray(doctorBody.profile_files));
+  assert.equal(doctorBody.profile_files.find((item) => item.label === ".env").status, "ok");
+  assert.ok(Array.isArray(doctorBody.secret_hygiene));
+  assert.equal(doctorBody.secret_hygiene.find((item) => item.key === "TOKEN_SECRET").status, "set");
+  assert.match(doctorBody.next_commands.join("\n"), /selfhost:summary/);
+  assert.ok(Array.isArray(doctorBody.notes));
+  assert.match(doctorBody.notes.join("\n"), /does not probe the network/);
+  assert.ok(!doctorJson.stdout.includes(env.get("PLATFORM_ADMIN_API_KEY") || ""));
+
   const rotatedEnv = readEnv(envPath);
   await withAuditServer(rotatedEnv.get("PLATFORM_ADMIN_API_KEY") || "", async (auditBaseUrl) => {
     const exportPath = path.join(tmpRoot, "exports/audit/platform/test-audit.json");

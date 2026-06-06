@@ -73,7 +73,7 @@ The ecosystem is "daily-deployable" when a fresh operator can:
 | Self-host deployment map | fourth repo | `corepack pnpm run selfhost:profiles` |
 | Self-host quickstart sequence | fourth repo | `corepack pnpm run selfhost:quickstart` |
 | Self-host readiness overview | fourth repo | `corepack pnpm run selfhost:readiness -- --all`, plus `corepack pnpm --silent run ... --json` for automation |
-| Self-host deployment doctor | fourth repo | `corepack pnpm run selfhost:doctor` |
+| Self-host deployment doctor | fourth repo | `corepack pnpm run selfhost:doctor`, plus `--json` for diagnostic panels |
 | Self-host env generator | fourth repo | `corepack pnpm run selfhost:init` |
 | Self-host profile summary | fourth repo | `corepack pnpm run selfhost:summary`, plus `--json` for overview cards |
 | Self-host URL inventory | fourth repo | `corepack pnpm run selfhost:urls`, plus `--json` for dashboards and scripts |
@@ -157,7 +157,8 @@ Required baseline:
 - Add `selfhost:summary` so operators can see deploy paths, URLs, declared
   host ports, secret hygiene status, and next commands in one read-only screen.
 - Add `selfhost:doctor` as the earliest read-only deployment diagnostic for
-  local tools, profile files, `.env` presence, and secret/public-origin hygiene.
+  local tools, profile files, `.env` presence, and secret/public-origin hygiene,
+  with `--json` for diagnostic panels and deployment scripts.
 - Add `selfhost:profiles` as the read-only deployment map for built-in profiles,
   deploy directories, services, declared host ports, and matching doctor commands.
 - Add `selfhost:quickstart` as the read-only copy-paste sequence for a selected

@@ -76,7 +76,7 @@ CALL ANYTHING 现在的仓库边界是正确的：
 | Self-host 部署地图 | 第四仓 | `corepack pnpm run selfhost:profiles` |
 | Self-host quickstart 序列 | 第四仓 | `corepack pnpm run selfhost:quickstart` |
 | Self-host readiness 总览 | 第四仓 | `corepack pnpm run selfhost:readiness -- --all`，以及自动化使用的 `corepack pnpm --silent run ... --json` |
-| Self-host 部署 doctor | 第四仓 | `corepack pnpm run selfhost:doctor` |
+| Self-host 部署 doctor | 第四仓 | `corepack pnpm run selfhost:doctor`，以及用于诊断面板的 `--json` |
 | Self-host env 生成器 | 第四仓 | `corepack pnpm run selfhost:init` |
 | Self-host profile 概要 | 第四仓 | `corepack pnpm run selfhost:summary`，以及用于概要卡片的 `--json` |
 | Self-host URL inventory | 第四仓 | `corepack pnpm run selfhost:urls`，以及用于 dashboard 和脚本的 `--json` |
@@ -155,7 +155,7 @@ CALL ANYTHING 现在的仓库边界是正确的：
 - 增加 `selfhost:summary`，让 operator 用一屏只读输出看清 deploy 路径、URLs、
   声明的 host ports、secret hygiene 状态和下一步命令。
 - 增加 `selfhost:doctor` 作为最早的只读部署诊断，覆盖本地工具、profile 文件、
-  `.env` 是否存在，以及 secret / public-origin hygiene。
+  `.env` 是否存在，以及 secret / public-origin hygiene，并用 `--json` 供诊断面板和部署脚本消费。
 - 增加 `selfhost:profiles` 作为只读部署地图，展示内置 profiles、deploy 目录、
   services、声明 host ports 和对应 doctor 命令。
 - 增加 `selfhost:quickstart` 作为选定 profile 的只读复制粘贴序列，覆盖 public-stack

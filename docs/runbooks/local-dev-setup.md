@@ -116,6 +116,7 @@ corepack pnpm --silent run selfhost:readiness -- --all --json
 corepack pnpm run selfhost:readiness
 corepack pnpm --silent run selfhost:readiness -- --json
 corepack pnpm run selfhost:doctor
+corepack pnpm --silent run selfhost:doctor -- --json
 corepack pnpm run selfhost:init
 corepack pnpm run selfhost:summary
 corepack pnpm --silent run selfhost:summary -- --json
@@ -137,6 +138,7 @@ corepack pnpm --silent run selfhost:quickstart -- --profile public-stack --json
 corepack pnpm run selfhost:readiness -- --profile public-stack
 corepack pnpm --silent run selfhost:readiness -- --profile public-stack --json
 corepack pnpm run selfhost:doctor -- --profile public-stack
+corepack pnpm --silent run selfhost:doctor -- --profile public-stack --json
 corepack pnpm run selfhost:init -- --profile public-stack
 corepack pnpm run selfhost:summary -- --profile public-stack
 corepack pnpm --silent run selfhost:summary -- --profile public-stack --json
@@ -181,7 +183,10 @@ output with the same exit-code semantics.
 `selfhost:doctor` is the earliest read-only deployment diagnostic. It checks
 local tool visibility, profile files, `.env` presence, and secret/public-origin
 hygiene, then prints the next commands without calling `docker compose`,
-starting services, probing the network, or printing secret values.
+starting services, probing the network, or printing secret values. Use
+`corepack pnpm --silent run selfhost:doctor ... --json` when a dashboard or
+script needs the same checks, blocker status, and next commands with the same
+exit-code semantics.
 
 `selfhost:summary` is the read-only one-screen overview for a selected profile.
 It prints deploy paths, URLs, declared host ports, secret hygiene status, and

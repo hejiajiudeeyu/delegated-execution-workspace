@@ -138,6 +138,7 @@ corepack pnpm --silent run selfhost:readiness -- --all --json
 corepack pnpm run selfhost:readiness
 corepack pnpm --silent run selfhost:readiness -- --json
 corepack pnpm run selfhost:doctor
+corepack pnpm --silent run selfhost:doctor -- --json
 corepack pnpm run selfhost:init
 corepack pnpm run selfhost:summary
 corepack pnpm --silent run selfhost:summary -- --json
@@ -161,6 +162,7 @@ corepack pnpm --silent run selfhost:quickstart -- --profile public-stack --json
 corepack pnpm run selfhost:readiness -- --profile public-stack
 corepack pnpm --silent run selfhost:readiness -- --profile public-stack --json
 corepack pnpm run selfhost:doctor -- --profile public-stack
+corepack pnpm --silent run selfhost:doctor -- --profile public-stack --json
 corepack pnpm run selfhost:init -- --profile public-stack
 corepack pnpm run selfhost:summary -- --profile public-stack
 corepack pnpm --silent run selfhost:summary -- --profile public-stack --json

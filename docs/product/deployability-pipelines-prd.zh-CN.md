@@ -51,6 +51,7 @@
 - `corepack pnpm run selfhost:readiness`
 - `corepack pnpm --silent run selfhost:readiness -- --json`
 - `corepack pnpm run selfhost:doctor`
+- `corepack pnpm --silent run selfhost:doctor -- --json`
 - `corepack pnpm run selfhost:preflight`
 - `corepack pnpm run selfhost:status`
 - `corepack pnpm run selfhost:smoke`
@@ -88,7 +89,8 @@
   全 profile readiness 检查输出机器可读的 `ok`、`blockers` 和 `next` 字段
 - doctor 检查本地工具可见性、profile 文件、`.env` 是否存在，以及 secret /
   public-origin hygiene，但不调用 `docker compose`、不启动服务、不探测网络、不打印
-  secret 值
+  secret 值；`--json` 返回同一组检查、阻断状态和下一步命令，供 dashboard 和脚本消费，
+  并保持相同 exit-code 语义
 - status 能显示 Docker compose 状态和 health endpoints
 - smoke 同时检查 secret hygiene、compose config 和 health endpoints
 - preflight 在 `up` 前检查 secret hygiene、compose config 和 routes，不要求服务已运行

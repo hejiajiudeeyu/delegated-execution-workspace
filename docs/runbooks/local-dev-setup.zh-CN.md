@@ -97,6 +97,7 @@ corepack pnpm --silent run selfhost:readiness -- --all --json
 corepack pnpm run selfhost:readiness
 corepack pnpm --silent run selfhost:readiness -- --json
 corepack pnpm run selfhost:doctor
+corepack pnpm --silent run selfhost:doctor -- --json
 corepack pnpm run selfhost:init
 corepack pnpm run selfhost:summary
 corepack pnpm --silent run selfhost:summary -- --json
@@ -118,6 +119,7 @@ corepack pnpm --silent run selfhost:quickstart -- --profile public-stack --json
 corepack pnpm run selfhost:readiness -- --profile public-stack
 corepack pnpm --silent run selfhost:readiness -- --profile public-stack --json
 corepack pnpm run selfhost:doctor -- --profile public-stack
+corepack pnpm --silent run selfhost:doctor -- --profile public-stack --json
 corepack pnpm run selfhost:init -- --profile public-stack
 corepack pnpm run selfhost:summary -- --profile public-stack
 corepack pnpm --silent run selfhost:summary -- --profile public-stack --json
@@ -154,7 +156,9 @@ exit-code 语义。
 
 `selfhost:doctor` 是最早运行的只读部署诊断命令。它会检查本地工具可见性、
 profile 文件、`.env` 是否存在，以及 secret / public-origin hygiene，然后打印下一步命令；
-但不会调用 `docker compose`、启动服务、探测网络或打印 secret 值。
+但不会调用 `docker compose`、启动服务、探测网络或打印 secret 值。当 dashboard 或脚本需要同一组检查、
+阻断状态和下一步命令且要保持相同 exit-code 语义时，使用
+`corepack pnpm --silent run selfhost:doctor ... --json`。
 
 `selfhost:summary` 是选定 profile 的只读一屏概要。它会输出 deploy 路径、URLs、
 声明的 host ports、secret hygiene 状态和下一步命令，但不会调用 Docker、绑定
