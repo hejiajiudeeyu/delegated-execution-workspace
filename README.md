@@ -121,6 +121,8 @@ corepack pnpm run dev:doctor
 corepack pnpm run test:agent-e2e
 corepack pnpm run mcp:golden-four
 corepack pnpm run test:selfhost-kit
+corepack pnpm run operator:onboarding:plan
+corepack pnpm run operator:onboarding:check
 ```
 
 Initialize and inspect a self-host profile:

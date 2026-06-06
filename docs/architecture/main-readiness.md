@@ -19,12 +19,12 @@ repositories.
 - `repos/client`: `f1d6a2d8c9b83517cdf6ca9803b223847f880e9a`
 - `repos/platform`: `dc7c654964707badbdda8d02d57a6b56b8cf11a5`
 
-The current bundle is `changes/CHG-2026-038.yaml`.
+The current bundle is `changes/CHG-2026-040.yaml`.
 
 ## Readiness Verdict
 
 The pinned combination is ready for daily fourth-repo development after
-CHG-2026-038:
+CHG-2026-040:
 
 - submodule SHA integrity is verified
 - boundary governance covers the new platform billing data package
@@ -41,6 +41,12 @@ CHG-2026-038:
   deployment profiles, ready/planned boundaries, and secret-safety defaults
 - one-command local stack bootstrap is available through managed
   `dev:local:*` commands
+- published-image smoke now has a fourth-repo entry point that reviews
+  public-stack release images and delegates to platform smoke with
+  `COMPOSE_NO_BUILD=true`
+- platform-first/operator-first onboarding now has a fourth-repo contract check
+  that keeps public-stack `/console/`, gateway session flow, platform docs,
+  brand-site narrative, and the source fallback runbook aligned
 
 This verdict is intentionally scoped. Billing P-1 M1.1 adds platform
 persistence and schema groundwork, but it does not make billing a complete
@@ -63,7 +69,7 @@ Observed results:
 - `check:submodules`: passed
 - `check:boundaries`: passed after adding `@delexec/billing-store` to
   `platform/data`
-- `check:bundles`: passed with `CHG-2026-038`
+- `check:bundles`: passed with `CHG-2026-040`
 - `test:contracts`: passed, including `@delexec/billing-store` in platform
   package validation
 - `test:integration`: passed with a successful request/response path
@@ -84,6 +90,21 @@ Observed results:
   secret-leak guard for the executable golden-four smoke
 - `test:local-stack`: passed for one-command local stack command sequencing,
   managed process status/log behavior, and secret-leak guard
+- `published-image:plan` / `published-image:smoke -- --dry-run`: passed for
+  public-stack release image registry/tag visibility, the `COMPOSE_NO_BUILD=true`
+  delegated command, and strict smoke defaults
+- `published-image:smoke -- --image-tag latest`: passed with `repos/platform`
+  public-stack smoke running in `mode=published_image`, completing the gateway
+  proxy scenario, and cleaning up compose
+- `test:published-image-smoke`: passed with a fake platform repo covering
+  compose image-template validation, dry-run delegation, and secret-leak guard
+- `operator:onboarding:check`: passed for the public-stack `/console/` and
+  `/gateway/*` route contract, `PLATFORM_CONSOLE_BOOTSTRAP_SECRET`, platform
+  operator guide, brand-site Deployability Profiles, and fourth-repo source
+  fallback runbook narrative
+- `test:operator-onboarding`: passed with a fake repo covering the operator
+  onboarding plan, stale platform-guide detection, brand-site planned-copy
+  detection, and secret-leak guard
 - `repos/brand-site` `npm run smoke:deployability-content`: passed for the
   bilingual Deployability Profiles route/content contract
 - `repos/brand-site` `npm run build`: passed, including client build, SSR
@@ -154,6 +175,15 @@ of being hidden behind a green status. `selfhost:up` reuses the preflight gate b
 default and will not continue when it fails unless `--force` is passed
 explicitly.
 
+`corepack pnpm run published-image:plan` reviews the three public-stack release
+images, `rsp-platform`, `rsp-relay`, and `rsp-gateway`, and confirms the compose
+image templates are still parameterized by `IMAGE_REGISTRY` / `IMAGE_TAG`.
+`corepack pnpm run published-image:smoke` delegates to `repos/platform`
+`test:public-stack-smoke` in strict Docker mode with `COMPOSE_NO_BUILD=true`, so
+platform smoke pulls published images instead of building locally. The fourth
+repo owns only this orchestration entry point; image build, publish, and release
+gates remain owned by `repos/platform`.
+
 ### Console deployability management slice
 
 The ops-console Runtime page now shows a deployability readiness panel for the
@@ -179,9 +209,11 @@ This is the first M3 explanation and runtime visibility surface.
 The brand-site docs now expose `/docs/deployability-profiles` and
 `/en/docs/deployability-profiles` as bilingual public entry points for Local
 Agent Loop, Selfhost Platform, Public Stack, and Management Console. The pages
-keep self-host messaging honest by labeling current paths as ready now and
-platform-first console onboarding as planned, while repeating that secrets,
-public origins, and billing readiness must not be hidden behind green status.
+keep self-host messaging honest by labeling current paths as ready now:
+local loop, selfhost, public-stack safety checks, published-image smoke, and
+Operator Onboarding. Capabilities that are not ready remain outside the green
+path, and secrets, public origins, and billing readiness must not be hidden
+behind green status.
 
 ## Still Not Ready As A Default Daily Path
 
@@ -190,8 +222,10 @@ default day-to-day workflows:
 
 - billing P-1 beyond M1.1, including API/read model/client-facing surfaces
 - email transport as an end-user default path
-- published-image smoke and deployment validation
-- platform-first/operator-first onboarding as the primary first-use path
+
+Also, the published-image wrapper becomes evidence for a specific
+`IMAGE_REGISTRY` / `IMAGE_TAG` only after a real `published-image:smoke` run
+against that tag. Dry-run validates the orchestration contract only.
 
 ## Current Caveat
 

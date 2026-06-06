@@ -15,13 +15,39 @@
 - 通过 `repos/platform` 启动 standalone relay
 - 通过 `repos/client` 源码 `delexec-ops` 完成 bootstrap
 - 官方 example hotline 的审批处理
+- public-stack `/console/` + gateway session flow 作为公网 operator 首次进入点
 
 本文 **不** 预设：
 
-- `public-stack` 已经打包 `platform-console` 前端
 - billing 或 quota enforcement 已经接入
 - email 已经成为默认 transport 路径
 - `repos/client` 内存在镜像型 smoke 脚本
+
+对于公网主机，`deploy/public-stack` 现在已经通过
+`platform-console-gateway` 打包 `platform-console` 静态 UI；首次进入使用
+`/console/`，credential-backed operator API 使用 `/gateway/*`。
+
+## Public Stack 首次使用路径
+
+当 operator 从公网 bundle 而不是本地源码集成 loop 开始时，使用这条路径：
+
+```bash
+corepack pnpm run selfhost:init -- --profile public-stack
+corepack pnpm run selfhost:preflight -- --profile public-stack
+corepack pnpm run selfhost:up -- --profile public-stack
+corepack pnpm run selfhost:smoke -- --profile public-stack
+corepack pnpm run published-image:smoke -- --image-tag latest
+corepack pnpm run operator:onboarding:check
+```
+
+预期结果：
+
+- `/console/` 通过 `platform-console-gateway` 提供 operator UI
+- `/gateway/session/setup` 初始化 gateway 本地密钥存储
+- `/gateway/credentials/platform-admin` 持久化 platform admin credential
+- `/gateway/proxy/v2/admin/hotlines` 证明已认证 gateway proxy 可用
+- `operator:onboarding:check` 确认 platform docs、public-stack route contract、
+  brand-site 叙事和 source fallback runbook 仍然一致
 
 ## 当前支持的两条 operator 分支
 
@@ -215,7 +241,6 @@ node repos/client/apps/ops/src/cli.js status
 
 以下内容仍然不在这条路径的 readiness 声明内：
 
-- `public-stack` 捆绑 operator 前端并作为默认首用入口
 - billing / quota 行为
 - email 作为 operator-first 主 transport 路径
 - 对所有 image / compose profile 的广义终端用户部署保证

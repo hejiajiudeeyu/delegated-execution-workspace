@@ -12,13 +12,41 @@ This runbook covers:
 - standalone relay via `repos/platform`
 - source `delexec-ops` bootstrap via `repos/client`
 - approval handling for the official example hotline
+- public-stack `/console/` + gateway session flow as the public operator
+  first-use entry point
 
 This runbook does **not** assume:
 
-- bundled `platform-console` frontend inside `public-stack`
 - billing or quota enforcement
 - email as the default transport path
 - image-smoke scripts inside `repos/client`
+
+For public hosts, `deploy/public-stack` now bundles `platform-console` static UI
+behind `platform-console-gateway`; use `/console/` for first entry and
+`/gateway/*` for credential-backed operator API calls.
+
+## Public Stack First-Use Path
+
+Use this when the operator starts from the public bundle instead of the local
+source integration loop.
+
+```bash
+corepack pnpm run selfhost:init -- --profile public-stack
+corepack pnpm run selfhost:preflight -- --profile public-stack
+corepack pnpm run selfhost:up -- --profile public-stack
+corepack pnpm run selfhost:smoke -- --profile public-stack
+corepack pnpm run published-image:smoke -- --image-tag latest
+corepack pnpm run operator:onboarding:check
+```
+
+Expected result:
+
+- `/console/` serves the operator UI through `platform-console-gateway`
+- `/gateway/session/setup` initializes the gateway local secret store
+- `/gateway/credentials/platform-admin` persists the platform admin credential
+- `/gateway/proxy/v2/admin/hotlines` proves the authenticated gateway proxy
+- `operator:onboarding:check` confirms the platform docs, public-stack route
+  contract, brand-site narrative, and source fallback runbook still agree
 
 ## Two Supported Operator Branches
 
@@ -212,7 +240,6 @@ Treat the operator-first path as ready for the current checkout only when all of
 
 These are still outside the readiness claim for this path:
 
-- public-stack bundled operator frontend as the default first-use surface
 - billing/quota behavior
 - email as the primary operator-first transport path
 - broad end-user deployment guarantees for every image/compose profile

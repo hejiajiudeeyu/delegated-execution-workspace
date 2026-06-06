@@ -109,6 +109,28 @@ corepack pnpm run selfhost:smoke -- --profile public-stack
 `selfhost:up` 会自动先运行同一组 preflight gate。若 public origin 或 secret
 hygiene 未通过，默认不会继续启动；只有显式传入 `--force` 才会绕过该阻断。
 
+验证已发布 public-stack 镜像：
+
+```bash
+corepack pnpm run published-image:plan
+corepack pnpm run published-image:smoke -- --image-registry ghcr.io/hejiajiudeeyu --image-tag latest
+corepack pnpm run published-image:smoke -- --dry-run --image-tag <candidate-tag>
+corepack pnpm run test:published-image-smoke
+```
+
+`published-image:smoke` 默认会设置 `COMPOSE_NO_BUILD=true` 和
+`STRICT_COMPOSE_SMOKE=true`，并委托 `repos/platform` 的 public-stack smoke。
+如果只是本地查看命令形状，可以使用 `--dry-run`；如果显式允许无 Docker 环境跳过，
+才传 `--allow-skip`。
+
+检查 operator 首次使用契约：
+
+```bash
+corepack pnpm run operator:onboarding:plan
+corepack pnpm run operator:onboarding:check
+corepack pnpm run test:operator-onboarding
+```
+
 运维辅助命令：
 
 ```bash

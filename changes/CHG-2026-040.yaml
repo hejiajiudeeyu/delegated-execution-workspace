@@ -1,0 +1,16 @@
+change_id: CHG-2026-040
+goal: make operator-first onboarding a verified public-stack contract
+protocol_sha: da3027100cfe9391f7f8d03be18a108ee2804cf6
+client_sha: f1d6a2d8c9b83517cdf6ca9803b223847f880e9a
+platform_sha: 618b16c423005ea7da19c1284fa81a0ef0ddea0a
+brand_site_sha: 30c55ede2b03599e40d0e03947a0c44a8cf6ebdd
+owner: hejiajiudeeyu
+risk_level: low
+affected_scope:
+  - platform
+  - brand-site
+  - orchestration
+  - documentation
+contracts_check: passed
+integration_check: passed
+notes: "Adds tools/operator-onboarding.mjs and test:operator-onboarding as a fourth-repo contract wrapper for the public-stack operator first-use path. The check verifies that public-stack Caddyfile/compose/README expose /console and /gateway consistently, that platform operator guides no longer say platform-console is unbundled, that the fourth-repo source fallback runbook still covers automatic and manual approval branches, and that brand-site Deployability Profiles mark Operator Onboarding as a verifiable path. Updates platform docs at 618b16c and brand-site docs at 30c55ed; keeps billing and email outside the ready claim."

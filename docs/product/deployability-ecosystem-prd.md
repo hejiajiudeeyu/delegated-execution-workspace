@@ -72,6 +72,8 @@ The ecosystem is "daily-deployable" when a fresh operator can:
 | Agent-facing smoke | fourth repo | `corepack pnpm run test:agent-e2e` |
 | Self-host env generator | fourth repo | `corepack pnpm run selfhost:init` |
 | Compose lifecycle wrapper | fourth repo | delegate to `repos/platform/deploy/*` |
+| Published-image smoke wrapper | fourth repo | delegate to `repos/platform` public-stack smoke |
+| Operator onboarding contract | fourth repo | `operator:onboarding:check` keeps public-stack, brand-site, and runbooks aligned |
 | Public stack deploy manifests | `repos/platform` | existing `deploy/public-stack` |
 | Runtime console | `repos/client` and `repos/platform` | status, logs, settings, approvals |
 | Brand explanation | `repos/brand-site` | deployability narrative and quick-start entry |
@@ -89,7 +91,8 @@ Required baseline:
 
 ## 8. Success Metrics
 
-- A fresh checkout can run `selfhost:init`, `selfhost:status`, `dev:doctor`, and `test:agent-e2e`.
+- A fresh checkout can run `selfhost:init`, `selfhost:status`, `dev:doctor`,
+  `test:agent-e2e`, `published-image:plan`, and `operator:onboarding:check`.
 - PRD, runbooks, README, and brand-site copy use the same named profiles.
 - Fourth-repo CI remains green after adding orchestration helpers.
 - Brand-site build remains green after messaging updates.
@@ -113,7 +116,11 @@ Required baseline:
 
 - Make runtime status, logs, approval policy, adapter health, and billing readiness visible in console surfaces.
 - Add operator-first public-stack onboarding checks.
+- Keep public-stack `/console/`, gateway session flow, and brand-site Operator
+  Onboarding narrative aligned.
 
 ### M4: Production hardening
 
-- Add backup/restore, rotation, audit export, published-image smoke, and public-stack security review gates.
+- Add backup/restore, rotation, audit export, and public-stack security review gates.
+- Published-image smoke is first connected as a fourth-repo wrapper; formal
+  image build, publish, and release gates remain owned by `repos/platform`.

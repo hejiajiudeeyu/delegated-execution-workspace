@@ -1,0 +1,14 @@
+change_id: CHG-2026-039
+goal: add published-image smoke orchestration
+protocol_sha: da3027100cfe9391f7f8d03be18a108ee2804cf6
+client_sha: f1d6a2d8c9b83517cdf6ca9803b223847f880e9a
+platform_sha: dc7c654964707badbdda8d02d57a6b56b8cf11a5
+brand_site_sha: cbf57685e27f29c1b6a5eb5912a05789e689761d
+owner: hejiajiudeeyu
+risk_level: low
+affected_scope:
+  - orchestration
+  - documentation
+contracts_check: passed
+integration_check: passed
+notes: "Adds tools/published-image-smoke.mjs and test:published-image-smoke as a fourth-repo published-image validation wrapper for the public-stack profile. The wrapper validates that platform public-stack release images remain parameterized by IMAGE_REGISTRY and IMAGE_TAG, prints resolved rsp-platform/rsp-relay/rsp-gateway image refs, and delegates real smoke execution to repos/platform test:public-stack-smoke with COMPOSE_NO_BUILD=true and strict Docker mode by default. Verified against latest with public-stack smoke mode=published_image and gateway proxy success. PRDs, readiness docs, and local runbooks now distinguish this orchestration entry point from the platform-owned image build, publish, and release gates."

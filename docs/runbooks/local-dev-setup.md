@@ -129,6 +129,29 @@ corepack pnpm run selfhost:smoke -- --profile public-stack
 or secret hygiene checks fail, it will not start the profile by default; passing
 `--force` is the explicit override.
 
+Validate published public-stack images:
+
+```bash
+corepack pnpm run published-image:plan
+corepack pnpm run published-image:smoke -- --image-registry ghcr.io/hejiajiudeeyu --image-tag latest
+corepack pnpm run published-image:smoke -- --dry-run --image-tag <candidate-tag>
+corepack pnpm run test:published-image-smoke
+```
+
+`published-image:smoke` sets `COMPOSE_NO_BUILD=true` and
+`STRICT_COMPOSE_SMOKE=true` by default, then delegates to the `repos/platform`
+public-stack smoke. Use `--dry-run` when you only want to inspect the command
+shape; pass `--allow-skip` only when you explicitly allow a no-Docker local
+probe to skip.
+
+Check the operator first-use contract:
+
+```bash
+corepack pnpm run operator:onboarding:plan
+corepack pnpm run operator:onboarding:check
+corepack pnpm run test:operator-onboarding
+```
+
 Operational helpers:
 
 ```bash

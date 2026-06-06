@@ -97,6 +97,7 @@
 - settings 页解释 local/public mode 和 approval policies
 - logs 页能引导定位问题，但不 dump secrets
 - billing readiness 是显式状态，而不是暗示已经 ready
+- public-stack 的 `/console/` 和 gateway session flow 能作为 operator 首次进入点被解释和验证
 
 ## 管线 E：Brand Site
 
@@ -111,3 +112,62 @@
 - console prototype 强调管理能力，而不只是视觉精致
 - self-host 文案诚实区分「现在可用」和「计划中」
 - brand-site build 与 deployability-content smoke 通过
+
+## 管线 F：Published Image Release Smoke
+
+目标：让 public-stack 的已发布镜像验证有一个第四仓入口，同时不复制
+`repos/platform` 的 release 实现。
+
+必备命令：
+
+- `corepack pnpm run published-image:plan`
+- `corepack pnpm run published-image:smoke`
+- `corepack pnpm run test:published-image-smoke`
+
+必备行为：
+
+- plan 输出 `rsp-platform`、`rsp-relay`、`rsp-gateway` 的 registry/tag
+  解析结果
+- plan 校验 `repos/platform/deploy/public-stack/docker-compose.yml` 中三类
+  release image 都通过 `IMAGE_REGISTRY` 和 `IMAGE_TAG` 参数化
+- smoke 委托到 `repos/platform` 的 `test:public-stack-smoke`
+- smoke 默认设置 `COMPOSE_NO_BUILD=true`，让平台 smoke 拉取已发布镜像而不是本地 build
+- smoke 默认使用 strict Docker 模式；只有显式 `--allow-skip` 才允许本地探测式跳过
+- 命令输出只显示 registry、tag 和命令形状，不打印 admin key、bootstrap secret 或 `.env` 值
+
+验收：
+
+- operator 在实际运行 Docker 前能审阅将要验证的镜像和平台 smoke 命令
+- `--image-registry` 和 `--image-tag` 可用于候选 release tag
+- dry-run 可在无 Docker 环境中验证编排契约
+- 真实 published-image smoke 的容器启动、health 和 gateway 场景仍由
+  `repos/platform` 拥有
+
+## 管线 G：Operator Onboarding Contract
+
+目标：让 platform-first/operator-first 不再只是 runbook，而是可以被第四仓检查的
+首次使用契约。
+
+必备命令：
+
+- `corepack pnpm run operator:onboarding:plan`
+- `corepack pnpm run operator:onboarding:check`
+- `corepack pnpm run test:operator-onboarding`
+
+必备行为：
+
+- plan 给出 public-stack first-use 顺序：preflight、`up`、打开 `/console/`、
+  gateway session setup、credential persistence、route smoke、published-image smoke
+- check 校验 public-stack `Caddyfile`、compose 和 README 对 `/console/`、
+  `/gateway/*`、`PLATFORM_CONSOLE_BOOTSTRAP_SECRET` 的契约一致
+- check 校验 platform operator guide 不再声称 `platform-console` 未打包
+- check 校验第四仓 source operator runbook 仍覆盖自动审批与人工审批停顿两条分支
+- check 校验 brand-site Deployability Profiles 把 Operator Onboarding 标成可验证路径，
+  而不是 planned
+
+验收：
+
+- operator 不需要先读完整协议，就能知道 public-stack 首次打开哪里、如何写入 admin
+  credential、如何验证 gateway proxy
+- 文档与实际 public-stack route contract 不一致时，第四仓 check 失败
+- 这条路径仍不把 billing、email transport 或 marketplace production readiness 包装成已完成

@@ -75,6 +75,8 @@ CALL ANYTHING 现在的仓库边界是正确的：
 | Agent-facing smoke | 第四仓 | `corepack pnpm run test:agent-e2e` |
 | Self-host env 生成器 | 第四仓 | `corepack pnpm run selfhost:init` |
 | Compose 生命周期 wrapper | 第四仓 | 委托到 `repos/platform/deploy/*` |
+| Published-image smoke wrapper | 第四仓 | 委托到 `repos/platform` 的 public-stack smoke |
+| Operator onboarding contract | 第四仓 | `operator:onboarding:check` 校验 public-stack/brand-site/runbook 一致性 |
 | Public stack deploy manifest | `repos/platform` | 现有 `deploy/public-stack` |
 | Runtime console | `repos/client` / `repos/platform` | 状态、日志、设置、审批 |
 | 品牌解释 | `repos/brand-site` | 可部署性叙事和 quick-start 入口 |
@@ -93,6 +95,7 @@ CALL ANYTHING 现在的仓库边界是正确的：
 ## 8. 成功指标
 
 - fresh checkout 可以运行 `selfhost:init`、`selfhost:status`、`dev:doctor`、`test:agent-e2e`
+  、`published-image:plan` 和 `operator:onboarding:check`
 - PRD、runbook、README、brand-site 使用同一套 profile 命名
 - 增加编排 helper 后，第四仓 CI 仍然绿色
 - 更新品牌站文案后，brand-site build 仍然绿色
@@ -116,7 +119,9 @@ CALL ANYTHING 现在的仓库边界是正确的：
 
 - 在 console surface 展示 runtime status、logs、approval policy、adapter health、billing readiness。
 - 增加 operator-first public-stack onboarding checks。
+- public-stack `/console/`、gateway session flow 与 brand-site Operator Onboarding 叙事保持一致。
 
 ### M4：生产硬化
 
-- 增加 backup/restore、secret rotation、audit export、published-image smoke、public-stack security review gates。
+- 增加 backup/restore、secret rotation、audit export、public-stack security review gates。
+- 已发布镜像 smoke 先以第四仓 wrapper 形式接入，正式 image build/publish/release gate 仍归 `repos/platform`。
