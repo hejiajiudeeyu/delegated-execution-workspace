@@ -113,6 +113,8 @@ Commands:
   urls      Print useful URLs for the selected profile
   ports     Show declared host ports for the selected profile
   summary   Print a one-screen non-secret deployment summary
+  readiness
+            Print a read-only deployment readiness overview
   doctor    Diagnose local files and tool availability before deployment
   profiles  List built-in self-host deployment profiles
   quickstart
@@ -604,6 +606,74 @@ function printSummary(profileName) {
   console.log("\nThis summary is read-only and does not call Docker, bind ports, or print secret values.");
 }
 
+function readinessItem(label, ok, detail = "") {
+  console.log(`[${ok ? "ok" : "fail"}] ${label}${detail ? `: ${detail}` : ""}`);
+  return ok;
+}
+
+function readinessProfile(profileName) {
+  const { profile, dir, envExamplePath, envPath, composePath, caddyfilePath } = profilePaths(profileName);
+  const suffix = commandProfileFlag(profileName);
+  const envExists = fs.existsSync(envPath);
+  let ok = true;
+
+  console.log(`[selfhost:readiness] profile=${profileName}`);
+  console.log("This command is read-only; it does not call Docker, bind ports, probe the network, mutate files, or print secret values.");
+  console.log(`deploy_dir=${path.relative(ROOT, dir)}`);
+  console.log(`env=${path.relative(ROOT, envPath)}`);
+
+  console.log("\n## Deployment readiness");
+  const profileFilesOk = readinessItem("profile files", fs.existsSync(dir) && fs.existsSync(envExamplePath) && fs.existsSync(composePath), path.relative(ROOT, dir));
+  const envFileOk = readinessItem("env file", envExists, envExists ? "present" : `missing; run corepack pnpm run selfhost:init${suffix}`);
+  ok &&= profileFilesOk && envFileOk;
+
+  console.log("\n## Secret hygiene");
+  if (!envExists) {
+    ok = false;
+    console.log(`[fail] secret hygiene: .env missing; run corepack pnpm run selfhost:init${suffix}`);
+  } else {
+    const findings = secretFindings(fs.readFileSync(envPath, "utf8"), profileName);
+    const failed = findings.filter((finding) => !finding.ok);
+    for (const finding of findings) {
+      console.log(`[${finding.ok ? "ok" : "fail"}] ${finding.key}: ${finding.ok ? "set" : finding.message}`);
+    }
+    ok &&= failed.length === 0;
+    console.log(`[${failed.length === 0 ? "ok" : "fail"}] secret hygiene`);
+  }
+
+  if (profileName === "public-stack") {
+    const origin = publicOrigin(profileName);
+    const originOk = Boolean(origin) && !origin.includes("localhost");
+    const publicOriginOk = readinessItem("public origin", originOk, originOk ? origin : `${origin}; set PUBLIC_SITE_ADDRESS before exposure`);
+    const caddyfileOk = readinessItem("Caddyfile", fs.existsSync(caddyfilePath), path.relative(ROOT, caddyfilePath));
+    const routeContractOk = checkPublicRouteContract(profileName);
+    ok &&= publicOriginOk && caddyfileOk && routeContractOk;
+  }
+
+  console.log("\n## URLs");
+  for (const [label, url] of profileUrls(profileName)) {
+    console.log(`- ${label}: ${url}`);
+  }
+
+  console.log("\n## Declared ports");
+  for (const [port, service, role] of profile.ports || []) {
+    console.log(`- ${port}: ${service} - ${role}`);
+  }
+
+  console.log("\n## Next commands");
+  console.log(`- corepack pnpm run selfhost:preflight${suffix}`);
+  console.log(`- corepack pnpm run selfhost:up${suffix}`);
+  console.log(`- corepack pnpm run selfhost:smoke${suffix}`);
+  console.log(`- corepack pnpm run selfhost:ops-report${suffix}`);
+  if (profileName === "public-stack") {
+    console.log(`- corepack pnpm run selfhost:security-review${suffix}`);
+    console.log("- corepack pnpm run operator:onboarding:check");
+  }
+
+  console.log(`[${ok ? "ok" : "fail"}] ${ok ? "readiness passed" : "readiness found deployment blockers"}`);
+  return ok;
+}
+
 function doctorItem(label, ok, detail = "", level = "fail") {
   const status = ok ? "ok" : level;
   console.log(`[${status}] ${label}${detail ? `: ${detail}` : ""}`);
@@ -1031,6 +1101,10 @@ async function main() {
   if (args.command === "summary") {
     printSummary(args.profile);
     return;
+  }
+
+  if (args.command === "readiness") {
+    process.exit(readinessProfile(args.profile) ? 0 : 1);
   }
 
   if (args.command === "doctor") {

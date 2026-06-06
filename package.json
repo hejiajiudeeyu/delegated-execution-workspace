@@ -51,6 +51,7 @@
     "selfhost:plan": "node tools/selfhost-kit.mjs plan",
     "selfhost:profiles": "node tools/selfhost-kit.mjs profiles",
     "selfhost:quickstart": "node tools/selfhost-kit.mjs quickstart",
+    "selfhost:readiness": "node tools/selfhost-kit.mjs readiness",
     "selfhost:summary": "node tools/selfhost-kit.mjs summary",
     "selfhost:urls": "node tools/selfhost-kit.mjs urls",
     "selfhost:ports": "node tools/selfhost-kit.mjs ports",

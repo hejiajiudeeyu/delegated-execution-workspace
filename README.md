@@ -130,6 +130,7 @@ Initialize and inspect a self-host profile:
 ```bash
 corepack pnpm run selfhost:profiles
 corepack pnpm run selfhost:quickstart
+corepack pnpm run selfhost:readiness
 corepack pnpm run selfhost:doctor
 corepack pnpm run selfhost:init
 corepack pnpm run selfhost:summary
@@ -147,6 +148,7 @@ corepack pnpm run selfhost:restore-plan -- --backup-dir backups/selfhost/platfor
 
 # Public operator stack:
 corepack pnpm run selfhost:quickstart -- --profile public-stack
+corepack pnpm run selfhost:readiness -- --profile public-stack
 corepack pnpm run selfhost:doctor -- --profile public-stack
 corepack pnpm run selfhost:init -- --profile public-stack
 corepack pnpm run selfhost:summary -- --profile public-stack

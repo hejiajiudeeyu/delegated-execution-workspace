@@ -299,6 +299,22 @@ try {
   assert.match(summary.stdout, /selfhost:ops-report/);
   assert.ok(!summary.stdout.includes(env.get("PLATFORM_ADMIN_API_KEY") || ""));
 
+  const readiness = run(tmpRoot, ["readiness"]);
+  assert.equal(readiness.status, 0, readiness.stderr || readiness.stdout);
+  assert.match(readiness.stdout, /selfhost:readiness/);
+  assert.match(readiness.stdout, /profile=platform/);
+  assert.match(readiness.stdout, /## Deployment readiness/);
+  assert.match(readiness.stdout, /\[ok\] profile files/);
+  assert.match(readiness.stdout, /\[ok\] env file/);
+  assert.match(readiness.stdout, /\[ok\] secret hygiene/);
+  assert.match(readiness.stdout, /## Declared ports/);
+  assert.match(readiness.stdout, /8080: platform-api/);
+  assert.match(readiness.stdout, /## Next commands/);
+  assert.match(readiness.stdout, /selfhost:preflight/);
+  assert.match(readiness.stdout, /selfhost:up/);
+  assert.match(readiness.stdout, /selfhost:smoke/);
+  assert.ok(!readiness.stdout.includes(env.get("PLATFORM_ADMIN_API_KEY") || ""));
+
   const doctor = run(tmpRoot, ["doctor"]);
   assert.equal(doctor.status, 0, doctor.stderr || doctor.stdout);
   assert.match(doctor.stdout, /selfhost:doctor/);
@@ -370,6 +386,16 @@ try {
   assert.match(publicQuickstart.stdout, /corepack pnpm run published-image:smoke -- --image-tag latest/);
   assert.ok(!publicQuickstart.stdout.includes(publicEnv.get("PLATFORM_ADMIN_API_KEY") || ""));
   assert.ok(!publicQuickstart.stdout.includes(publicEnv.get("PLATFORM_CONSOLE_BOOTSTRAP_SECRET") || ""));
+
+  const unsafeReadiness = run(tmpRoot, ["readiness", "--profile", "public-stack"]);
+  assert.equal(unsafeReadiness.status, 1, unsafeReadiness.stderr || unsafeReadiness.stdout);
+  assert.match(unsafeReadiness.stdout, /selfhost:readiness/);
+  assert.match(unsafeReadiness.stdout, /profile=public-stack/);
+  assert.match(unsafeReadiness.stdout, /\[fail\] public origin/);
+  assert.match(unsafeReadiness.stdout, /localhost/);
+  assert.match(unsafeReadiness.stdout, /selfhost:security-review -- --profile public-stack/);
+  assert.ok(!unsafeReadiness.stdout.includes(publicEnv.get("PLATFORM_ADMIN_API_KEY") || ""));
+  assert.ok(!unsafeReadiness.stdout.includes(publicEnv.get("PLATFORM_CONSOLE_BOOTSTRAP_SECRET") || ""));
 
   const publicPorts = run(tmpRoot, ["ports", "--profile", "public-stack"]);
   assert.equal(publicPorts.status, 0, publicPorts.stderr || publicPorts.stdout);

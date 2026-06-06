@@ -109,6 +109,7 @@ Initialize and inspect a self-host profile:
 ```bash
 corepack pnpm run selfhost:profiles
 corepack pnpm run selfhost:quickstart
+corepack pnpm run selfhost:readiness
 corepack pnpm run selfhost:doctor
 corepack pnpm run selfhost:init
 corepack pnpm run selfhost:summary
@@ -123,6 +124,7 @@ For the public operator stack:
 
 ```bash
 corepack pnpm run selfhost:quickstart -- --profile public-stack
+corepack pnpm run selfhost:readiness -- --profile public-stack
 corepack pnpm run selfhost:doctor -- --profile public-stack
 corepack pnpm run selfhost:init -- --profile public-stack
 corepack pnpm run selfhost:summary -- --profile public-stack
@@ -146,6 +148,12 @@ Docker.
 profile without executing it. Use it when you want the shortest copy-paste
 path from profile discovery to doctor, init, summary, preflight, up, smoke, and
 handoff evidence.
+
+`selfhost:readiness` prints a read-only deployment readiness overview for a
+selected profile. It combines profile file presence, `.env` status, secret
+hygiene, public-stack origin/route blockers, URLs, declared host ports, and
+next commands without calling Docker, binding ports, probing the network,
+mutating files, or printing secret values.
 
 `selfhost:doctor` is the earliest read-only deployment diagnostic. It checks
 local tool visibility, profile files, `.env` presence, and secret/public-origin

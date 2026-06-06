@@ -1,6 +1,6 @@
 # Main Readiness
 
-Updated: 2026-06-06
+Updated: 2026-06-07
 
 ## Purpose
 
@@ -18,14 +18,14 @@ repositories.
 - `repos/protocol`: `da3027100cfe9391f7f8d03be18a108ee2804cf6`
 - `repos/client`: `f1d6a2d8c9b83517cdf6ca9803b223847f880e9a`
 - `repos/platform`: `5961309c6b0ca4e8df22dbb5be92ac0845bf8d25`
-- `repos/brand-site`: `0336a81abbba30ad2b70fae836bc0e501f9a6b04`
+- `repos/brand-site`: `ef051924aac27d1ba754cc5387cbbcb433fbd2e7`
 
-The current bundle is `changes/CHG-2026-054.yaml`.
+The current bundle is `changes/CHG-2026-055.yaml`.
 
 ## Readiness Verdict
 
 The pinned combination is ready for daily fourth-repo development after
-CHG-2026-054:
+CHG-2026-055:
 
 - submodule SHA integrity is verified
 - boundary governance covers the new platform billing data package
@@ -58,6 +58,9 @@ CHG-2026-054:
 - `selfhost:quickstart` is available as a read-only copy-paste command sequence
   for a selected profile, including public-stack safety review and handoff
   evidence steps
+- `selfhost:readiness` is available as a read-only deployment readiness overview
+  that combines profile files, `.env` status, secret hygiene, public-stack
+  origin/route blockers, URLs, declared host ports, and next commands
 - `selfhost:backup-validate` is available as a non-destructive backup artifact
   shape check before restore rehearsal
 - `selfhost:restore-plan` is available as a non-destructive recovery rehearsal
@@ -67,7 +70,7 @@ CHG-2026-054:
 - brand-site now has bilingual Deployability Profiles docs that explain the
   deployment profiles, ready/planned boundaries, secret-safety defaults, and
   the operator-only Billing console slice, plus the new profiles/doctor/summary/security-review
-  and quickstart/audit-export/ports/ops-report/backup-validate/restore-plan gates
+  and quickstart/readiness/audit-export/ports/ops-report/backup-validate/restore-plan gates
 - one-command local stack bootstrap is available through managed
   `dev:local:*` commands
 - published-image smoke now has a fourth-repo entry point that reviews
@@ -87,7 +90,7 @@ platform API/read model and an operator-only console surface on top of
 persistence and schema groundwork, but it does not make billing a complete
 client-facing or end-user default path yet.
 
-## Verified On 2026-06-06
+## Verified On 2026-06-07
 
 The required fourth-repo gates pass on the current pinned combination:
 
@@ -104,29 +107,29 @@ Observed results:
 - `check:submodules`: passed
 - `check:boundaries`: passed after adding `@delexec/billing-store` to
   `platform/data`
-- `check:bundles`: passed with `CHG-2026-054`
+- `check:bundles`: passed with `CHG-2026-055`
 - `test:contracts`: passed, including `@delexec/billing-store` in platform
   package validation and the `@delexec/platform-api` dependency graph
 - `test:integration`: passed with a successful request/response path
 - `test:agent-e2e`: passed after retargeting the script to the current
   `/skills/caller/*` surface
 - `dev:doctor`: passed for the local daily agent/caller-skill stack
-- `selfhost:profiles` / `selfhost:quickstart` / `selfhost:doctor` / `selfhost:init` /
+- `selfhost:profiles` / `selfhost:quickstart` / `selfhost:readiness` / `selfhost:doctor` / `selfhost:init` /
   `selfhost:summary` / `selfhost:urls` / `selfhost:preflight`: added as the
   first self-host management spine for profile discovery, copy-paste startup
-  sequencing, deployment diagnostics, generated env, one-screen profile
-  overview, URL discovery, and pre-`up` route, compose config, and secret
-  hygiene checks
+  sequencing, read-only readiness overview, deployment diagnostics, generated
+  env, one-screen profile overview, URL discovery, and pre-`up` route, compose
+  config, and secret hygiene checks
 - `selfhost:smoke`: passed for the local `platform` profile; the
   `public-stack` profile now also prints and validates the edge route contract,
   and intentionally fails while the public origin remains localhost or the stack
   is not running
 - `test:selfhost-kit`: passed with temp-profile coverage for env generation,
   read-only profile map output, read-only doctor output, one-screen summary
-  output, read-only quickstart sequences, secret rotation dry-run/confirm
-  behavior, public-stack preflight safety, non-destructive security review,
-  admin audit export without secret leakage, restore planning, and public
-  route-contract smoke output
+  output, read-only quickstart sequences, read-only readiness overviews,
+  secret rotation dry-run/confirm behavior, public-stack preflight safety,
+  non-destructive security review, admin audit export without secret leakage,
+  restore planning, and public route-contract smoke output
 - `test:mcp-golden-four`: passed with a fake MCP streamable HTTP host and
   secret-leak guard for the executable golden-four smoke
 - `test:local-stack`: passed for one-command local stack command sequencing,
@@ -149,7 +152,7 @@ Observed results:
 - `repos/brand-site` `npm run smoke:deployability-content`: passed for the
   bilingual Deployability Profiles route/content contract, including the
   admin-only Billing console narrative plus `selfhost:security-review` and
-  `selfhost:audit-export` / `selfhost:profiles` / `selfhost:quickstart` / `selfhost:doctor` / `selfhost:summary` / `selfhost:ports` /
+  `selfhost:audit-export` / `selfhost:profiles` / `selfhost:quickstart` / `selfhost:readiness` / `selfhost:doctor` / `selfhost:summary` / `selfhost:ports` /
   `selfhost:ops-report` / `selfhost:backup-validate` / `selfhost:restore-plan`
   commands
 - `repos/brand-site` `npm run build`: passed, including client build, SSR
@@ -227,6 +230,11 @@ commands without reading `.env`, inspecting Docker, or printing secret values;
 command sequence for the selected profile, including public-stack security,
 published-image, onboarding, and handoff evidence steps when applicable, without
 running Docker, mutating files, reading `.env`, or printing secret values;
+`corepack pnpm run selfhost:readiness` prints a read-only deployment readiness
+overview that combines profile files, `.env` status, secret hygiene,
+public-stack origin/route blockers, URLs, declared host ports, and next commands
+without calling Docker, binding sockets, probing the network, mutating files, or
+printing secret values;
 `corepack pnpm run selfhost:doctor` now diagnoses local tool visibility,
 profile files, `.env` presence, and secret/public-origin hygiene without calling
 `docker compose`, starting services, probing the network, or printing secret values;
@@ -308,10 +316,10 @@ local loop, selfhost, public-stack safety checks, published-image smoke, and
 Operator Onboarding. Management Console copy now also describes the admin-only
 Billing page as an operator surface, not as client-facing billing readiness, and
 the public-stack command examples include `selfhost:security-review`,
-`selfhost:audit-export`, `selfhost:profiles`, `selfhost:quickstart`, `selfhost:doctor`, `selfhost:summary`, `selfhost:ports`,
+`selfhost:audit-export`, `selfhost:profiles`, `selfhost:quickstart`, `selfhost:readiness`, `selfhost:doctor`, `selfhost:summary`, `selfhost:ports`,
 `selfhost:ops-report`,
 `selfhost:backup-validate`, and `selfhost:restore-plan` as pre-exposure safety,
-evidence, quickstart sequencing, port visibility, handoff-report,
+evidence, quickstart sequencing, readiness overview, port visibility, handoff-report,
 backup-artifact validation, and recovery-rehearsal commands. Capabilities that
 are not ready remain outside the
 green path, and secrets, public origins, and billing readiness must not be
