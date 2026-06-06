@@ -1,0 +1,14 @@
+change_id: CHG-2026-031
+goal: add selfhost preflight gate and align console guidance
+protocol_sha: da3027100cfe9391f7f8d03be18a108ee2804cf6
+client_sha: 877df78998e3c5b016cd97a50939e5938c8d84b9
+platform_sha: dc7c654964707badbdda8d02d57a6b56b8cf11a5
+brand_site_sha: 2081f2adbf7f18aebb0d55c1506f0d60e58724c1
+owner: hejiajiudeeyu
+risk_level: low
+affected_scope:
+  - client
+  - orchestration
+contracts_check: passed
+integration_check: passed
+notes: "Adds the fourth-repo selfhost:preflight command as a pre-up deployment safety gate. The command checks secret hygiene, docker compose config, and route output without requiring services to be running; for public-stack it fails while PUBLIC_SITE_ADDRESS remains localhost and prints public routes without leaking generated admin or bootstrap secret values. The selfhost-kit test now covers public-stack init warnings, unsafe preflight failure, safe-origin preflight success, and no secret leakage. The client submodule advances to 877df78 so ops-console Runtime and Help deployability guidance mention selfhost:preflight in the operator command sequence. Documentation and PRDs are updated to distinguish preflight as the pre-up gate and smoke as the post-start health gate. Verified with node --check tools/selfhost-kit.mjs, corepack pnpm run test:selfhost-kit, repos/client npm run test:unit, and the required fourth-repo ci gates."

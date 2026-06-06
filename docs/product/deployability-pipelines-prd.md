@@ -30,6 +30,7 @@ Goal: make `repos/platform/deploy/platform` safe to initialize and inspect.
 Required commands:
 
 - `corepack pnpm run selfhost:init`
+- `corepack pnpm run selfhost:preflight`
 - `corepack pnpm run selfhost:status`
 - `corepack pnpm run selfhost:smoke`
 - `corepack pnpm run selfhost:config`
@@ -46,6 +47,8 @@ Acceptance:
 - placeholder secrets are replaced with generated values
 - status shows Docker compose state and health endpoints
 - smoke checks secret hygiene, compose config, and health endpoints
+- preflight checks secret hygiene, compose config, and routes before `up`,
+  without requiring services to be running
 - logs can be filtered by service and tail length
 - backup and rotation are explicit plans before destructive action
 - selfhost kit has automated coverage for env creation and secret rotation dry-run/confirm behavior
@@ -60,6 +63,8 @@ Required behavior:
 - `--profile public-stack` support in self-host helper
 - generated admin and bootstrap secrets
 - public route list
+- `selfhost:preflight -- --profile public-stack` checks public routes and
+  exposure blockers before `up`
 - clear warning when `PUBLIC_SITE_ADDRESS` is still localhost
 - public-stack smoke fails when the public origin is still unsafe
 

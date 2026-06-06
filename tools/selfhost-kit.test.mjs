@@ -58,6 +58,41 @@ function writeMinimalProfile(root) {
   };
 }
 
+function writeMinimalPublicStackProfile(root) {
+  const dir = path.join(root, "repos/platform/deploy/public-stack");
+  fs.mkdirSync(dir, { recursive: true });
+  fs.writeFileSync(
+    path.join(dir, ".env.example"),
+    [
+      "POSTGRES_DB=croc",
+      "POSTGRES_USER=croc",
+      "POSTGRES_PASSWORD=croc",
+      "DATABASE_URL=postgresql://croc:croc@postgres:5432/croc",
+      "TOKEN_SECRET=change-me-public-token-secret",
+      "PLATFORM_ADMIN_API_KEY=sk_admin_change_me",
+      "PLATFORM_CONSOLE_BOOTSTRAP_SECRET=change-me-public-bootstrap-secret",
+      "PUBLIC_SITE_ADDRESS=http://localhost",
+      ""
+    ].join("\n"),
+    "utf8"
+  );
+  fs.writeFileSync(
+    path.join(dir, "docker-compose.yml"),
+    [
+      "services:",
+      "  edge:",
+      "    image: alpine:3.20",
+      "    command: ['sh', '-c', 'sleep 60']",
+      ""
+    ].join("\n"),
+    "utf8"
+  );
+  return {
+    dir,
+    envPath: path.join(dir, ".env")
+  };
+}
+
 const tmpRoot = fs.mkdtempSync(path.join(os.tmpdir(), "delexec-selfhost-kit-test-"));
 try {
   const { envPath } = writeMinimalProfile(tmpRoot);
@@ -93,6 +128,28 @@ try {
   const backupPlan = run(tmpRoot, ["backup-plan"]);
   assert.equal(backupPlan.status, 0, backupPlan.stderr || backupPlan.stdout);
   assert.match(backupPlan.stdout, /This command prints a plan only/);
+
+  const publicStack = writeMinimalPublicStackProfile(tmpRoot);
+  const publicInit = run(tmpRoot, ["init", "--profile", "public-stack"]);
+  assert.equal(publicInit.status, 0, publicInit.stderr || publicInit.stdout);
+  assert.match(publicInit.stdout, /PUBLIC_SITE_ADDRESS still points at localhost/);
+
+  const unsafePreflight = run(tmpRoot, ["preflight", "--profile", "public-stack"]);
+  assert.equal(unsafePreflight.status, 1, unsafePreflight.stderr || unsafePreflight.stdout);
+  assert.match(unsafePreflight.stdout, /PUBLIC_SITE_ADDRESS/);
+  assert.match(unsafePreflight.stdout, /localhost/);
+  const publicEnv = readEnv(publicStack.envPath);
+  assert.ok(!unsafePreflight.stdout.includes(publicEnv.get("PLATFORM_ADMIN_API_KEY") || ""));
+  assert.ok(!unsafePreflight.stdout.includes(publicEnv.get("PLATFORM_CONSOLE_BOOTSTRAP_SECRET") || ""));
+
+  const safePublicText = fs
+    .readFileSync(publicStack.envPath, "utf8")
+    .replace("PUBLIC_SITE_ADDRESS=http://localhost", "PUBLIC_SITE_ADDRESS=https://call.example.com");
+  fs.writeFileSync(publicStack.envPath, safePublicText, "utf8");
+  const safePreflight = run(tmpRoot, ["preflight", "--profile", "public-stack"]);
+  assert.equal(safePreflight.status, 0, safePreflight.stderr || safePreflight.stdout);
+  assert.match(safePreflight.stdout, /Public routes/);
+  assert.match(safePreflight.stdout, /https:\/\/call.example.com/);
 
   console.log("[selfhost-kit.test] ok");
 } finally {

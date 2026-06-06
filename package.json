@@ -33,6 +33,7 @@
     "dev:platform-console": "corepack pnpm run dev:console:gateway & corepack pnpm run dev:platform-console:ui",
     "dev:doctor": "node tools/dev-doctor.mjs",
     "selfhost:init": "node tools/selfhost-kit.mjs init",
+    "selfhost:preflight": "node tools/selfhost-kit.mjs preflight",
     "selfhost:status": "node tools/selfhost-kit.mjs status",
     "selfhost:smoke": "node tools/selfhost-kit.mjs smoke",
     "selfhost:config": "node tools/selfhost-kit.mjs config",

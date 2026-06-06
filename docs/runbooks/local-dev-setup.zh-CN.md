@@ -66,6 +66,7 @@ corepack pnpm run test:selfhost-kit
 corepack pnpm run selfhost:init
 corepack pnpm run selfhost:plan
 corepack pnpm run selfhost:urls
+corepack pnpm run selfhost:preflight
 corepack pnpm run selfhost:status
 corepack pnpm run selfhost:smoke
 ```
@@ -75,6 +76,7 @@ Public operator stack：
 ```bash
 corepack pnpm run selfhost:init -- --profile public-stack
 corepack pnpm run selfhost:urls -- --profile public-stack
+corepack pnpm run selfhost:preflight -- --profile public-stack
 corepack pnpm run selfhost:status -- --profile public-stack
 corepack pnpm run selfhost:smoke -- --profile public-stack
 ```

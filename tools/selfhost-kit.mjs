@@ -79,6 +79,7 @@ function usage() {
 
 Commands:
   init      Create or harden the selected profile .env file
+  preflight Run pre-up secret, compose, and public-route checks
   status    Show compose ps plus configured health endpoint status
   smoke     Run secret hygiene, compose config, and health checks
   config    Validate docker compose config for the selected profile
@@ -354,14 +355,30 @@ async function checkHealth(profileName) {
 }
 
 function printUrls(profileName) {
-  const { profile, envPath } = profilePaths(profileName);
+  const { envPath } = profilePaths(profileName);
   console.log(`[selfhost:urls] profile=${profileName}`);
   if (!fs.existsSync(envPath)) {
     console.log(`[selfhost:urls] .env missing; run corepack pnpm run selfhost:init -- --profile ${profileName}`);
   }
-  for (const [label, url] of profile.urls) {
+  for (const [label, url] of profileUrls(profileName)) {
     console.log(`- ${label}: ${url}`);
   }
+}
+
+function profileUrls(profileName) {
+  const { profile, envPath } = profilePaths(profileName);
+  if (profileName !== "public-stack" || !fs.existsSync(envPath)) {
+    return profile.urls;
+  }
+  const entries = parseEnv(fs.readFileSync(envPath, "utf8"));
+  const origin = (entries.get("PUBLIC_SITE_ADDRESS") || "http://127.0.0.1").replace(/\/+$/, "");
+  return [
+    ["Public edge", origin],
+    ["Console", `${origin}/console/`],
+    ["Platform API", `${origin}/platform/`],
+    ["Relay", `${origin}/relay/`],
+    ["Gateway", `${origin}/gateway/`]
+  ];
 }
 
 function checkSecrets(profileName) {
@@ -394,16 +411,25 @@ function printPlan(profileName) {
     console.log(`- ${name}: ${role}`);
   }
   console.log("\nURLs:");
-  for (const [label, url] of profile.urls) {
+  for (const [label, url] of profileUrls(profileName)) {
     console.log(`- ${label}: ${url}`);
   }
   console.log("\nSafety checks:");
   console.log("- run selfhost:init before first up");
+  console.log("- run selfhost:preflight before up");
   console.log("- run selfhost:smoke after up");
   console.log("- rotate secrets before public exposure");
   console.log("- keep .env out of git; this tool never prints secret values");
   if (profileName === "public-stack") {
     console.log("- set PUBLIC_SITE_ADDRESS to the real public origin before exposure");
+  }
+}
+
+function printPreflightRoutes(profileName) {
+  const heading = profileName === "public-stack" ? "Public routes" : "Local routes";
+  console.log(`\n${heading}`);
+  for (const [label, url] of profileUrls(profileName)) {
+    console.log(`- ${label}: ${url}`);
   }
 }
 
@@ -476,6 +502,18 @@ async function main() {
   if (args.command === "plan") {
     printPlan(args.profile);
     return;
+  }
+
+  if (args.command === "preflight") {
+    console.log(`[selfhost:preflight] profile=${args.profile}`);
+    console.log("\nSecret hygiene");
+    const secretsOk = checkSecrets(args.profile);
+    console.log("\nCompose config");
+    const configResult = composeConfig(args.profile);
+    const configOk = configResult.status === 0;
+    console.log(`[${configOk ? "ok" : "fail"}] docker compose config`);
+    printPreflightRoutes(args.profile);
+    process.exit(secretsOk && configOk ? 0 : 1);
   }
 
   if (args.command === "config") {

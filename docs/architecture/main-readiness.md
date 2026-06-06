@@ -16,15 +16,15 @@ repositories.
 ## Current Pinned Combination
 
 - `repos/protocol`: `da3027100cfe9391f7f8d03be18a108ee2804cf6`
-- `repos/client`: `c89be2070dfc04509b36ee962c7d3e73eed25906`
+- `repos/client`: `877df78998e3c5b016cd97a50939e5938c8d84b9`
 - `repos/platform`: `dc7c654964707badbdda8d02d57a6b56b8cf11a5`
 
-The current bundle is `changes/CHG-2026-030.yaml`.
+The current bundle is `changes/CHG-2026-031.yaml`.
 
 ## Readiness Verdict
 
 The pinned combination is ready for daily fourth-repo development after
-CHG-2026-030:
+CHG-2026-031:
 
 - submodule SHA integrity is verified
 - boundary governance covers the new platform billing data package
@@ -61,8 +61,9 @@ Observed results:
 - `test:agent-e2e`: passed after retargeting the script to the current
   `/skills/caller/*` surface
 - `dev:doctor`: passed for the local daily agent/caller-skill stack
-- `selfhost:init` / `selfhost:urls`: added as the first self-host management
-  spine for generated env and profile discovery
+- `selfhost:init` / `selfhost:urls` / `selfhost:preflight`: added as the first
+  self-host management spine for generated env, profile discovery, and pre-`up`
+  route, compose config, and secret hygiene checks
 - `selfhost:smoke`: passed for the local `platform` profile; the
   `public-stack` profile intentionally fails while the public origin remains
   localhost or the stack is not running
@@ -112,10 +113,11 @@ workspace-summary hotline.
 `corepack pnpm run dev:doctor` checks the local prerequisites and runtime
 health endpoints used by that daily path.
 
-`corepack pnpm run selfhost:smoke` now combines secret hygiene, compose config
-validation, and health endpoint checks. For public profiles, unsafe public
-origin settings are warnings/failures instead of being hidden behind a green
-status.
+`corepack pnpm run selfhost:preflight` now combines secret hygiene, compose
+config validation, and route output before services are started;
+`corepack pnpm run selfhost:smoke` remains the post-start health endpoint
+check. For public profiles, unsafe public origin settings are warnings/failures
+instead of being hidden behind a green status.
 
 ### Console deployability management slice
 

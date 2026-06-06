@@ -124,11 +124,13 @@ Initialize and inspect a self-host profile:
 corepack pnpm run selfhost:init
 corepack pnpm run selfhost:plan
 corepack pnpm run selfhost:urls
+corepack pnpm run selfhost:preflight
 corepack pnpm run selfhost:status
 corepack pnpm run selfhost:smoke
 
 # Public operator stack:
 corepack pnpm run selfhost:init -- --profile public-stack
+corepack pnpm run selfhost:preflight -- --profile public-stack
 corepack pnpm run selfhost:status -- --profile public-stack
 ```
 

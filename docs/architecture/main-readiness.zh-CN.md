@@ -16,14 +16,14 @@ protocol/client/platform SHA 组合可用于本地跨仓开发和已认证的源
 ## 当前固定组合
 
 - `repos/protocol`：`da3027100cfe9391f7f8d03be18a108ee2804cf6`
-- `repos/client`：`c89be2070dfc04509b36ee962c7d3e73eed25906`
+- `repos/client`：`877df78998e3c5b016cd97a50939e5938c8d84b9`
 - `repos/platform`：`dc7c654964707badbdda8d02d57a6b56b8cf11a5`
 
-当前 bundle 为 `changes/CHG-2026-030.yaml`。
+当前 bundle 为 `changes/CHG-2026-031.yaml`。
 
 ## 当前判断
 
-CHG-2026-030 收口后，当前固定组合已经可以用于日常第四仓开发：
+CHG-2026-031 收口后，当前固定组合已经可以用于日常第四仓开发：
 
 - submodule SHA 完整性已验证
 - 边界治理已覆盖新的 platform billing data package
@@ -58,8 +58,9 @@ corepack pnpm run test:integration
 - `test:integration`：通过，完整 request/response 路径成功
 - `test:agent-e2e`：通过，脚本已改为当前 `/skills/caller/*` 接口面
 - `dev:doctor`：通过，当前本地日常 agent/caller-skill 栈健康
-- `selfhost:init` / `selfhost:urls`：已新增为 self-host 管理骨架，用于生成
-  env 和发现 profile
+- `selfhost:init` / `selfhost:urls` / `selfhost:preflight`：已新增为
+  self-host 管理骨架，用于生成 env、发现 profile，并在 `up` 前检查 routes、
+  compose config 和 secret hygiene
 - `selfhost:smoke`：local `platform` profile 已通过；`public-stack` 在 public
   origin 仍为 localhost 或栈未启动时会按预期失败
 - `test:selfhost-kit`：通过，用临时 profile 覆盖 env 生成和 secret rotation
@@ -105,9 +106,10 @@ workspace-summary hotline 作为样例。
 `corepack pnpm run dev:doctor` 会检查这条日常路径需要的本地前置条件和 runtime
 health endpoint。
 
-`corepack pnpm run selfhost:smoke` 现在会组合检查 secret hygiene、compose config
-和 health endpoint。对 public profile，不安全的 public origin 不会被包装成绿色状态，
-而是明确 warning / failure。
+`corepack pnpm run selfhost:preflight` 现在会在服务启动前组合检查 secret
+hygiene、compose config 和 route 输出；`corepack pnpm run selfhost:smoke`
+用于启动后 health endpoint 检查。对 public profile，不安全的 public origin 不会被包装
+成绿色状态，而是明确 warning / failure。
 
 ### Console deployability 管理切片
 
