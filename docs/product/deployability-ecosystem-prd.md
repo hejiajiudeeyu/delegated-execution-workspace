@@ -138,6 +138,8 @@ Required baseline:
   as local JSON evidence without printing admin keys.
 - Add `selfhost:ops-report` so operators can hand off a Markdown profile
   summary with URLs, safety posture, and next commands without secret values.
+- Add `selfhost:ports` so operators can inspect declared host ports before
+  starting a profile or exposing public-stack.
 - Add `selfhost:backup-validate` so restore rehearsal starts from a checked
   backup directory shape without reading or printing `.env` secrets.
 - Add `selfhost:restore-plan` so backup artifacts have a visible recovery

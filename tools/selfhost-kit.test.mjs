@@ -243,6 +243,16 @@ try {
   assert.ok(!opsReport.stdout.includes(env.get("PLATFORM_ADMIN_API_KEY") || ""));
   assert.ok(!opsReportText.includes(env.get("PLATFORM_ADMIN_API_KEY") || ""));
 
+  const ports = run(tmpRoot, ["ports"]);
+  assert.equal(ports.status, 0, ports.stderr || ports.stdout);
+  assert.match(ports.stdout, /selfhost:ports/);
+  assert.match(ports.stdout, /profile=platform/);
+  assert.match(ports.stdout, /8080/);
+  assert.match(ports.stdout, /platform-api/);
+  assert.match(ports.stdout, /5432/);
+  assert.match(ports.stdout, /postgres/);
+  assert.ok(!ports.stdout.includes(env.get("PLATFORM_ADMIN_API_KEY") || ""));
+
   const rotatedEnv = readEnv(envPath);
   await withAuditServer(rotatedEnv.get("PLATFORM_ADMIN_API_KEY") || "", async (auditBaseUrl) => {
     const exportPath = path.join(tmpRoot, "exports/audit/platform/test-audit.json");
@@ -285,6 +295,13 @@ try {
   assert.match(unsafeReview.stdout, /rotate-plan/);
   assert.ok(!unsafeReview.stdout.includes(publicEnv.get("PLATFORM_ADMIN_API_KEY") || ""));
   assert.ok(!unsafeReview.stdout.includes(publicEnv.get("PLATFORM_CONSOLE_BOOTSTRAP_SECRET") || ""));
+
+  const publicPorts = run(tmpRoot, ["ports", "--profile", "public-stack"]);
+  assert.equal(publicPorts.status, 0, publicPorts.stderr || publicPorts.stdout);
+  assert.match(publicPorts.stdout, /profile=public-stack/);
+  assert.match(publicPorts.stdout, /80/);
+  assert.match(publicPorts.stdout, /443/);
+  assert.match(publicPorts.stdout, /edge/);
 
   const unsafeUp = run(tmpRoot, ["up", "--profile", "public-stack"]);
   assert.equal(unsafeUp.status, 1, unsafeUp.stderr || unsafeUp.stdout);

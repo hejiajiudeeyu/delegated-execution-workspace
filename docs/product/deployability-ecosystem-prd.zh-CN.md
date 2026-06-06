@@ -138,6 +138,8 @@ CALL ANYTHING 现在的仓库边界是正确的：
   本地 JSON 证据，同时不在终端打印 admin key。
 - 增加 `selfhost:ops-report`，让 operator 可以交接一份 Markdown profile 摘要，
   其中包含 URLs、安全状态和后续命令，但不包含 secret 值。
+- 增加 `selfhost:ports`，让 operator 在启动 profile 或暴露 public-stack 前先看清
+  声明的 host ports。
 - 增加 `selfhost:backup-validate`，让恢复演练先基于已检查的 backup directory
   形状开始，同时不读取或打印 `.env` secrets。
 - 增加 `selfhost:restore-plan`，让 backup artifact 在任何破坏性恢复动作前有一条

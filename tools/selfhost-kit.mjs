@@ -18,6 +18,10 @@ const PROFILES = {
     urls: [
       ["Platform API", "http://127.0.0.1:8080"],
       ["Platform health", "http://127.0.0.1:8080/healthz"]
+    ],
+    ports: [
+      ["5432", "postgres", "PostgreSQL metadata and billing persistence"],
+      ["8080", "platform-api", "control-plane API"]
     ]
   },
   "public-stack": {
@@ -41,6 +45,11 @@ const PROFILES = {
       ["Platform API", "http://127.0.0.1/platform/"],
       ["Relay", "http://127.0.0.1/relay/"],
       ["Gateway", "http://127.0.0.1/gateway/"]
+    ],
+    ports: [
+      ["80", "edge", "HTTP public ingress"],
+      ["443", "edge", "HTTPS public ingress"],
+      ["5432", "postgres", "PostgreSQL metadata and billing persistence"]
     ]
   },
   "all-in-one": {
@@ -63,6 +72,13 @@ const PROFILES = {
       ["Caller controller", "http://127.0.0.1:8081"],
       ["Responder controller", "http://127.0.0.1:8082"],
       ["Relay", "http://127.0.0.1:8090"]
+    ],
+    ports: [
+      ["5432", "postgres", "PostgreSQL metadata persistence"],
+      ["8080", "platform-api", "control-plane API"],
+      ["8081", "caller-controller", "caller-side request runtime"],
+      ["8082", "responder-controller", "responder-side worker runtime"],
+      ["8090", "relay", "local relay transport"]
     ]
   }
 };
@@ -92,6 +108,7 @@ Commands:
   smoke     Run secret hygiene, compose config, and health checks
   config    Validate docker compose config for the selected profile
   urls      Print useful URLs for the selected profile
+  ports     Show declared host ports for the selected profile
   plan      Explain services, URLs, and safety checks for the profile
   up        Run preflight, then docker compose up -d for the selected profile
   down      Run docker compose down for the selected profile
@@ -421,6 +438,15 @@ function printUrls(profileName) {
   }
   for (const [label, url] of profileUrls(profileName)) {
     console.log(`- ${label}: ${url}`);
+  }
+}
+
+function printPorts(profileName) {
+  const { profile } = profilePaths(profileName);
+  console.log(`[selfhost:ports] profile=${profileName}`);
+  console.log("Declared host ports; this command does not check whether ports are currently free.");
+  for (const [port, service, role] of profile.ports || []) {
+    console.log(`- ${port}: ${service} - ${role}`);
   }
 }
 
@@ -819,6 +845,11 @@ async function main() {
 
   if (args.command === "urls") {
     printUrls(args.profile);
+    return;
+  }
+
+  if (args.command === "ports") {
+    printPorts(args.profile);
     return;
   }
 

@@ -49,6 +49,7 @@
     "selfhost:config": "node tools/selfhost-kit.mjs config",
     "selfhost:plan": "node tools/selfhost-kit.mjs plan",
     "selfhost:urls": "node tools/selfhost-kit.mjs urls",
+    "selfhost:ports": "node tools/selfhost-kit.mjs ports",
     "selfhost:up": "node tools/selfhost-kit.mjs up",
     "selfhost:down": "node tools/selfhost-kit.mjs down",
     "selfhost:logs": "node tools/selfhost-kit.mjs logs",

@@ -18,14 +18,14 @@ repositories.
 - `repos/protocol`: `da3027100cfe9391f7f8d03be18a108ee2804cf6`
 - `repos/client`: `f1d6a2d8c9b83517cdf6ca9803b223847f880e9a`
 - `repos/platform`: `5961309c6b0ca4e8df22dbb5be92ac0845bf8d25`
-- `repos/brand-site`: `379ddca8ce16f45436dda793882f7fa9a67551fa`
+- `repos/brand-site`: `40888a59fe194b6369c8a15ca87f26a47c4078fa`
 
-The current bundle is `changes/CHG-2026-047.yaml`.
+The current bundle is `changes/CHG-2026-048.yaml`.
 
 ## Readiness Verdict
 
 The pinned combination is ready for daily fourth-repo development after
-CHG-2026-047:
+CHG-2026-048:
 
 - submodule SHA integrity is verified
 - boundary governance covers the new platform billing data package
@@ -44,6 +44,8 @@ CHG-2026-047:
   keys
 - `selfhost:ops-report` is available as a non-secret Markdown operations
   handoff report with URLs, secret hygiene status, and next commands
+- `selfhost:ports` is available as a non-destructive declared host-port list
+  before an operator starts a self-host profile
 - `selfhost:backup-validate` is available as a non-destructive backup artifact
   shape check before restore rehearsal
 - `selfhost:restore-plan` is available as a non-destructive recovery rehearsal
@@ -53,7 +55,7 @@ CHG-2026-047:
 - brand-site now has bilingual Deployability Profiles docs that explain the
   deployment profiles, ready/planned boundaries, secret-safety defaults, and
   the operator-only Billing console slice, plus the new security-review and
-  audit-export/ops-report/backup-validate/restore-plan gates
+  audit-export/ports/ops-report/backup-validate/restore-plan gates
 - one-command local stack bootstrap is available through managed
   `dev:local:*` commands
 - published-image smoke now has a fourth-repo entry point that reviews
@@ -129,7 +131,7 @@ Observed results:
 - `repos/brand-site` `npm run smoke:deployability-content`: passed for the
   bilingual Deployability Profiles route/content contract, including the
   admin-only Billing console narrative plus `selfhost:security-review` and
-  `selfhost:audit-export` / `selfhost:ops-report` /
+  `selfhost:audit-export` / `selfhost:ports` / `selfhost:ops-report` /
   `selfhost:backup-validate` / `selfhost:restore-plan` commands
 - `repos/brand-site` `npm run build`: passed, including client build, SSR
   build, and prerender output for the new deployability docs routes
@@ -212,6 +214,8 @@ key;
 `corepack pnpm run selfhost:ops-report` writes a Markdown handoff report under
 `exports/selfhost/<profile>/` with URLs, secret hygiene status, and operator
 commands while omitting raw secret values;
+`corepack pnpm run selfhost:ports` prints the selected profile's declared host
+ports without binding sockets, inspecting the local network, or calling Docker;
 `corepack pnpm run selfhost:backup-validate` checks a backup directory for
 `.env`, `postgres.sql`, and `compose.config.txt` presence and size without
 reading or printing `.env` secret values;
@@ -271,11 +275,12 @@ local loop, selfhost, public-stack safety checks, published-image smoke, and
 Operator Onboarding. Management Console copy now also describes the admin-only
 Billing page as an operator surface, not as client-facing billing readiness, and
 the public-stack command examples include `selfhost:security-review`,
-`selfhost:audit-export`, `selfhost:ops-report`, `selfhost:backup-validate`, and
-`selfhost:restore-plan` as pre-exposure safety, evidence, handoff-report,
-backup-artifact validation, and recovery-rehearsal commands. Capabilities that
-are not ready remain outside the green path, and secrets, public origins, and
-billing readiness must not be hidden behind green status.
+`selfhost:audit-export`, `selfhost:ports`, `selfhost:ops-report`,
+`selfhost:backup-validate`, and `selfhost:restore-plan` as pre-exposure safety,
+evidence, port visibility, handoff-report, backup-artifact validation, and
+recovery-rehearsal commands. Capabilities that are not ready remain outside the
+green path, and secrets, public origins, and billing readiness must not be
+hidden behind green status.
 
 ## Still Not Ready As A Default Daily Path
 

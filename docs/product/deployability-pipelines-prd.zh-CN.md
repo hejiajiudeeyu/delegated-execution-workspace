@@ -50,6 +50,7 @@
 - `corepack pnpm run selfhost:config`
 - `corepack pnpm run selfhost:plan`
 - `corepack pnpm run selfhost:urls`
+- `corepack pnpm run selfhost:ports`
 - `corepack pnpm run selfhost:logs`
 - `corepack pnpm run selfhost:ops-report`
 - `corepack pnpm run selfhost:backup-plan`
@@ -74,6 +75,7 @@
   admin key
 - ops report 会写出包含 URLs、secret hygiene 状态和 operator 命令的 Markdown
   交接 artifact，但不包含 raw secret 值
+- ports 会打印选定 profile 声明的 host port 使用情况，但不绑定 socket 或调用 Docker
 - backup validate 会检查 `.env`、`postgres.sql` 和 `compose.config.txt` 的存在与大小，
   但不读取或打印 secret 值
 - restore plan 会基于 backup directory 输出恢复演练步骤，但不停止服务或导入 SQL
