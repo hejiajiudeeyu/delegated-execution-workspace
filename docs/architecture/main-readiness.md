@@ -42,6 +42,8 @@ CHG-2026-045:
 - `selfhost:audit-export` is available as a local JSON audit evidence export
   helper for the existing platform admin audit endpoint without printing admin
   keys
+- `selfhost:backup-validate` is available as a non-destructive backup artifact
+  shape check before restore rehearsal
 - `selfhost:restore-plan` is available as a non-destructive recovery rehearsal
   command for backup directories before any restore action touches live data
 - MCP host golden-four validation is available as an executable fourth-repo
@@ -49,7 +51,7 @@ CHG-2026-045:
 - brand-site now has bilingual Deployability Profiles docs that explain the
   deployment profiles, ready/planned boundaries, secret-safety defaults, and
   the operator-only Billing console slice, plus the new security-review and
-  audit-export/restore-plan gates
+  audit-export/backup-validate/restore-plan gates
 - one-command local stack bootstrap is available through managed
   `dev:local:*` commands
 - published-image smoke now has a fourth-repo entry point that reviews
@@ -125,7 +127,8 @@ Observed results:
 - `repos/brand-site` `npm run smoke:deployability-content`: passed for the
   bilingual Deployability Profiles route/content contract, including the
   admin-only Billing console narrative plus `selfhost:security-review` and
-  `selfhost:audit-export` / `selfhost:restore-plan` commands
+  `selfhost:audit-export` / `selfhost:backup-validate` /
+  `selfhost:restore-plan` commands
 - `repos/brand-site` `npm run build`: passed, including client build, SSR
   build, and prerender output for the new deployability docs routes
 - `repos/platform` platform-console view-model unit test: passed for Billing
@@ -204,6 +207,9 @@ run before treating a public stack as exposure-ready;
 calls the existing platform admin audit endpoint, and writes the response as a
 local JSON artifact under `exports/audit/<profile>/` without printing the admin
 key;
+`corepack pnpm run selfhost:backup-validate` checks a backup directory for
+`.env`, `postgres.sql`, and `compose.config.txt` presence and size without
+reading or printing `.env` secret values;
 `corepack pnpm run selfhost:restore-plan` prints the downtime, private `.env`
 review, `postgres.sql` import, restart, and smoke-validation sequence for a
 backup directory without stopping services or importing SQL;
@@ -260,8 +266,9 @@ local loop, selfhost, public-stack safety checks, published-image smoke, and
 Operator Onboarding. Management Console copy now also describes the admin-only
 Billing page as an operator surface, not as client-facing billing readiness, and
 the public-stack command examples include `selfhost:security-review`,
-`selfhost:audit-export`, and `selfhost:restore-plan` as pre-exposure safety,
-evidence, and recovery-rehearsal commands. Capabilities that are not ready
+`selfhost:audit-export`, `selfhost:backup-validate`, and
+`selfhost:restore-plan` as pre-exposure safety, evidence, backup-artifact
+validation, and recovery-rehearsal commands. Capabilities that are not ready
 remain outside the green path, and secrets, public origins, and billing
 readiness must not be hidden behind green status.
 

@@ -211,6 +211,21 @@ try {
   assert.match(restorePlan.stdout, /selfhost:smoke/);
   assert.ok(!restorePlan.stdout.includes(env.get("PLATFORM_ADMIN_API_KEY") || ""));
 
+  const backupDir = path.join(tmpRoot, "backups/selfhost/platform/sample");
+  fs.mkdirSync(backupDir, { recursive: true });
+  fs.writeFileSync(path.join(backupDir, ".env"), fs.readFileSync(envPath, "utf8"), "utf8");
+  fs.writeFileSync(path.join(backupDir, "postgres.sql"), "-- sample dump\n", "utf8");
+  fs.writeFileSync(path.join(backupDir, "compose.config.txt"), "services: {}\n", "utf8");
+  const backupValidate = run(tmpRoot, ["backup-validate", "--backup-dir", "backups/selfhost/platform/sample"]);
+  assert.equal(backupValidate.status, 0, backupValidate.stderr || backupValidate.stdout);
+  assert.match(backupValidate.stdout, /selfhost:backup-validate/);
+  assert.match(backupValidate.stdout, /backup_dir=backups\/selfhost\/platform\/sample/);
+  assert.match(backupValidate.stdout, /\[ok\] \.env present/);
+  assert.match(backupValidate.stdout, /\[ok\] postgres\.sql present/);
+  assert.match(backupValidate.stdout, /\[ok\] compose\.config\.txt present/);
+  assert.match(backupValidate.stdout, /ready for restore-plan review/);
+  assert.ok(!backupValidate.stdout.includes(env.get("PLATFORM_ADMIN_API_KEY") || ""));
+
   const rotatedEnv = readEnv(envPath);
   await withAuditServer(rotatedEnv.get("PLATFORM_ADMIN_API_KEY") || "", async (auditBaseUrl) => {
     const exportPath = path.join(tmpRoot, "exports/audit/platform/test-audit.json");

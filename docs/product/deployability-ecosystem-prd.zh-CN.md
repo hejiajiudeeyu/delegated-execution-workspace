@@ -136,6 +136,8 @@ CALL ANYTHING 现在的仓库边界是正确的：
   这些 operator 前置动作。
 - 增加 `selfhost:audit-export`，让 operator 能把 platform admin audit events 保存成
   本地 JSON 证据，同时不在终端打印 admin key。
+- 增加 `selfhost:backup-validate`，让恢复演练先基于已检查的 backup directory
+  形状开始，同时不读取或打印 `.env` secrets。
 - 增加 `selfhost:restore-plan`，让 backup artifact 在任何破坏性恢复动作前有一条
   可见的恢复演练路径。
 - 已发布镜像 smoke 先以第四仓 wrapper 形式接入，正式 image build/publish/release gate 仍归 `repos/platform`。

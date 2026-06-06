@@ -136,6 +136,7 @@ corepack pnpm run selfhost:status
 corepack pnpm run selfhost:smoke
 corepack pnpm run selfhost:security-review
 corepack pnpm run selfhost:audit-export
+corepack pnpm run selfhost:backup-validate -- --backup-dir backups/selfhost/platform/<stamp>
 corepack pnpm run selfhost:restore-plan -- --backup-dir backups/selfhost/platform/<stamp>
 
 # Public operator stack:
@@ -143,6 +144,7 @@ corepack pnpm run selfhost:init -- --profile public-stack
 corepack pnpm run selfhost:preflight -- --profile public-stack
 corepack pnpm run selfhost:security-review -- --profile public-stack
 corepack pnpm run selfhost:audit-export -- --profile public-stack
+corepack pnpm run selfhost:backup-validate -- --profile public-stack --backup-dir backups/selfhost/public-stack/<stamp>
 corepack pnpm run selfhost:restore-plan -- --profile public-stack --backup-dir backups/selfhost/public-stack/<stamp>
 corepack pnpm run selfhost:status -- --profile public-stack
 ```

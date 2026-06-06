@@ -105,6 +105,8 @@ Commands:
             Print the manual secret rotation checklist
   restore-plan
             Print the manual backup restore checklist
+  backup-validate
+            Validate a backup directory without printing secrets
   backup-plan
             Print the manual data backup checklist
 
@@ -590,6 +592,39 @@ function printRestorePlan(profileName, backupDir) {
   console.log("7. Keep original volumes and the backup artifact until the recovered stack is validated.");
 }
 
+function validateBackup(profileName, backupDir) {
+  if (!backupDir) {
+    throw new Error("--backup-dir is required for backup-validate");
+  }
+  const normalizedBackupDir = backupDir.replace(/\/+$/, "");
+  const absoluteBackupDir = path.resolve(ROOT, normalizedBackupDir);
+  console.log(`[selfhost:backup-validate] profile=${profileName}`);
+  console.log("This command is non-destructive; it checks file presence and size only.");
+  console.log(`backup_dir=${normalizedBackupDir}`);
+
+  let ok = true;
+  const checks = [
+    [".env", true],
+    ["postgres.sql", true],
+    ["compose.config.txt", false]
+  ];
+  for (const [file, required] of checks) {
+    const filePath = path.join(absoluteBackupDir, file);
+    if (!fs.existsSync(filePath)) {
+      const level = required ? "fail" : "warn";
+      console.log(`[${level}] ${file} missing`);
+      ok &&= !required;
+      continue;
+    }
+    const stats = fs.statSync(filePath);
+    const fileOk = stats.isFile() && stats.size > 0;
+    console.log(`[${fileOk ? "ok" : "fail"}] ${file} present (${stats.size} bytes)`);
+    ok &&= fileOk || !required;
+  }
+  console.log(`[${ok ? "ok" : "fail"}] ${ok ? "ready for restore-plan review" : "backup artifact is incomplete"}`);
+  return ok;
+}
+
 function securityReviewProfile(profileName) {
   console.log(`[selfhost:security-review] profile=${profileName}`);
   console.log("This command is non-destructive; it reviews local files and compose output only.");
@@ -797,6 +832,10 @@ async function main() {
   if (args.command === "restore-plan") {
     printRestorePlan(args.profile, args.backupDir);
     return;
+  }
+
+  if (args.command === "backup-validate") {
+    process.exit(validateBackup(args.profile, args.backupDir) ? 0 : 1);
   }
 
   if (args.command === "backup-plan") {
