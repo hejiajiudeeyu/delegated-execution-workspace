@@ -166,6 +166,15 @@ try {
   assert.ok(!unsafePreflight.stdout.includes(publicEnv.get("PLATFORM_ADMIN_API_KEY") || ""));
   assert.ok(!unsafePreflight.stdout.includes(publicEnv.get("PLATFORM_CONSOLE_BOOTSTRAP_SECRET") || ""));
 
+  const unsafeReview = run(tmpRoot, ["security-review", "--profile", "public-stack"]);
+  assert.equal(unsafeReview.status, 1, unsafeReview.stderr || unsafeReview.stdout);
+  assert.match(unsafeReview.stdout, /selfhost:security-review/);
+  assert.match(unsafeReview.stdout, /PUBLIC_SITE_ADDRESS/);
+  assert.match(unsafeReview.stdout, /backup-plan/);
+  assert.match(unsafeReview.stdout, /rotate-plan/);
+  assert.ok(!unsafeReview.stdout.includes(publicEnv.get("PLATFORM_ADMIN_API_KEY") || ""));
+  assert.ok(!unsafeReview.stdout.includes(publicEnv.get("PLATFORM_CONSOLE_BOOTSTRAP_SECRET") || ""));
+
   const unsafeUp = run(tmpRoot, ["up", "--profile", "public-stack"]);
   assert.equal(unsafeUp.status, 1, unsafeUp.stderr || unsafeUp.stdout);
   assert.match(unsafeUp.stdout, /selfhost:preflight/);
@@ -179,6 +188,14 @@ try {
   assert.equal(safePreflight.status, 0, safePreflight.stderr || safePreflight.stdout);
   assert.match(safePreflight.stdout, /Public routes/);
   assert.match(safePreflight.stdout, /https:\/\/call.example.com/);
+
+  const safeReview = run(tmpRoot, ["security-review", "--profile", "public-stack"]);
+  assert.equal(safeReview.status, 0, safeReview.stderr || safeReview.stdout);
+  assert.match(safeReview.stdout, /Public route contract/);
+  assert.match(safeReview.stdout, /\[ok\] Caddyfile route \/console\/\*/);
+  assert.match(safeReview.stdout, /ready for public exposure review/);
+  assert.ok(!safeReview.stdout.includes(publicEnv.get("PLATFORM_ADMIN_API_KEY") || ""));
+  assert.ok(!safeReview.stdout.includes(publicEnv.get("PLATFORM_CONSOLE_BOOTSTRAP_SECRET") || ""));
 
   const publicSmoke = run(tmpRoot, ["smoke", "--profile", "public-stack"]);
   assert.equal(publicSmoke.status, 1, publicSmoke.stderr || publicSmoke.stdout);

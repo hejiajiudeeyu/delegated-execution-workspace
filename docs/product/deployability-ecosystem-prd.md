@@ -93,7 +93,8 @@ Required baseline:
 ## 8. Success Metrics
 
 - A fresh checkout can run `selfhost:init`, `selfhost:status`, `dev:doctor`,
-  `test:agent-e2e`, `published-image:plan`, and `operator:onboarding:check`.
+  `test:agent-e2e`, `published-image:plan`, `selfhost:security-review`, and
+  `operator:onboarding:check`.
 - Platform billing operators have an admin-only API and Platform Console page
   for tenant setup, balance inspection, manual recharge capture, and ledger
   browsing, while end-user billing remains outside the ready verdict.
@@ -130,5 +131,8 @@ Required baseline:
 ### M4: Production hardening
 
 - Add backup/restore, rotation, audit export, and public-stack security review gates.
+- Start with a non-destructive `selfhost:security-review` gate that verifies
+  secret hygiene, compose config, public route contracts, and operator
+  backup/rotation/smoke prerequisites before public exposure.
 - Published-image smoke is first connected as a fourth-repo wrapper; formal
   image build, publish, and release gates remain owned by `repos/platform`.

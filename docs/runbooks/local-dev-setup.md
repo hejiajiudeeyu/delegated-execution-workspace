@@ -121,6 +121,7 @@ For the public operator stack:
 corepack pnpm run selfhost:init -- --profile public-stack
 corepack pnpm run selfhost:urls -- --profile public-stack
 corepack pnpm run selfhost:preflight -- --profile public-stack
+corepack pnpm run selfhost:security-review -- --profile public-stack
 corepack pnpm run selfhost:status -- --profile public-stack
 corepack pnpm run selfhost:smoke -- --profile public-stack
 ```
@@ -128,6 +129,11 @@ corepack pnpm run selfhost:smoke -- --profile public-stack
 `selfhost:up` automatically runs the same preflight gate first. If public origin
 or secret hygiene checks fail, it will not start the profile by default; passing
 `--force` is the explicit override.
+
+`selfhost:security-review` is the non-destructive public exposure review. It
+reuses secret hygiene, compose config, and public route-contract checks, then
+prints the backup, rotation, and smoke commands to run before treating a public
+stack as exposure-ready. It does not print secret values.
 
 Validate published public-stack images:
 
@@ -156,6 +162,7 @@ Operational helpers:
 
 ```bash
 corepack pnpm run selfhost:logs -- --service platform-api --tail 80
+corepack pnpm run selfhost:security-review -- --profile public-stack
 corepack pnpm run selfhost:backup-plan
 corepack pnpm run selfhost:rotate-plan
 corepack pnpm run selfhost:rotate -- --confirm

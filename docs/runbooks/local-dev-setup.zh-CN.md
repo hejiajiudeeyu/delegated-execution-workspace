@@ -102,12 +102,18 @@ Public operator stack：
 corepack pnpm run selfhost:init -- --profile public-stack
 corepack pnpm run selfhost:urls -- --profile public-stack
 corepack pnpm run selfhost:preflight -- --profile public-stack
+corepack pnpm run selfhost:security-review -- --profile public-stack
 corepack pnpm run selfhost:status -- --profile public-stack
 corepack pnpm run selfhost:smoke -- --profile public-stack
 ```
 
 `selfhost:up` 会自动先运行同一组 preflight gate。若 public origin 或 secret
 hygiene 未通过，默认不会继续启动；只有显式传入 `--force` 才会绕过该阻断。
+
+`selfhost:security-review` 是非破坏性的公开暴露前安全复核。它复用 secret
+hygiene、compose config 和 public route contract 检查，并打印 backup、rotation
+和 smoke 命令，帮助 operator 在把 public stack 视为 exposure-ready 前完成收口。
+该命令不打印 secret 值。
 
 验证已发布 public-stack 镜像：
 
@@ -135,6 +141,7 @@ corepack pnpm run test:operator-onboarding
 
 ```bash
 corepack pnpm run selfhost:logs -- --service platform-api --tail 80
+corepack pnpm run selfhost:security-review -- --profile public-stack
 corepack pnpm run selfhost:backup-plan
 corepack pnpm run selfhost:rotate-plan
 corepack pnpm run selfhost:rotate -- --confirm

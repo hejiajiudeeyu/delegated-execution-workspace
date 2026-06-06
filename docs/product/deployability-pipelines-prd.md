@@ -45,6 +45,7 @@ Required commands:
 - `corepack pnpm run selfhost:preflight`
 - `corepack pnpm run selfhost:status`
 - `corepack pnpm run selfhost:smoke`
+- `corepack pnpm run selfhost:security-review`
 - `corepack pnpm run selfhost:config`
 - `corepack pnpm run selfhost:plan`
 - `corepack pnpm run selfhost:urls`
@@ -65,6 +66,9 @@ Acceptance:
   when preflight fails unless `--force` is passed explicitly
 - logs can be filtered by service and tail length
 - backup and rotation are explicit plans before destructive action
+- security review is a non-destructive public exposure gate that checks secret
+  hygiene, compose config, route contracts, and backup/rotation/smoke
+  prerequisites
 - selfhost kit has automated coverage for env creation and secret rotation dry-run/confirm behavior
 - no command prints secret values
 
@@ -79,6 +83,8 @@ Required behavior:
 - public route list
 - `selfhost:preflight -- --profile public-stack` checks public routes and
   exposure blockers before `up`
+- `selfhost:security-review -- --profile public-stack` checks the public
+  exposure contract without starting services
 - `selfhost:up -- --profile public-stack` is blocked by preflight by default
   so unsafe public origins are not started accidentally
 - clear warning when `PUBLIC_SITE_ADDRESS` is still localhost
@@ -89,6 +95,8 @@ Required behavior:
 Acceptance:
 
 - operator can inspect ports, routes, and secrets status before `up`
+- operator can run one non-destructive command to review public exposure
+  readiness before treating the stack as ready to expose
 - smoke lists and validates edge routes for `/healthz`, `/platform/healthz`,
   `/relay/healthz`, `/gateway/healthz`, and `/console/`
 - docs describe platform, relay, gateway, console, and edge roles

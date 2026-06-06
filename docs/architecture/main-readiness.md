@@ -18,14 +18,14 @@ repositories.
 - `repos/protocol`: `da3027100cfe9391f7f8d03be18a108ee2804cf6`
 - `repos/client`: `f1d6a2d8c9b83517cdf6ca9803b223847f880e9a`
 - `repos/platform`: `5961309c6b0ca4e8df22dbb5be92ac0845bf8d25`
-- `repos/brand-site`: `fa34119a07b8e0f824123157ade3d767308ebe9d`
+- `repos/brand-site`: `0aba3ab67cae1e77a74e40576c42002b24fca3e9`
 
-The current bundle is `changes/CHG-2026-042.yaml`.
+The current bundle is `changes/CHG-2026-043.yaml`.
 
 ## Readiness Verdict
 
 The pinned combination is ready for daily fourth-repo development after
-CHG-2026-042:
+CHG-2026-043:
 
 - submodule SHA integrity is verified
 - boundary governance covers the new platform billing data package
@@ -36,11 +36,14 @@ CHG-2026-042:
   visibility, approval-policy posture, and explicit billing readiness surfaces
 - public-stack smoke now checks the public route contract beyond generic
   health endpoint reachability
+- `selfhost:security-review` is available as a non-destructive public exposure
+  review gate for secret hygiene, compose config, route contracts, and
+  backup/rotation/smoke prerequisites
 - MCP host golden-four validation is available as an executable fourth-repo
   smoke and a deterministic unit-style harness
 - brand-site now has bilingual Deployability Profiles docs that explain the
   deployment profiles, ready/planned boundaries, secret-safety defaults, and
-  the operator-only Billing console slice
+  the operator-only Billing console slice, plus the new security-review gate
 - one-command local stack bootstrap is available through managed
   `dev:local:*` commands
 - published-image smoke now has a fourth-repo entry point that reviews
@@ -76,7 +79,7 @@ Observed results:
 - `check:submodules`: passed
 - `check:boundaries`: passed after adding `@delexec/billing-store` to
   `platform/data`
-- `check:bundles`: passed with `CHG-2026-042`
+- `check:bundles`: passed with `CHG-2026-043`
 - `test:contracts`: passed, including `@delexec/billing-store` in platform
   package validation and the `@delexec/platform-api` dependency graph
 - `test:integration`: passed with a successful request/response path
@@ -90,9 +93,9 @@ Observed results:
   `public-stack` profile now also prints and validates the edge route contract,
   and intentionally fails while the public origin remains localhost or the stack
   is not running
-- `test:selfhost-kit`: passed with temp-profile coverage for env generation
-  secret rotation dry-run/confirm behavior, public-stack preflight safety, and
-  public route-contract smoke output
+- `test:selfhost-kit`: passed with temp-profile coverage for env generation,
+  secret rotation dry-run/confirm behavior, public-stack preflight safety,
+  non-destructive security review, and public route-contract smoke output
 - `test:mcp-golden-four`: passed with a fake MCP streamable HTTP host and
   secret-leak guard for the executable golden-four smoke
 - `test:local-stack`: passed for one-command local stack command sequencing,
@@ -114,7 +117,7 @@ Observed results:
   detection, and secret-leak guard
 - `repos/brand-site` `npm run smoke:deployability-content`: passed for the
   bilingual Deployability Profiles route/content contract, including the
-  admin-only Billing console narrative
+  admin-only Billing console narrative and `selfhost:security-review` command
 - `repos/brand-site` `npm run build`: passed, including client build, SSR
   build, and prerender output for the new deployability docs routes
 - `repos/platform` platform-console view-model unit test: passed for Billing
@@ -185,6 +188,10 @@ preparation, signed result delivery via `send_request`, and byte-stable
 
 `corepack pnpm run selfhost:preflight` now combines secret hygiene, compose
 config validation, and route output before services are started;
+`corepack pnpm run selfhost:security-review` adds a non-destructive public
+exposure review that repeats the secret, compose, and public route-contract
+checks and prints the backup, rotation, and smoke commands an operator should
+run before treating a public stack as exposure-ready;
 `corepack pnpm run selfhost:smoke` remains the post-start health endpoint check
 and, for `public-stack`, also validates the edge route contract for `/healthz`,
 `/platform/healthz`, `/relay/healthz`, `/gateway/healthz`, and `/console/`.
@@ -236,9 +243,11 @@ Agent Loop, Selfhost Platform, Public Stack, and Management Console. The pages
 keep self-host messaging honest by labeling current paths as ready now:
 local loop, selfhost, public-stack safety checks, published-image smoke, and
 Operator Onboarding. Management Console copy now also describes the admin-only
-Billing page as an operator surface, not as client-facing billing readiness.
-Capabilities that are not ready remain outside the green path, and secrets,
-public origins, and billing readiness must not be hidden behind green status.
+Billing page as an operator surface, not as client-facing billing readiness, and
+the public-stack command examples include `selfhost:security-review` as the
+pre-exposure safety gate. Capabilities that are not ready remain outside the
+green path, and secrets, public origins, and billing readiness must not be
+hidden behind green status.
 
 ## Still Not Ready As A Default Daily Path
 

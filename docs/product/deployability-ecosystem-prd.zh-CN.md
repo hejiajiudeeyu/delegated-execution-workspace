@@ -96,7 +96,7 @@ CALL ANYTHING 现在的仓库边界是正确的：
 ## 8. 成功指标
 
 - fresh checkout 可以运行 `selfhost:init`、`selfhost:status`、`dev:doctor`、`test:agent-e2e`
-  、`published-image:plan` 和 `operator:onboarding:check`
+  、`published-image:plan`、`selfhost:security-review` 和 `operator:onboarding:check`
 - platform billing operator 已有 admin-only API 和 Platform Console 页面，可做
   tenant setup、balance inspection、人工 recharge capture 和 ledger 浏览；终端用户
   billing 仍不进入 ready 结论
@@ -131,4 +131,7 @@ CALL ANYTHING 现在的仓库边界是正确的：
 ### M4：生产硬化
 
 - 增加 backup/restore、secret rotation、audit export、public-stack security review gates。
+- 先补一个非破坏性的 `selfhost:security-review` gate，在公网暴露前验证 secret
+  hygiene、compose config、public route contract，以及 backup / rotation / smoke
+  这些 operator 前置动作。
 - 已发布镜像 smoke 先以第四仓 wrapper 形式接入，正式 image build/publish/release gate 仍归 `repos/platform`。

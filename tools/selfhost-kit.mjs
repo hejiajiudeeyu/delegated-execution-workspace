@@ -96,6 +96,8 @@ Commands:
   up        Run preflight, then docker compose up -d for the selected profile
   down      Run docker compose down for the selected profile
   logs      Run docker compose logs for the selected profile; supports --service and --tail
+  security-review
+            Run non-destructive public exposure review checks
   rotate    Dry-run secret rotation, or write .env with --confirm
   rotate-plan
             Print the manual secret rotation checklist
@@ -516,6 +518,31 @@ function printRotatePlan(profileName) {
   console.log("6. Run selfhost:smoke and keep the generated .env rotation backup until validated.");
 }
 
+function securityReviewProfile(profileName) {
+  console.log(`[selfhost:security-review] profile=${profileName}`);
+  console.log("This command is non-destructive; it reviews local files and compose output only.");
+
+  console.log("\nSecret hygiene");
+  const secretsOk = checkSecrets(profileName);
+
+  console.log("\nCompose config");
+  const configResult = composeConfig(profileName);
+  const configOk = configResult.status === 0;
+  console.log(`[${configOk ? "ok" : "fail"}] docker compose config`);
+
+  const routeOk = checkPublicRouteContract(profileName);
+
+  console.log("\nOperational prerequisites");
+  console.log(`- backup-plan: corepack pnpm run selfhost:backup-plan -- --profile ${profileName}`);
+  console.log(`- rotate-plan: corepack pnpm run selfhost:rotate-plan -- --profile ${profileName}`);
+  console.log(`- smoke: corepack pnpm run selfhost:smoke -- --profile ${profileName}`);
+  console.log("- logs/status/health output must stay secret-redacted.");
+
+  const ok = secretsOk && configOk && routeOk;
+  console.log(`[${ok ? "ok" : "fail"}] ${ok ? "ready for public exposure review" : "fix findings before public exposure review"}`);
+  return ok;
+}
+
 function rotateProfile(profileName, { confirm = false } = {}) {
   const { envPath } = profilePaths(profileName);
   if (!fs.existsSync(envPath)) {
@@ -623,6 +650,10 @@ async function main() {
     }
     const result = dockerCompose(args.profile, logArgs);
     process.exit(result.status || 0);
+  }
+
+  if (args.command === "security-review") {
+    process.exit(securityReviewProfile(args.profile) ? 0 : 1);
   }
 
   if (args.command === "backup-plan") {

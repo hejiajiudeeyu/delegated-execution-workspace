@@ -45,6 +45,7 @@
 - `corepack pnpm run selfhost:preflight`
 - `corepack pnpm run selfhost:status`
 - `corepack pnpm run selfhost:smoke`
+- `corepack pnpm run selfhost:security-review`
 - `corepack pnpm run selfhost:config`
 - `corepack pnpm run selfhost:plan`
 - `corepack pnpm run selfhost:urls`
@@ -63,6 +64,8 @@
 - `selfhost:up` 默认复用 preflight gate；未通过时不继续启动，除非显式 `--force`
 - logs 支持按 service 和 tail 行数过滤
 - backup / rotation 在破坏性动作前先输出明确计划
+- security review 是非破坏性的公开暴露前 gate，会检查 secret hygiene、compose
+  config、route contract 和 backup / rotation / smoke 前置动作
 - selfhost kit 对 env 创建、secret rotation dry-run / confirm 行为有自动化覆盖
 - 命令不打印 secret 值
 
@@ -76,6 +79,8 @@
 - 自动生成 admin 和 bootstrap secrets
 - 输出 public route 列表
 - `selfhost:preflight -- --profile public-stack` 在 `up` 前检查 public routes 和暴露前阻断项
+- `selfhost:security-review -- --profile public-stack` 在不启动服务的情况下检查
+  public exposure contract
 - `selfhost:up -- --profile public-stack` 默认受 preflight 阻断，防止 unsafe public origin 被直接启动
 - 当 `PUBLIC_SITE_ADDRESS` 仍是 localhost 时给出明确 warning
 - 当 public origin 仍不安全时，public-stack smoke 应失败
@@ -84,6 +89,7 @@
 验收：
 
 - operator 在 `up` 前能看到端口、路由和 secrets 状态
+- operator 能用一个非破坏性命令，在把 stack 视为可公网暴露前完成安全复核
 - smoke 能列出并验证 `/healthz`、`/platform/healthz`、`/relay/healthz`、`/gateway/healthz`、`/console/` 对应的 edge route
 - docs 解释 platform、relay、gateway、console、edge 的角色
 
