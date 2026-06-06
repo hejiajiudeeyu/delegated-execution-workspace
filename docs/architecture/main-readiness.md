@@ -16,23 +16,23 @@ repositories.
 ## Current Pinned Combination
 
 - `repos/protocol`: `da3027100cfe9391f7f8d03be18a108ee2804cf6`
-- `repos/client`: `83e71ad0d088e869670b2e776578c5b7aaf86886`
+- `repos/client`: `43fd0a8555873baee5c3382945738bc488fd88cf`
 - `repos/platform`: `dc7c654964707badbdda8d02d57a6b56b8cf11a5`
 
-The current bundle is `changes/CHG-2026-032.yaml`.
+The current bundle is `changes/CHG-2026-033.yaml`.
 
 ## Readiness Verdict
 
 The pinned combination is ready for daily fourth-repo development after
-CHG-2026-032:
+CHG-2026-033:
 
 - submodule SHA integrity is verified
 - boundary governance covers the new platform billing data package
 - change bundle validation passes
 - protocol/client/platform package and deploy-contract checks pass
 - the source integration path succeeds end to end
-- ops-console now has deployability-management explanation and adapter health
-  visibility surfaces
+- ops-console now has deployability-management explanation, adapter health
+  visibility, and approval-policy posture surfaces
 
 This verdict is intentionally scoped. Billing P-1 M1.1 adds platform
 persistence and schema groundwork, but it does not make billing a complete
@@ -70,9 +70,10 @@ Observed results:
   localhost or the stack is not running
 - `test:selfhost-kit`: passed with temp-profile coverage for env generation
   and secret rotation dry-run/confirm behavior
-- `repos/client` `npm run test:unit`: passed with 13 test files and 123 tests,
+- `repos/client` `npm run test:unit`: passed with 14 test files and 124 tests,
   including new Runtime deployability panel and Help deployability chapter
-  coverage, plus Skill/MCP adapter runtime status coverage
+  coverage, Skill/MCP adapter runtime status coverage, and Preferences approval
+  policy deployability coverage
 
 ## What Is Usable Now
 
@@ -131,10 +132,15 @@ not print secret values. It also renders supervisor status cards for
 `skill_adapter` and `mcp_adapter` while keeping log tabs scoped to
 caller/responder/relay.
 
+The Preferences page now includes an approval-policy deployability summary that
+shows the active approval mode, whitelist and blocklist counts, local-mode
+guidance, and the warning that `allow_all` should not be the default for public
+or team deployments.
+
 The Help page now has a dedicated Deployability chapter connecting profile
 choice, health, logs, secret hygiene, and the Runtime/Transport entry points.
-This is the first M3 explanation and runtime visibility surface; approval policy
-summary and billing readiness status still need follow-up closeout.
+This is the first M3 explanation and runtime visibility surface; billing
+readiness status still needs follow-up closeout.
 
 ## Still Not Ready As A Default Daily Path
 
@@ -145,7 +151,7 @@ default day-to-day workflows:
 - profile-specific public-stack smoke beyond health/status
 - MCP host golden-four validation as an executable script
 - billing P-1 beyond M1.1, including API/read model/client-facing surfaces
-- dynamic adapter health, approval policy, and billing readiness in console
+- billing readiness in console
 - email transport as an end-user default path
 - published-image smoke and deployment validation
 - platform-first/operator-first onboarding as the primary first-use path
