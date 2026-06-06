@@ -75,7 +75,8 @@ The ecosystem is "daily-deployable" when a fresh operator can:
 | Self-host readiness overview | fourth repo | `corepack pnpm run selfhost:readiness -- --all`, plus `corepack pnpm --silent run ... --json` for automation |
 | Self-host deployment doctor | fourth repo | `corepack pnpm run selfhost:doctor` |
 | Self-host env generator | fourth repo | `corepack pnpm run selfhost:init` |
-| Self-host profile summary | fourth repo | `corepack pnpm run selfhost:summary` |
+| Self-host profile summary | fourth repo | `corepack pnpm run selfhost:summary`, plus `--json` for overview cards |
+| Self-host declared ports inventory | fourth repo | `corepack pnpm run selfhost:ports`, plus `--json` for dashboards and scripts |
 | Compose lifecycle wrapper | fourth repo | delegate to `repos/platform/deploy/*` |
 | Published-image smoke wrapper | fourth repo | delegate to `repos/platform` public-stack smoke |
 | Operator onboarding contract | fourth repo | `operator:onboarding:check` keeps public-stack, brand-site, and runbooks aligned |
@@ -147,7 +148,8 @@ Required baseline:
   summary with URLs, host ports, safety posture, and next commands without
   secret values.
 - Add `selfhost:ports` so operators can inspect declared host ports before
-  starting a profile or exposing public-stack.
+  starting a profile or exposing public-stack, with `--json` for dashboards
+  and deployment scripts.
 - Add `selfhost:summary` so operators can see deploy paths, URLs, declared
   host ports, secret hygiene status, and next commands in one read-only screen.
 - Add `selfhost:doctor` as the earliest read-only deployment diagnostic for

@@ -289,6 +289,25 @@ try {
   assert.match(ports.stdout, /postgres/);
   assert.ok(!ports.stdout.includes(env.get("PLATFORM_ADMIN_API_KEY") || ""));
 
+  const portsJson = run(tmpRoot, ["ports", "--json"]);
+  assert.equal(portsJson.status, 0, portsJson.stderr || portsJson.stdout);
+  const portsBody = JSON.parse(portsJson.stdout);
+  assert.equal(portsBody.command, "selfhost:ports");
+  assert.equal(portsBody.profile, "platform");
+  assert.ok(portsBody.generated_at);
+  assert.equal(portsBody.deploy_dir, "repos/platform/deploy/platform");
+  assert.equal(portsBody.env_path, "repos/platform/deploy/platform/.env");
+  assert.equal(portsBody.env_status, "present");
+  assert.ok(Array.isArray(portsBody.ports));
+  assert.deepEqual(
+    portsBody.ports.map((item) => item.port),
+    ["5432", "8080"]
+  );
+  assert.equal(portsBody.ports.find((item) => item.port === "8080").service, "platform-api");
+  assert.ok(Array.isArray(portsBody.notes));
+  assert.match(portsBody.notes.join("\n"), /does not bind ports/);
+  assert.ok(!portsJson.stdout.includes(env.get("PLATFORM_ADMIN_API_KEY") || ""));
+
   const profiles = run(tmpRoot, ["profiles"]);
   assert.equal(profiles.status, 0, profiles.stderr || profiles.stdout);
   assert.match(profiles.stdout, /selfhost:profiles/);

@@ -461,11 +461,37 @@ function printUrls(profileName) {
   }
 }
 
+function portsData(profileName) {
+  const { profile, dir, envPath } = profilePaths(profileName);
+  return {
+    command: "selfhost:ports",
+    profile: profileName,
+    deploy_dir: path.relative(ROOT, dir),
+    env_path: path.relative(ROOT, envPath),
+    env_status: fs.existsSync(envPath) ? "present" : "missing",
+    ports: (profile.ports || []).map(([port, service, role]) => ({ port, service, role })),
+    notes: ["read-only", "does not call Docker", "does not bind ports", "does not probe the network"]
+  };
+}
+
+function printPortsJson(profileName) {
+  console.log(
+    JSON.stringify(
+      {
+        generated_at: new Date().toISOString(),
+        ...portsData(profileName)
+      },
+      null,
+      2
+    )
+  );
+}
+
 function printPorts(profileName) {
-  const { profile } = profilePaths(profileName);
+  const { ports } = portsData(profileName);
   console.log(`[selfhost:ports] profile=${profileName}`);
   console.log("Declared host ports; this command does not check whether ports are currently free.");
-  for (const [port, service, role] of profile.ports || []) {
+  for (const { port, service, role } of ports) {
     console.log(`- ${port}: ${service} - ${role}`);
   }
 }
@@ -1306,7 +1332,11 @@ async function main() {
   }
 
   if (args.command === "ports") {
-    printPorts(args.profile);
+    if (args.json) {
+      printPortsJson(args.profile);
+    } else {
+      printPorts(args.profile);
+    }
     return;
   }
 

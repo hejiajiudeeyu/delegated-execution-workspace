@@ -121,6 +121,8 @@ corepack pnpm run selfhost:summary
 corepack pnpm --silent run selfhost:summary -- --json
 corepack pnpm run selfhost:plan
 corepack pnpm run selfhost:urls
+corepack pnpm run selfhost:ports
+corepack pnpm --silent run selfhost:ports -- --json
 corepack pnpm run selfhost:preflight
 corepack pnpm run selfhost:status
 corepack pnpm run selfhost:smoke
@@ -138,6 +140,8 @@ corepack pnpm run selfhost:init -- --profile public-stack
 corepack pnpm run selfhost:summary -- --profile public-stack
 corepack pnpm --silent run selfhost:summary -- --profile public-stack --json
 corepack pnpm run selfhost:urls -- --profile public-stack
+corepack pnpm run selfhost:ports -- --profile public-stack
+corepack pnpm --silent run selfhost:ports -- --profile public-stack --json
 corepack pnpm run selfhost:preflight -- --profile public-stack
 corepack pnpm run selfhost:security-review -- --profile public-stack
 corepack pnpm run selfhost:status -- --profile public-stack
@@ -184,6 +188,12 @@ printing secret values. Use `corepack pnpm --silent run selfhost:summary ... --j
 when a dashboard or script needs the same overview card data without parsing
 terminal prose.
 
+`selfhost:ports` prints the selected profile's declared host ports without
+binding sockets, calling Docker, or probing whether ports are free. Use
+`corepack pnpm --silent run selfhost:ports ... --json` when dashboards or
+deployment scripts need the same declared port inventory without parsing
+terminal prose.
+
 `selfhost:security-review` is the non-destructive public exposure review. It
 reuses secret hygiene, compose config, and public route-contract checks, then
 prints the backup, rotation, and smoke commands to run before treating a public
@@ -222,6 +232,7 @@ Operational helpers:
 ```bash
 corepack pnpm run selfhost:logs -- --service platform-api --tail 80
 corepack pnpm run selfhost:ports -- --profile public-stack
+corepack pnpm --silent run selfhost:ports -- --profile public-stack --json
 corepack pnpm run selfhost:ops-report -- --profile public-stack
 corepack pnpm run selfhost:security-review -- --profile public-stack
 corepack pnpm run selfhost:audit-export -- --profile public-stack
@@ -244,7 +255,8 @@ secret values.
 
 `selfhost:ports` prints the declared host ports for the selected profile without
 binding sockets or calling Docker. Use it before `selfhost:up` when checking for
-local port conflicts.
+local port conflicts, or use the `--json` form when a dashboard or script needs
+the same declared port inventory.
 
 `selfhost:backup-validate` checks a backup directory for `.env`, `postgres.sql`,
 and `compose.config.txt` presence and size before restore rehearsal. It does not

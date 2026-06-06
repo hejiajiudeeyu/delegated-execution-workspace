@@ -1,0 +1,15 @@
+change_id: CHG-2026-063
+goal: add machine-readable self-host declared ports inventory
+protocol_sha: da3027100cfe9391f7f8d03be18a108ee2804cf6
+client_sha: f1d6a2d8c9b83517cdf6ca9803b223847f880e9a
+platform_sha: 5961309c6b0ca4e8df22dbb5be92ac0845bf8d25
+brand_site_sha: 3a0b83aa86a5676511ce26c223c195c312d7c4f5
+owner: hejiajiudeeyu
+risk_level: low
+affected_scope:
+  - orchestration
+  - brand-site
+  - documentation
+contracts_check: passed
+integration_check: passed
+notes: "Adds selfhost:ports -- --json so dashboards and deployment scripts can consume selected-profile declared host port inventory, including deploy/env paths, env presence, service/role metadata, and read-only safety notes, without calling Docker, binding sockets, probing the network, or printing secret values. Updates README, runbooks, deployability PRDs, and brand-site Deployability Profiles while keeping protocol/client/platform SHAs unchanged."

@@ -78,7 +78,8 @@ CALL ANYTHING 现在的仓库边界是正确的：
 | Self-host readiness 总览 | 第四仓 | `corepack pnpm run selfhost:readiness -- --all`，以及自动化使用的 `corepack pnpm --silent run ... --json` |
 | Self-host 部署 doctor | 第四仓 | `corepack pnpm run selfhost:doctor` |
 | Self-host env 生成器 | 第四仓 | `corepack pnpm run selfhost:init` |
-| Self-host profile 概要 | 第四仓 | `corepack pnpm run selfhost:summary` |
+| Self-host profile 概要 | 第四仓 | `corepack pnpm run selfhost:summary`，以及用于概要卡片的 `--json` |
+| Self-host 声明端口 inventory | 第四仓 | `corepack pnpm run selfhost:ports`，以及用于 dashboard 和脚本的 `--json` |
 | Compose 生命周期 wrapper | 第四仓 | 委托到 `repos/platform/deploy/*` |
 | Published-image smoke wrapper | 第四仓 | 委托到 `repos/platform` 的 public-stack smoke |
 | Operator onboarding contract | 第四仓 | `operator:onboarding:check` 校验 public-stack/brand-site/runbook 一致性 |
@@ -147,7 +148,7 @@ CALL ANYTHING 现在的仓库边界是正确的：
 - 增加 `selfhost:ops-report`，让 operator 可以交接一份 Markdown profile 摘要，
   其中包含 URLs、host ports、安全状态和后续命令，但不包含 secret 值。
 - 增加 `selfhost:ports`，让 operator 在启动 profile 或暴露 public-stack 前先看清
-  声明的 host ports。
+  声明的 host ports，并用 `--json` 供 dashboard 和部署脚本消费。
 - 增加 `selfhost:summary`，让 operator 用一屏只读输出看清 deploy 路径、URLs、
   声明的 host ports、secret hygiene 状态和下一步命令。
 - 增加 `selfhost:doctor` 作为最早的只读部署诊断，覆盖本地工具、profile 文件、
