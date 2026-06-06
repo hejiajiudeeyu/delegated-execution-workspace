@@ -1,8 +1,9 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
+import http from "node:http";
 import os from "node:os";
 import path from "node:path";
-import { spawnSync } from "node:child_process";
+import { spawn, spawnSync } from "node:child_process";
 
 const REPO_ROOT = path.resolve(new URL("..", import.meta.url).pathname);
 const SELFHOST_KIT = path.join(REPO_ROOT, "tools/selfhost-kit.mjs");
@@ -13,6 +14,53 @@ function run(cwd, args) {
     encoding: "utf8"
   });
   return result;
+}
+
+function runAsync(cwd, args) {
+  return new Promise((resolve) => {
+    const child = spawn(process.execPath, [SELFHOST_KIT, ...args], {
+      cwd,
+      stdio: ["ignore", "pipe", "pipe"]
+    });
+    let stdout = "";
+    let stderr = "";
+    child.stdout.setEncoding("utf8");
+    child.stderr.setEncoding("utf8");
+    child.stdout.on("data", (chunk) => {
+      stdout += chunk;
+    });
+    child.stderr.on("data", (chunk) => {
+      stderr += chunk;
+    });
+    child.on("close", (status) => {
+      resolve({ status, stdout, stderr });
+    });
+  });
+}
+
+async function withAuditServer(expectedToken, handler) {
+  const server = http.createServer((req, res) => {
+    assert.equal(req.headers.authorization, `Bearer ${expectedToken}`);
+    assert.equal(req.url, "/v1/admin/audit-events?limit=5");
+    res.writeHead(200, { "content-type": "application/json" });
+    res.end(
+      JSON.stringify({
+        items: [{ id: "audit_test_1", action: "security.reviewed" }],
+        pagination: { limit: 5, offset: 0, total: 1, has_more: false }
+      })
+    );
+  });
+  await new Promise((resolve, reject) => {
+    server.once("error", reject);
+    server.listen(0, "127.0.0.1", resolve);
+  });
+  const address = server.address();
+  assert.ok(address && typeof address === "object");
+  try {
+    return await handler(`http://127.0.0.1:${address.port}`);
+  } finally {
+    await new Promise((resolve) => server.close(resolve));
+  }
 }
 
 function readEnv(file) {
@@ -152,6 +200,27 @@ try {
   const backupPlan = run(tmpRoot, ["backup-plan"]);
   assert.equal(backupPlan.status, 0, backupPlan.stderr || backupPlan.stdout);
   assert.match(backupPlan.stdout, /This command prints a plan only/);
+
+  const rotatedEnv = readEnv(envPath);
+  await withAuditServer(rotatedEnv.get("PLATFORM_ADMIN_API_KEY") || "", async (auditBaseUrl) => {
+    const exportPath = path.join(tmpRoot, "exports/audit/platform/test-audit.json");
+    const auditExport = await runAsync(tmpRoot, [
+      "audit-export",
+      "--audit-base-url",
+      auditBaseUrl,
+      "--limit",
+      "5",
+      "--output",
+      exportPath
+    ]);
+    assert.equal(auditExport.status, 0, auditExport.stderr || auditExport.stdout);
+    assert.match(auditExport.stdout, /selfhost:audit-export/);
+    assert.match(auditExport.stdout, /items=1/);
+    assert.ok(!auditExport.stdout.includes(rotatedEnv.get("PLATFORM_ADMIN_API_KEY") || ""));
+    const exported = JSON.parse(fs.readFileSync(exportPath, "utf8"));
+    assert.equal(exported.profile, "platform");
+    assert.equal(exported.body.items[0].action, "security.reviewed");
+  });
 
   const publicStack = writeMinimalPublicStackProfile(tmpRoot);
   const publicInit = run(tmpRoot, ["init", "--profile", "public-stack"]);

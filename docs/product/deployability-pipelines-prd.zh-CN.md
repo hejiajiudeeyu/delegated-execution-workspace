@@ -46,6 +46,7 @@
 - `corepack pnpm run selfhost:status`
 - `corepack pnpm run selfhost:smoke`
 - `corepack pnpm run selfhost:security-review`
+- `corepack pnpm run selfhost:audit-export`
 - `corepack pnpm run selfhost:config`
 - `corepack pnpm run selfhost:plan`
 - `corepack pnpm run selfhost:urls`
@@ -66,6 +67,8 @@
 - backup / rotation 在破坏性动作前先输出明确计划
 - security review 是非破坏性的公开暴露前 gate，会检查 secret hygiene、compose
   config、route contract 和 backup / rotation / smoke 前置动作
+- audit export 会把 platform admin audit events 写成本地 JSON 证据，同时不打印
+  admin key
 - selfhost kit 对 env 创建、secret rotation dry-run / confirm 行为有自动化覆盖
 - 命令不打印 secret 值
 

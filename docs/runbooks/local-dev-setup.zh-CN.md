@@ -142,7 +142,12 @@ corepack pnpm run test:operator-onboarding
 ```bash
 corepack pnpm run selfhost:logs -- --service platform-api --tail 80
 corepack pnpm run selfhost:security-review -- --profile public-stack
+corepack pnpm run selfhost:audit-export -- --profile public-stack
 corepack pnpm run selfhost:backup-plan
 corepack pnpm run selfhost:rotate-plan
 corepack pnpm run selfhost:rotate -- --confirm
 ```
+
+`selfhost:audit-export` 会读取选定 profile 的 `.env`，调用 platform admin audit
+endpoint，并把 JSON 证据写入 `exports/audit/<profile>/`；也可以用 `--output`
+指定路径。它会使用 admin key 发起请求，但不会把 key 打印到终端。

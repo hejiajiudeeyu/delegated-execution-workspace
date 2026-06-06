@@ -46,6 +46,7 @@ Required commands:
 - `corepack pnpm run selfhost:status`
 - `corepack pnpm run selfhost:smoke`
 - `corepack pnpm run selfhost:security-review`
+- `corepack pnpm run selfhost:audit-export`
 - `corepack pnpm run selfhost:config`
 - `corepack pnpm run selfhost:plan`
 - `corepack pnpm run selfhost:urls`
@@ -69,6 +70,8 @@ Acceptance:
 - security review is a non-destructive public exposure gate that checks secret
   hygiene, compose config, route contracts, and backup/rotation/smoke
   prerequisites
+- audit export writes platform admin audit events to a local JSON artifact
+  without printing admin keys
 - selfhost kit has automated coverage for env creation and secret rotation dry-run/confirm behavior
 - no command prints secret values
 

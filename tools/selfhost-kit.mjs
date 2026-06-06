@@ -98,6 +98,8 @@ Commands:
   logs      Run docker compose logs for the selected profile; supports --service and --tail
   security-review
             Run non-destructive public exposure review checks
+  audit-export
+            Export platform admin audit events to a local JSON file
   rotate    Dry-run secret rotation, or write .env with --confirm
   rotate-plan
             Print the manual secret rotation checklist
@@ -115,7 +117,10 @@ function parseArgs(argv) {
     force: false,
     confirm: false,
     service: null,
-    tail: "120"
+    tail: "120",
+    limit: "100",
+    output: null,
+    auditBaseUrl: null
   };
   for (let index = 3; index < argv.length; index += 1) {
     const value = argv[index];
@@ -143,6 +148,33 @@ function parseArgs(argv) {
     }
     if (value.startsWith("--tail=")) {
       args.tail = value.slice("--tail=".length);
+      continue;
+    }
+    if (value === "--limit") {
+      args.limit = argv[index + 1];
+      index += 1;
+      continue;
+    }
+    if (value.startsWith("--limit=")) {
+      args.limit = value.slice("--limit=".length);
+      continue;
+    }
+    if (value === "--output") {
+      args.output = argv[index + 1];
+      index += 1;
+      continue;
+    }
+    if (value.startsWith("--output=")) {
+      args.output = value.slice("--output=".length);
+      continue;
+    }
+    if (value === "--audit-base-url") {
+      args.auditBaseUrl = argv[index + 1];
+      index += 1;
+      continue;
+    }
+    if (value.startsWith("--audit-base-url=")) {
+      args.auditBaseUrl = value.slice("--audit-base-url=".length);
       continue;
     }
     if (value === "--profile") {
@@ -453,6 +485,16 @@ function publicOrigin(profileName) {
   return (entries.get("PUBLIC_SITE_ADDRESS") || "http://127.0.0.1").replace(/\/+$/, "");
 }
 
+function platformAdminBaseUrl(profileName, override = null) {
+  if (override) {
+    return override.replace(/\/+$/, "");
+  }
+  if (profileName === "public-stack") {
+    return `${publicOrigin(profileName)}/platform`;
+  }
+  return "http://127.0.0.1:8080";
+}
+
 function checkPublicRouteContract(profileName) {
   if (profileName !== "public-stack") {
     return true;
@@ -541,6 +583,63 @@ function securityReviewProfile(profileName) {
   const ok = secretsOk && configOk && routeOk;
   console.log(`[${ok ? "ok" : "fail"}] ${ok ? "ready for public exposure review" : "fix findings before public exposure review"}`);
   return ok;
+}
+
+function defaultAuditExportPath(profileName) {
+  const stamp = new Date().toISOString().replace(/[:.]/g, "-");
+  return path.join(ROOT, "exports", "audit", profileName, `${stamp}.json`);
+}
+
+async function auditExportProfile(profileName, { limit = "100", output = null, auditBaseUrl = null } = {}) {
+  const { envPath } = profilePaths(profileName);
+  if (!fs.existsSync(envPath)) {
+    throw new Error(`${path.relative(ROOT, envPath)} missing; run selfhost:init first`);
+  }
+  const entries = parseEnv(fs.readFileSync(envPath, "utf8"));
+  const adminKey = entries.get("PLATFORM_ADMIN_API_KEY") || "";
+  if (!adminKey) {
+    throw new Error("PLATFORM_ADMIN_API_KEY missing from selected profile .env");
+  }
+
+  const numericLimit = Number.parseInt(String(limit), 10);
+  if (!Number.isFinite(numericLimit) || numericLimit < 1 || numericLimit > 1000) {
+    throw new Error("--limit must be an integer between 1 and 1000");
+  }
+
+  const baseUrl = platformAdminBaseUrl(profileName, auditBaseUrl);
+  const sourceUrl = `${baseUrl}/v1/admin/audit-events?limit=${numericLimit}`;
+  const response = await fetch(sourceUrl, {
+    headers: {
+      Authorization: `Bearer ${adminKey}`
+    }
+  });
+  if (!response.ok) {
+    throw new Error(`audit export request failed: ${response.status} ${response.statusText}`);
+  }
+
+  const body = await response.json();
+  const outputPath = path.resolve(ROOT, output || defaultAuditExportPath(profileName));
+  fs.mkdirSync(path.dirname(outputPath), { recursive: true });
+  fs.writeFileSync(
+    outputPath,
+    `${JSON.stringify(
+      {
+        exported_at: new Date().toISOString(),
+        profile: profileName,
+        source_url: sourceUrl,
+        body
+      },
+      null,
+      2
+    )}\n`,
+    "utf8"
+  );
+
+  const itemCount = Array.isArray(body?.items) ? body.items.length : 0;
+  console.log(`[selfhost:audit-export] profile=${profileName}`);
+  console.log(`source=${sourceUrl}`);
+  console.log(`output=${path.relative(ROOT, outputPath)}`);
+  console.log(`items=${itemCount}`);
 }
 
 function rotateProfile(profileName, { confirm = false } = {}) {
@@ -654,6 +753,15 @@ async function main() {
 
   if (args.command === "security-review") {
     process.exit(securityReviewProfile(args.profile) ? 0 : 1);
+  }
+
+  if (args.command === "audit-export") {
+    await auditExportProfile(args.profile, {
+      limit: args.limit,
+      output: args.output,
+      auditBaseUrl: args.auditBaseUrl
+    });
+    return;
   }
 
   if (args.command === "backup-plan") {

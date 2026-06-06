@@ -134,5 +134,7 @@ Required baseline:
 - Start with a non-destructive `selfhost:security-review` gate that verifies
   secret hygiene, compose config, public route contracts, and operator
   backup/rotation/smoke prerequisites before public exposure.
+- Add `selfhost:audit-export` so operators can save platform admin audit events
+  as local JSON evidence without printing admin keys.
 - Published-image smoke is first connected as a fourth-repo wrapper; formal
   image build, publish, and release gates remain owned by `repos/platform`.

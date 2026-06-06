@@ -163,10 +163,16 @@ Operational helpers:
 ```bash
 corepack pnpm run selfhost:logs -- --service platform-api --tail 80
 corepack pnpm run selfhost:security-review -- --profile public-stack
+corepack pnpm run selfhost:audit-export -- --profile public-stack
 corepack pnpm run selfhost:backup-plan
 corepack pnpm run selfhost:rotate-plan
 corepack pnpm run selfhost:rotate -- --confirm
 ```
+
+`selfhost:audit-export` reads the selected profile `.env`, calls the platform
+admin audit endpoint, and writes a JSON artifact under `exports/audit/<profile>/`
+unless `--output` is provided. It uses the admin key for the request but never
+prints that key.
 
 Default endpoints:
 

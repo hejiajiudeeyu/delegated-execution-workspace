@@ -28,6 +28,7 @@ junit.xml
 
 # Test artifacts
 tests/reports/latest.json
+exports/
 
 _local_ref/
 
@@ -41,4 +42,3 @@ _local_ref/
 # Python bytecode from tools/agent-e2e and similar local python scripts
 __pycache__/
 *.pyc
-

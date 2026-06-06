@@ -134,4 +134,6 @@ CALL ANYTHING 现在的仓库边界是正确的：
 - 先补一个非破坏性的 `selfhost:security-review` gate，在公网暴露前验证 secret
   hygiene、compose config、public route contract，以及 backup / rotation / smoke
   这些 operator 前置动作。
+- 增加 `selfhost:audit-export`，让 operator 能把 platform admin audit events 保存成
+  本地 JSON 证据，同时不在终端打印 admin key。
 - 已发布镜像 smoke 先以第四仓 wrapper 形式接入，正式 image build/publish/release gate 仍归 `repos/platform`。

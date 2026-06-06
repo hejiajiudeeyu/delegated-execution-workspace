@@ -135,11 +135,13 @@ corepack pnpm run selfhost:preflight
 corepack pnpm run selfhost:status
 corepack pnpm run selfhost:smoke
 corepack pnpm run selfhost:security-review
+corepack pnpm run selfhost:audit-export
 
 # Public operator stack:
 corepack pnpm run selfhost:init -- --profile public-stack
 corepack pnpm run selfhost:preflight -- --profile public-stack
 corepack pnpm run selfhost:security-review -- --profile public-stack
+corepack pnpm run selfhost:audit-export -- --profile public-stack
 corepack pnpm run selfhost:status -- --profile public-stack
 ```
 
