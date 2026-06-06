@@ -19,12 +19,12 @@ repositories.
 - `repos/client`: `f1d6a2d8c9b83517cdf6ca9803b223847f880e9a`
 - `repos/platform`: `dc7c654964707badbdda8d02d57a6b56b8cf11a5`
 
-The current bundle is `changes/CHG-2026-036.yaml`.
+The current bundle is `changes/CHG-2026-037.yaml`.
 
 ## Readiness Verdict
 
 The pinned combination is ready for daily fourth-repo development after
-CHG-2026-036:
+CHG-2026-037:
 
 - submodule SHA integrity is verified
 - boundary governance covers the new platform billing data package
@@ -37,6 +37,8 @@ CHG-2026-036:
   health endpoint reachability
 - MCP host golden-four validation is available as an executable fourth-repo
   smoke and a deterministic unit-style harness
+- brand-site now has bilingual Deployability Profiles docs that explain the
+  deployment profiles, ready/planned boundaries, and secret-safety defaults
 
 This verdict is intentionally scoped. Billing P-1 M1.1 adds platform
 persistence and schema groundwork, but it does not make billing a complete
@@ -78,6 +80,10 @@ Observed results:
   public route-contract smoke output
 - `test:mcp-golden-four`: passed with a fake MCP streamable HTTP host and
   secret-leak guard for the executable golden-four smoke
+- `repos/brand-site` `npm run smoke:deployability-content`: passed for the
+  bilingual Deployability Profiles route/content contract
+- `repos/brand-site` `npm run build`: passed, including client build, SSR
+  build, and prerender output for the new deployability docs routes
 - `repos/client` `npm run test:unit`: passed with 14 test files and 125 tests,
   including new Runtime deployability panel and Help deployability chapter
   coverage, Skill/MCP adapter runtime status coverage, and Preferences approval
@@ -157,6 +163,15 @@ or team deployments.
 The Help page now has a dedicated Deployability chapter connecting profile
 choice, health, logs, secret hygiene, and the Runtime/Transport entry points.
 This is the first M3 explanation and runtime visibility surface.
+
+### Brand-site deployability narrative
+
+The brand-site docs now expose `/docs/deployability-profiles` and
+`/en/docs/deployability-profiles` as bilingual public entry points for Local
+Agent Loop, Selfhost Platform, Public Stack, and Management Console. The pages
+keep self-host messaging honest by labeling current paths as ready now and
+platform-first console onboarding as planned, while repeating that secrets,
+public origins, and billing readiness must not be hidden behind green status.
 
 ## Still Not Ready As A Default Daily Path
 

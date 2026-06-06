@@ -1,0 +1,14 @@
+change_id: CHG-2026-037
+goal: align brand-site deployability profiles narrative
+protocol_sha: da3027100cfe9391f7f8d03be18a108ee2804cf6
+client_sha: f1d6a2d8c9b83517cdf6ca9803b223847f880e9a
+platform_sha: dc7c654964707badbdda8d02d57a6b56b8cf11a5
+brand_site_sha: cbf57685e27f29c1b6a5eb5912a05789e689761d
+owner: hejiajiudeeyu
+risk_level: low
+affected_scope:
+  - brand-site
+  - documentation
+contracts_check: passed
+integration_check: passed
+notes: "Bumps brand-site to cbf5768, adding bilingual /docs/deployability-profiles and /en/docs/deployability-profiles pages, docs/search/SEO/prerender wiring, and a deployability-content smoke script. The public narrative now explains Local Agent Loop, Selfhost Platform, Public Stack, Management Console, ready-now versus planned boundaries, and secret-safety defaults in the same profile language used by the fourth-repo PRDs."

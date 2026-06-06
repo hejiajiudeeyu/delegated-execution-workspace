@@ -97,5 +97,9 @@
 验收：
 
 - homepage / docs 解释部署 profiles
+- `/docs/deployability-profiles` 与 `/en/docs/deployability-profiles` 解释
+  Local Agent Loop、Selfhost Platform、Public Stack、Management Console、
+  ready-now / planned 边界和 secrets 安全默认值
 - console prototype 强调管理能力，而不只是视觉精致
 - self-host 文案诚实区分「现在可用」和「计划中」
+- brand-site build 与 deployability-content smoke 通过

@@ -103,5 +103,9 @@ Goal: make the public narrative match the deployability work.
 Acceptance:
 
 - homepage/docs explain the deployment profiles
+- `/docs/deployability-profiles` and `/en/docs/deployability-profiles` explain
+  Local Agent Loop, Selfhost Platform, Public Stack, Management Console,
+  ready-now versus planned boundaries, and secret-safety defaults
 - console prototype highlights management rather than only visual polish
 - self-host messaging is honest about what is ready now versus planned
+- brand-site build and deployability-content smoke pass
