@@ -256,6 +256,20 @@ try {
   assert.match(ports.stdout, /postgres/);
   assert.ok(!ports.stdout.includes(env.get("PLATFORM_ADMIN_API_KEY") || ""));
 
+  const profiles = run(tmpRoot, ["profiles"]);
+  assert.equal(profiles.status, 0, profiles.stderr || profiles.stdout);
+  assert.match(profiles.stdout, /selfhost:profiles/);
+  assert.match(profiles.stdout, /platform/);
+  assert.match(profiles.stdout, /repos\/platform\/deploy\/platform/);
+  assert.match(profiles.stdout, /public-stack/);
+  assert.match(profiles.stdout, /repos\/platform\/deploy\/public-stack/);
+  assert.match(profiles.stdout, /all-in-one/);
+  assert.match(profiles.stdout, /repos\/platform\/deploy\/all-in-one/);
+  assert.match(profiles.stdout, /services=2/);
+  assert.match(profiles.stdout, /ports=5432,8080/);
+  assert.match(profiles.stdout, /corepack pnpm run selfhost:doctor -- --profile public-stack/);
+  assert.ok(!profiles.stdout.includes(env.get("PLATFORM_ADMIN_API_KEY") || ""));
+
   const summary = run(tmpRoot, ["summary"]);
   assert.equal(summary.status, 0, summary.stderr || summary.stdout);
   assert.match(summary.stdout, /selfhost:summary/);

@@ -128,6 +128,7 @@ corepack pnpm run operator:onboarding:check
 Initialize and inspect a self-host profile:
 
 ```bash
+corepack pnpm run selfhost:profiles
 corepack pnpm run selfhost:doctor
 corepack pnpm run selfhost:init
 corepack pnpm run selfhost:summary

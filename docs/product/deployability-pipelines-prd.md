@@ -42,6 +42,7 @@ Goal: make `repos/platform/deploy/platform` safe to initialize and inspect.
 Required commands:
 
 - `corepack pnpm run selfhost:init`
+- `corepack pnpm run selfhost:profiles`
 - `corepack pnpm run selfhost:doctor`
 - `corepack pnpm run selfhost:preflight`
 - `corepack pnpm run selfhost:status`
@@ -65,6 +66,9 @@ Acceptance:
 
 - `.env` is created from `.env.example` when missing
 - placeholder secrets are replaced with generated values
+- profiles lists built-in deployment profiles, purpose, deploy directories,
+  service counts, declared host ports, and matching doctor commands without
+  reading `.env` or touching Docker
 - doctor checks local tool visibility, profile files, `.env` presence, and
   secret/public-origin hygiene without calling `docker compose`, starting
   services, probing the network, or printing secrets

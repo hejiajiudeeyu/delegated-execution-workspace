@@ -70,6 +70,7 @@ The ecosystem is "daily-deployable" when a fresh operator can:
 | Compatibility ledger | fourth repo | change bundles and required gates |
 | Daily local doctor | fourth repo | `corepack pnpm run dev:doctor` |
 | Agent-facing smoke | fourth repo | `corepack pnpm run test:agent-e2e` |
+| Self-host deployment map | fourth repo | `corepack pnpm run selfhost:profiles` |
 | Self-host deployment doctor | fourth repo | `corepack pnpm run selfhost:doctor` |
 | Self-host env generator | fourth repo | `corepack pnpm run selfhost:init` |
 | Self-host profile summary | fourth repo | `corepack pnpm run selfhost:summary` |
@@ -94,8 +95,8 @@ Required baseline:
 
 ## 8. Success Metrics
 
-- A fresh checkout can run `selfhost:doctor`, `selfhost:init`, `selfhost:summary`,
-  `selfhost:status`, `dev:doctor`, `test:agent-e2e`,
+- A fresh checkout can run `selfhost:profiles`, `selfhost:doctor`,
+  `selfhost:init`, `selfhost:summary`, `selfhost:status`, `dev:doctor`, `test:agent-e2e`,
   `published-image:plan`, `selfhost:security-review`, and
   `operator:onboarding:check`.
 - Platform billing operators have an admin-only API and Platform Console page
@@ -148,6 +149,8 @@ Required baseline:
   host ports, secret hygiene status, and next commands in one read-only screen.
 - Add `selfhost:doctor` as the earliest read-only deployment diagnostic for
   local tools, profile files, `.env` presence, and secret/public-origin hygiene.
+- Add `selfhost:profiles` as the read-only deployment map for built-in profiles,
+  deploy directories, services, declared host ports, and matching doctor commands.
 - Require the operator onboarding contract to include `selfhost:ports` and
   `selfhost:ops-report` in the public-stack first-use path so the handoff
   sequence cannot drift back to terminal-only startup/smoke steps.

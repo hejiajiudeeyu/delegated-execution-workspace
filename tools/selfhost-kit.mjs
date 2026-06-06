@@ -8,6 +8,7 @@ const ROOT = process.cwd();
 const PROFILES = {
   platform: {
     dir: "repos/platform/deploy/platform",
+    purpose: "private platform control plane",
     services: [
       ["postgres", "PostgreSQL metadata and billing persistence"],
       ["platform-api", "control-plane API for catalog, tokens, requests, metrics"]
@@ -26,6 +27,7 @@ const PROFILES = {
   },
   "public-stack": {
     dir: "repos/platform/deploy/public-stack",
+    purpose: "public edge, gateway, relay, platform API, and console",
     services: [
       ["edge", "Caddy public ingress and TLS termination"],
       ["postgres", "PostgreSQL metadata and billing persistence"],
@@ -54,6 +56,7 @@ const PROFILES = {
   },
   "all-in-one": {
     dir: "repos/platform/deploy/all-in-one",
+    purpose: "single-machine caller, responder, relay, and platform stack",
     services: [
       ["postgres", "PostgreSQL metadata persistence"],
       ["relay", "local relay transport"],
@@ -111,6 +114,7 @@ Commands:
   ports     Show declared host ports for the selected profile
   summary   Print a one-screen non-secret deployment summary
   doctor    Diagnose local files and tool availability before deployment
+  profiles  List built-in self-host deployment profiles
   plan      Explain services, URLs, and safety checks for the profile
   up        Run preflight, then docker compose up -d for the selected profile
   down      Run docker compose down for the selected profile
@@ -449,6 +453,22 @@ function printPorts(profileName) {
   console.log("Declared host ports; this command does not check whether ports are currently free.");
   for (const [port, service, role] of profile.ports || []) {
     console.log(`- ${port}: ${service} - ${role}`);
+  }
+}
+
+function printProfiles() {
+  console.log("[selfhost:profiles]");
+  console.log("Built-in deployment profiles; this command is read-only and does not inspect .env or Docker.");
+  for (const [profileName, profile] of Object.entries(PROFILES)) {
+    const serviceNames = (profile.services || []).map(([name]) => name).join(",");
+    const ports = (profile.ports || []).map(([port]) => port).join(",");
+    const suffix = commandProfileFlag(profileName);
+    console.log(`\n## ${profileName}`);
+    console.log(`purpose=${profile.purpose || "deployment profile"}`);
+    console.log(`deploy_dir=${profile.dir}`);
+    console.log(`services=${(profile.services || []).length} ${serviceNames}`);
+    console.log(`ports=${ports || "none"}`);
+    console.log(`next=corepack pnpm run selfhost:doctor${suffix}`);
   }
 }
 
@@ -966,6 +986,11 @@ async function main() {
 
   if (args.command === "ports") {
     printPorts(args.profile);
+    return;
+  }
+
+  if (args.command === "profiles") {
+    printProfiles();
     return;
   }
 

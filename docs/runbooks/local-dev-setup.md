@@ -107,6 +107,7 @@ corepack pnpm run test:selfhost-kit
 Initialize and inspect a self-host profile:
 
 ```bash
+corepack pnpm run selfhost:profiles
 corepack pnpm run selfhost:doctor
 corepack pnpm run selfhost:init
 corepack pnpm run selfhost:summary
@@ -133,6 +134,11 @@ corepack pnpm run selfhost:smoke -- --profile public-stack
 `selfhost:up` automatically runs the same preflight gate first. If public origin
 or secret hygiene checks fail, it will not start the profile by default; passing
 `--force` is the explicit override.
+
+`selfhost:profiles` is the read-only deployment map. It lists the built-in
+profiles, purpose, deploy directory, service count, declared host ports, and
+the matching `selfhost:doctor` command without reading `.env` or touching
+Docker.
 
 `selfhost:doctor` is the earliest read-only deployment diagnostic. It checks
 local tool visibility, profile files, `.env` presence, and secret/public-origin

@@ -18,14 +18,14 @@ repositories.
 - `repos/protocol`: `da3027100cfe9391f7f8d03be18a108ee2804cf6`
 - `repos/client`: `f1d6a2d8c9b83517cdf6ca9803b223847f880e9a`
 - `repos/platform`: `5961309c6b0ca4e8df22dbb5be92ac0845bf8d25`
-- `repos/brand-site`: `a3a2d8ab3c5fc64343c13b1bd567f925e714dbc7`
+- `repos/brand-site`: `ba24712dc345baa08c9bc5a2bceeaaedc4596192`
 
-The current bundle is `changes/CHG-2026-052.yaml`.
+The current bundle is `changes/CHG-2026-053.yaml`.
 
 ## Readiness Verdict
 
 The pinned combination is ready for daily fourth-repo development after
-CHG-2026-052:
+CHG-2026-053:
 
 - submodule SHA integrity is verified
 - boundary governance covers the new platform billing data package
@@ -52,6 +52,9 @@ CHG-2026-052:
 - `selfhost:doctor` is available as the earliest read-only deployment
   diagnostic for local tools, profile files, `.env` presence, and
   secret/public-origin hygiene
+- `selfhost:profiles` is available as a read-only deployment map for built-in
+  profiles, deploy directories, services, declared host ports, and matching
+  doctor commands
 - `selfhost:backup-validate` is available as a non-destructive backup artifact
   shape check before restore rehearsal
 - `selfhost:restore-plan` is available as a non-destructive recovery rehearsal
@@ -60,7 +63,7 @@ CHG-2026-052:
   smoke and a deterministic unit-style harness
 - brand-site now has bilingual Deployability Profiles docs that explain the
   deployment profiles, ready/planned boundaries, secret-safety defaults, and
-  the operator-only Billing console slice, plus the new doctor/summary/security-review
+  the operator-only Billing console slice, plus the new profiles/doctor/summary/security-review
   and audit-export/ports/ops-report/backup-validate/restore-plan gates
 - one-command local stack bootstrap is available through managed
   `dev:local:*` commands
@@ -98,26 +101,27 @@ Observed results:
 - `check:submodules`: passed
 - `check:boundaries`: passed after adding `@delexec/billing-store` to
   `platform/data`
-- `check:bundles`: passed with `CHG-2026-052`
+- `check:bundles`: passed with `CHG-2026-053`
 - `test:contracts`: passed, including `@delexec/billing-store` in platform
   package validation and the `@delexec/platform-api` dependency graph
 - `test:integration`: passed with a successful request/response path
 - `test:agent-e2e`: passed after retargeting the script to the current
   `/skills/caller/*` surface
 - `dev:doctor`: passed for the local daily agent/caller-skill stack
-- `selfhost:doctor` / `selfhost:init` / `selfhost:summary` / `selfhost:urls` /
-  `selfhost:preflight`: added as the first self-host management spine for
-  deployment diagnostics, generated env, one-screen profile overview, profile
-  discovery, and pre-`up` route, compose config, and secret hygiene checks
+- `selfhost:profiles` / `selfhost:doctor` / `selfhost:init` /
+  `selfhost:summary` / `selfhost:urls` / `selfhost:preflight`: added as the
+  first self-host management spine for profile discovery, deployment
+  diagnostics, generated env, one-screen profile overview, URL discovery, and
+  pre-`up` route, compose config, and secret hygiene checks
 - `selfhost:smoke`: passed for the local `platform` profile; the
   `public-stack` profile now also prints and validates the edge route contract,
   and intentionally fails while the public origin remains localhost or the stack
   is not running
 - `test:selfhost-kit`: passed with temp-profile coverage for env generation,
-  read-only doctor output, one-screen summary output, secret rotation
-  dry-run/confirm behavior, public-stack preflight safety, non-destructive
-  security review, admin audit export without secret leakage, restore planning,
-  and public route-contract smoke output
+  read-only profile map output, read-only doctor output, one-screen summary
+  output, secret rotation dry-run/confirm behavior, public-stack preflight
+  safety, non-destructive security review, admin audit export without secret
+  leakage, restore planning, and public route-contract smoke output
 - `test:mcp-golden-four`: passed with a fake MCP streamable HTTP host and
   secret-leak guard for the executable golden-four smoke
 - `test:local-stack`: passed for one-command local stack command sequencing,
@@ -140,7 +144,7 @@ Observed results:
 - `repos/brand-site` `npm run smoke:deployability-content`: passed for the
   bilingual Deployability Profiles route/content contract, including the
   admin-only Billing console narrative plus `selfhost:security-review` and
-  `selfhost:audit-export` / `selfhost:doctor` / `selfhost:summary` / `selfhost:ports` /
+  `selfhost:audit-export` / `selfhost:profiles` / `selfhost:doctor` / `selfhost:summary` / `selfhost:ports` /
   `selfhost:ops-report` / `selfhost:backup-validate` / `selfhost:restore-plan`
   commands
 - `repos/brand-site` `npm run build`: passed, including client build, SSR
@@ -211,6 +215,9 @@ executable smoke: six-tool discovery, workspace-summary hotline search, request
 preparation, signed result delivery via `send_request`, and byte-stable
 `report_response` recovery.
 
+`corepack pnpm run selfhost:profiles` lists built-in deployment profiles,
+deploy directories, service counts, declared host ports, and matching doctor
+commands without reading `.env`, inspecting Docker, or printing secret values;
 `corepack pnpm run selfhost:doctor` now diagnoses local tool visibility,
 profile files, `.env` presence, and secret/public-origin hygiene without calling
 `docker compose`, starting services, probing the network, or printing secret values;
@@ -292,7 +299,7 @@ local loop, selfhost, public-stack safety checks, published-image smoke, and
 Operator Onboarding. Management Console copy now also describes the admin-only
 Billing page as an operator surface, not as client-facing billing readiness, and
 the public-stack command examples include `selfhost:security-review`,
-`selfhost:audit-export`, `selfhost:doctor`, `selfhost:summary`, `selfhost:ports`,
+`selfhost:audit-export`, `selfhost:profiles`, `selfhost:doctor`, `selfhost:summary`, `selfhost:ports`,
 `selfhost:ops-report`,
 `selfhost:backup-validate`, and `selfhost:restore-plan` as pre-exposure safety,
 evidence, port visibility, handoff-report, backup-artifact validation, and

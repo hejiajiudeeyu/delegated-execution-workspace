@@ -88,6 +88,7 @@ corepack pnpm run test:selfhost-kit
 初始化并检查 self-host profile：
 
 ```bash
+corepack pnpm run selfhost:profiles
 corepack pnpm run selfhost:doctor
 corepack pnpm run selfhost:init
 corepack pnpm run selfhost:summary
@@ -113,6 +114,10 @@ corepack pnpm run selfhost:smoke -- --profile public-stack
 
 `selfhost:up` 会自动先运行同一组 preflight gate。若 public origin 或 secret
 hygiene 未通过，默认不会继续启动；只有显式传入 `--force` 才会绕过该阻断。
+
+`selfhost:profiles` 是只读部署地图。它列出内置 profiles、用途、deploy 目录、
+service 数量、声明 host ports 和对应的 `selfhost:doctor` 命令，但不读取 `.env`
+或触碰 Docker。
 
 `selfhost:doctor` 是最早运行的只读部署诊断命令。它会检查本地工具可见性、
 profile 文件、`.env` 是否存在，以及 secret / public-origin hygiene，然后打印下一步命令；
