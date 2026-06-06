@@ -107,6 +107,7 @@ corepack pnpm run test:selfhost-kit
 Initialize and inspect a self-host profile:
 
 ```bash
+corepack pnpm run selfhost:doctor
 corepack pnpm run selfhost:init
 corepack pnpm run selfhost:summary
 corepack pnpm run selfhost:plan
@@ -119,6 +120,7 @@ corepack pnpm run selfhost:smoke
 For the public operator stack:
 
 ```bash
+corepack pnpm run selfhost:doctor -- --profile public-stack
 corepack pnpm run selfhost:init -- --profile public-stack
 corepack pnpm run selfhost:summary -- --profile public-stack
 corepack pnpm run selfhost:urls -- --profile public-stack
@@ -131,6 +133,11 @@ corepack pnpm run selfhost:smoke -- --profile public-stack
 `selfhost:up` automatically runs the same preflight gate first. If public origin
 or secret hygiene checks fail, it will not start the profile by default; passing
 `--force` is the explicit override.
+
+`selfhost:doctor` is the earliest read-only deployment diagnostic. It checks
+local tool visibility, profile files, `.env` presence, and secret/public-origin
+hygiene, then prints the next commands without calling `docker compose`,
+starting services, probing the network, or printing secret values.
 
 `selfhost:summary` is the read-only one-screen overview for a selected profile.
 It prints deploy paths, URLs, declared host ports, secret hygiene status, and

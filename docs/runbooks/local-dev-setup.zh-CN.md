@@ -88,6 +88,7 @@ corepack pnpm run test:selfhost-kit
 初始化并检查 self-host profile：
 
 ```bash
+corepack pnpm run selfhost:doctor
 corepack pnpm run selfhost:init
 corepack pnpm run selfhost:summary
 corepack pnpm run selfhost:plan
@@ -100,6 +101,7 @@ corepack pnpm run selfhost:smoke
 Public operator stack：
 
 ```bash
+corepack pnpm run selfhost:doctor -- --profile public-stack
 corepack pnpm run selfhost:init -- --profile public-stack
 corepack pnpm run selfhost:summary -- --profile public-stack
 corepack pnpm run selfhost:urls -- --profile public-stack
@@ -111,6 +113,10 @@ corepack pnpm run selfhost:smoke -- --profile public-stack
 
 `selfhost:up` 会自动先运行同一组 preflight gate。若 public origin 或 secret
 hygiene 未通过，默认不会继续启动；只有显式传入 `--force` 才会绕过该阻断。
+
+`selfhost:doctor` 是最早运行的只读部署诊断命令。它会检查本地工具可见性、
+profile 文件、`.env` 是否存在，以及 secret / public-origin hygiene，然后打印下一步命令；
+但不会调用 `docker compose`、启动服务、探测网络或打印 secret 值。
 
 `selfhost:summary` 是选定 profile 的只读一屏概要。它会输出 deploy 路径、URLs、
 声明的 host ports、secret hygiene 状态和下一步命令，但不会调用 Docker、绑定

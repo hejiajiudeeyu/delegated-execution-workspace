@@ -272,6 +272,16 @@ try {
   assert.match(summary.stdout, /selfhost:ops-report/);
   assert.ok(!summary.stdout.includes(env.get("PLATFORM_ADMIN_API_KEY") || ""));
 
+  const doctor = run(tmpRoot, ["doctor"]);
+  assert.equal(doctor.status, 0, doctor.stderr || doctor.stdout);
+  assert.match(doctor.stdout, /selfhost:doctor/);
+  assert.match(doctor.stdout, /\[ok\] profile deploy dir/);
+  assert.match(doctor.stdout, /\[ok\] \.env\.example/);
+  assert.match(doctor.stdout, /\[ok\] docker-compose\.yml/);
+  assert.match(doctor.stdout, /\[ok\] secret hygiene/);
+  assert.match(doctor.stdout, /corepack pnpm run selfhost:summary/);
+  assert.ok(!doctor.stdout.includes(env.get("PLATFORM_ADMIN_API_KEY") || ""));
+
   const rotatedEnv = readEnv(envPath);
   await withAuditServer(rotatedEnv.get("PLATFORM_ADMIN_API_KEY") || "", async (auditBaseUrl) => {
     const exportPath = path.join(tmpRoot, "exports/audit/platform/test-audit.json");
@@ -314,6 +324,14 @@ try {
   assert.match(unsafeReview.stdout, /rotate-plan/);
   assert.ok(!unsafeReview.stdout.includes(publicEnv.get("PLATFORM_ADMIN_API_KEY") || ""));
   assert.ok(!unsafeReview.stdout.includes(publicEnv.get("PLATFORM_CONSOLE_BOOTSTRAP_SECRET") || ""));
+
+  const unsafeDoctor = run(tmpRoot, ["doctor", "--profile", "public-stack"]);
+  assert.equal(unsafeDoctor.status, 1, unsafeDoctor.stderr || unsafeDoctor.stdout);
+  assert.match(unsafeDoctor.stdout, /selfhost:doctor/);
+  assert.match(unsafeDoctor.stdout, /PUBLIC_SITE_ADDRESS/);
+  assert.match(unsafeDoctor.stdout, /corepack pnpm run selfhost:init -- --profile public-stack/);
+  assert.ok(!unsafeDoctor.stdout.includes(publicEnv.get("PLATFORM_ADMIN_API_KEY") || ""));
+  assert.ok(!unsafeDoctor.stdout.includes(publicEnv.get("PLATFORM_CONSOLE_BOOTSTRAP_SECRET") || ""));
 
   const publicPorts = run(tmpRoot, ["ports", "--profile", "public-stack"]);
   assert.equal(publicPorts.status, 0, publicPorts.stderr || publicPorts.stdout);

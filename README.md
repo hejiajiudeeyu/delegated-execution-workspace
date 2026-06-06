@@ -128,6 +128,7 @@ corepack pnpm run operator:onboarding:check
 Initialize and inspect a self-host profile:
 
 ```bash
+corepack pnpm run selfhost:doctor
 corepack pnpm run selfhost:init
 corepack pnpm run selfhost:summary
 corepack pnpm run selfhost:plan
@@ -143,6 +144,7 @@ corepack pnpm run selfhost:backup-validate -- --backup-dir backups/selfhost/plat
 corepack pnpm run selfhost:restore-plan -- --backup-dir backups/selfhost/platform/<stamp>
 
 # Public operator stack:
+corepack pnpm run selfhost:doctor -- --profile public-stack
 corepack pnpm run selfhost:init -- --profile public-stack
 corepack pnpm run selfhost:summary -- --profile public-stack
 corepack pnpm run selfhost:ports -- --profile public-stack

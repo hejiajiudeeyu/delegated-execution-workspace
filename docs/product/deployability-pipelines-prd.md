@@ -42,6 +42,7 @@ Goal: make `repos/platform/deploy/platform` safe to initialize and inspect.
 Required commands:
 
 - `corepack pnpm run selfhost:init`
+- `corepack pnpm run selfhost:doctor`
 - `corepack pnpm run selfhost:preflight`
 - `corepack pnpm run selfhost:status`
 - `corepack pnpm run selfhost:smoke`
@@ -64,6 +65,9 @@ Acceptance:
 
 - `.env` is created from `.env.example` when missing
 - placeholder secrets are replaced with generated values
+- doctor checks local tool visibility, profile files, `.env` presence, and
+  secret/public-origin hygiene without calling `docker compose`, starting
+  services, probing the network, or printing secrets
 - status shows Docker compose state and health endpoints
 - smoke checks secret hygiene, compose config, and health endpoints
 - preflight checks secret hygiene, compose config, and routes before `up`,

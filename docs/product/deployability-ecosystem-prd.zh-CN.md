@@ -73,6 +73,7 @@ CALL ANYTHING 现在的仓库边界是正确的：
 | 兼容性台账 | 第四仓 | change bundles 和必跑 gates |
 | 日常本地 doctor | 第四仓 | `corepack pnpm run dev:doctor` |
 | Agent-facing smoke | 第四仓 | `corepack pnpm run test:agent-e2e` |
+| Self-host 部署 doctor | 第四仓 | `corepack pnpm run selfhost:doctor` |
 | Self-host env 生成器 | 第四仓 | `corepack pnpm run selfhost:init` |
 | Self-host profile 概要 | 第四仓 | `corepack pnpm run selfhost:summary` |
 | Compose 生命周期 wrapper | 第四仓 | 委托到 `repos/platform/deploy/*` |
@@ -96,9 +97,9 @@ CALL ANYTHING 现在的仓库边界是正确的：
 
 ## 8. 成功指标
 
-- fresh checkout 可以运行 `selfhost:init`、`selfhost:summary`、`selfhost:status`、
-  `dev:doctor`、`test:agent-e2e`、`published-image:plan`、`selfhost:security-review`
-  和 `operator:onboarding:check`
+- fresh checkout 可以运行 `selfhost:doctor`、`selfhost:init`、`selfhost:summary`、
+  `selfhost:status`、`dev:doctor`、`test:agent-e2e`、`published-image:plan`、
+  `selfhost:security-review` 和 `operator:onboarding:check`
 - platform billing operator 已有 admin-only API 和 Platform Console 页面，可做
   tenant setup、balance inspection、人工 recharge capture 和 ledger 浏览；终端用户
   billing 仍不进入 ready 结论
@@ -144,6 +145,8 @@ CALL ANYTHING 现在的仓库边界是正确的：
   声明的 host ports。
 - 增加 `selfhost:summary`，让 operator 用一屏只读输出看清 deploy 路径、URLs、
   声明的 host ports、secret hygiene 状态和下一步命令。
+- 增加 `selfhost:doctor` 作为最早的只读部署诊断，覆盖本地工具、profile 文件、
+  `.env` 是否存在，以及 secret / public-origin hygiene。
 - 要求 operator onboarding contract 把 `selfhost:ports` 和 `selfhost:ops-report`
   纳入 public-stack 首次使用路径，避免交接顺序退回只有终端启动和 smoke 的状态。
 - 增加 `selfhost:backup-validate`，让恢复演练先基于已检查的 backup directory

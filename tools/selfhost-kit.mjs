@@ -110,6 +110,7 @@ Commands:
   urls      Print useful URLs for the selected profile
   ports     Show declared host ports for the selected profile
   summary   Print a one-screen non-secret deployment summary
+  doctor    Diagnose local files and tool availability before deployment
   plan      Explain services, URLs, and safety checks for the profile
   up        Run preflight, then docker compose up -d for the selected profile
   down      Run docker compose down for the selected profile
@@ -554,6 +555,73 @@ function printSummary(profileName) {
   console.log("\nThis summary is read-only and does not call Docker, bind ports, or print secret values.");
 }
 
+function doctorItem(label, ok, detail = "", level = "fail") {
+  const status = ok ? "ok" : level;
+  console.log(`[${status}] ${label}${detail ? `: ${detail}` : ""}`);
+  return ok || level === "warn";
+}
+
+function commandAvailable(command, args = ["--version"]) {
+  const result = spawnSync(command, args, {
+    cwd: ROOT,
+    encoding: "utf8"
+  });
+  const output = result.status === 0 ? result.stdout.trim().split(/\r?\n/)[0] : result.stderr.trim().split(/\r?\n/)[0];
+  return {
+    ok: result.status === 0,
+    detail: output || (result.status === 0 ? "available" : "not available")
+  };
+}
+
+function doctorProfile(profileName) {
+  const { dir, envExamplePath, envPath, composePath } = profilePaths(profileName);
+  const suffix = commandProfileFlag(profileName);
+  let ok = true;
+
+  console.log(`[selfhost:doctor] profile=${profileName}`);
+  console.log("This command is read-only; it does not call docker compose, start services, probe the network, or print secret values.");
+
+  console.log("\n## Local tools");
+  const nodeCheck = commandAvailable(process.execPath, ["--version"]);
+  ok &&= doctorItem("node runtime", nodeCheck.ok, nodeCheck.detail);
+  const corepackCheck = commandAvailable("corepack", ["--version"]);
+  ok &&= doctorItem("corepack", corepackCheck.ok, corepackCheck.detail);
+  const dockerCheck = commandAvailable("docker", ["--version"]);
+  doctorItem("docker cli", dockerCheck.ok, dockerCheck.detail, "warn");
+
+  console.log("\n## Profile files");
+  ok &&= doctorItem("profile deploy dir", fs.existsSync(dir), path.relative(ROOT, dir));
+  ok &&= doctorItem(".env.example", fs.existsSync(envExamplePath), path.relative(ROOT, envExamplePath));
+  ok &&= doctorItem("docker-compose.yml", fs.existsSync(composePath), path.relative(ROOT, composePath));
+  const envExists = fs.existsSync(envPath);
+  ok &&= doctorItem(".env", envExists, envExists ? path.relative(ROOT, envPath) : `missing; run corepack pnpm run selfhost:init${suffix}`);
+
+  console.log("\n## Secret hygiene");
+  if (!envExists) {
+    ok = false;
+    console.log(`[fail] secret hygiene: .env missing; run corepack pnpm run selfhost:init${suffix}`);
+  } else {
+    const findings = secretFindings(fs.readFileSync(envPath, "utf8"), profileName);
+    const failed = findings.filter((finding) => !finding.ok);
+    for (const finding of findings) {
+      console.log(`[${finding.ok ? "ok" : "fail"}] ${finding.key}: ${finding.ok ? "set" : finding.message}`);
+    }
+    ok &&= failed.length === 0;
+    if (failed.length === 0) {
+      console.log("[ok] secret hygiene: deployable values are set");
+    }
+  }
+
+  console.log("\n## Next commands");
+  console.log(`- corepack pnpm run selfhost:init${suffix}`);
+  console.log(`- corepack pnpm run selfhost:summary${suffix}`);
+  console.log(`- corepack pnpm run selfhost:preflight${suffix}`);
+  console.log(`- corepack pnpm run selfhost:up${suffix}`);
+
+  console.log(`[${ok ? "ok" : "fail"}] ${ok ? "doctor passed" : "doctor found deployment blockers"}`);
+  return ok;
+}
+
 function printPreflightRoutes(profileName) {
   const heading = profileName === "public-stack" ? "Public routes" : "Local routes";
   console.log(`\n${heading}`);
@@ -904,6 +972,10 @@ async function main() {
   if (args.command === "summary") {
     printSummary(args.profile);
     return;
+  }
+
+  if (args.command === "doctor") {
+    process.exit(doctorProfile(args.profile) ? 0 : 1);
   }
 
   if (args.command === "plan") {

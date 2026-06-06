@@ -43,6 +43,7 @@
     "dev:doctor": "node tools/dev-doctor.mjs",
     "mcp:golden-four": "node tools/mcp-golden-four.mjs",
     "selfhost:init": "node tools/selfhost-kit.mjs init",
+    "selfhost:doctor": "node tools/selfhost-kit.mjs doctor",
     "selfhost:preflight": "node tools/selfhost-kit.mjs preflight",
     "selfhost:status": "node tools/selfhost-kit.mjs status",
     "selfhost:smoke": "node tools/selfhost-kit.mjs smoke",

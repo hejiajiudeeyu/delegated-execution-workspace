@@ -42,6 +42,7 @@
 必备命令：
 
 - `corepack pnpm run selfhost:init`
+- `corepack pnpm run selfhost:doctor`
 - `corepack pnpm run selfhost:preflight`
 - `corepack pnpm run selfhost:status`
 - `corepack pnpm run selfhost:smoke`
@@ -64,6 +65,9 @@
 
 - `.env` 缺失时从 `.env.example` 创建
 - placeholder secrets 被生成值替换
+- doctor 检查本地工具可见性、profile 文件、`.env` 是否存在，以及 secret /
+  public-origin hygiene，但不调用 `docker compose`、不启动服务、不探测网络、不打印
+  secret 值
 - status 能显示 Docker compose 状态和 health endpoints
 - smoke 同时检查 secret hygiene、compose config 和 health endpoints
 - preflight 在 `up` 前检查 secret hygiene、compose config 和 routes，不要求服务已运行
