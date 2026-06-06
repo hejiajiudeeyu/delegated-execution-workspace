@@ -231,7 +231,8 @@ corepack pnpm run selfhost:backup-validate -- --profile public-stack --backup-di
 corepack pnpm --silent run selfhost:backup-validate -- --profile public-stack --backup-dir backups/selfhost/public-stack/<stamp> --json
 corepack pnpm run selfhost:restore-plan -- --profile public-stack --backup-dir backups/selfhost/public-stack/<stamp>
 corepack pnpm --silent run selfhost:restore-plan -- --profile public-stack --backup-dir backups/selfhost/public-stack/<stamp> --json
-corepack pnpm run selfhost:rotate-plan
+corepack pnpm run selfhost:rotate-plan -- --profile public-stack
+corepack pnpm --silent run selfhost:rotate-plan -- --profile public-stack --json
 corepack pnpm run selfhost:rotate -- --confirm
 ```
 
@@ -267,3 +268,9 @@ backup-validate 命令，且不想解析终端文本时，使用
 `.env` 私下复核、`postgres.sql` 导入、重启和 smoke 验证顺序；不会复制文件、
 导入 SQL 或停止服务。当 dashboard、CI 或恢复演练脚本需要同一组有序恢复步骤且不想
 解析终端文本时，使用 `corepack pnpm --silent run selfhost:restore-plan ... --json`。
+
+`selfhost:rotate-plan` 也只输出计划。它会打印 backup-first、停机窗口、dry-run、
+confirmed rotation、restart 和 smoke 验证 checklist；不会读取或修改 `.env`。
+当 dashboard、CI 或 operator runbook 需要同一组 rotation 顺序和 safety notes，
+且不想解析终端文本时，使用
+`corepack pnpm --silent run selfhost:rotate-plan ... --json`。

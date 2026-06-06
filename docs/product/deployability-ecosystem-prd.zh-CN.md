@@ -86,6 +86,7 @@ CALL ANYTHING 现在的仓库边界是正确的：
 | Self-host backup planning | 第四仓 | `corepack pnpm run selfhost:backup-plan`，以及用于恢复演练脚本的 `--json` |
 | Self-host backup validation | 第四仓 | `corepack pnpm run selfhost:backup-validate`，以及用于恢复演练脚本的 `--json` |
 | Self-host restore rehearsal | 第四仓 | `corepack pnpm run selfhost:restore-plan`，以及用于恢复演练脚本的 `--json` |
+| Self-host rotation planning | 第四仓 | `corepack pnpm run selfhost:rotate-plan`，以及用于 operator runbook 和 dashboard 的 `--json` |
 | Compose 生命周期 wrapper | 第四仓 | 委托到 `repos/platform/deploy/*` |
 | Published-image smoke wrapper | 第四仓 | 委托到 `repos/platform` 的 public-stack smoke |
 | Operator onboarding contract | 第四仓 | `operator:onboarding:check` 校验 public-stack/brand-site/runbook 一致性 |
@@ -185,4 +186,7 @@ CALL ANYTHING 现在的仓库边界是正确的：
 - 增加 `selfhost:restore-plan`，让 backup artifact 在任何破坏性恢复动作前有一条
   可见的恢复演练路径。增加 `--json`，让 dashboard 和恢复演练脚本能渲染同一组有序步骤，
   但不执行这些步骤。
+- 增加 `selfhost:rotate-plan -- --json`，让 dashboard、CI 和 operator runbook
+  能消费 backup-first、dry-run、confirm、restart、smoke 验证这些 secret rotation
+  checklist，同时不读取或修改 `.env`。
 - 已发布镜像 smoke 先以第四仓 wrapper 形式接入，正式 image build/publish/release gate 仍归 `repos/platform`。

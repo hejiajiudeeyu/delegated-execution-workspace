@@ -268,7 +268,8 @@ corepack pnpm run selfhost:backup-validate -- --profile public-stack --backup-di
 corepack pnpm --silent run selfhost:backup-validate -- --profile public-stack --backup-dir backups/selfhost/public-stack/<stamp> --json
 corepack pnpm run selfhost:restore-plan -- --profile public-stack --backup-dir backups/selfhost/public-stack/<stamp>
 corepack pnpm --silent run selfhost:restore-plan -- --profile public-stack --backup-dir backups/selfhost/public-stack/<stamp> --json
-corepack pnpm run selfhost:rotate-plan
+corepack pnpm run selfhost:rotate-plan -- --profile public-stack
+corepack pnpm --silent run selfhost:rotate-plan -- --profile public-stack --json
 corepack pnpm run selfhost:rotate -- --confirm
 ```
 
@@ -312,6 +313,13 @@ backup directory without copying files, importing SQL, or stopping services. Use
 `corepack pnpm --silent run selfhost:restore-plan ... --json` when dashboards,
 CI, or recovery rehearsal scripts need the same ordered recovery steps without
 parsing terminal prose.
+
+`selfhost:rotate-plan` is plan-only. It prints the backup-first, downtime
+window, dry-run, confirmed rotation, restart, and smoke-validation checklist
+without reading or modifying `.env`. Use
+`corepack pnpm --silent run selfhost:rotate-plan ... --json` when dashboards,
+CI, or operator runbooks need the same rotation sequence and safety notes
+without parsing terminal prose.
 
 Default endpoints:
 

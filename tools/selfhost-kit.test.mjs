@@ -230,6 +230,26 @@ try {
   const backups = fs.readdirSync(path.dirname(envPath)).filter((file) => file.startsWith(".env.rotate-backup-"));
   assert.equal(backups.length, 1, "confirmed rotation should create exactly one backup");
 
+  const rotatePlanJson = run(tmpRoot, ["rotate-plan", "--json"]);
+  assert.equal(rotatePlanJson.status, 0, rotatePlanJson.stderr || rotatePlanJson.stdout);
+  const rotatePlanBody = JSON.parse(rotatePlanJson.stdout);
+  assert.equal(rotatePlanBody.command, "selfhost:rotate-plan");
+  assert.equal(rotatePlanBody.profile, "platform");
+  assert.equal(rotatePlanBody.ok, true);
+  assert.ok(rotatePlanBody.generated_at);
+  assert.equal(rotatePlanBody.env_path, "repos/platform/deploy/platform/.env");
+  assert.ok(Array.isArray(rotatePlanBody.steps));
+  assert.match(rotatePlanBody.steps.map((item) => item.command || item.detail).join("\n"), /backup-plan/);
+  assert.match(rotatePlanBody.steps.map((item) => item.command || item.detail).join("\n"), /selfhost:rotate -- --profile platform/);
+  assert.match(rotatePlanBody.steps.map((item) => item.command || item.detail).join("\n"), /--confirm/);
+  assert.match(rotatePlanBody.steps.map((item) => item.command || item.detail).join("\n"), /selfhost:down/);
+  assert.match(rotatePlanBody.steps.map((item) => item.command || item.detail).join("\n"), /selfhost:smoke/);
+  assert.match(rotatePlanBody.next, /selfhost:rotate -- --profile platform/);
+  assert.ok(Array.isArray(rotatePlanBody.notes));
+  assert.match(rotatePlanBody.notes.join("\n"), /plan-only/);
+  assert.match(rotatePlanBody.notes.join("\n"), /does not rotate secrets/);
+  assert.ok(!rotatePlanJson.stdout.includes(env.get("PLATFORM_ADMIN_API_KEY") || ""));
+
   const backupPlan = run(tmpRoot, ["backup-plan"]);
   assert.equal(backupPlan.status, 0, backupPlan.stderr || backupPlan.stdout);
   assert.match(backupPlan.stdout, /This command prints a plan only/);

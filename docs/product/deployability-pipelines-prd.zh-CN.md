@@ -76,6 +76,7 @@
 - `corepack pnpm run selfhost:restore-plan`
 - `corepack pnpm --silent run selfhost:restore-plan -- --backup-dir <dir> --json`
 - `corepack pnpm run selfhost:rotate-plan`
+- `corepack pnpm --silent run selfhost:rotate-plan -- --json`
 - `corepack pnpm run test:selfhost-kit`
 
 验收：
@@ -125,6 +126,9 @@
   restore-plan 命令和 safety notes，供 dashboard、CI 和恢复演练脚本消费
 - restore plan 会基于 backup directory 输出恢复演练步骤，但不停止服务或导入 SQL；
   `--json` 返回同一组有序恢复步骤和 safety notes，供 dashboard、CI 和恢复演练脚本消费
+- rotate plan 会输出手动 secret rotation checklist，但不读取或修改 `.env`；
+  `--json` 返回同一组 backup-first、dry-run、confirm、restart、smoke 验证步骤和
+  safety notes，供 dashboard、CI 和 operator runbook 消费
 - selfhost kit 对 env 创建、secret rotation dry-run / confirm 行为有自动化覆盖
 - 命令不打印 secret 值
 

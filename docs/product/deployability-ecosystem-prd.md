@@ -83,6 +83,7 @@ The ecosystem is "daily-deployable" when a fresh operator can:
 | Self-host backup planning | fourth repo | `corepack pnpm run selfhost:backup-plan`, plus `--json` for recovery rehearsal scripts |
 | Self-host backup validation | fourth repo | `corepack pnpm run selfhost:backup-validate`, plus `--json` for recovery rehearsal scripts |
 | Self-host restore rehearsal | fourth repo | `corepack pnpm run selfhost:restore-plan`, plus `--json` for recovery rehearsal scripts |
+| Self-host rotation planning | fourth repo | `corepack pnpm run selfhost:rotate-plan`, plus `--json` for operator runbooks and dashboards |
 | Compose lifecycle wrapper | fourth repo | delegate to `repos/platform/deploy/*` |
 | Published-image smoke wrapper | fourth repo | delegate to `repos/platform` public-stack smoke |
 | Operator onboarding contract | fourth repo | `operator:onboarding:check` keeps public-stack, brand-site, and runbooks aligned |
@@ -194,5 +195,8 @@ Required baseline:
   rehearsal path before any destructive restore action. Add `--json` so
   dashboards and recovery rehearsal scripts can render the same ordered steps
   without executing them.
+- Add `selfhost:rotate-plan -- --json` so dashboards, CI, and operator runbooks
+  can consume the backup-first, dry-run, confirm, restart, and smoke-validation
+  secret rotation checklist without reading or mutating `.env`.
 - Published-image smoke is first connected as a fourth-repo wrapper; formal
   image build, publish, and release gates remain owned by `repos/platform`.

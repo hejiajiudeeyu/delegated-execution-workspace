@@ -76,6 +76,7 @@ Required commands:
 - `corepack pnpm run selfhost:restore-plan`
 - `corepack pnpm --silent run selfhost:restore-plan -- --backup-dir <dir> --json`
 - `corepack pnpm run selfhost:rotate-plan`
+- `corepack pnpm --silent run selfhost:rotate-plan -- --json`
 - `corepack pnpm run test:selfhost-kit`
 
 Acceptance:
@@ -140,6 +141,10 @@ Acceptance:
   without stopping services or importing SQL; `--json` returns the same ordered
   recovery steps and safety notes for dashboards, CI, and recovery rehearsal
   scripts
+- rotate plan prints the manual secret rotation checklist without reading or
+  changing `.env`; `--json` returns the same backup-first, dry-run, confirm,
+  restart, smoke-validation steps and safety notes for dashboards, CI, and
+  operator runbooks
 - selfhost kit has automated coverage for env creation and secret rotation dry-run/confirm behavior
 - no command prints secret values
 

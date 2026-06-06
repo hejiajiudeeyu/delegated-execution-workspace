@@ -69,12 +69,15 @@ CHG-2026-057:
   shape check before restore rehearsal
 - `selfhost:restore-plan` is available as a non-destructive recovery rehearsal
   command for backup directories before any restore action touches live data
+- `selfhost:rotate-plan` is available as a non-destructive secret rotation
+  checklist, and supports `--json` for machine-readable backup-first, dry-run,
+  confirm, restart, smoke-validation steps, and safety notes
 - MCP host golden-four validation is available as an executable fourth-repo
   smoke and a deterministic unit-style harness
 - brand-site now has bilingual Deployability Profiles docs that explain the
   deployment profiles, ready/planned boundaries, secret-safety defaults, and
   the operator-only Billing console slice, plus the new profiles/doctor/summary/security-review
-  and quickstart/readiness/audit-export/ports/ops-report/backup-validate/restore-plan gates
+  and quickstart/readiness/audit-export/ports/ops-report/backup-validate/restore-plan/rotate-plan gates
 - one-command local stack bootstrap is available through managed
   `dev:local:*` commands
 - published-image smoke now has a fourth-repo entry point that reviews
@@ -277,6 +280,9 @@ reading or printing `.env` secret values;
 `corepack pnpm run selfhost:restore-plan` prints the downtime, private `.env`
 review, `postgres.sql` import, restart, and smoke-validation sequence for a
 backup directory without stopping services or importing SQL;
+`corepack pnpm run selfhost:rotate-plan` prints the backup-first, downtime
+window, dry-run, confirmed rotation, restart, and smoke-validation checklist
+without reading or modifying `.env`;
 `corepack pnpm run selfhost:smoke` remains the post-start health endpoint check
 and, for `public-stack`, also validates the edge route contract for `/healthz`,
 `/platform/healthz`, `/relay/healthz`, `/gateway/healthz`, and `/console/`.
@@ -332,9 +338,9 @@ Billing page as an operator surface, not as client-facing billing readiness, and
 the public-stack command examples include `selfhost:security-review`,
 `selfhost:audit-export`, `selfhost:profiles`, `selfhost:quickstart`, `selfhost:readiness -- --all`, `selfhost:readiness`, `selfhost:readiness -- --json`, `selfhost:doctor`, `selfhost:summary`, `selfhost:ports`,
 `selfhost:ops-report`,
-`selfhost:backup-plan`, `selfhost:backup-validate`, and `selfhost:restore-plan` as pre-exposure safety,
+`selfhost:backup-plan`, `selfhost:backup-validate`, `selfhost:restore-plan`, and `selfhost:rotate-plan` as pre-exposure safety,
 evidence, quickstart sequencing, human-readable and machine-readable readiness overview, port visibility, handoff-report,
-backup planning, backup-artifact validation, and recovery-rehearsal commands. Capabilities that
+backup planning, backup-artifact validation, recovery-rehearsal, and rotation-planning commands. Capabilities that
 are not ready remain outside the
 green path, and secrets, public origins, and billing readiness must not be
 hidden behind green status.

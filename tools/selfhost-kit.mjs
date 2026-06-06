@@ -1310,13 +1310,81 @@ function printBackupPlanJson(profileName) {
 }
 
 function printRotatePlan(profileName) {
+  const data = rotatePlanData(profileName);
   console.log(`[selfhost:rotate-plan] profile=${profileName}`);
-  console.log("1. Run backup-plan and take a real database backup first.");
-  console.log("2. Schedule downtime or restart window for services using rotated secrets.");
-  console.log(`3. Dry-run: corepack pnpm run selfhost:rotate -- --profile ${profileName}`);
-  console.log(`4. Apply:   corepack pnpm run selfhost:rotate -- --profile ${profileName} --confirm`);
-  console.log(`5. Restart: corepack pnpm run selfhost:down -- --profile ${profileName} && corepack pnpm run selfhost:up -- --profile ${profileName}`);
-  console.log("6. Run selfhost:smoke and keep the generated .env rotation backup until validated.");
+  for (const step of data.steps) {
+    console.log(`${step.step}. ${step.detail}${step.command ? `: ${step.command}` : ""}`);
+  }
+}
+
+function rotatePlanData(profileName) {
+  const envPath = path.relative(ROOT, profilePaths(profileName).envPath);
+  return {
+    command: "selfhost:rotate-plan",
+    profile: profileName,
+    ok: true,
+    env_path: envPath,
+    steps: [
+      {
+        step: 1,
+        action: "backup-first",
+        detail: "Run backup-plan and take a real database backup first.",
+        command: `corepack pnpm run selfhost:backup-plan -- --profile ${profileName}`
+      },
+      {
+        step: 2,
+        action: "schedule-window",
+        detail: "Schedule downtime or restart window for services using rotated secrets."
+      },
+      {
+        step: 3,
+        action: "dry-run-rotation",
+        detail: "Dry-run secret rotation",
+        command: `corepack pnpm run selfhost:rotate -- --profile ${profileName}`
+      },
+      {
+        step: 4,
+        action: "apply-rotation",
+        detail: "Apply secret rotation",
+        command: `corepack pnpm run selfhost:rotate -- --profile ${profileName} --confirm`
+      },
+      {
+        step: 5,
+        action: "restart-services",
+        detail: "Restart services",
+        command: `corepack pnpm run selfhost:down -- --profile ${profileName} && corepack pnpm run selfhost:up -- --profile ${profileName}`
+      },
+      {
+        step: 6,
+        action: "validate-rotation",
+        detail: "Run selfhost:smoke and keep the generated .env rotation backup until validated.",
+        command: `corepack pnpm run selfhost:smoke -- --profile ${profileName}`
+      }
+    ],
+    next: `corepack pnpm run selfhost:rotate -- --profile ${profileName}`,
+    notes: [
+      "plan-only",
+      "does not rotate secrets",
+      "does not read or print .env secret values",
+      "confirmed rotation writes a .env rotation backup next to the selected profile env file",
+      "keep the generated .env rotation backup until smoke validation passes"
+    ]
+  };
+}
+
+function printRotatePlanJson(profileName) {
+  const data = rotatePlanData(profileName);
+  console.log(
+    JSON.stringify(
+      {
+        generated_at: new Date().toISOString(),
+        ...data
+      },
+      null,
+      2
+    )
+  );
+  return data.ok;
 }
 
 function printRestorePlan(profileName, backupDir) {
@@ -1950,6 +2018,10 @@ async function main() {
   }
 
   if (args.command === "rotate-plan") {
+    if (args.json) {
+      printRotatePlanJson(args.profile);
+      return;
+    }
     printRotatePlan(args.profile);
     return;
   }
