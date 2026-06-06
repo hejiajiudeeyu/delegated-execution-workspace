@@ -103,6 +103,8 @@ Commands:
   rotate    Dry-run secret rotation, or write .env with --confirm
   rotate-plan
             Print the manual secret rotation checklist
+  restore-plan
+            Print the manual backup restore checklist
   backup-plan
             Print the manual data backup checklist
 
@@ -120,7 +122,8 @@ function parseArgs(argv) {
     tail: "120",
     limit: "100",
     output: null,
-    auditBaseUrl: null
+    auditBaseUrl: null,
+    backupDir: null
   };
   for (let index = 3; index < argv.length; index += 1) {
     const value = argv[index];
@@ -175,6 +178,15 @@ function parseArgs(argv) {
     }
     if (value.startsWith("--audit-base-url=")) {
       args.auditBaseUrl = value.slice("--audit-base-url=".length);
+      continue;
+    }
+    if (value === "--backup-dir") {
+      args.backupDir = argv[index + 1];
+      index += 1;
+      continue;
+    }
+    if (value.startsWith("--backup-dir=")) {
+      args.backupDir = value.slice("--backup-dir=".length);
       continue;
     }
     if (value === "--profile") {
@@ -560,6 +572,24 @@ function printRotatePlan(profileName) {
   console.log("6. Run selfhost:smoke and keep the generated .env rotation backup until validated.");
 }
 
+function printRestorePlan(profileName, backupDir) {
+  if (!backupDir) {
+    throw new Error("--backup-dir is required for restore-plan");
+  }
+  const { envPath } = profilePaths(profileName);
+  const normalizedBackupDir = backupDir.replace(/\/+$/, "");
+  console.log(`[selfhost:restore-plan] profile=${profileName}`);
+  console.log("This command prints a plan only; it does not stop services, copy files, or import data.");
+  console.log(`backup_dir=${normalizedBackupDir}`);
+  console.log("1. Confirm the backup directory was produced by selfhost:backup-plan and stored privately.");
+  console.log(`2. Schedule downtime: corepack pnpm run selfhost:down -- --profile ${profileName}`);
+  console.log(`3. Review ${normalizedBackupDir}/.env privately, then copy it to ${path.relative(ROOT, envPath)} if it matches the target environment.`);
+  console.log(`4. Import database dump: docker compose --env-file .env exec -T postgres psql -U "$POSTGRES_USER" "$POSTGRES_DB" < ${normalizedBackupDir}/postgres.sql`);
+  console.log(`5. Restart services: corepack pnpm run selfhost:up -- --profile ${profileName}`);
+  console.log(`6. Validate recovery: corepack pnpm run selfhost:smoke -- --profile ${profileName}`);
+  console.log("7. Keep original volumes and the backup artifact until the recovered stack is validated.");
+}
+
 function securityReviewProfile(profileName) {
   console.log(`[selfhost:security-review] profile=${profileName}`);
   console.log("This command is non-destructive; it reviews local files and compose output only.");
@@ -761,6 +791,11 @@ async function main() {
       output: args.output,
       auditBaseUrl: args.auditBaseUrl
     });
+    return;
+  }
+
+  if (args.command === "restore-plan") {
+    printRestorePlan(args.profile, args.backupDir);
     return;
   }
 

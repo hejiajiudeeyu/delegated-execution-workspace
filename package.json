@@ -55,6 +55,7 @@
     "selfhost:security-review": "node tools/selfhost-kit.mjs security-review",
     "selfhost:audit-export": "node tools/selfhost-kit.mjs audit-export",
     "selfhost:backup-plan": "node tools/selfhost-kit.mjs backup-plan",
+    "selfhost:restore-plan": "node tools/selfhost-kit.mjs restore-plan",
     "selfhost:rotate-plan": "node tools/selfhost-kit.mjs rotate-plan",
     "selfhost:rotate": "node tools/selfhost-kit.mjs rotate",
     "dev:approve-example": "node tools/approve-example.mjs",

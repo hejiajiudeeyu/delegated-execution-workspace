@@ -144,6 +144,7 @@ corepack pnpm run selfhost:logs -- --service platform-api --tail 80
 corepack pnpm run selfhost:security-review -- --profile public-stack
 corepack pnpm run selfhost:audit-export -- --profile public-stack
 corepack pnpm run selfhost:backup-plan
+corepack pnpm run selfhost:restore-plan -- --profile public-stack --backup-dir backups/selfhost/public-stack/<stamp>
 corepack pnpm run selfhost:rotate-plan
 corepack pnpm run selfhost:rotate -- --confirm
 ```
@@ -151,3 +152,7 @@ corepack pnpm run selfhost:rotate -- --confirm
 `selfhost:audit-export` 会读取选定 profile 的 `.env`，调用 platform admin audit
 endpoint，并把 JSON 证据写入 `exports/audit/<profile>/`；也可以用 `--output`
 指定路径。它会使用 admin key 发起请求，但不会把 key 打印到终端。
+
+`selfhost:restore-plan` 同样只输出计划。它会基于一个 backup directory 打印停机、
+`.env` 私下复核、`postgres.sql` 导入、重启和 smoke 验证顺序；不会复制文件、
+导入 SQL 或停止服务。

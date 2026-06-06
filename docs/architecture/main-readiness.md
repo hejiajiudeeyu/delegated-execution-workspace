@@ -18,14 +18,14 @@ repositories.
 - `repos/protocol`: `da3027100cfe9391f7f8d03be18a108ee2804cf6`
 - `repos/client`: `f1d6a2d8c9b83517cdf6ca9803b223847f880e9a`
 - `repos/platform`: `5961309c6b0ca4e8df22dbb5be92ac0845bf8d25`
-- `repos/brand-site`: `8205fc914cbe4e557a1cb1d75bab1e895d053f54`
+- `repos/brand-site`: `83706fd651d9aa005da2a8fe70954f179f73a11c`
 
-The current bundle is `changes/CHG-2026-044.yaml`.
+The current bundle is `changes/CHG-2026-045.yaml`.
 
 ## Readiness Verdict
 
 The pinned combination is ready for daily fourth-repo development after
-CHG-2026-044:
+CHG-2026-045:
 
 - submodule SHA integrity is verified
 - boundary governance covers the new platform billing data package
@@ -42,12 +42,14 @@ CHG-2026-044:
 - `selfhost:audit-export` is available as a local JSON audit evidence export
   helper for the existing platform admin audit endpoint without printing admin
   keys
+- `selfhost:restore-plan` is available as a non-destructive recovery rehearsal
+  command for backup directories before any restore action touches live data
 - MCP host golden-four validation is available as an executable fourth-repo
   smoke and a deterministic unit-style harness
 - brand-site now has bilingual Deployability Profiles docs that explain the
   deployment profiles, ready/planned boundaries, secret-safety defaults, and
   the operator-only Billing console slice, plus the new security-review and
-  audit-export gates
+  audit-export/restore-plan gates
 - one-command local stack bootstrap is available through managed
   `dev:local:*` commands
 - published-image smoke now has a fourth-repo entry point that reviews
@@ -83,7 +85,7 @@ Observed results:
 - `check:submodules`: passed
 - `check:boundaries`: passed after adding `@delexec/billing-store` to
   `platform/data`
-- `check:bundles`: passed with `CHG-2026-044`
+- `check:bundles`: passed with `CHG-2026-045`
 - `test:contracts`: passed, including `@delexec/billing-store` in platform
   package validation and the `@delexec/platform-api` dependency graph
 - `test:integration`: passed with a successful request/response path
@@ -100,7 +102,7 @@ Observed results:
 - `test:selfhost-kit`: passed with temp-profile coverage for env generation,
   secret rotation dry-run/confirm behavior, public-stack preflight safety,
   non-destructive security review, admin audit export without secret leakage,
-  and public route-contract smoke output
+  restore planning, and public route-contract smoke output
 - `test:mcp-golden-four`: passed with a fake MCP streamable HTTP host and
   secret-leak guard for the executable golden-four smoke
 - `test:local-stack`: passed for one-command local stack command sequencing,
@@ -123,7 +125,7 @@ Observed results:
 - `repos/brand-site` `npm run smoke:deployability-content`: passed for the
   bilingual Deployability Profiles route/content contract, including the
   admin-only Billing console narrative plus `selfhost:security-review` and
-  `selfhost:audit-export` commands
+  `selfhost:audit-export` / `selfhost:restore-plan` commands
 - `repos/brand-site` `npm run build`: passed, including client build, SSR
   build, and prerender output for the new deployability docs routes
 - `repos/platform` platform-console view-model unit test: passed for Billing
@@ -202,6 +204,9 @@ run before treating a public stack as exposure-ready;
 calls the existing platform admin audit endpoint, and writes the response as a
 local JSON artifact under `exports/audit/<profile>/` without printing the admin
 key;
+`corepack pnpm run selfhost:restore-plan` prints the downtime, private `.env`
+review, `postgres.sql` import, restart, and smoke-validation sequence for a
+backup directory without stopping services or importing SQL;
 `corepack pnpm run selfhost:smoke` remains the post-start health endpoint check
 and, for `public-stack`, also validates the edge route contract for `/healthz`,
 `/platform/healthz`, `/relay/healthz`, `/gateway/healthz`, and `/console/`.
@@ -254,10 +259,11 @@ keep self-host messaging honest by labeling current paths as ready now:
 local loop, selfhost, public-stack safety checks, published-image smoke, and
 Operator Onboarding. Management Console copy now also describes the admin-only
 Billing page as an operator surface, not as client-facing billing readiness, and
-the public-stack command examples include `selfhost:security-review` and
-`selfhost:audit-export` as pre-exposure safety and evidence commands.
-Capabilities that are not ready remain outside the green path, and secrets,
-public origins, and billing readiness must not be hidden behind green status.
+the public-stack command examples include `selfhost:security-review`,
+`selfhost:audit-export`, and `selfhost:restore-plan` as pre-exposure safety,
+evidence, and recovery-rehearsal commands. Capabilities that are not ready
+remain outside the green path, and secrets, public origins, and billing
+readiness must not be hidden behind green status.
 
 ## Still Not Ready As A Default Daily Path
 

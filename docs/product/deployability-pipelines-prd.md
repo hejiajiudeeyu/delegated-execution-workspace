@@ -52,6 +52,7 @@ Required commands:
 - `corepack pnpm run selfhost:urls`
 - `corepack pnpm run selfhost:logs`
 - `corepack pnpm run selfhost:backup-plan`
+- `corepack pnpm run selfhost:restore-plan`
 - `corepack pnpm run selfhost:rotate-plan`
 - `corepack pnpm run test:selfhost-kit`
 
@@ -72,6 +73,8 @@ Acceptance:
   prerequisites
 - audit export writes platform admin audit events to a local JSON artifact
   without printing admin keys
+- restore plan prints a recovery rehearsal sequence for backup directories
+  without stopping services or importing SQL
 - selfhost kit has automated coverage for env creation and secret rotation dry-run/confirm behavior
 - no command prints secret values
 

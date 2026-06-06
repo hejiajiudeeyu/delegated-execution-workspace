@@ -136,5 +136,7 @@ Required baseline:
   backup/rotation/smoke prerequisites before public exposure.
 - Add `selfhost:audit-export` so operators can save platform admin audit events
   as local JSON evidence without printing admin keys.
+- Add `selfhost:restore-plan` so backup artifacts have a visible recovery
+  rehearsal path before any destructive restore action.
 - Published-image smoke is first connected as a fourth-repo wrapper; formal
   image build, publish, and release gates remain owned by `repos/platform`.

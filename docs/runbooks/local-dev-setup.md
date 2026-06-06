@@ -165,6 +165,7 @@ corepack pnpm run selfhost:logs -- --service platform-api --tail 80
 corepack pnpm run selfhost:security-review -- --profile public-stack
 corepack pnpm run selfhost:audit-export -- --profile public-stack
 corepack pnpm run selfhost:backup-plan
+corepack pnpm run selfhost:restore-plan -- --profile public-stack --backup-dir backups/selfhost/public-stack/<stamp>
 corepack pnpm run selfhost:rotate-plan
 corepack pnpm run selfhost:rotate -- --confirm
 ```
@@ -173,6 +174,10 @@ corepack pnpm run selfhost:rotate -- --confirm
 admin audit endpoint, and writes a JSON artifact under `exports/audit/<profile>/`
 unless `--output` is provided. It uses the admin key for the request but never
 prints that key.
+
+`selfhost:restore-plan` is also plan-only. It prints the downtime, `.env`
+review, `postgres.sql` import, restart, and smoke-validation sequence for a
+backup directory without copying files, importing SQL, or stopping services.
 
 Default endpoints:
 

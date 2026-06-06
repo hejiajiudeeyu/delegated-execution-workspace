@@ -201,6 +201,16 @@ try {
   assert.equal(backupPlan.status, 0, backupPlan.stderr || backupPlan.stdout);
   assert.match(backupPlan.stdout, /This command prints a plan only/);
 
+  const restorePlan = run(tmpRoot, ["restore-plan", "--backup-dir", "backups/selfhost/platform/sample"]);
+  assert.equal(restorePlan.status, 0, restorePlan.stderr || restorePlan.stdout);
+  assert.match(restorePlan.stdout, /selfhost:restore-plan/);
+  assert.match(restorePlan.stdout, /backups\/selfhost\/platform\/sample/);
+  assert.match(restorePlan.stdout, /postgres\.sql/);
+  assert.match(restorePlan.stdout, /selfhost:down/);
+  assert.match(restorePlan.stdout, /selfhost:up/);
+  assert.match(restorePlan.stdout, /selfhost:smoke/);
+  assert.ok(!restorePlan.stdout.includes(env.get("PLATFORM_ADMIN_API_KEY") || ""));
+
   const rotatedEnv = readEnv(envPath);
   await withAuditServer(rotatedEnv.get("PLATFORM_ADMIN_API_KEY") || "", async (auditBaseUrl) => {
     const exportPath = path.join(tmpRoot, "exports/audit/platform/test-audit.json");

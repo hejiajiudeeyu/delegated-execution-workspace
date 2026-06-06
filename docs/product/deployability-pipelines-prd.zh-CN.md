@@ -52,6 +52,7 @@
 - `corepack pnpm run selfhost:urls`
 - `corepack pnpm run selfhost:logs`
 - `corepack pnpm run selfhost:backup-plan`
+- `corepack pnpm run selfhost:restore-plan`
 - `corepack pnpm run selfhost:rotate-plan`
 - `corepack pnpm run test:selfhost-kit`
 
@@ -69,6 +70,7 @@
   config、route contract 和 backup / rotation / smoke 前置动作
 - audit export 会把 platform admin audit events 写成本地 JSON 证据，同时不打印
   admin key
+- restore plan 会基于 backup directory 输出恢复演练步骤，但不停止服务或导入 SQL
 - selfhost kit 对 env 创建、secret rotation dry-run / confirm 行为有自动化覆盖
 - 命令不打印 secret 值
 
