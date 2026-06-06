@@ -773,6 +773,48 @@ function composeConfig(profileName, mode = "quiet", stdio = "inherit") {
   return dockerCompose(profileName, args, stdio);
 }
 
+function configData(profileName) {
+  const { dir, envPath, composePath } = profilePaths(profileName);
+  const result = composeConfig(profileName, "quiet", "pipe");
+  const ok = result.status === 0;
+  return {
+    command: "selfhost:config",
+    profile: profileName,
+    ok,
+    deploy_dir: path.relative(ROOT, dir),
+    compose_path: path.relative(ROOT, composePath),
+    env_path: path.relative(ROOT, envPath),
+    env_status: fs.existsSync(envPath) ? "present" : "missing",
+    compose_config: {
+      ok,
+      status: ok ? "ok" : "fail",
+      exit_code: result.status ?? 1,
+      stderr_lines: (result.stderr || "").trim().split(/\r?\n/).filter(Boolean)
+    },
+    blockers: ok ? [] : ["docker compose config failed"],
+    notes: [
+      "runs docker compose config --quiet",
+      "does not include docker compose config stdout because it can contain expanded environment values",
+      "does not print secret values"
+    ]
+  };
+}
+
+function printConfigJson(profileName) {
+  const data = configData(profileName);
+  console.log(
+    JSON.stringify(
+      {
+        generated_at: new Date().toISOString(),
+        ...data
+      },
+      null,
+      2
+    )
+  );
+  return data.ok;
+}
+
 function printPlan(profileName) {
   const data = planData(profileName);
   console.log(`[selfhost:plan] profile=${profileName}`);
@@ -2115,6 +2157,9 @@ async function main() {
   }
 
   if (args.command === "config") {
+    if (args.json) {
+      process.exit(printConfigJson(args.profile) ? 0 : 1);
+    }
     const result = composeConfig(args.profile, "print");
     process.exit(result.status || 0);
   }

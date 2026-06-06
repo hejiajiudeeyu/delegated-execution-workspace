@@ -218,6 +218,13 @@ function writeFakeDocker(root) {
       "  }",
       "  process.exit(0);",
       "}",
+      "if (args.includes('config')) {",
+      "  console.log('services:');",
+      "  console.log('  platform-api:');",
+      "  console.log('    environment:');",
+      "  console.log('      PLATFORM_ADMIN_API_KEY: sk_admin_fake_secret_from_compose');",
+      "  process.exit(0);",
+      "}",
       "process.exit(0);",
       ""
     ].join("\n"),
@@ -529,6 +536,27 @@ try {
   assert.ok(Array.isArray(statusBody.notes));
   assert.match(statusBody.notes.join("\n"), /does not print secret values/);
   assert.ok(!statusJson.stdout.includes(env.get("PLATFORM_ADMIN_API_KEY") || ""));
+
+  const configJson = run(tmpRoot, ["config", "--json"], {
+    env: {
+      ...process.env,
+      PATH: `${fakeDockerBin}${path.delimiter}${process.env.PATH || ""}`
+    }
+  });
+  assert.equal(configJson.status, 0, configJson.stderr || configJson.stdout);
+  const configBody = JSON.parse(configJson.stdout);
+  assert.equal(configBody.command, "selfhost:config");
+  assert.equal(configBody.profile, "platform");
+  assert.equal(configBody.ok, true);
+  assert.equal(configBody.compose_config.status, "ok");
+  assert.equal(configBody.compose_config.exit_code, 0);
+  assert.equal(configBody.compose_path, "repos/platform/deploy/platform/docker-compose.yml");
+  assert.equal(configBody.env_path, "repos/platform/deploy/platform/.env");
+  assert.equal(configBody.env_status, "present");
+  assert.ok(Array.isArray(configBody.notes));
+  assert.match(configBody.notes.join("\n"), /does not include docker compose config stdout/);
+  assert.ok(!configJson.stdout.includes("sk_admin_fake_secret_from_compose"));
+  assert.ok(!configJson.stdout.includes(env.get("PLATFORM_ADMIN_API_KEY") || ""));
 
   const profiles = run(tmpRoot, ["profiles"]);
   assert.equal(profiles.status, 0, profiles.stderr || profiles.stdout);

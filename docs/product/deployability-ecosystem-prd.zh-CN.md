@@ -85,6 +85,7 @@ CALL ANYTHING 现在的仓库边界是正确的：
 | Self-host ops handoff | 第四仓 | `corepack pnpm run selfhost:ops-report`，以及用于 dashboard 和管理脚本的 `--json` |
 | Self-host preflight gate | 第四仓 | `corepack pnpm run selfhost:preflight`，以及用于部署控制器的 `--json` |
 | Self-host runtime status | 第四仓 | `corepack pnpm run selfhost:status`，以及用于 dashboard 和管理脚本的 `--json` |
+| Self-host compose config validation | 第四仓 | `corepack pnpm run selfhost:config`，以及用于 CI 和 dashboard 的 `--json` |
 | Self-host security review | 第四仓 | `corepack pnpm run selfhost:security-review`，以及用于公开暴露 dashboard 的 `--json` |
 | Self-host backup planning | 第四仓 | `corepack pnpm run selfhost:backup-plan`，以及用于恢复演练脚本的 `--json` |
 | Self-host backup validation | 第四仓 | `corepack pnpm run selfhost:backup-validate`，以及用于恢复演练脚本的 `--json` |
@@ -109,6 +110,7 @@ CALL ANYTHING 现在的仓库边界是正确的：
 - health check 不泄漏 secrets
 - logs/status 命令帮助定位问题，但不 dump `.env`
 - runtime status 可以机器读取，供 dashboard 消费，但不泄漏 secret 值
+- compose config validation 可以机器读取，但省略可能包含环境值的 compose stdout
 
 ## 8. 成功指标
 
@@ -173,6 +175,8 @@ CALL ANYTHING 现在的仓库边界是正确的：
 - 增加 `selfhost:status -- --json`，让 dashboard 和管理脚本能消费 runtime Docker
   compose service state、secret hygiene 状态、health endpoint checks、blockers 和
   safety notes，而不解析终端文本、不打印 secret 值。
+- 增加 `selfhost:config -- --json`，让 CI、dashboard 和管理脚本能消费 compose config
+  pass/fail、blocker 和 stderr metadata，同时不包含可能带环境值的展开后 compose stdout。
 - 增加 `selfhost:summary`，让 operator 用一屏只读输出看清 deploy 路径、URLs、
   声明的 host ports、secret hygiene 状态和下一步命令。
 - 增加 `selfhost:doctor` 作为最早的只读部署诊断，覆盖本地工具、profile 文件、

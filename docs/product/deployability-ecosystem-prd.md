@@ -82,6 +82,7 @@ The ecosystem is "daily-deployable" when a fresh operator can:
 | Self-host ops handoff | fourth repo | `corepack pnpm run selfhost:ops-report`, plus `--json` for dashboards and management scripts |
 | Self-host preflight gate | fourth repo | `corepack pnpm run selfhost:preflight`, plus `--json` for deployment controllers |
 | Self-host runtime status | fourth repo | `corepack pnpm run selfhost:status`, plus `--json` for dashboards and management scripts |
+| Self-host compose config validation | fourth repo | `corepack pnpm run selfhost:config`, plus `--json` for CI and dashboards |
 | Self-host security review | fourth repo | `corepack pnpm run selfhost:security-review`, plus `--json` for public exposure dashboards |
 | Self-host backup planning | fourth repo | `corepack pnpm run selfhost:backup-plan`, plus `--json` for recovery rehearsal scripts |
 | Self-host backup validation | fourth repo | `corepack pnpm run selfhost:backup-validate`, plus `--json` for recovery rehearsal scripts |
@@ -106,6 +107,8 @@ Required baseline:
 - health checks that do not leak secrets
 - logs/status commands that help debug without dumping `.env`
 - machine-readable status output for dashboards without leaking secret values
+- machine-readable compose config validation that omits expanded compose stdout
+  because it can contain environment values
 
 ## 8. Success Metrics
 
@@ -177,6 +180,9 @@ Required baseline:
   consume runtime Docker compose service state, secret hygiene status, health
   endpoint checks, blockers, and safety notes without parsing terminal prose or
   printing secret values.
+- Add `selfhost:config -- --json` so CI, dashboards, and management scripts can
+  consume compose config pass/fail, blocker, and stderr metadata without
+  including expanded compose stdout that may contain environment values.
 - Add `selfhost:summary` so operators can see deploy paths, URLs, declared
   host ports, secret hygiene status, and next commands in one read-only screen.
 - Add `selfhost:doctor` as the earliest read-only deployment diagnostic for

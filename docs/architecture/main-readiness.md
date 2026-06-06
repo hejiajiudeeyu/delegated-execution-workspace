@@ -18,14 +18,14 @@ repositories.
 - `repos/protocol`: `da3027100cfe9391f7f8d03be18a108ee2804cf6`
 - `repos/client`: `f1d6a2d8c9b83517cdf6ca9803b223847f880e9a`
 - `repos/platform`: `5961309c6b0ca4e8df22dbb5be92ac0845bf8d25`
-- `repos/brand-site`: `22f4ae95929954f144f3ac617490e08f8fa48bbb`
+- `repos/brand-site`: `9a2b505afe1917f9f4e389e672853c316490b190`
 
-The current bundle is `changes/CHG-2026-074.yaml`.
+The current bundle is `changes/CHG-2026-075.yaml`.
 
 ## Readiness Verdict
 
 The pinned combination is ready for daily fourth-repo development after
-CHG-2026-074:
+CHG-2026-075:
 
 - submodule SHA integrity is verified
 - boundary governance covers the new platform billing data package
@@ -49,6 +49,9 @@ CHG-2026-074:
   startup, and supports `--json` for Docker compose service state, secret
   hygiene status, health endpoint checks, blockers, and safety notes without
   printing secret values
+- `selfhost:config` is available as the compose config validation command, and
+  supports `--json` for pass/fail, blocker, and stderr metadata while omitting
+  expanded compose stdout because it can contain environment values
 - `selfhost:ports` is available as a non-destructive declared host-port list
   before an operator starts a self-host profile
 - `selfhost:summary` is available as a read-only one-screen profile overview
@@ -122,7 +125,7 @@ Observed results:
 - `check:submodules`: passed
 - `check:boundaries`: passed after adding `@delexec/billing-store` to
   `platform/data`
-- `check:bundles`: passed with `CHG-2026-074`
+- `check:bundles`: passed with `CHG-2026-075`
 - `test:contracts`: passed, including `@delexec/billing-store` in platform
   package validation and the `@delexec/platform-api` dependency graph
 - `test:integration`: passed with a successful request/response path
@@ -172,7 +175,7 @@ Observed results:
   bilingual Deployability Profiles route/content contract, including the
   admin-only Billing console narrative plus `selfhost:security-review` and
   `selfhost:audit-export` / `selfhost:profiles` / `selfhost:quickstart` / `selfhost:readiness -- --all` / `selfhost:readiness` / `selfhost:doctor` / `selfhost:summary` / `selfhost:ports` /
-  `selfhost:ops-report` / `selfhost:status -- --json` / `selfhost:backup-validate` / `selfhost:restore-plan`
+  `selfhost:ops-report` / `selfhost:status -- --json` / `selfhost:config -- --json` / `selfhost:backup-validate` / `selfhost:restore-plan`
   commands
 - `repos/brand-site` `npm run build`: passed, including client build, SSR
   build, and prerender output for the new deployability docs routes
@@ -285,6 +288,10 @@ snapshot. It calls Docker compose `ps`, checks secret hygiene status, and probes
 configured health endpoints without printing secret values; `--json` emits the
 same runtime service state, health checks, blockers, and safety notes for
 dashboards and management scripts;
+`corepack pnpm run selfhost:config` validates the selected profile compose
+config. The text form prints compose output for a private operator terminal;
+`--json` emits pass/fail, blocker, and stderr metadata while omitting expanded
+compose stdout because it can contain environment values;
 `corepack pnpm run selfhost:ports` prints the selected profile's declared host
 ports without binding sockets, inspecting the local network, or calling Docker;
 `corepack pnpm run selfhost:summary` prints a read-only one-screen profile

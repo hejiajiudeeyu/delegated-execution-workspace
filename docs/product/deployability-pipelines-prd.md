@@ -61,6 +61,7 @@ Required commands:
 - `corepack pnpm --silent run selfhost:security-review -- --json`
 - `corepack pnpm run selfhost:audit-export`
 - `corepack pnpm run selfhost:config`
+- `corepack pnpm --silent run selfhost:config -- --json`
 - `corepack pnpm run selfhost:plan`
 - `corepack pnpm --silent run selfhost:plan -- --json`
 - `corepack pnpm run selfhost:summary`
@@ -109,6 +110,9 @@ Acceptance:
   same runtime service state, secret hygiene status, health checks, blockers,
   and safety notes for dashboards and management scripts without printing
   secret values
+- config validates Docker compose config; `--json` returns pass/fail, blocker,
+  and stderr metadata for CI, dashboards, and management scripts while omitting
+  expanded compose stdout because it can contain environment values
 - smoke checks secret hygiene, compose config, and health endpoints
 - preflight checks secret hygiene, compose config, and routes before `up`,
   without requiring services to be running; `--json` preserves the same

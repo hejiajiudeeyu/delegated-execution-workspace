@@ -133,6 +133,8 @@ corepack pnpm --silent run selfhost:status -- --json
 corepack pnpm run selfhost:smoke
 corepack pnpm run selfhost:security-review
 corepack pnpm --silent run selfhost:security-review -- --json
+corepack pnpm run selfhost:config
+corepack pnpm --silent run selfhost:config -- --json
 ```
 
 For the public operator stack:
@@ -160,6 +162,8 @@ corepack pnpm --silent run selfhost:security-review -- --profile public-stack --
 corepack pnpm run selfhost:status -- --profile public-stack
 corepack pnpm --silent run selfhost:status -- --profile public-stack --json
 corepack pnpm run selfhost:smoke -- --profile public-stack
+corepack pnpm run selfhost:config -- --profile public-stack
+corepack pnpm --silent run selfhost:config -- --profile public-stack --json
 ```
 
 `selfhost:up` automatically runs the same preflight gate first. If public origin
@@ -175,6 +179,14 @@ health endpoints without printing secret values. Use
 `corepack pnpm --silent run selfhost:status ... --json` when dashboards or
 management scripts need compose service state, health checks, blockers, and
 safety notes without parsing terminal prose.
+
+`selfhost:config` validates the selected profile's Docker compose config. The
+text form prints the compose output for a private operator terminal; the JSON
+form intentionally omits compose stdout because expanded compose output can
+contain environment values. Use
+`corepack pnpm --silent run selfhost:config ... --json` when dashboards or CI
+need compose config pass/fail, blocker, and stderr metadata without secret-valued
+stdout.
 
 `selfhost:profiles` is the read-only deployment map. It lists the built-in
 profiles, purpose, deploy directory, service count, declared host ports, and
