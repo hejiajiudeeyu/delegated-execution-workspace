@@ -13,6 +13,8 @@ Required commands:
 
 - `corepack pnpm run dev:doctor`
 - `corepack pnpm run test:agent-e2e`
+- `corepack pnpm run test:mcp-golden-four`
+- `corepack pnpm run mcp:golden-four`
 - `corepack pnpm run dev:client:bootstrap`
 - `corepack pnpm run dev:client:supervisor`
 
@@ -21,6 +23,8 @@ Acceptance:
 - doctor passes
 - six caller-skill actions are visible
 - bundled workspace-summary Hotline can run end to end
+- executable MCP golden-four smoke validates tool discovery, hotline search,
+  request preparation, signed result delivery, and report recovery
 - docs and brand-site describe this as the fastest local path
 
 ## Pipeline B: Self-host Platform Profile

@@ -13,6 +13,8 @@
 
 - `corepack pnpm run dev:doctor`
 - `corepack pnpm run test:agent-e2e`
+- `corepack pnpm run test:mcp-golden-four`
+- `corepack pnpm run mcp:golden-four`
 - `corepack pnpm run dev:client:bootstrap`
 - `corepack pnpm run dev:client:supervisor`
 
@@ -21,6 +23,8 @@
 - doctor 通过
 - 六个 caller-skill actions 可见
 - 内置 workspace-summary Hotline 能端到端跑通
+- 可执行 MCP golden-four smoke 能验证 tool discovery、hotline search、
+  request prepare、签名结果交付和 report recovery
 - docs 和 brand-site 都把这条路描述成最快本地路径
 
 ## 管线 B：Self-host Platform Profile

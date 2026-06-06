@@ -1,7 +1,7 @@
 # Caller Skill MCP Integration
 
-Status: Active. Last verified against CHG-2026-028 (protocol `da302710`,
-client `8a6eae4`, platform `dc7c654`) on 2026-06-06.
+Status: Active. Last verified against CHG-2026-036 (protocol `da302710`,
+client `f1d6a2d`, platform `dc7c654`) on 2026-06-06.
 
 This runbook belongs to the fourth-repo. It explains how to validate the
 caller-skill MCP adapter end-to-end against the currently certified submodule
@@ -239,7 +239,19 @@ into MCP tools.
 3. Start the MCP adapter in the transport the host expects (the supervisor
    keeps it running as `mcp-adapter` already; verify via
    `curl -sf http://127.0.0.1:8092/healthz`).
-4. From the host, run the "golden four" checks. These are normative for
+4. Run the executable fourth-repo golden-four smoke against the streamable HTTP
+   adapter:
+
+   ```bash
+   corepack pnpm run mcp:golden-four
+   ```
+
+   By default this targets `http://localhost:8092/mcp` and the bundled
+   `local.delegated-execution.workspace-summary.v1` hotline. Override with
+   `MCP_ENDPOINT_URL`, `MCP_ADAPTER_BASE_URL`, or `AGENT_E2E_HOTLINE_ID` when
+   validating a non-default adapter endpoint. The command does not print admin
+   API keys or secret env values.
+5. From a real host, mirror the same "golden four" checks when validating
    host-specific tool wiring:
 
    1. **Tool discovery** lists six tools. Most hosts (Codex included)
@@ -281,8 +293,9 @@ into MCP tools.
    counts as a pass: this loop validates wire integrity, not summary
    quality.
 
-Only after all four pass should a CHG that touches the MCP adapter be marked
-`integration_check: passed`.
+Only after `corepack pnpm run test:mcp-golden-four`, the executable smoke, and
+the host-specific golden four pass should a CHG that touches the MCP adapter be
+marked `integration_check: passed`.
 
 ## Troubleshooting
 

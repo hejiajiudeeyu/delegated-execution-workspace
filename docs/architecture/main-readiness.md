@@ -19,12 +19,12 @@ repositories.
 - `repos/client`: `f1d6a2d8c9b83517cdf6ca9803b223847f880e9a`
 - `repos/platform`: `dc7c654964707badbdda8d02d57a6b56b8cf11a5`
 
-The current bundle is `changes/CHG-2026-035.yaml`.
+The current bundle is `changes/CHG-2026-036.yaml`.
 
 ## Readiness Verdict
 
 The pinned combination is ready for daily fourth-repo development after
-CHG-2026-035:
+CHG-2026-036:
 
 - submodule SHA integrity is verified
 - boundary governance covers the new platform billing data package
@@ -35,6 +35,8 @@ CHG-2026-035:
   visibility, approval-policy posture, and explicit billing readiness surfaces
 - public-stack smoke now checks the public route contract beyond generic
   health endpoint reachability
+- MCP host golden-four validation is available as an executable fourth-repo
+  smoke and a deterministic unit-style harness
 
 This verdict is intentionally scoped. Billing P-1 M1.1 adds platform
 persistence and schema groundwork, but it does not make billing a complete
@@ -57,7 +59,7 @@ Observed results:
 - `check:submodules`: passed
 - `check:boundaries`: passed after adding `@delexec/billing-store` to
   `platform/data`
-- `check:bundles`: passed with `CHG-2026-028`
+- `check:bundles`: passed with `CHG-2026-036`
 - `test:contracts`: passed, including `@delexec/billing-store` in platform
   package validation
 - `test:integration`: passed with a successful request/response path
@@ -74,6 +76,8 @@ Observed results:
 - `test:selfhost-kit`: passed with temp-profile coverage for env generation
   secret rotation dry-run/confirm behavior, public-stack preflight safety, and
   public route-contract smoke output
+- `test:mcp-golden-four`: passed with a fake MCP streamable HTTP host and
+  secret-leak guard for the executable golden-four smoke
 - `repos/client` `npm run test:unit`: passed with 14 test files and 125 tests,
   including new Runtime deployability panel and Help deployability chapter
   coverage, Skill/MCP adapter runtime status coverage, and Preferences approval
@@ -119,6 +123,11 @@ workspace-summary hotline.
 `corepack pnpm run dev:doctor` checks the local prerequisites and runtime
 health endpoints used by that daily path.
 
+`corepack pnpm run mcp:golden-four` validates the MCP host-facing path as an
+executable smoke: six-tool discovery, workspace-summary hotline search, request
+preparation, signed result delivery via `send_request`, and byte-stable
+`report_response` recovery.
+
 `corepack pnpm run selfhost:preflight` now combines secret hygiene, compose
 config validation, and route output before services are started;
 `corepack pnpm run selfhost:smoke` remains the post-start health endpoint check
@@ -155,7 +164,6 @@ These areas still need their own closeout before they should be treated as
 default day-to-day workflows:
 
 - one-command local stack bootstrap
-- MCP host golden-four validation as an executable script
 - billing P-1 beyond M1.1, including API/read model/client-facing surfaces
 - email transport as an end-user default path
 - published-image smoke and deployment validation
