@@ -109,6 +109,7 @@ Commands:
   config    Validate docker compose config for the selected profile
   urls      Print useful URLs for the selected profile
   ports     Show declared host ports for the selected profile
+  summary   Print a one-screen non-secret deployment summary
   plan      Explain services, URLs, and safety checks for the profile
   up        Run preflight, then docker compose up -d for the selected profile
   down      Run docker compose down for the selected profile
@@ -510,6 +511,49 @@ function printPlan(profileName) {
   }
 }
 
+function commandProfileFlag(profileName) {
+  return profileName === "platform" ? "" : ` -- --profile ${profileName}`;
+}
+
+function printSummary(profileName) {
+  const { profile, dir, envPath } = profilePaths(profileName);
+  const envExists = fs.existsSync(envPath);
+  const findings = envExists ? secretFindings(fs.readFileSync(envPath, "utf8"), profileName) : [];
+  const suffix = commandProfileFlag(profileName);
+
+  console.log(`[selfhost:summary] profile=${profileName}`);
+  console.log(`deploy_dir=${path.relative(ROOT, dir)}`);
+  console.log(`env=${path.relative(ROOT, envPath)}`);
+  console.log(`env_status=${envExists ? "present" : "missing"}`);
+
+  console.log("\n## URLs");
+  for (const [label, url] of profileUrls(profileName)) {
+    console.log(`- ${label}: ${url}`);
+  }
+
+  console.log("\n## Ports");
+  for (const [port, service, role] of profile.ports || []) {
+    console.log(`- ${port}: ${service} - ${role}`);
+  }
+
+  console.log("\n## Secret hygiene");
+  if (!envExists) {
+    console.log(`- .env missing: run corepack pnpm run selfhost:init${suffix}`);
+  } else {
+    for (const finding of findings) {
+      console.log(`- ${finding.key}: ${finding.ok ? "set" : finding.message}`);
+    }
+  }
+
+  console.log("\n## Next commands");
+  console.log(`- corepack pnpm run selfhost:preflight${suffix}`);
+  console.log(`- corepack pnpm run selfhost:up${suffix}`);
+  console.log(`- corepack pnpm run selfhost:smoke${suffix}`);
+  console.log(`- corepack pnpm run selfhost:ops-report${suffix}`);
+  console.log(`- corepack pnpm run selfhost:security-review${suffix}`);
+  console.log("\nThis summary is read-only and does not call Docker, bind ports, or print secret values.");
+}
+
 function printPreflightRoutes(profileName) {
   const heading = profileName === "public-stack" ? "Public routes" : "Local routes";
   console.log(`\n${heading}`);
@@ -854,6 +898,11 @@ async function main() {
 
   if (args.command === "ports") {
     printPorts(args.profile);
+    return;
+  }
+
+  if (args.command === "summary") {
+    printSummary(args.profile);
     return;
   }
 

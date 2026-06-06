@@ -71,6 +71,7 @@ The ecosystem is "daily-deployable" when a fresh operator can:
 | Daily local doctor | fourth repo | `corepack pnpm run dev:doctor` |
 | Agent-facing smoke | fourth repo | `corepack pnpm run test:agent-e2e` |
 | Self-host env generator | fourth repo | `corepack pnpm run selfhost:init` |
+| Self-host profile summary | fourth repo | `corepack pnpm run selfhost:summary` |
 | Compose lifecycle wrapper | fourth repo | delegate to `repos/platform/deploy/*` |
 | Published-image smoke wrapper | fourth repo | delegate to `repos/platform` public-stack smoke |
 | Operator onboarding contract | fourth repo | `operator:onboarding:check` keeps public-stack, brand-site, and runbooks aligned |
@@ -92,8 +93,9 @@ Required baseline:
 
 ## 8. Success Metrics
 
-- A fresh checkout can run `selfhost:init`, `selfhost:status`, `dev:doctor`,
-  `test:agent-e2e`, `published-image:plan`, `selfhost:security-review`, and
+- A fresh checkout can run `selfhost:init`, `selfhost:summary`,
+  `selfhost:status`, `dev:doctor`, `test:agent-e2e`,
+  `published-image:plan`, `selfhost:security-review`, and
   `operator:onboarding:check`.
 - Platform billing operators have an admin-only API and Platform Console page
   for tenant setup, balance inspection, manual recharge capture, and ledger
@@ -141,6 +143,8 @@ Required baseline:
   secret values.
 - Add `selfhost:ports` so operators can inspect declared host ports before
   starting a profile or exposing public-stack.
+- Add `selfhost:summary` so operators can see deploy paths, URLs, declared
+  host ports, secret hygiene status, and next commands in one read-only screen.
 - Require the operator onboarding contract to include `selfhost:ports` and
   `selfhost:ops-report` in the public-stack first-use path so the handoff
   sequence cannot drift back to terminal-only startup/smoke steps.

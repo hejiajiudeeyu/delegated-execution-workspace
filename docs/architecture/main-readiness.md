@@ -18,14 +18,14 @@ repositories.
 - `repos/protocol`: `da3027100cfe9391f7f8d03be18a108ee2804cf6`
 - `repos/client`: `f1d6a2d8c9b83517cdf6ca9803b223847f880e9a`
 - `repos/platform`: `5961309c6b0ca4e8df22dbb5be92ac0845bf8d25`
-- `repos/brand-site`: `d910de6cbc89ad70c1f49b340a2a3e6772707c48`
+- `repos/brand-site`: `db09cb4a192b4808f6a65b5b1133433f101b47ec`
 
-The current bundle is `changes/CHG-2026-050.yaml`.
+The current bundle is `changes/CHG-2026-051.yaml`.
 
 ## Readiness Verdict
 
 The pinned combination is ready for daily fourth-repo development after
-CHG-2026-050:
+CHG-2026-051:
 
 - submodule SHA integrity is verified
 - boundary governance covers the new platform billing data package
@@ -46,6 +46,9 @@ CHG-2026-050:
   handoff report with URLs, host ports, secret hygiene status, and next commands
 - `selfhost:ports` is available as a non-destructive declared host-port list
   before an operator starts a self-host profile
+- `selfhost:summary` is available as a read-only one-screen profile overview
+  with deploy paths, URLs, declared host ports, secret hygiene status, and next
+  commands before an operator starts Docker or writes a handoff report
 - `selfhost:backup-validate` is available as a non-destructive backup artifact
   shape check before restore rehearsal
 - `selfhost:restore-plan` is available as a non-destructive recovery rehearsal
@@ -54,8 +57,8 @@ CHG-2026-050:
   smoke and a deterministic unit-style harness
 - brand-site now has bilingual Deployability Profiles docs that explain the
   deployment profiles, ready/planned boundaries, secret-safety defaults, and
-  the operator-only Billing console slice, plus the new security-review and
-  audit-export/ports/ops-report/backup-validate/restore-plan gates
+  the operator-only Billing console slice, plus the new summary/security-review
+  and audit-export/ports/ops-report/backup-validate/restore-plan gates
 - one-command local stack bootstrap is available through managed
   `dev:local:*` commands
 - published-image smoke now has a fourth-repo entry point that reviews
@@ -92,24 +95,26 @@ Observed results:
 - `check:submodules`: passed
 - `check:boundaries`: passed after adding `@delexec/billing-store` to
   `platform/data`
-- `check:bundles`: passed with `CHG-2026-050`
+- `check:bundles`: passed with `CHG-2026-051`
 - `test:contracts`: passed, including `@delexec/billing-store` in platform
   package validation and the `@delexec/platform-api` dependency graph
 - `test:integration`: passed with a successful request/response path
 - `test:agent-e2e`: passed after retargeting the script to the current
   `/skills/caller/*` surface
 - `dev:doctor`: passed for the local daily agent/caller-skill stack
-- `selfhost:init` / `selfhost:urls` / `selfhost:preflight`: added as the first
-  self-host management spine for generated env, profile discovery, and pre-`up`
+- `selfhost:init` / `selfhost:summary` / `selfhost:urls` /
+  `selfhost:preflight`: added as the first self-host management spine for
+  generated env, one-screen profile overview, profile discovery, and pre-`up`
   route, compose config, and secret hygiene checks
 - `selfhost:smoke`: passed for the local `platform` profile; the
   `public-stack` profile now also prints and validates the edge route contract,
   and intentionally fails while the public origin remains localhost or the stack
   is not running
 - `test:selfhost-kit`: passed with temp-profile coverage for env generation,
-  secret rotation dry-run/confirm behavior, public-stack preflight safety,
-  non-destructive security review, admin audit export without secret leakage,
-  restore planning, and public route-contract smoke output
+  one-screen summary output, secret rotation dry-run/confirm behavior,
+  public-stack preflight safety, non-destructive security review, admin audit
+  export without secret leakage, restore planning, and public route-contract
+  smoke output
 - `test:mcp-golden-four`: passed with a fake MCP streamable HTTP host and
   secret-leak guard for the executable golden-four smoke
 - `test:local-stack`: passed for one-command local stack command sequencing,
@@ -132,8 +137,9 @@ Observed results:
 - `repos/brand-site` `npm run smoke:deployability-content`: passed for the
   bilingual Deployability Profiles route/content contract, including the
   admin-only Billing console narrative plus `selfhost:security-review` and
-  `selfhost:audit-export` / `selfhost:ports` / `selfhost:ops-report` /
-  `selfhost:backup-validate` / `selfhost:restore-plan` commands
+  `selfhost:audit-export` / `selfhost:summary` / `selfhost:ports` /
+  `selfhost:ops-report` / `selfhost:backup-validate` / `selfhost:restore-plan`
+  commands
 - `repos/brand-site` `npm run build`: passed, including client build, SSR
   build, and prerender output for the new deployability docs routes
 - `repos/platform` platform-console view-model unit test: passed for Billing
@@ -217,6 +223,10 @@ key;
 operator commands while omitting raw secret values;
 `corepack pnpm run selfhost:ports` prints the selected profile's declared host
 ports without binding sockets, inspecting the local network, or calling Docker;
+`corepack pnpm run selfhost:summary` prints a read-only one-screen profile
+overview with deploy paths, URLs, declared host ports, secret hygiene status,
+and next commands without calling Docker, binding sockets, probing the network,
+or printing secret values;
 `corepack pnpm run selfhost:backup-validate` checks a backup directory for
 `.env`, `postgres.sql`, and `compose.config.txt` presence and size without
 reading or printing `.env` secret values;
@@ -276,7 +286,8 @@ local loop, selfhost, public-stack safety checks, published-image smoke, and
 Operator Onboarding. Management Console copy now also describes the admin-only
 Billing page as an operator surface, not as client-facing billing readiness, and
 the public-stack command examples include `selfhost:security-review`,
-`selfhost:audit-export`, `selfhost:ports`, `selfhost:ops-report`,
+`selfhost:audit-export`, `selfhost:summary`, `selfhost:ports`,
+`selfhost:ops-report`,
 `selfhost:backup-validate`, and `selfhost:restore-plan` as pre-exposure safety,
 evidence, port visibility, handoff-report, backup-artifact validation, and
 recovery-rehearsal commands. Capabilities that are not ready remain outside the

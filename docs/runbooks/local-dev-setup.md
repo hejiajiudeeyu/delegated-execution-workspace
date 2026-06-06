@@ -108,6 +108,7 @@ Initialize and inspect a self-host profile:
 
 ```bash
 corepack pnpm run selfhost:init
+corepack pnpm run selfhost:summary
 corepack pnpm run selfhost:plan
 corepack pnpm run selfhost:urls
 corepack pnpm run selfhost:preflight
@@ -119,6 +120,7 @@ For the public operator stack:
 
 ```bash
 corepack pnpm run selfhost:init -- --profile public-stack
+corepack pnpm run selfhost:summary -- --profile public-stack
 corepack pnpm run selfhost:urls -- --profile public-stack
 corepack pnpm run selfhost:preflight -- --profile public-stack
 corepack pnpm run selfhost:security-review -- --profile public-stack
@@ -129,6 +131,11 @@ corepack pnpm run selfhost:smoke -- --profile public-stack
 `selfhost:up` automatically runs the same preflight gate first. If public origin
 or secret hygiene checks fail, it will not start the profile by default; passing
 `--force` is the explicit override.
+
+`selfhost:summary` is the read-only one-screen overview for a selected profile.
+It prints deploy paths, URLs, declared host ports, secret hygiene status, and
+next commands without calling Docker, binding sockets, probing the network, or
+printing secret values.
 
 `selfhost:security-review` is the non-destructive public exposure review. It
 reuses secret hygiene, compose config, and public route-contract checks, then

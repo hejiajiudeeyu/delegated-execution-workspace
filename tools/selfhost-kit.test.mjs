@@ -256,6 +256,22 @@ try {
   assert.match(ports.stdout, /postgres/);
   assert.ok(!ports.stdout.includes(env.get("PLATFORM_ADMIN_API_KEY") || ""));
 
+  const summary = run(tmpRoot, ["summary"]);
+  assert.equal(summary.status, 0, summary.stderr || summary.stdout);
+  assert.match(summary.stdout, /selfhost:summary/);
+  assert.match(summary.stdout, /profile=platform/);
+  assert.match(summary.stdout, /deploy_dir=repos\/platform\/deploy\/platform/);
+  assert.match(summary.stdout, /## URLs/);
+  assert.match(summary.stdout, /Platform API/);
+  assert.match(summary.stdout, /## Ports/);
+  assert.match(summary.stdout, /8080: platform-api/);
+  assert.match(summary.stdout, /## Secret hygiene/);
+  assert.match(summary.stdout, /TOKEN_SECRET: set/);
+  assert.match(summary.stdout, /## Next commands/);
+  assert.match(summary.stdout, /selfhost:preflight/);
+  assert.match(summary.stdout, /selfhost:ops-report/);
+  assert.ok(!summary.stdout.includes(env.get("PLATFORM_ADMIN_API_KEY") || ""));
+
   const rotatedEnv = readEnv(envPath);
   await withAuditServer(rotatedEnv.get("PLATFORM_ADMIN_API_KEY") || "", async (auditBaseUrl) => {
     const exportPath = path.join(tmpRoot, "exports/audit/platform/test-audit.json");

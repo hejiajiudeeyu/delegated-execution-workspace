@@ -89,6 +89,7 @@ corepack pnpm run test:selfhost-kit
 
 ```bash
 corepack pnpm run selfhost:init
+corepack pnpm run selfhost:summary
 corepack pnpm run selfhost:plan
 corepack pnpm run selfhost:urls
 corepack pnpm run selfhost:preflight
@@ -100,6 +101,7 @@ Public operator stack：
 
 ```bash
 corepack pnpm run selfhost:init -- --profile public-stack
+corepack pnpm run selfhost:summary -- --profile public-stack
 corepack pnpm run selfhost:urls -- --profile public-stack
 corepack pnpm run selfhost:preflight -- --profile public-stack
 corepack pnpm run selfhost:security-review -- --profile public-stack
@@ -109,6 +111,10 @@ corepack pnpm run selfhost:smoke -- --profile public-stack
 
 `selfhost:up` 会自动先运行同一组 preflight gate。若 public origin 或 secret
 hygiene 未通过，默认不会继续启动；只有显式传入 `--force` 才会绕过该阻断。
+
+`selfhost:summary` 是选定 profile 的只读一屏概要。它会输出 deploy 路径、URLs、
+声明的 host ports、secret hygiene 状态和下一步命令，但不会调用 Docker、绑定
+socket、探测网络或打印 secret 值。
 
 `selfhost:security-review` 是非破坏性的公开暴露前安全复核。它复用 secret
 hygiene、compose config 和 public route contract 检查，并打印 backup、rotation

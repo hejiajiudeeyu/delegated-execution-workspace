@@ -49,6 +49,7 @@ Required commands:
 - `corepack pnpm run selfhost:audit-export`
 - `corepack pnpm run selfhost:config`
 - `corepack pnpm run selfhost:plan`
+- `corepack pnpm run selfhost:summary`
 - `corepack pnpm run selfhost:urls`
 - `corepack pnpm run selfhost:ports`
 - `corepack pnpm run selfhost:logs`
@@ -70,6 +71,9 @@ Acceptance:
 - `selfhost:up` reuses the preflight gate by default; it does not continue
   when preflight fails unless `--force` is passed explicitly
 - logs can be filtered by service and tail length
+- summary prints a one-screen, read-only profile overview with deploy paths,
+  URLs, declared host ports, secret hygiene status, and next commands without
+  calling Docker, binding sockets, probing the network, or printing secrets
 - backup and rotation are explicit plans before destructive action
 - security review is a non-destructive public exposure gate that checks secret
   hygiene, compose config, route contracts, and backup/rotation/smoke
