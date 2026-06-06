@@ -17,14 +17,14 @@ repositories.
 
 - `repos/protocol`: `da3027100cfe9391f7f8d03be18a108ee2804cf6`
 - `repos/client`: `f1d6a2d8c9b83517cdf6ca9803b223847f880e9a`
-- `repos/platform`: `dc7c654964707badbdda8d02d57a6b56b8cf11a5`
+- `repos/platform`: `d1a0bfcafd64c7cce5391059c31a6af90a51f9eb`
 
-The current bundle is `changes/CHG-2026-040.yaml`.
+The current bundle is `changes/CHG-2026-041.yaml`.
 
 ## Readiness Verdict
 
 The pinned combination is ready for daily fourth-repo development after
-CHG-2026-040:
+CHG-2026-041:
 
 - submodule SHA integrity is verified
 - boundary governance covers the new platform billing data package
@@ -47,10 +47,12 @@ CHG-2026-040:
 - platform-first/operator-first onboarding now has a fourth-repo contract check
   that keeps public-stack `/console/`, gateway session flow, platform docs,
   brand-site narrative, and the source fallback runbook aligned
+- Billing P-1 now has an admin-only API/read-model slice for tenant creation,
+  balance lookup, manual recharge capture, and ledger browsing
 
-This verdict is intentionally scoped. Billing P-1 M1.1 adds platform
-persistence and schema groundwork, but it does not make billing a complete
-end-user default path yet.
+This verdict is intentionally scoped. Billing P-1 M1.2 adds an admin-only
+platform API/read model on top of persistence and schema groundwork, but it does
+not make billing a complete client-facing or end-user default path yet.
 
 ## Verified On 2026-06-06
 
@@ -69,9 +71,9 @@ Observed results:
 - `check:submodules`: passed
 - `check:boundaries`: passed after adding `@delexec/billing-store` to
   `platform/data`
-- `check:bundles`: passed with `CHG-2026-040`
+- `check:bundles`: passed with `CHG-2026-041`
 - `test:contracts`: passed, including `@delexec/billing-store` in platform
-  package validation
+  package validation and the `@delexec/platform-api` dependency graph
 - `test:integration`: passed with a successful request/response path
 - `test:agent-e2e`: passed after retargeting the script to the current
   `/skills/caller/*` surface
@@ -131,15 +133,19 @@ path defined in [Integration Path](integration-path.md):
 - source `delexec-ops` from `repos/client`
 - approval plus a full request/response success path
 
-### Billing P-1 M1.1 groundwork
+### Billing P-1 M1.2 admin read model
 
 The platform submodule now includes the first concrete billing implementation
-milestone:
+milestones:
 
 - `@delexec/billing-store`
 - `002_p1_tenant_balance.sql`
 - unit and integration tests for billing persistence
 - platform package validation wiring
+- admin-only `/v1/admin/billing/*` routes for tenant creation, balance lookup,
+  manual recharge capture, and ledger browsing
+- platform API integration coverage for admin auth, tenant-miss error mapping,
+  recharge capture, and ledger filtering
 
 The fourth-repo boundary map treats this package as `platform/data`.
 
@@ -190,8 +196,9 @@ The ops-console Runtime page now shows a deployability readiness panel for the
 `platform`, `public-stack`, and `all-in-one` profiles, the recommended
 `selfhost:*` check sequence, the safety boundary that status/smoke/logs do not
 print secret values, and an explicit Billing readiness state. Billing is marked
-as P-1 M1.1 foundation only, not production-default ready until the API, read
-model, and client-facing surfaces are complete. Runtime also renders supervisor
+as P-1 M1.2 admin-read-model foundation only, not production-default ready until
+client-facing surfaces, enforcement, and end-user consent flows are complete.
+Runtime also renders supervisor
 status cards for `skill_adapter` and `mcp_adapter` while keeping log tabs scoped
 to caller/responder/relay.
 
@@ -220,7 +227,8 @@ behind green status.
 These areas still need their own closeout before they should be treated as
 default day-to-day workflows:
 
-- billing P-1 beyond M1.1, including API/read model/client-facing surfaces
+- billing P-1 beyond the admin-only read model, including client-facing
+  surfaces, enforcement, and end-user consent flows
 - email transport as an end-user default path
 
 Also, the published-image wrapper becomes evidence for a specific

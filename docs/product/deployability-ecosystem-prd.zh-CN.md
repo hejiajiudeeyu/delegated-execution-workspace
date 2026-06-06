@@ -78,6 +78,7 @@ CALL ANYTHING 现在的仓库边界是正确的：
 | Published-image smoke wrapper | 第四仓 | 委托到 `repos/platform` 的 public-stack smoke |
 | Operator onboarding contract | 第四仓 | `operator:onboarding:check` 校验 public-stack/brand-site/runbook 一致性 |
 | Public stack deploy manifest | `repos/platform` | 现有 `deploy/public-stack` |
+| Billing admin read model | `repos/platform` | admin-only tenant、balance、recharge、ledger endpoints |
 | Runtime console | `repos/client` / `repos/platform` | 状态、日志、设置、审批 |
 | 品牌解释 | `repos/brand-site` | 可部署性叙事和 quick-start 入口 |
 
@@ -96,6 +97,8 @@ CALL ANYTHING 现在的仓库边界是正确的：
 
 - fresh checkout 可以运行 `selfhost:init`、`selfhost:status`、`dev:doctor`、`test:agent-e2e`
   、`published-image:plan` 和 `operator:onboarding:check`
+- platform billing operator 已有 admin-only API，可做 tenant setup、balance
+  inspection、人工 recharge capture 和 ledger 浏览；终端用户 billing 仍不进入 ready 结论
 - PRD、runbook、README、brand-site 使用同一套 profile 命名
 - 增加编排 helper 后，第四仓 CI 仍然绿色
 - 更新品牌站文案后，brand-site build 仍然绿色
@@ -119,6 +122,7 @@ CALL ANYTHING 现在的仓库边界是正确的：
 
 - 在 console surface 展示 runtime status、logs、approval policy、adapter health、billing readiness。
 - 增加 operator-first public-stack onboarding checks。
+- 在暴露 client-facing billing workflow 前，先补 platform-owned billing admin read model。
 - public-stack `/console/`、gateway session flow 与 brand-site Operator Onboarding 叙事保持一致。
 
 ### M4：生产硬化

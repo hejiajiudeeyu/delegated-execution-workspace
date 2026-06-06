@@ -1,0 +1,14 @@
+change_id: CHG-2026-041
+goal: add platform-owned billing admin API and read model
+protocol_sha: da3027100cfe9391f7f8d03be18a108ee2804cf6
+client_sha: f1d6a2d8c9b83517cdf6ca9803b223847f880e9a
+platform_sha: d1a0bfcafd64c7cce5391059c31a6af90a51f9eb
+brand_site_sha: 30c55ede2b03599e40d0e03947a0c44a8cf6ebdd
+owner: hejiajiudeeyu
+risk_level: medium
+affected_scope:
+  - platform
+  - documentation
+contracts_check: passed
+integration_check: passed
+notes: "Adds admin-only /v1/admin/billing tenant, balance, recharge, and ledger endpoints in repos/platform, backed by @delexec/billing-store and covered by a dedicated platform API integration test. Updates readiness and deployability PRDs to mark Billing P-1 as M1.2 admin-read-model foundation only; client-facing billing, enforcement, and end-user consent remain outside the ready verdict."
