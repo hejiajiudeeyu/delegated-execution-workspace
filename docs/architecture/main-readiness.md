@@ -16,22 +16,23 @@ repositories.
 ## Current Pinned Combination
 
 - `repos/protocol`: `da3027100cfe9391f7f8d03be18a108ee2804cf6`
-- `repos/client`: `877df78998e3c5b016cd97a50939e5938c8d84b9`
+- `repos/client`: `83e71ad0d088e869670b2e776578c5b7aaf86886`
 - `repos/platform`: `dc7c654964707badbdda8d02d57a6b56b8cf11a5`
 
-The current bundle is `changes/CHG-2026-031.yaml`.
+The current bundle is `changes/CHG-2026-032.yaml`.
 
 ## Readiness Verdict
 
 The pinned combination is ready for daily fourth-repo development after
-CHG-2026-031:
+CHG-2026-032:
 
 - submodule SHA integrity is verified
 - boundary governance covers the new platform billing data package
 - change bundle validation passes
 - protocol/client/platform package and deploy-contract checks pass
 - the source integration path succeeds end to end
-- ops-console now has its first deployability-management explanation surface
+- ops-console now has deployability-management explanation and adapter health
+  visibility surfaces
 
 This verdict is intentionally scoped. Billing P-1 M1.1 adds platform
 persistence and schema groundwork, but it does not make billing a complete
@@ -69,9 +70,9 @@ Observed results:
   localhost or the stack is not running
 - `test:selfhost-kit`: passed with temp-profile coverage for env generation
   and secret rotation dry-run/confirm behavior
-- `repos/client` `npm run test:unit`: passed with 13 test files and 122 tests,
+- `repos/client` `npm run test:unit`: passed with 13 test files and 123 tests,
   including new Runtime deployability panel and Help deployability chapter
-  coverage
+  coverage, plus Skill/MCP adapter runtime status coverage
 
 ## What Is Usable Now
 
@@ -126,12 +127,14 @@ is passed explicitly.
 The ops-console Runtime page now shows a deployability readiness panel for the
 `platform`, `public-stack`, and `all-in-one` profiles, the recommended
 `selfhost:*` check sequence, and the safety boundary that status/smoke/logs do
-not print secret values.
+not print secret values. It also renders supervisor status cards for
+`skill_adapter` and `mcp_adapter` while keeping log tabs scoped to
+caller/responder/relay.
 
 The Help page now has a dedicated Deployability chapter connecting profile
 choice, health, logs, secret hygiene, and the Runtime/Transport entry points.
-This is the first M3 explanation surface; dynamic adapter health, approval
-policy summary, and billing readiness status still need follow-up closeout.
+This is the first M3 explanation and runtime visibility surface; approval policy
+summary and billing readiness status still need follow-up closeout.
 
 ## Still Not Ready As A Default Daily Path
 

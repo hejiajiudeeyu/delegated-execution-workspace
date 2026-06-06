@@ -16,21 +16,21 @@ protocol/client/platform SHA 组合可用于本地跨仓开发和已认证的源
 ## 当前固定组合
 
 - `repos/protocol`：`da3027100cfe9391f7f8d03be18a108ee2804cf6`
-- `repos/client`：`877df78998e3c5b016cd97a50939e5938c8d84b9`
+- `repos/client`：`83e71ad0d088e869670b2e776578c5b7aaf86886`
 - `repos/platform`：`dc7c654964707badbdda8d02d57a6b56b8cf11a5`
 
-当前 bundle 为 `changes/CHG-2026-031.yaml`。
+当前 bundle 为 `changes/CHG-2026-032.yaml`。
 
 ## 当前判断
 
-CHG-2026-031 收口后，当前固定组合已经可以用于日常第四仓开发：
+CHG-2026-032 收口后，当前固定组合已经可以用于日常第四仓开发：
 
 - submodule SHA 完整性已验证
 - 边界治理已覆盖新的 platform billing data package
 - change bundle 校验通过
 - protocol/client/platform 包形态与 deploy-contract 检查通过
 - 源码集成路径端到端成功
-- ops-console 已出现第一段部署与管理可理解性 surface
+- ops-console 已出现部署与管理可理解性 surface，并补上 adapter health 可见性
 
 这个结论是有边界的。Billing P-1 M1.1 增加了 platform 持久化和 schema
 基础，但还不等于 billing 已经成为完整的终端用户默认路径。
@@ -65,8 +65,9 @@ corepack pnpm run test:integration
   origin 仍为 localhost 或栈未启动时会按预期失败
 - `test:selfhost-kit`：通过，用临时 profile 覆盖 env 生成和 secret rotation
   dry-run / confirm 行为
-- `repos/client` `npm run test:unit`：通过，13 个测试文件、122 条测试；新增
-  Runtime deployability panel 和 Help deployability chapter 覆盖
+- `repos/client` `npm run test:unit`：通过，13 个测试文件、123 条测试；新增
+  Runtime deployability panel、Help deployability chapter 和 Skill/MCP adapter
+  runtime status 覆盖
 
 ## 当前可用内容
 
@@ -116,11 +117,13 @@ hygiene、compose config 和 route 输出；`corepack pnpm run selfhost:smoke`
 
 ops-console 的 Runtime 页现在展示部署与管理就绪度面板，解释 `platform`、
 `public-stack`、`all-in-one` 三个 profile、推荐的 `selfhost:*` 检查顺序，以及
-status / smoke / logs 不输出 secret 值的安全边界。
+status / smoke / logs 不输出 secret 值的安全边界。同时它会从 supervisor
+`/status` 展示 `skill_adapter` 与 `mcp_adapter` 状态卡；日志 tab 仍只覆盖
+caller / responder / relay。
 
 Help 页新增「部署与管理」章节，把 profile 选择、health、logs、secret hygiene
-和 Runtime / Transport 入口串起来。它是 M3 的第一段可理解性 surface；adapter
-health、approval policy 汇总和 billing readiness 的动态状态仍需后续收口。
+和 Runtime / Transport 入口串起来。它是 M3 的第一段可理解性和运行状态可见性
+surface；approval policy 汇总和 billing readiness 的动态状态仍需后续收口。
 
 ## 尚不能作为默认日常路径的内容
 
@@ -130,7 +133,7 @@ health、approval policy 汇总和 billing readiness 的动态状态仍需后续
 - profile-specific public-stack smoke，不只是 health/status
 - MCP host golden-four 验证脚本化
 - Billing P-1 M1.1 之后的 API、读模型、client-facing surface
-- console 中 adapter health、approval policy、billing readiness 的动态状态
+- console 中 approval policy、billing readiness 的动态状态
 - email transport 作为终端用户默认路径
 - published-image smoke 与部署验证
 - platform-first/operator-first onboarding 作为主要首次使用路径
