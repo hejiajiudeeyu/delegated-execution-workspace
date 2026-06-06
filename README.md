@@ -122,6 +122,7 @@ corepack pnpm run test:agent-e2e
 corepack pnpm run mcp:golden-four
 corepack pnpm run test:selfhost-kit
 corepack pnpm run operator:onboarding:plan
+corepack pnpm --silent run operator:onboarding:plan -- --json
 corepack pnpm run operator:onboarding:check
 ```
 

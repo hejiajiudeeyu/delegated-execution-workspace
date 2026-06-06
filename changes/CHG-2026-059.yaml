@@ -1,0 +1,15 @@
+change_id: CHG-2026-059
+goal: add machine-readable operator onboarding plan
+protocol_sha: da3027100cfe9391f7f8d03be18a108ee2804cf6
+client_sha: f1d6a2d8c9b83517cdf6ca9803b223847f880e9a
+platform_sha: 5961309c6b0ca4e8df22dbb5be92ac0845bf8d25
+brand_site_sha: 030d002343f6f581937f0414d7ce2eb31e9725fc
+owner: hejiajiudeeyu
+risk_level: medium
+affected_scope:
+  - orchestration
+  - brand-site
+  - documentation
+contracts_check: passed
+integration_check: passed
+notes: "Adds operator:onboarding:plan --json so CI, dashboards, and management scripts can consume the public-stack first-use phases, commands, safety notes, and next validation command without parsing terminal prose or printing secrets. Updates README, runbooks, pipeline PRDs, and brand-site Deployability Profiles while keeping protocol/client/platform SHAs unchanged."

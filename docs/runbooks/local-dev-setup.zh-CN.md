@@ -169,9 +169,13 @@ corepack pnpm run test:published-image-smoke
 
 ```bash
 corepack pnpm run operator:onboarding:plan
+corepack pnpm --silent run operator:onboarding:plan -- --json
 corepack pnpm run operator:onboarding:check
 corepack pnpm run test:operator-onboarding
 ```
+
+当 console、CI job 或部署脚本需要 public-stack 首次使用阶段、命令、安全说明和下一步验证命令，
+但不想解析终端文本时，使用 `--json` 形式。
 
 运维辅助命令：
 

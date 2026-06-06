@@ -215,6 +215,7 @@ fourth-repo-checkable first-use contract.
 Required commands:
 
 - `corepack pnpm run operator:onboarding:plan`
+- `corepack pnpm --silent run operator:onboarding:plan -- --json`
 - `corepack pnpm run operator:onboarding:check`
 - `corepack pnpm run test:operator-onboarding`
 
@@ -224,6 +225,9 @@ Required behavior:
   overview, declared port inventory, preflight, `up`, open `/console/`, gateway
   session setup, credential persistence, route smoke, non-secret ops handoff
   report, and published-image smoke
+- plan `--json` emits the same first-use phases, commands, safety notes, and
+  next validation command for console, CI, and deployment-script consumption
+  without parsing terminal prose or printing secrets
 - check validates that public-stack `Caddyfile`, compose, and README agree on
   `/console/`, `/gateway/*`, and `PLATFORM_CONSOLE_BOOTSTRAP_SECRET`
 - check validates that the platform operator guide no longer claims
@@ -240,6 +244,8 @@ Acceptance:
 - an operator can find the public-stack first-use URL, admin credential setup
   flow, readiness overview, declared ports, non-secret handoff report, and gateway proxy
   verification path without reading the full protocol
+- a management surface or CI job can consume the first-use plan as clean JSON
+  through `corepack pnpm --silent run operator:onboarding:plan -- --json`
 - fourth-repo check fails when docs drift away from the actual public-stack
   route contract
 - this path still does not claim billing, email transport, or marketplace

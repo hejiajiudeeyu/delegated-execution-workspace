@@ -18,11 +18,18 @@ const FILES = {
 };
 
 function usage() {
-  console.log(`Usage: node tools/operator-onboarding.mjs <command>
+  console.log(`Usage: node tools/operator-onboarding.mjs <command> [--json]
 
 Commands:
   plan   Print the operator-first onboarding sequence and validation commands
   check  Validate public-stack, runbook, and brand-site onboarding contracts`);
+}
+
+function parseArgs(argv) {
+  return {
+    command: argv[2] || "help",
+    json: argv.slice(3).includes("--json")
+  };
 }
 
 function read(relPath) {
@@ -140,43 +147,108 @@ function validateContracts() {
   return ok;
 }
 
+function onboardingPlan() {
+  return {
+    command: "operator:onboarding:plan",
+    profile: "public-stack",
+    phases: [
+      {
+        id: "preflight",
+        title: "Preflight the public operator stack",
+        commands: [
+          "corepack pnpm run selfhost:init -- --profile public-stack",
+          "corepack pnpm run selfhost:readiness -- --profile public-stack",
+          "corepack pnpm --silent run selfhost:readiness -- --profile public-stack --json",
+          "corepack pnpm run selfhost:ports -- --profile public-stack",
+          "corepack pnpm run selfhost:preflight -- --profile public-stack",
+          "corepack pnpm run selfhost:urls -- --profile public-stack"
+        ]
+      },
+      {
+        id: "operator_surface",
+        title: "Start and inspect the operator surface",
+        commands: [
+          "corepack pnpm run selfhost:up -- --profile public-stack",
+          "open ${PUBLIC_SITE_ADDRESS%/}/console/",
+          "use /gateway/session/setup then /gateway/credentials/platform-admin"
+        ]
+      },
+      {
+        id: "smoke_and_evidence",
+        title: "Smoke the public routes and published images",
+        commands: [
+          "corepack pnpm run selfhost:smoke -- --profile public-stack",
+          "corepack pnpm run selfhost:ops-report -- --profile public-stack",
+          "corepack pnpm run published-image:plan",
+          "corepack pnpm run published-image:smoke -- --image-tag <tag>"
+        ]
+      },
+      {
+        id: "contract_validation",
+        title: "Validate docs and onboarding contract",
+        commands: [
+          "corepack pnpm run operator:onboarding:check",
+          "corepack pnpm run test:operator-onboarding"
+        ]
+      },
+      {
+        id: "source_fallback",
+        title: "Source fallback for local integration",
+        commands: [
+          "Branch A: bootstrap with operator credentials -> SUCCEEDED",
+          "Branch B: bootstrap pauses at awaiting_admin_approval -> approve -> SUCCEEDED"
+        ]
+      }
+    ],
+    safety: [
+      "public-stack must not be marked ready while public origin or secrets are unsafe",
+      "gateway setup stores admin credentials without printing secret values",
+      "fourth repo checks the onboarding contract; platform owns runtime and deploy truth"
+    ],
+    next: "corepack pnpm run operator:onboarding:check"
+  };
+}
+
+function printPlanJson() {
+  console.log(
+    JSON.stringify(
+      {
+        generated_at: new Date().toISOString(),
+        ...onboardingPlan()
+      },
+      null,
+      2
+    )
+  );
+}
+
 function printPlan() {
+  const plan = onboardingPlan();
   console.log("[operator:onboarding:plan] public-stack first-use path");
-  console.log("\n1. Preflight the public operator stack");
-  console.log("   corepack pnpm run selfhost:init -- --profile public-stack");
-  console.log("   corepack pnpm run selfhost:readiness -- --profile public-stack");
-  console.log("   corepack pnpm run selfhost:ports -- --profile public-stack");
-  console.log("   corepack pnpm run selfhost:preflight -- --profile public-stack");
-  console.log("   corepack pnpm run selfhost:urls -- --profile public-stack");
-  console.log("\n2. Start and inspect the operator surface");
-  console.log("   corepack pnpm run selfhost:up -- --profile public-stack");
-  console.log("   open ${PUBLIC_SITE_ADDRESS%/}/console/");
-  console.log("   use /gateway/session/setup then /gateway/credentials/platform-admin");
-  console.log("\n3. Smoke the public routes and published images");
-  console.log("   corepack pnpm run selfhost:smoke -- --profile public-stack");
-  console.log("   corepack pnpm run selfhost:ops-report -- --profile public-stack");
-  console.log("   corepack pnpm run published-image:plan");
-  console.log("   corepack pnpm run published-image:smoke -- --image-tag <tag>");
-  console.log("\n4. Validate docs and onboarding contract");
-  console.log("   corepack pnpm run operator:onboarding:check");
-  console.log("   corepack pnpm run test:operator-onboarding");
-  console.log("\n5. Source fallback for local integration");
-  console.log("   Branch A: bootstrap with operator credentials -> SUCCEEDED");
-  console.log("   Branch B: bootstrap pauses at awaiting_admin_approval -> approve -> SUCCEEDED");
+  plan.phases.forEach((phase, index) => {
+    console.log(`\n${index + 1}. ${phase.title}`);
+    for (const command of phase.commands) {
+      console.log(`   ${command}`);
+    }
+  });
   console.log("\nSafety:");
-  console.log("- public-stack must not be marked ready while public origin or secrets are unsafe");
-  console.log("- gateway setup stores admin credentials without printing secret values");
-  console.log("- fourth repo checks the onboarding contract; platform owns runtime and deploy truth");
+  for (const note of plan.safety) {
+    console.log(`- ${note}`);
+  }
 }
 
 function main() {
-  const command = process.argv[2] || "help";
+  const { command, json } = parseArgs(process.argv);
   if (command === "help" || command === "--help" || command === "-h") {
     usage();
     return 0;
   }
   if (command === "plan") {
-    printPlan();
+    if (json) {
+      printPlanJson();
+    } else {
+      printPlan();
+    }
     return 0;
   }
   if (command === "check") {

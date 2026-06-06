@@ -156,6 +156,23 @@ try {
   assert.match(plan.stdout, /corepack pnpm run operator:onboarding:check/);
   assert.ok(!plan.stdout.includes("sk_admin_must_not_leak"));
 
+  const planJson = run(tmpRoot, ["plan", "--json"]);
+  assert.equal(planJson.status, 0, planJson.stderr || planJson.stdout);
+  const planBody = JSON.parse(planJson.stdout);
+  assert.equal(planBody.command, "operator:onboarding:plan");
+  assert.equal(planBody.profile, "public-stack");
+  assert.ok(planBody.generated_at);
+  assert.ok(Array.isArray(planBody.phases));
+  assert.ok(Array.isArray(planBody.safety));
+  assert.ok(planBody.phases.find((phase) => phase.id === "preflight"));
+  assert.ok(planBody.phases.find((phase) => phase.id === "operator_surface"));
+  assert.ok(planBody.phases.find((phase) => phase.id === "smoke_and_evidence"));
+  assert.ok(planBody.phases.find((phase) => phase.id === "contract_validation"));
+  assert.match(JSON.stringify(planBody), /corepack pnpm --silent run selfhost:readiness -- --profile public-stack --json/);
+  assert.match(JSON.stringify(planBody), /corepack pnpm run operator:onboarding:check/);
+  assert.equal(planBody.next, "corepack pnpm run operator:onboarding:check");
+  assert.ok(!planJson.stdout.includes("sk_admin_must_not_leak"));
+
   const check = run(tmpRoot, ["check"]);
   assert.equal(check.status, 0, check.stderr || check.stdout);
   assert.match(check.stdout, /public-stack console contract/);
