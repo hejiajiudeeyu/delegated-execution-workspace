@@ -12,7 +12,12 @@
 必备命令：
 
 - `corepack pnpm run dev:doctor`
+- `corepack pnpm run dev:local:plan`
+- `corepack pnpm run dev:local:up`
+- `corepack pnpm run dev:local:status`
+- `corepack pnpm run dev:local:logs`
 - `corepack pnpm run test:agent-e2e`
+- `corepack pnpm run test:local-stack`
 - `corepack pnpm run test:mcp-golden-four`
 - `corepack pnpm run mcp:golden-four`
 - `corepack pnpm run dev:client:bootstrap`
@@ -21,6 +26,9 @@
 验收：
 
 - doctor 通过
+- 一键本地 bootstrap 能按文档顺序启动 platform、relay、client bootstrap 和
+  supervisor
+- 托管 relay / supervisor 的 status、logs、down 命令可用
 - 六个 caller-skill actions 可见
 - 内置 workspace-summary Hotline 能端到端跑通
 - 可执行 MCP golden-four smoke 能验证 tool discovery、hotline search、

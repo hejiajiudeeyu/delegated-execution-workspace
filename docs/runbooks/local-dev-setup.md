@@ -59,14 +59,38 @@ corepack pnpm run test:integration
 ### 5. Start Local Source Integration
 
 ```bash
-# Terminal 1: Platform API (docker) + standalone relay
+# One-command managed local loop:
+corepack pnpm run dev:local:plan
+corepack pnpm run dev:local:up
+corepack pnpm run dev:local:status
+
+# Manual fallback, if you want separate terminals:
 corepack pnpm run dev:platform
 corepack pnpm run dev:relay
-
-# Terminal 2: Client bootstrap (registers example responder + hotline)
 corepack pnpm run dev:client:bootstrap
+```
 
-# Terminal 3 (optional): Ops console UI for caller-side inspection
+`dev:local:up` initializes the `platform` self-host profile, starts the
+standalone relay as a managed background process, runs client bootstrap once,
+and starts the ops supervisor as a managed background process. Logs and pid files
+live under `.run/local-stack/`.
+
+Stop the managed local loop with:
+
+```bash
+corepack pnpm run dev:local:down
+```
+
+Inspect managed process logs with:
+
+```bash
+corepack pnpm run dev:local:logs -- --service relay --tail 80
+corepack pnpm run dev:local:logs -- --service supervisor --tail 80
+```
+
+Optional console UI for browser-side inspection still runs separately:
+
+```bash
 corepack pnpm run dev:console   # gateway on :8079 + ops-console UI on :4174
 ```
 
@@ -75,6 +99,8 @@ Check the daily local stack health:
 ```bash
 corepack pnpm run dev:doctor
 corepack pnpm run test:agent-e2e
+corepack pnpm run mcp:golden-four
+corepack pnpm run test:local-stack
 corepack pnpm run test:selfhost-kit
 ```
 

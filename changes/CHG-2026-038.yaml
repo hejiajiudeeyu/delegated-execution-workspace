@@ -1,0 +1,14 @@
+change_id: CHG-2026-038
+goal: add one-command local stack bootstrap
+protocol_sha: da3027100cfe9391f7f8d03be18a108ee2804cf6
+client_sha: f1d6a2d8c9b83517cdf6ca9803b223847f880e9a
+platform_sha: dc7c654964707badbdda8d02d57a6b56b8cf11a5
+brand_site_sha: cbf57685e27f29c1b6a5eb5912a05789e689761d
+owner: hejiajiudeeyu
+risk_level: low
+affected_scope:
+  - orchestration
+  - documentation
+contracts_check: passed
+integration_check: passed
+notes: "Adds tools/local-stack.mjs and test:local-stack as a fourth-repo managed one-command local bootstrap for the daily agent loop. dev:local:up initializes and starts the platform profile, starts relay as a managed background process, runs client bootstrap, and starts the ops supervisor as a managed background process. dev:local:status, dev:local:logs, and dev:local:down provide matching management commands without adding business runtime truth to the fourth repo."

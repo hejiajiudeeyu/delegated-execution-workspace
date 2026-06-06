@@ -1,0 +1,62 @@
+import assert from "node:assert/strict";
+import fs from "node:fs";
+import os from "node:os";
+import path from "node:path";
+import { spawnSync } from "node:child_process";
+
+const REPO_ROOT = path.resolve(new URL("..", import.meta.url).pathname);
+const LOCAL_STACK = path.join(REPO_ROOT, "tools/local-stack.mjs");
+
+function run(cwd, args, env = {}) {
+  return spawnSync(process.execPath, [LOCAL_STACK, ...args], {
+    cwd,
+    encoding: "utf8",
+    env: {
+      ...process.env,
+      PLATFORM_ADMIN_API_KEY: "sk_admin_must_not_leak",
+      ...env
+    }
+  });
+}
+
+const tmpRoot = fs.mkdtempSync(path.join(os.tmpdir(), "delexec-local-stack-test-"));
+try {
+  const up = run(tmpRoot, ["up", "--dry-run"]);
+  assert.equal(up.status, 0, up.stderr || up.stdout);
+  assert.match(up.stdout, /\[local-stack:up\]/);
+  assert.match(up.stdout, /node tools\/selfhost-kit\.mjs up --profile platform/);
+  assert.match(up.stdout, /corepack pnpm --dir repos\/platform --filter @delexec\/transport-relay run start/);
+  assert.match(up.stdout, /corepack pnpm --dir repos\/client --filter @delexec\/ops exec node src\/cli\.js bootstrap --platform http:\/\/127\.0\.0\.1:8080/);
+  assert.match(up.stdout, /corepack pnpm --dir repos\/client --filter @delexec\/ops exec node src\/cli\.js start/);
+  assert.match(up.stdout, /corepack pnpm run dev:doctor/);
+  assert.match(up.stdout, /corepack pnpm run test:agent-e2e/);
+  assert.match(up.stdout, /corepack pnpm run mcp:golden-four/);
+  assert.ok(!up.stdout.includes("sk_admin_must_not_leak"));
+
+  const stateDir = path.join(tmpRoot, ".run/local-stack");
+  fs.mkdirSync(stateDir, { recursive: true });
+  fs.writeFileSync(path.join(stateDir, "relay.pid"), "999999", "utf8");
+  fs.writeFileSync(path.join(stateDir, "supervisor.log"), ["first", "second", "third", ""].join("\n"), "utf8");
+
+  const status = run(tmpRoot, ["status"]);
+  assert.equal(status.status, 0, status.stderr || status.stdout);
+  assert.match(status.stdout, /relay: stopped/);
+  assert.match(status.stdout, /supervisor: stopped/);
+  assert.ok(!status.stdout.includes("sk_admin_must_not_leak"));
+
+  const logs = run(tmpRoot, ["logs", "--service", "supervisor", "--tail", "2"]);
+  assert.equal(logs.status, 0, logs.stderr || logs.stdout);
+  assert.match(logs.stdout, /second/);
+  assert.match(logs.stdout, /third/);
+  assert.doesNotMatch(logs.stdout, /first/);
+
+  const down = run(tmpRoot, ["down", "--dry-run"]);
+  assert.equal(down.status, 0, down.stderr || down.stdout);
+  assert.match(down.stdout, /\[dry-run\] stop supervisor/);
+  assert.match(down.stdout, /\[dry-run\] stop relay/);
+  assert.match(down.stdout, /node tools\/selfhost-kit\.mjs down --profile platform/);
+
+  console.log("[local-stack.test] ok");
+} finally {
+  fs.rmSync(tmpRoot, { recursive: true, force: true });
+}

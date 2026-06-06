@@ -12,7 +12,12 @@ Goal: make the local caller-skill/MCP loop the fastest development path.
 Required commands:
 
 - `corepack pnpm run dev:doctor`
+- `corepack pnpm run dev:local:plan`
+- `corepack pnpm run dev:local:up`
+- `corepack pnpm run dev:local:status`
+- `corepack pnpm run dev:local:logs`
 - `corepack pnpm run test:agent-e2e`
+- `corepack pnpm run test:local-stack`
 - `corepack pnpm run test:mcp-golden-four`
 - `corepack pnpm run mcp:golden-four`
 - `corepack pnpm run dev:client:bootstrap`
@@ -21,6 +26,9 @@ Required commands:
 Acceptance:
 
 - doctor passes
+- one-command local bootstrap starts platform, relay, client bootstrap, and
+  supervisor in the documented order
+- managed relay/supervisor status, logs, and down commands are available
 - six caller-skill actions are visible
 - bundled workspace-summary Hotline can run end to end
 - executable MCP golden-four smoke validates tool discovery, hotline search,

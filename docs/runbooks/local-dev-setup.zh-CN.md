@@ -47,9 +47,32 @@ corepack pnpm run test:integration
 5. 启动本地源码集成：
 
 ```bash
+# 一键托管本地 loop：
+corepack pnpm run dev:local:plan
+corepack pnpm run dev:local:up
+corepack pnpm run dev:local:status
+
+# 如果你想拆成多个终端，也可以用底层命令：
 corepack pnpm run dev:platform
 corepack pnpm run dev:relay
 corepack pnpm run dev:client:bootstrap
+```
+
+`dev:local:up` 会初始化 `platform` self-host profile，托管启动 standalone relay，
+运行一次 client bootstrap，并托管启动 ops supervisor。pid 和日志都写在
+`.run/local-stack/`。
+
+停止托管本地 loop：
+
+```bash
+corepack pnpm run dev:local:down
+```
+
+查看托管进程日志：
+
+```bash
+corepack pnpm run dev:local:logs -- --service relay --tail 80
+corepack pnpm run dev:local:logs -- --service supervisor --tail 80
 ```
 
 检查日常本地栈健康状态：
@@ -57,6 +80,8 @@ corepack pnpm run dev:client:bootstrap
 ```bash
 corepack pnpm run dev:doctor
 corepack pnpm run test:agent-e2e
+corepack pnpm run mcp:golden-four
+corepack pnpm run test:local-stack
 corepack pnpm run test:selfhost-kit
 ```
 

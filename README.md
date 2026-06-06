@@ -113,8 +113,13 @@ corepack pnpm run test:integration
 Check whether the local daily agent/caller-skill development stack is ready:
 
 ```bash
+corepack pnpm run dev:local:plan
+corepack pnpm run dev:local:up
+corepack pnpm run dev:local:status
+corepack pnpm run dev:local:logs
 corepack pnpm run dev:doctor
 corepack pnpm run test:agent-e2e
+corepack pnpm run mcp:golden-four
 corepack pnpm run test:selfhost-kit
 ```
 
@@ -149,6 +154,9 @@ NX_DAEMON=false corepack pnpm exec nx graph --affected
 Start local source integration:
 
 ```bash
+corepack pnpm run dev:local:up
+
+# Or run the underlying steps manually:
 corepack pnpm run dev:platform
 corepack pnpm run dev:relay
 corepack pnpm run dev:client:bootstrap

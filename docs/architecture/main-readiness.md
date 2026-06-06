@@ -19,12 +19,12 @@ repositories.
 - `repos/client`: `f1d6a2d8c9b83517cdf6ca9803b223847f880e9a`
 - `repos/platform`: `dc7c654964707badbdda8d02d57a6b56b8cf11a5`
 
-The current bundle is `changes/CHG-2026-037.yaml`.
+The current bundle is `changes/CHG-2026-038.yaml`.
 
 ## Readiness Verdict
 
 The pinned combination is ready for daily fourth-repo development after
-CHG-2026-037:
+CHG-2026-038:
 
 - submodule SHA integrity is verified
 - boundary governance covers the new platform billing data package
@@ -39,6 +39,8 @@ CHG-2026-037:
   smoke and a deterministic unit-style harness
 - brand-site now has bilingual Deployability Profiles docs that explain the
   deployment profiles, ready/planned boundaries, and secret-safety defaults
+- one-command local stack bootstrap is available through managed
+  `dev:local:*` commands
 
 This verdict is intentionally scoped. Billing P-1 M1.1 adds platform
 persistence and schema groundwork, but it does not make billing a complete
@@ -61,7 +63,7 @@ Observed results:
 - `check:submodules`: passed
 - `check:boundaries`: passed after adding `@delexec/billing-store` to
   `platform/data`
-- `check:bundles`: passed with `CHG-2026-036`
+- `check:bundles`: passed with `CHG-2026-038`
 - `test:contracts`: passed, including `@delexec/billing-store` in platform
   package validation
 - `test:integration`: passed with a successful request/response path
@@ -80,6 +82,8 @@ Observed results:
   public route-contract smoke output
 - `test:mcp-golden-four`: passed with a fake MCP streamable HTTP host and
   secret-leak guard for the executable golden-four smoke
+- `test:local-stack`: passed for one-command local stack command sequencing,
+  managed process status/log behavior, and secret-leak guard
 - `repos/brand-site` `npm run smoke:deployability-content`: passed for the
   bilingual Deployability Profiles route/content contract
 - `repos/brand-site` `npm run build`: passed, including client build, SSR
@@ -128,6 +132,12 @@ workspace-summary hotline.
 
 `corepack pnpm run dev:doctor` checks the local prerequisites and runtime
 health endpoints used by that daily path.
+
+`corepack pnpm run dev:local:up` is the managed one-command local bootstrap for
+the daily agent loop. It initializes and starts the platform profile, starts
+relay as a managed background process, runs client bootstrap, then starts the
+ops supervisor as a managed background process. `dev:local:status`,
+`dev:local:logs`, and `dev:local:down` provide the matching management surface.
 
 `corepack pnpm run mcp:golden-four` validates the MCP host-facing path as an
 executable smoke: six-tool discovery, workspace-summary hotline search, request
@@ -178,7 +188,6 @@ public origins, and billing readiness must not be hidden behind green status.
 These areas still need their own closeout before they should be treated as
 default day-to-day workflows:
 
-- one-command local stack bootstrap
 - billing P-1 beyond M1.1, including API/read model/client-facing surfaces
 - email transport as an end-user default path
 - published-image smoke and deployment validation
