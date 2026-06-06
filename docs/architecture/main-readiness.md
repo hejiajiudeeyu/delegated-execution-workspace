@@ -18,14 +18,14 @@ repositories.
 - `repos/protocol`: `da3027100cfe9391f7f8d03be18a108ee2804cf6`
 - `repos/client`: `f1d6a2d8c9b83517cdf6ca9803b223847f880e9a`
 - `repos/platform`: `5961309c6b0ca4e8df22dbb5be92ac0845bf8d25`
-- `repos/brand-site`: `694bc2acd82a580743b8f3db17616295c8b65ad2`
+- `repos/brand-site`: `22f4ae95929954f144f3ac617490e08f8fa48bbb`
 
-The current bundle is `changes/CHG-2026-073.yaml`.
+The current bundle is `changes/CHG-2026-074.yaml`.
 
 ## Readiness Verdict
 
 The pinned combination is ready for daily fourth-repo development after
-CHG-2026-073:
+CHG-2026-074:
 
 - submodule SHA integrity is verified
 - boundary governance covers the new platform billing data package
@@ -45,6 +45,10 @@ CHG-2026-073:
 - `selfhost:ops-report` is available as a non-secret Markdown operations
   handoff report with URLs, host ports, secret hygiene status, and next commands,
   and supports `--json` for dashboards and management scripts
+- `selfhost:status` is available as the runtime management snapshot after
+  startup, and supports `--json` for Docker compose service state, secret
+  hygiene status, health endpoint checks, blockers, and safety notes without
+  printing secret values
 - `selfhost:ports` is available as a non-destructive declared host-port list
   before an operator starts a self-host profile
 - `selfhost:summary` is available as a read-only one-screen profile overview
@@ -118,7 +122,7 @@ Observed results:
 - `check:submodules`: passed
 - `check:boundaries`: passed after adding `@delexec/billing-store` to
   `platform/data`
-- `check:bundles`: passed with `CHG-2026-073`
+- `check:bundles`: passed with `CHG-2026-074`
 - `test:contracts`: passed, including `@delexec/billing-store` in platform
   package validation and the `@delexec/platform-api` dependency graph
 - `test:integration`: passed with a successful request/response path
@@ -168,7 +172,7 @@ Observed results:
   bilingual Deployability Profiles route/content contract, including the
   admin-only Billing console narrative plus `selfhost:security-review` and
   `selfhost:audit-export` / `selfhost:profiles` / `selfhost:quickstart` / `selfhost:readiness -- --all` / `selfhost:readiness` / `selfhost:doctor` / `selfhost:summary` / `selfhost:ports` /
-  `selfhost:ops-report` / `selfhost:backup-validate` / `selfhost:restore-plan`
+  `selfhost:ops-report` / `selfhost:status -- --json` / `selfhost:backup-validate` / `selfhost:restore-plan`
   commands
 - `repos/brand-site` `npm run build`: passed, including client build, SSR
   build, and prerender output for the new deployability docs routes
@@ -276,6 +280,11 @@ key;
 `exports/selfhost/<profile>/` with URLs, host ports, secret hygiene status, and
 operator commands while omitting raw secret values; `--json` emits the same
 non-secret handoff data without writing a Markdown file;
+`corepack pnpm run selfhost:status` is the post-start runtime management
+snapshot. It calls Docker compose `ps`, checks secret hygiene status, and probes
+configured health endpoints without printing secret values; `--json` emits the
+same runtime service state, health checks, blockers, and safety notes for
+dashboards and management scripts;
 `corepack pnpm run selfhost:ports` prints the selected profile's declared host
 ports without binding sockets, inspecting the local network, or calling Docker;
 `corepack pnpm run selfhost:summary` prints a read-only one-screen profile

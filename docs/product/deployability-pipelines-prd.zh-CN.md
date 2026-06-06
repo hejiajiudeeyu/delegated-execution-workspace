@@ -55,6 +55,7 @@
 - `corepack pnpm run selfhost:preflight`
 - `corepack pnpm --silent run selfhost:preflight -- --json`
 - `corepack pnpm run selfhost:status`
+- `corepack pnpm --silent run selfhost:status -- --json`
 - `corepack pnpm run selfhost:smoke`
 - `corepack pnpm run selfhost:security-review`
 - `corepack pnpm --silent run selfhost:security-review -- --json`
@@ -99,7 +100,9 @@
   public-origin hygiene，但不调用 `docker compose`、不启动服务、不探测网络、不打印
   secret 值；`--json` 返回同一组检查、阻断状态和下一步命令，供 dashboard 和脚本消费，
   并保持相同 exit-code 语义
-- status 能显示 Docker compose 状态和 health endpoints
+- status 能显示 Docker compose 状态和 health endpoints；`--json` 返回同一组
+  runtime service state、secret hygiene 状态、health checks、blockers 和 safety
+  notes，供 dashboard 和管理脚本消费，且不打印 secret 值
 - smoke 同时检查 secret hygiene、compose config 和 health endpoints
 - preflight 在 `up` 前检查 secret hygiene、compose config 和 routes，不要求服务已运行；
   `--json` 保持同一 exit-code 语义，并输出机器可读的 secret hygiene、compose

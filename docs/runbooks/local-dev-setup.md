@@ -129,6 +129,7 @@ corepack pnpm --silent run selfhost:ports -- --json
 corepack pnpm run selfhost:preflight
 corepack pnpm --silent run selfhost:preflight -- --json
 corepack pnpm run selfhost:status
+corepack pnpm --silent run selfhost:status -- --json
 corepack pnpm run selfhost:smoke
 corepack pnpm run selfhost:security-review
 corepack pnpm --silent run selfhost:security-review -- --json
@@ -157,6 +158,7 @@ corepack pnpm --silent run selfhost:preflight -- --profile public-stack --json
 corepack pnpm run selfhost:security-review -- --profile public-stack
 corepack pnpm --silent run selfhost:security-review -- --profile public-stack --json
 corepack pnpm run selfhost:status -- --profile public-stack
+corepack pnpm --silent run selfhost:status -- --profile public-stack --json
 corepack pnpm run selfhost:smoke -- --profile public-stack
 ```
 
@@ -166,6 +168,13 @@ or secret hygiene checks fail, it will not start the profile by default; passing
 same gate and exit-code semantics while returning machine-readable secret
 hygiene, compose config, route, blocker, and note fields for dashboards or
 deployment scripts.
+
+`selfhost:status` is the runtime management snapshot after a profile is started.
+It calls Docker compose `ps`, checks secret hygiene status, and probes configured
+health endpoints without printing secret values. Use
+`corepack pnpm --silent run selfhost:status ... --json` when dashboards or
+management scripts need compose service state, health checks, blockers, and
+safety notes without parsing terminal prose.
 
 `selfhost:profiles` is the read-only deployment map. It lists the built-in
 profiles, purpose, deploy directory, service count, declared host ports, and

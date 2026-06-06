@@ -110,6 +110,7 @@ corepack pnpm --silent run selfhost:ports -- --json
 corepack pnpm run selfhost:preflight
 corepack pnpm --silent run selfhost:preflight -- --json
 corepack pnpm run selfhost:status
+corepack pnpm --silent run selfhost:status -- --json
 corepack pnpm run selfhost:smoke
 corepack pnpm run selfhost:security-review
 corepack pnpm --silent run selfhost:security-review -- --json
@@ -138,6 +139,7 @@ corepack pnpm --silent run selfhost:preflight -- --profile public-stack --json
 corepack pnpm run selfhost:security-review -- --profile public-stack
 corepack pnpm --silent run selfhost:security-review -- --profile public-stack --json
 corepack pnpm run selfhost:status -- --profile public-stack
+corepack pnpm --silent run selfhost:status -- --profile public-stack --json
 corepack pnpm run selfhost:smoke -- --profile public-stack
 ```
 
@@ -145,6 +147,12 @@ corepack pnpm run selfhost:smoke -- --profile public-stack
 hygiene 未通过，默认不会继续启动；只有显式传入 `--force` 才会绕过该阻断。
 `selfhost:preflight -- --json` 保持同一套 gate 和 exit-code 语义，同时输出机器可读
 的 secret hygiene、compose config、routes、blockers 和 notes，供 dashboard 或部署脚本消费。
+
+`selfhost:status` 是 profile 启动后的 runtime 管理快照。它会调用 Docker compose
+`ps`、检查 secret hygiene 状态，并探测配置的 health endpoints，但不会打印 secret 值。
+当 dashboard 或管理脚本需要 compose service state、health checks、blockers 和
+safety notes 且不想解析终端文本时，使用
+`corepack pnpm --silent run selfhost:status ... --json`。
 
 `selfhost:profiles` 是只读部署地图。它列出内置 profiles、用途、deploy 目录、
 service 数量、声明 host ports 和对应的 `selfhost:doctor` 命令，但不读取 `.env`

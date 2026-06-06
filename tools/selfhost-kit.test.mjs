@@ -8,9 +8,10 @@ import { spawn, spawnSync } from "node:child_process";
 const REPO_ROOT = path.resolve(new URL("..", import.meta.url).pathname);
 const SELFHOST_KIT = path.join(REPO_ROOT, "tools/selfhost-kit.mjs");
 
-function run(cwd, args) {
+function run(cwd, args, options = {}) {
   const result = spawnSync(process.execPath, [SELFHOST_KIT, ...args], {
     cwd,
+    env: options.env || process.env,
     encoding: "utf8"
   });
   return result;
@@ -196,6 +197,34 @@ function writeMinimalAllInOneProfile(root) {
     dir,
     envPath: path.join(dir, ".env")
   };
+}
+
+function writeFakeDocker(root) {
+  const binDir = path.join(root, "bin");
+  fs.mkdirSync(binDir, { recursive: true });
+  const dockerPath = path.join(binDir, "docker");
+  fs.writeFileSync(
+    dockerPath,
+    [
+      "#!/usr/bin/env node",
+      "const args = process.argv.slice(2);",
+      "if (args[0] !== 'compose') process.exit(2);",
+      "if (args.includes('ps')) {",
+      "  if (args.includes('--format') && args.includes('json')) {",
+      "    console.log(JSON.stringify([{ Service: 'platform-api', State: 'running', Health: 'healthy' }]));",
+      "  } else {",
+      "    console.log('NAME SERVICE STATUS');",
+      "    console.log('platform-api platform-api running');",
+      "  }",
+      "  process.exit(0);",
+      "}",
+      "process.exit(0);",
+      ""
+    ].join("\n"),
+    "utf8"
+  );
+  fs.chmodSync(dockerPath, 0o755);
+  return binDir;
 }
 
 const tmpRoot = fs.mkdtempSync(path.join(os.tmpdir(), "delexec-selfhost-kit-test-"));
@@ -473,6 +502,33 @@ try {
   assert.ok(Array.isArray(planBody.notes));
   assert.match(planBody.notes.join("\n"), /read-only/);
   assert.ok(!planJson.stdout.includes(env.get("PLATFORM_ADMIN_API_KEY") || ""));
+
+  const fakeDockerBin = writeFakeDocker(tmpRoot);
+  const statusJson = run(tmpRoot, ["status", "--json"], {
+    env: {
+      ...process.env,
+      PATH: `${fakeDockerBin}${path.delimiter}${process.env.PATH || ""}`
+    }
+  });
+  assert.ok([0, 1].includes(statusJson.status), statusJson.stderr || statusJson.stdout);
+  const statusBody = JSON.parse(statusJson.stdout);
+  assert.equal(statusBody.command, "selfhost:status");
+  assert.equal(statusBody.profile, "platform");
+  assert.equal(statusBody.compose.ok, true);
+  assert.equal(statusBody.compose.exit_code, 0);
+  assert.equal(statusBody.compose.services[0].Service, "platform-api");
+  assert.equal(statusBody.secret_hygiene.find((item) => item.key === "PLATFORM_ADMIN_API_KEY").status, "set");
+  assert.ok(Array.isArray(statusBody.health));
+  const statusHealth = statusBody.health.find((item) => item.name === "platform-api");
+  assert.equal(typeof statusHealth.ok, "boolean");
+  assert.equal(statusHealth.url, "http://127.0.0.1:8080/healthz");
+  assert.equal(statusBody.ok, statusBody.compose.ok && statusBody.secret_hygiene.every((item) => item.ok) && statusBody.health.every((item) => item.ok));
+  if (!statusBody.ok) {
+    assert.ok(statusBody.blockers.length > 0);
+  }
+  assert.ok(Array.isArray(statusBody.notes));
+  assert.match(statusBody.notes.join("\n"), /does not print secret values/);
+  assert.ok(!statusJson.stdout.includes(env.get("PLATFORM_ADMIN_API_KEY") || ""));
 
   const profiles = run(tmpRoot, ["profiles"]);
   assert.equal(profiles.status, 0, profiles.stderr || profiles.stdout);

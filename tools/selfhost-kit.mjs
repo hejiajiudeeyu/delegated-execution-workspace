@@ -435,19 +435,138 @@ function dockerCompose(profileName, args, stdio = "inherit") {
 }
 
 async function checkHealth(profileName) {
-  const { profile } = profilePaths(profileName);
+  const checks = await healthData(profileName);
   let ok = true;
+  for (const check of checks) {
+    if (check.ok) {
+      console.log(`[ok] ${check.name}: ${check.status} ${check.url}`);
+    } else {
+      console.log(`[fail] ${check.name}: ${check.error || check.status} ${check.url}`);
+    }
+    ok &&= check.ok;
+  }
+  return ok;
+}
+
+async function healthData(profileName) {
+  const { profile } = profilePaths(profileName);
+  const checks = [];
   for (const [name, url] of profile.health) {
     try {
       const response = await fetch(url);
-      console.log(`[${response.ok ? "ok" : "fail"}] ${name}: ${response.status} ${url}`);
-      ok &&= response.ok;
+      checks.push({
+        name,
+        url,
+        ok: response.ok,
+        status: response.status
+      });
     } catch (error) {
-      console.log(`[fail] ${name}: ${error instanceof Error ? error.message : String(error)} ${url}`);
-      ok = false;
+      checks.push({
+        name,
+        url,
+        ok: false,
+        status: null,
+        error: error instanceof Error ? error.message : String(error)
+      });
     }
   }
-  return ok;
+  return checks;
+}
+
+function parseComposePs(stdout) {
+  const text = (stdout || "").trim();
+  if (!text) {
+    return [];
+  }
+  try {
+    const parsed = JSON.parse(text);
+    return Array.isArray(parsed) ? parsed : [parsed];
+  } catch {
+    const parsedLines = [];
+    for (const line of text.split(/\r?\n/).filter(Boolean)) {
+      try {
+        parsedLines.push(JSON.parse(line));
+      } catch {
+        return [];
+      }
+    }
+    return parsedLines;
+  }
+}
+
+function statusSecretHygiene(profileName) {
+  const { envPath } = profilePaths(profileName);
+  const suffix = commandProfileFlag(profileName);
+  if (!fs.existsSync(envPath)) {
+    return [
+      {
+        key: "secret hygiene",
+        ok: false,
+        status: `.env missing; run corepack pnpm run selfhost:init${suffix}`
+      }
+    ];
+  }
+  return secretFindings(fs.readFileSync(envPath, "utf8"), profileName).map((finding) => ({
+    key: finding.key,
+    ok: finding.ok,
+    status: finding.ok ? "set" : finding.message
+  }));
+}
+
+async function statusData(profileName) {
+  const composeResult = dockerCompose(profileName, ["ps", "--format", "json"], "pipe");
+  const composeOk = composeResult.status === 0;
+  const secretHygiene = statusSecretHygiene(profileName);
+  const health = await healthData(profileName);
+  const blockers = [];
+  if (!composeOk) {
+    blockers.push("docker compose ps failed");
+  }
+  for (const finding of secretHygiene) {
+    if (!finding.ok) {
+      blockers.push(`${finding.key}: ${finding.status}`);
+    }
+  }
+  for (const check of health) {
+    if (!check.ok) {
+      blockers.push(`health ${check.name}: ${check.error || check.status}`);
+    }
+  }
+  return {
+    command: "selfhost:status",
+    profile: profileName,
+    ok: composeOk && secretHygiene.every((finding) => finding.ok) && health.every((check) => check.ok),
+    compose: {
+      ok: composeOk,
+      exit_code: composeResult.status ?? 1,
+      services: parseComposePs(composeResult.stdout || ""),
+      stdout_lines: (composeResult.stdout || "").trim().split(/\r?\n/).filter(Boolean),
+      stderr_lines: (composeResult.stderr || "").trim().split(/\r?\n/).filter(Boolean)
+    },
+    secret_hygiene: secretHygiene,
+    health,
+    blockers,
+    notes: [
+      "status calls Docker compose ps and probes configured health endpoints",
+      "does not print secret values",
+      "use selfhost:readiness for a read-only pre-start overview"
+    ]
+  };
+}
+
+async function printStatusJson(profileName) {
+  const data = await statusData(profileName);
+  console.log(
+    JSON.stringify(
+      {
+        generated_at: new Date().toISOString(),
+        ...data
+      },
+      null,
+      2
+    )
+  );
+  return data.ok;
 }
 
 function urlsData(profileName) {
@@ -2001,6 +2120,9 @@ async function main() {
   }
 
   if (args.command === "status") {
+    if (args.json) {
+      process.exit((await printStatusJson(args.profile)) ? 0 : 1);
+    }
     const result = dockerCompose(args.profile, ["ps"], "inherit");
     if (result.status !== 0) {
       process.exit(result.status || 1);

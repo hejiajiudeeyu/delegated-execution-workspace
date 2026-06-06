@@ -55,6 +55,7 @@ Required commands:
 - `corepack pnpm run selfhost:preflight`
 - `corepack pnpm --silent run selfhost:preflight -- --json`
 - `corepack pnpm run selfhost:status`
+- `corepack pnpm --silent run selfhost:status -- --json`
 - `corepack pnpm run selfhost:smoke`
 - `corepack pnpm run selfhost:security-review`
 - `corepack pnpm --silent run selfhost:security-review -- --json`
@@ -104,7 +105,10 @@ Acceptance:
   services, probing the network, or printing secrets; `--json` returns the same
   checks, blocker status, and next commands for dashboards and scripts with the
   same exit-code semantics
-- status shows Docker compose state and health endpoints
+- status shows Docker compose state and health endpoints; `--json` returns the
+  same runtime service state, secret hygiene status, health checks, blockers,
+  and safety notes for dashboards and management scripts without printing
+  secret values
 - smoke checks secret hygiene, compose config, and health endpoints
 - preflight checks secret hygiene, compose config, and routes before `up`,
   without requiring services to be running; `--json` preserves the same

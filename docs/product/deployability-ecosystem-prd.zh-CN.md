@@ -84,6 +84,7 @@ CALL ANYTHING 现在的仓库边界是正确的：
 | Self-host 声明端口 inventory | 第四仓 | `corepack pnpm run selfhost:ports`，以及用于 dashboard 和脚本的 `--json` |
 | Self-host ops handoff | 第四仓 | `corepack pnpm run selfhost:ops-report`，以及用于 dashboard 和管理脚本的 `--json` |
 | Self-host preflight gate | 第四仓 | `corepack pnpm run selfhost:preflight`，以及用于部署控制器的 `--json` |
+| Self-host runtime status | 第四仓 | `corepack pnpm run selfhost:status`，以及用于 dashboard 和管理脚本的 `--json` |
 | Self-host security review | 第四仓 | `corepack pnpm run selfhost:security-review`，以及用于公开暴露 dashboard 的 `--json` |
 | Self-host backup planning | 第四仓 | `corepack pnpm run selfhost:backup-plan`，以及用于恢复演练脚本的 `--json` |
 | Self-host backup validation | 第四仓 | `corepack pnpm run selfhost:backup-validate`，以及用于恢复演练脚本的 `--json` |
@@ -107,12 +108,14 @@ CALL ANYTHING 现在的仓库边界是正确的：
 - 文档里明确 local/public 边界
 - health check 不泄漏 secrets
 - logs/status 命令帮助定位问题，但不 dump `.env`
+- runtime status 可以机器读取，供 dashboard 消费，但不泄漏 secret 值
 
 ## 8. 成功指标
 
 - fresh checkout 可以运行 `selfhost:profiles`、`selfhost:quickstart`、
   `selfhost:readiness -- --all`、`selfhost:readiness`、`selfhost:doctor`、
-  `selfhost:init`、`selfhost:summary`、`selfhost:preflight`、`selfhost:status`、`dev:doctor`、
+  `selfhost:init`、`selfhost:summary`、`selfhost:preflight`、`selfhost:status`、
+  `selfhost:status -- --json`、`dev:doctor`、
   `test:agent-e2e`、`published-image:plan`、
   `selfhost:security-review` 和 `operator:onboarding:check`
 - platform billing operator 已有 admin-only API 和 Platform Console 页面，可做
@@ -167,6 +170,9 @@ CALL ANYTHING 现在的仓库边界是正确的：
   声明的 host ports，并用 `--json` 供 dashboard 和部署脚本消费。
 - 增加 `selfhost:preflight -- --json`，让部署控制器消费与 `selfhost:up` 启动前
   相同的 secret hygiene、compose config、routes、blockers 和 safety notes gate。
+- 增加 `selfhost:status -- --json`，让 dashboard 和管理脚本能消费 runtime Docker
+  compose service state、secret hygiene 状态、health endpoint checks、blockers 和
+  safety notes，而不解析终端文本、不打印 secret 值。
 - 增加 `selfhost:summary`，让 operator 用一屏只读输出看清 deploy 路径、URLs、
   声明的 host ports、secret hygiene 状态和下一步命令。
 - 增加 `selfhost:doctor` 作为最早的只读部署诊断，覆盖本地工具、profile 文件、

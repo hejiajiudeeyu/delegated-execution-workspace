@@ -153,6 +153,7 @@ corepack pnpm --silent run selfhost:ops-report -- --json
 corepack pnpm run selfhost:preflight
 corepack pnpm --silent run selfhost:preflight -- --json
 corepack pnpm run selfhost:status
+corepack pnpm --silent run selfhost:status -- --json
 corepack pnpm run selfhost:smoke
 corepack pnpm run selfhost:security-review
 corepack pnpm --silent run selfhost:security-review -- --json
@@ -198,6 +199,7 @@ corepack pnpm --silent run selfhost:restore-plan -- --profile public-stack --bac
 corepack pnpm run selfhost:rotate-plan -- --profile public-stack
 corepack pnpm --silent run selfhost:rotate-plan -- --profile public-stack --json
 corepack pnpm run selfhost:status -- --profile public-stack
+corepack pnpm --silent run selfhost:status -- --profile public-stack --json
 ```
 
 Notes:
