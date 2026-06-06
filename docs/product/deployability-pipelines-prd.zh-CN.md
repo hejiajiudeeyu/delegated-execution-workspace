@@ -73,6 +73,7 @@
 - `corepack pnpm run selfhost:backup-validate`
 - `corepack pnpm --silent run selfhost:backup-validate -- --backup-dir <dir> --json`
 - `corepack pnpm run selfhost:restore-plan`
+- `corepack pnpm --silent run selfhost:restore-plan -- --backup-dir <dir> --json`
 - `corepack pnpm run selfhost:rotate-plan`
 - `corepack pnpm run test:selfhost-kit`
 
@@ -118,7 +119,8 @@
 - backup validate 会检查 `.env`、`postgres.sql` 和 `compose.config.txt` 的存在与大小，
   但不读取或打印 secret 值；`--json` 返回机器可读的 file status、blockers、下一步
   restore-plan 命令和 safety notes，供 dashboard、CI 和恢复演练脚本消费
-- restore plan 会基于 backup directory 输出恢复演练步骤，但不停止服务或导入 SQL
+- restore plan 会基于 backup directory 输出恢复演练步骤，但不停止服务或导入 SQL；
+  `--json` 返回同一组有序恢复步骤和 safety notes，供 dashboard、CI 和恢复演练脚本消费
 - selfhost kit 对 env 创建、secret rotation dry-run / confirm 行为有自动化覆盖
 - 命令不打印 secret 值
 

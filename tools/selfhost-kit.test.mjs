@@ -244,6 +244,22 @@ try {
   assert.match(restorePlan.stdout, /selfhost:smoke/);
   assert.ok(!restorePlan.stdout.includes(env.get("PLATFORM_ADMIN_API_KEY") || ""));
 
+  const restorePlanJson = run(tmpRoot, ["restore-plan", "--backup-dir", "backups/selfhost/platform/sample", "--json"]);
+  assert.equal(restorePlanJson.status, 0, restorePlanJson.stderr || restorePlanJson.stdout);
+  const restorePlanBody = JSON.parse(restorePlanJson.stdout);
+  assert.equal(restorePlanBody.command, "selfhost:restore-plan");
+  assert.equal(restorePlanBody.profile, "platform");
+  assert.equal(restorePlanBody.backup_dir, "backups/selfhost/platform/sample");
+  assert.equal(restorePlanBody.ok, true);
+  assert.ok(Array.isArray(restorePlanBody.steps));
+  assert.match(restorePlanBody.steps.map((item) => item.command || item.detail).join("\n"), /selfhost:down/);
+  assert.match(restorePlanBody.steps.map((item) => item.command || item.detail).join("\n"), /postgres\.sql/);
+  assert.match(restorePlanBody.steps.map((item) => item.command || item.detail).join("\n"), /selfhost:up/);
+  assert.match(restorePlanBody.steps.map((item) => item.command || item.detail).join("\n"), /selfhost:smoke/);
+  assert.ok(Array.isArray(restorePlanBody.notes));
+  assert.match(restorePlanBody.notes.join("\n"), /does not stop services/);
+  assert.ok(!restorePlanJson.stdout.includes(env.get("PLATFORM_ADMIN_API_KEY") || ""));
+
   const backupDir = path.join(tmpRoot, "backups/selfhost/platform/sample");
   fs.mkdirSync(backupDir, { recursive: true });
   fs.writeFileSync(path.join(backupDir, ".env"), fs.readFileSync(envPath, "utf8"), "utf8");

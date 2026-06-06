@@ -266,6 +266,7 @@ corepack pnpm run selfhost:backup-plan
 corepack pnpm run selfhost:backup-validate -- --profile public-stack --backup-dir backups/selfhost/public-stack/<stamp>
 corepack pnpm --silent run selfhost:backup-validate -- --profile public-stack --backup-dir backups/selfhost/public-stack/<stamp> --json
 corepack pnpm run selfhost:restore-plan -- --profile public-stack --backup-dir backups/selfhost/public-stack/<stamp>
+corepack pnpm --silent run selfhost:restore-plan -- --profile public-stack --backup-dir backups/selfhost/public-stack/<stamp> --json
 corepack pnpm run selfhost:rotate-plan
 corepack pnpm run selfhost:rotate -- --confirm
 ```
@@ -299,7 +300,10 @@ and the matching restore-plan command.
 
 `selfhost:restore-plan` is also plan-only. It prints the downtime, `.env`
 review, `postgres.sql` import, restart, and smoke-validation sequence for a
-backup directory without copying files, importing SQL, or stopping services.
+backup directory without copying files, importing SQL, or stopping services. Use
+`corepack pnpm --silent run selfhost:restore-plan ... --json` when dashboards,
+CI, or recovery rehearsal scripts need the same ordered recovery steps without
+parsing terminal prose.
 
 Default endpoints:
 

@@ -73,6 +73,7 @@ Required commands:
 - `corepack pnpm run selfhost:backup-validate`
 - `corepack pnpm --silent run selfhost:backup-validate -- --backup-dir <dir> --json`
 - `corepack pnpm run selfhost:restore-plan`
+- `corepack pnpm --silent run selfhost:restore-plan -- --backup-dir <dir> --json`
 - `corepack pnpm run selfhost:rotate-plan`
 - `corepack pnpm run test:selfhost-kit`
 
@@ -131,7 +132,9 @@ Acceptance:
   machine-readable file status, blockers, next restore-plan command, and safety
   notes for dashboards, CI, and recovery rehearsal scripts
 - restore plan prints a recovery rehearsal sequence for backup directories
-  without stopping services or importing SQL
+  without stopping services or importing SQL; `--json` returns the same ordered
+  recovery steps and safety notes for dashboards, CI, and recovery rehearsal
+  scripts
 - selfhost kit has automated coverage for env creation and secret rotation dry-run/confirm behavior
 - no command prints secret values
 

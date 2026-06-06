@@ -229,6 +229,7 @@ corepack pnpm run selfhost:backup-plan
 corepack pnpm run selfhost:backup-validate -- --profile public-stack --backup-dir backups/selfhost/public-stack/<stamp>
 corepack pnpm --silent run selfhost:backup-validate -- --profile public-stack --backup-dir backups/selfhost/public-stack/<stamp> --json
 corepack pnpm run selfhost:restore-plan -- --profile public-stack --backup-dir backups/selfhost/public-stack/<stamp>
+corepack pnpm --silent run selfhost:restore-plan -- --profile public-stack --backup-dir backups/selfhost/public-stack/<stamp> --json
 corepack pnpm run selfhost:rotate-plan
 corepack pnpm run selfhost:rotate -- --confirm
 ```
@@ -257,4 +258,5 @@ inventory 时，使用 `--json` 形式。
 
 `selfhost:restore-plan` 同样只输出计划。它会基于一个 backup directory 打印停机、
 `.env` 私下复核、`postgres.sql` 导入、重启和 smoke 验证顺序；不会复制文件、
-导入 SQL 或停止服务。
+导入 SQL 或停止服务。当 dashboard、CI 或恢复演练脚本需要同一组有序恢复步骤且不想
+解析终端文本时，使用 `corepack pnpm --silent run selfhost:restore-plan ... --json`。

@@ -1259,18 +1259,91 @@ function printRestorePlan(profileName, backupDir) {
   if (!backupDir) {
     throw new Error("--backup-dir is required for restore-plan");
   }
-  const { envPath } = profilePaths(profileName);
-  const normalizedBackupDir = backupDir.replace(/\/+$/, "");
+  const data = restorePlanData(profileName, backupDir);
   console.log(`[selfhost:restore-plan] profile=${profileName}`);
   console.log("This command prints a plan only; it does not stop services, copy files, or import data.");
-  console.log(`backup_dir=${normalizedBackupDir}`);
-  console.log("1. Confirm the backup directory was produced by selfhost:backup-plan and stored privately.");
-  console.log(`2. Schedule downtime: corepack pnpm run selfhost:down -- --profile ${profileName}`);
-  console.log(`3. Review ${normalizedBackupDir}/.env privately, then copy it to ${path.relative(ROOT, envPath)} if it matches the target environment.`);
-  console.log(`4. Import database dump: docker compose --env-file .env exec -T postgres psql -U "$POSTGRES_USER" "$POSTGRES_DB" < ${normalizedBackupDir}/postgres.sql`);
-  console.log(`5. Restart services: corepack pnpm run selfhost:up -- --profile ${profileName}`);
-  console.log(`6. Validate recovery: corepack pnpm run selfhost:smoke -- --profile ${profileName}`);
-  console.log("7. Keep original volumes and the backup artifact until the recovered stack is validated.");
+  console.log(`backup_dir=${data.backup_dir}`);
+  for (const step of data.steps) {
+    console.log(`${step.step}. ${step.detail}${step.command ? `: ${step.command}` : ""}`);
+  }
+}
+
+function restorePlanData(profileName, backupDir) {
+  if (!backupDir) {
+    throw new Error("--backup-dir is required for restore-plan");
+  }
+  const { envPath } = profilePaths(profileName);
+  const normalizedBackupDir = backupDir.replace(/\/+$/, "");
+  return {
+    command: "selfhost:restore-plan",
+    profile: profileName,
+    ok: true,
+    backup_dir: normalizedBackupDir,
+    env_path: path.relative(ROOT, envPath),
+    steps: [
+      {
+        step: 1,
+        action: "confirm-backup-source",
+        detail: "Confirm the backup directory was produced by selfhost:backup-plan and stored privately."
+      },
+      {
+        step: 2,
+        action: "schedule-downtime",
+        detail: "Schedule downtime",
+        command: `corepack pnpm run selfhost:down -- --profile ${profileName}`
+      },
+      {
+        step: 3,
+        action: "review-env",
+        detail: `Review ${normalizedBackupDir}/.env privately, then copy it to ${path.relative(ROOT, envPath)} if it matches the target environment.`
+      },
+      {
+        step: 4,
+        action: "import-database",
+        detail: "Import database dump",
+        command: `docker compose --env-file .env exec -T postgres psql -U "$POSTGRES_USER" "$POSTGRES_DB" < ${normalizedBackupDir}/postgres.sql`
+      },
+      {
+        step: 5,
+        action: "restart-services",
+        detail: "Restart services",
+        command: `corepack pnpm run selfhost:up -- --profile ${profileName}`
+      },
+      {
+        step: 6,
+        action: "validate-recovery",
+        detail: "Validate recovery",
+        command: `corepack pnpm run selfhost:smoke -- --profile ${profileName}`
+      },
+      {
+        step: 7,
+        action: "retain-artifacts",
+        detail: "Keep original volumes and the backup artifact until the recovered stack is validated."
+      }
+    ],
+    notes: [
+      "plan-only",
+      "does not stop services",
+      "does not copy files",
+      "does not import SQL",
+      "review .env privately because it may contain secret values"
+    ]
+  };
+}
+
+function printRestorePlanJson(profileName, backupDir) {
+  const data = restorePlanData(profileName, backupDir);
+  console.log(
+    JSON.stringify(
+      {
+        generated_at: new Date().toISOString(),
+        ...data
+      },
+      null,
+      2
+    )
+  );
+  return data.ok;
 }
 
 function validateBackup(profileName, backupDir) {
@@ -1788,6 +1861,10 @@ async function main() {
   }
 
   if (args.command === "restore-plan") {
+    if (args.json) {
+      printRestorePlanJson(args.profile, args.backupDir);
+      return;
+    }
     printRestorePlan(args.profile, args.backupDir);
     return;
   }

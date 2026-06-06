@@ -81,6 +81,7 @@ The ecosystem is "daily-deployable" when a fresh operator can:
 | Self-host preflight gate | fourth repo | `corepack pnpm run selfhost:preflight`, plus `--json` for deployment controllers |
 | Self-host security review | fourth repo | `corepack pnpm run selfhost:security-review`, plus `--json` for public exposure dashboards |
 | Self-host backup validation | fourth repo | `corepack pnpm run selfhost:backup-validate`, plus `--json` for recovery rehearsal scripts |
+| Self-host restore rehearsal | fourth repo | `corepack pnpm run selfhost:restore-plan`, plus `--json` for recovery rehearsal scripts |
 | Compose lifecycle wrapper | fourth repo | delegate to `repos/platform/deploy/*` |
 | Published-image smoke wrapper | fourth repo | delegate to `repos/platform` public-stack smoke |
 | Operator onboarding contract | fourth repo | `operator:onboarding:check` keeps public-stack, brand-site, and runbooks aligned |
@@ -185,6 +186,8 @@ Required baseline:
   `--json` so recovery rehearsal scripts can consume file status, blockers,
   next restore-plan command, and safety notes.
 - Add `selfhost:restore-plan` so backup artifacts have a visible recovery
-  rehearsal path before any destructive restore action.
+  rehearsal path before any destructive restore action. Add `--json` so
+  dashboards and recovery rehearsal scripts can render the same ordered steps
+  without executing them.
 - Published-image smoke is first connected as a fourth-repo wrapper; formal
   image build, publish, and release gates remain owned by `repos/platform`.
