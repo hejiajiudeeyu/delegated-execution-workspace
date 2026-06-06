@@ -108,6 +108,7 @@ Initialize and inspect a self-host profile:
 
 ```bash
 corepack pnpm run selfhost:profiles
+corepack pnpm --silent run selfhost:profiles -- --json
 corepack pnpm run selfhost:quickstart
 corepack pnpm run selfhost:readiness -- --all
 corepack pnpm --silent run selfhost:readiness -- --all --json
@@ -146,7 +147,9 @@ or secret hygiene checks fail, it will not start the profile by default; passing
 `selfhost:profiles` is the read-only deployment map. It lists the built-in
 profiles, purpose, deploy directory, service count, declared host ports, and
 the matching `selfhost:doctor` command without reading `.env` or touching
-Docker.
+Docker. Use `corepack pnpm --silent run selfhost:profiles -- --json` when a
+console, dashboard, or script needs the same profile selector data without
+parsing terminal prose.
 
 `selfhost:quickstart` prints the recommended command sequence for a selected
 profile without executing it. Use it when you want the shortest copy-paste

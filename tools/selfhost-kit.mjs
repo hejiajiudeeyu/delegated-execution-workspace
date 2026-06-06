@@ -470,19 +470,45 @@ function printPorts(profileName) {
   }
 }
 
+function profileSummary(profileName) {
+  const profile = PROFILES[profileName];
+  const suffix = commandProfileFlag(profileName);
+  return {
+    profile: profileName,
+    purpose: profile.purpose || "deployment profile",
+    deploy_dir: profile.dir,
+    services: (profile.services || []).map(([name, role]) => ({ name, role })),
+    ports: (profile.ports || []).map(([port, service, role]) => ({ port, service, role })),
+    next: `corepack pnpm run selfhost:doctor${suffix}`
+  };
+}
+
+function printProfilesJson() {
+  console.log(
+    JSON.stringify(
+      {
+        generated_at: new Date().toISOString(),
+        command: "selfhost:profiles",
+        profiles: Object.keys(PROFILES).map((profileName) => profileSummary(profileName))
+      },
+      null,
+      2
+    )
+  );
+}
+
 function printProfiles() {
   console.log("[selfhost:profiles]");
   console.log("Built-in deployment profiles; this command is read-only and does not inspect .env or Docker.");
-  for (const [profileName, profile] of Object.entries(PROFILES)) {
-    const serviceNames = (profile.services || []).map(([name]) => name).join(",");
-    const ports = (profile.ports || []).map(([port]) => port).join(",");
-    const suffix = commandProfileFlag(profileName);
-    console.log(`\n## ${profileName}`);
-    console.log(`purpose=${profile.purpose || "deployment profile"}`);
-    console.log(`deploy_dir=${profile.dir}`);
-    console.log(`services=${(profile.services || []).length} ${serviceNames}`);
+  for (const summary of Object.keys(PROFILES).map((profileName) => profileSummary(profileName))) {
+    const serviceNames = summary.services.map(({ name }) => name).join(",");
+    const ports = summary.ports.map(({ port }) => port).join(",");
+    console.log(`\n## ${summary.profile}`);
+    console.log(`purpose=${summary.purpose}`);
+    console.log(`deploy_dir=${summary.deploy_dir}`);
+    console.log(`services=${summary.services.length} ${serviceNames}`);
     console.log(`ports=${ports || "none"}`);
-    console.log(`next=corepack pnpm run selfhost:doctor${suffix}`);
+    console.log(`next=${summary.next}`);
   }
 }
 
@@ -1218,7 +1244,11 @@ async function main() {
   }
 
   if (args.command === "profiles") {
-    printProfiles();
+    if (args.json) {
+      printProfilesJson();
+    } else {
+      printProfiles();
+    }
     return;
   }
 

@@ -303,6 +303,25 @@ try {
   assert.match(profiles.stdout, /corepack pnpm run selfhost:doctor -- --profile public-stack/);
   assert.ok(!profiles.stdout.includes(env.get("PLATFORM_ADMIN_API_KEY") || ""));
 
+  const profilesJson = run(tmpRoot, ["profiles", "--json"]);
+  assert.equal(profilesJson.status, 0, profilesJson.stderr || profilesJson.stdout);
+  const profilesBody = JSON.parse(profilesJson.stdout);
+  assert.equal(profilesBody.command, "selfhost:profiles");
+  assert.ok(profilesBody.generated_at);
+  assert.ok(Array.isArray(profilesBody.profiles));
+  assert.equal(profilesBody.profiles.length, 3);
+  assert.equal(profilesBody.profiles.find((item) => item.profile === "platform").deploy_dir, "repos/platform/deploy/platform");
+  assert.equal(profilesBody.profiles.find((item) => item.profile === "platform").services.length, 2);
+  assert.deepEqual(
+    profilesBody.profiles.find((item) => item.profile === "platform").ports.map((item) => item.port),
+    ["5432", "8080"]
+  );
+  assert.equal(
+    profilesBody.profiles.find((item) => item.profile === "public-stack").next,
+    "corepack pnpm run selfhost:doctor -- --profile public-stack"
+  );
+  assert.ok(!profilesJson.stdout.includes(env.get("PLATFORM_ADMIN_API_KEY") || ""));
+
   const quickstart = run(tmpRoot, ["quickstart"]);
   assert.equal(quickstart.status, 0, quickstart.stderr || quickstart.stdout);
   assert.match(quickstart.stdout, /selfhost:quickstart/);

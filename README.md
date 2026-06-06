@@ -130,6 +130,7 @@ Initialize and inspect a self-host profile:
 
 ```bash
 corepack pnpm run selfhost:profiles
+corepack pnpm --silent run selfhost:profiles -- --json
 corepack pnpm run selfhost:quickstart
 corepack pnpm run selfhost:readiness -- --all
 corepack pnpm --silent run selfhost:readiness -- --all --json

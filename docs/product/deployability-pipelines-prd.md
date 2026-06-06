@@ -43,6 +43,7 @@ Required commands:
 
 - `corepack pnpm run selfhost:init`
 - `corepack pnpm run selfhost:profiles`
+- `corepack pnpm --silent run selfhost:profiles -- --json`
 - `corepack pnpm run selfhost:quickstart`
 - `corepack pnpm run selfhost:readiness -- --all`
 - `corepack pnpm --silent run selfhost:readiness -- --all --json`
@@ -73,7 +74,8 @@ Acceptance:
 - placeholder secrets are replaced with generated values
 - profiles lists built-in deployment profiles, purpose, deploy directories,
   service counts, declared host ports, and matching doctor commands without
-  reading `.env` or touching Docker
+  reading `.env` or touching Docker; `--json` returns the same profile selector
+  data for consoles, dashboards, and scripts
 - quickstart prints the recommended copy-paste command sequence for the
   selected profile without executing Docker, mutating files, or printing secrets
 - readiness prints a read-only deployment overview for one profile, and
