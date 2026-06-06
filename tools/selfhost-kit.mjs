@@ -102,7 +102,7 @@ const SECRET_KEYS = new Set([
 ]);
 
 function usage() {
-  console.log(`Usage: node tools/selfhost-kit.mjs <command> [--profile profile] [--all] [--force] [--service name] [--tail lines]
+  console.log(`Usage: node tools/selfhost-kit.mjs <command> [--profile profile] [--all] [--json] [--force] [--service name] [--tail lines]
 
 Commands:
   init      Create or harden the selected profile .env file
@@ -155,7 +155,8 @@ function parseArgs(argv) {
     output: null,
     auditBaseUrl: null,
     backupDir: null,
-    all: false
+    all: false,
+    json: false
   };
   for (let index = 3; index < argv.length; index += 1) {
     const value = argv[index];
@@ -165,6 +166,10 @@ function parseArgs(argv) {
     }
     if (value === "--all") {
       args.all = true;
+      continue;
+    }
+    if (value === "--json") {
+      args.json = true;
       continue;
     }
     if (value === "--confirm") {
@@ -669,6 +674,52 @@ function readinessSummary(profileName) {
   };
 }
 
+function readinessNextCommand(profileName) {
+  return `corepack pnpm run selfhost:readiness${commandProfileFlag(profileName)}`;
+}
+
+function readinessJsonSummary(profileName) {
+  const summary = readinessSummary(profileName);
+  return {
+    profile: summary.profileName,
+    ok: summary.ok,
+    blockers: summary.blockers,
+    next: readinessNextCommand(summary.profileName)
+  };
+}
+
+function printReadinessJson(profileName) {
+  const summary = readinessJsonSummary(profileName);
+  const body = {
+    generated_at: new Date().toISOString(),
+    mode: "profile",
+    profile: summary.profile,
+    ok: summary.ok,
+    blockers: summary.blockers,
+    next: summary.next
+  };
+  console.log(JSON.stringify(body, null, 2));
+  return summary.ok;
+}
+
+function printReadinessAllJson() {
+  const profiles = Object.keys(PROFILES).map((profileName) => readinessJsonSummary(profileName));
+  const ok = profiles.every((profile) => profile.ok);
+  console.log(
+    JSON.stringify(
+      {
+        generated_at: new Date().toISOString(),
+        mode: "all",
+        ok,
+        profiles
+      },
+      null,
+      2
+    )
+  );
+  return ok;
+}
+
 function readinessAllProfiles() {
   console.log("[selfhost:readiness] mode=all");
   console.log("This command is read-only; it does not call Docker, bind ports, probe the network, mutate files, or print secret values.");
@@ -682,8 +733,7 @@ function readinessAllProfiles() {
         console.log(`- ${blocker}`);
       }
     }
-    const suffix = commandProfileFlag(summary.profileName);
-    console.log(`- next: corepack pnpm run selfhost:readiness${suffix}`);
+    console.log(`- next: ${readinessNextCommand(summary.profileName)}`);
   }
   const ok = summaries.every((summary) => summary.ok);
   console.log(`[${ok ? "ok" : "fail"}] ${ok ? "all profiles passed readiness" : "one or more profiles have readiness blockers"}`);
@@ -1183,6 +1233,12 @@ async function main() {
   }
 
   if (args.command === "readiness") {
+    if (args.json && args.all) {
+      process.exit(printReadinessAllJson() ? 0 : 1);
+    }
+    if (args.json) {
+      process.exit(printReadinessJson(args.profile) ? 0 : 1);
+    }
     if (args.all) {
       process.exit(readinessAllProfiles() ? 0 : 1);
     }

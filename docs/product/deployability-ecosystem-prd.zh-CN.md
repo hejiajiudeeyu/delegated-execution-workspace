@@ -75,7 +75,7 @@ CALL ANYTHING 现在的仓库边界是正确的：
 | Agent-facing smoke | 第四仓 | `corepack pnpm run test:agent-e2e` |
 | Self-host 部署地图 | 第四仓 | `corepack pnpm run selfhost:profiles` |
 | Self-host quickstart 序列 | 第四仓 | `corepack pnpm run selfhost:quickstart` |
-| Self-host readiness 总览 | 第四仓 | `corepack pnpm run selfhost:readiness -- --all` |
+| Self-host readiness 总览 | 第四仓 | `corepack pnpm run selfhost:readiness -- --all`，以及自动化使用的 `corepack pnpm --silent run ... --json` |
 | Self-host 部署 doctor | 第四仓 | `corepack pnpm run selfhost:doctor` |
 | Self-host env 生成器 | 第四仓 | `corepack pnpm run selfhost:init` |
 | Self-host profile 概要 | 第四仓 | `corepack pnpm run selfhost:summary` |
@@ -158,7 +158,9 @@ CALL ANYTHING 现在的仓库边界是正确的：
   安全复核和交接证据步骤。
 - 增加 `selfhost:readiness` 作为只读部署就绪总览，合并 profile 文件、`.env`
   状态、secret hygiene、public-stack origin / route 阻断项、URLs、声明 host ports
-  和下一步命令。增加 `selfhost:readiness -- --all` 作为内置多 profile readiness 矩阵。
+  和下一步命令。增加 `selfhost:readiness -- --all` 作为内置多 profile readiness 矩阵，
+  并让两种形式都支持通过 `corepack pnpm --silent run` 输出 `--json`，供 CI、
+  dashboard 和管理脚本消费且保持 stdout 为干净 JSON。
 - 要求 operator onboarding contract 把 `selfhost:readiness`、`selfhost:ports` 和
   `selfhost:ops-report` 纳入 public-stack 首次使用路径，避免交接顺序退回只有终端启动和
   smoke 的状态。

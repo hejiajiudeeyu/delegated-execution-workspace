@@ -348,6 +348,17 @@ try {
   assert.match(readiness.stdout, /selfhost:smoke/);
   assert.ok(!readiness.stdout.includes(env.get("PLATFORM_ADMIN_API_KEY") || ""));
 
+  const readinessJson = run(tmpRoot, ["readiness", "--json"]);
+  assert.equal(readinessJson.status, 0, readinessJson.stderr || readinessJson.stdout);
+  const readinessBody = JSON.parse(readinessJson.stdout);
+  assert.equal(readinessBody.mode, "profile");
+  assert.equal(readinessBody.profile, "platform");
+  assert.equal(readinessBody.ok, true);
+  assert.deepEqual(readinessBody.blockers, []);
+  assert.equal(readinessBody.next, "corepack pnpm run selfhost:readiness");
+  assert.ok(readinessBody.generated_at);
+  assert.ok(!readinessJson.stdout.includes(env.get("PLATFORM_ADMIN_API_KEY") || ""));
+
   const doctor = run(tmpRoot, ["doctor"]);
   assert.equal(doctor.status, 0, doctor.stderr || doctor.stdout);
   assert.match(doctor.stdout, /selfhost:doctor/);
@@ -443,6 +454,25 @@ try {
   assert.match(readinessAll.stdout, /corepack pnpm run selfhost:readiness -- --profile public-stack/);
   assert.ok(!readinessAll.stdout.includes(publicEnv.get("PLATFORM_ADMIN_API_KEY") || ""));
   assert.ok(!readinessAll.stdout.includes(publicEnv.get("PLATFORM_CONSOLE_BOOTSTRAP_SECRET") || ""));
+
+  const readinessAllJson = run(tmpRoot, ["readiness", "--all", "--json"]);
+  assert.equal(readinessAllJson.status, 1, readinessAllJson.stderr || readinessAllJson.stdout);
+  const readinessAllBody = JSON.parse(readinessAllJson.stdout);
+  assert.equal(readinessAllBody.mode, "all");
+  assert.equal(readinessAllBody.ok, false);
+  assert.ok(readinessAllBody.generated_at);
+  assert.ok(Array.isArray(readinessAllBody.profiles));
+  assert.equal(readinessAllBody.profiles.find((item) => item.profile === "platform").ok, true);
+  assert.equal(readinessAllBody.profiles.find((item) => item.profile === "public-stack").ok, false);
+  assert.equal(readinessAllBody.profiles.find((item) => item.profile === "all-in-one").ok, false);
+  assert.match(readinessAllBody.profiles.find((item) => item.profile === "public-stack").blockers.join("\n"), /PUBLIC_SITE_ADDRESS/);
+  assert.match(readinessAllBody.profiles.find((item) => item.profile === "all-in-one").blockers.join("\n"), /env file missing/);
+  assert.equal(
+    readinessAllBody.profiles.find((item) => item.profile === "public-stack").next,
+    "corepack pnpm run selfhost:readiness -- --profile public-stack"
+  );
+  assert.ok(!readinessAllJson.stdout.includes(publicEnv.get("PLATFORM_ADMIN_API_KEY") || ""));
+  assert.ok(!readinessAllJson.stdout.includes(publicEnv.get("PLATFORM_CONSOLE_BOOTSTRAP_SECRET") || ""));
 
   const publicPorts = run(tmpRoot, ["ports", "--profile", "public-stack"]);
   assert.equal(publicPorts.status, 0, publicPorts.stderr || publicPorts.stdout);

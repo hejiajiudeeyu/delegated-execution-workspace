@@ -45,7 +45,9 @@ Required commands:
 - `corepack pnpm run selfhost:profiles`
 - `corepack pnpm run selfhost:quickstart`
 - `corepack pnpm run selfhost:readiness -- --all`
+- `corepack pnpm --silent run selfhost:readiness -- --all --json`
 - `corepack pnpm run selfhost:readiness`
+- `corepack pnpm --silent run selfhost:readiness -- --json`
 - `corepack pnpm run selfhost:doctor`
 - `corepack pnpm run selfhost:preflight`
 - `corepack pnpm run selfhost:status`
@@ -78,7 +80,9 @@ Acceptance:
   `readiness --all` prints a built-in profile matrix; both combine profile file
   presence, `.env` status, secret hygiene, public-stack origin/route blockers,
   URLs, declared host ports, and next commands without executing Docker,
-  mutating files, probing the network, binding sockets, or printing secrets
+  mutating files, probing the network, binding sockets, or printing secrets;
+  `--json` prints machine-readable `ok`, `blockers`, and `next` fields for the
+  same single-profile or all-profile readiness checks
 - doctor checks local tool visibility, profile files, `.env` presence, and
   secret/public-origin hygiene without calling `docker compose`, starting
   services, probing the network, or printing secrets

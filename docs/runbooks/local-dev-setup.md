@@ -110,7 +110,9 @@ Initialize and inspect a self-host profile:
 corepack pnpm run selfhost:profiles
 corepack pnpm run selfhost:quickstart
 corepack pnpm run selfhost:readiness -- --all
+corepack pnpm --silent run selfhost:readiness -- --all --json
 corepack pnpm run selfhost:readiness
+corepack pnpm --silent run selfhost:readiness -- --json
 corepack pnpm run selfhost:doctor
 corepack pnpm run selfhost:init
 corepack pnpm run selfhost:summary
@@ -126,6 +128,7 @@ For the public operator stack:
 ```bash
 corepack pnpm run selfhost:quickstart -- --profile public-stack
 corepack pnpm run selfhost:readiness -- --profile public-stack
+corepack pnpm --silent run selfhost:readiness -- --profile public-stack --json
 corepack pnpm run selfhost:doctor -- --profile public-stack
 corepack pnpm run selfhost:init -- --profile public-stack
 corepack pnpm run selfhost:summary -- --profile public-stack
@@ -155,7 +158,10 @@ built-in profile. `selfhost:readiness` prints the same kind of deployment
 overview for one selected profile. Both combine profile file presence, `.env`
 status, secret hygiene, public-stack origin/route blockers, URLs, declared host
 ports, and next commands without calling Docker, binding ports, probing the
-network, mutating files, or printing secret values.
+network, mutating files, or printing secret values. Use
+`corepack pnpm --silent run selfhost:readiness ... --json` when CI,
+dashboards, or management scripts need machine-readable `ok`/`blockers`/`next`
+output with the same exit-code semantics.
 
 `selfhost:doctor` is the earliest read-only deployment diagnostic. It checks
 local tool visibility, profile files, `.env` presence, and secret/public-origin

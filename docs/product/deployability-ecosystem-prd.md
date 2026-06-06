@@ -72,7 +72,7 @@ The ecosystem is "daily-deployable" when a fresh operator can:
 | Agent-facing smoke | fourth repo | `corepack pnpm run test:agent-e2e` |
 | Self-host deployment map | fourth repo | `corepack pnpm run selfhost:profiles` |
 | Self-host quickstart sequence | fourth repo | `corepack pnpm run selfhost:quickstart` |
-| Self-host readiness overview | fourth repo | `corepack pnpm run selfhost:readiness -- --all` |
+| Self-host readiness overview | fourth repo | `corepack pnpm run selfhost:readiness -- --all`, plus `corepack pnpm --silent run ... --json` for automation |
 | Self-host deployment doctor | fourth repo | `corepack pnpm run selfhost:doctor` |
 | Self-host env generator | fourth repo | `corepack pnpm run selfhost:init` |
 | Self-host profile summary | fourth repo | `corepack pnpm run selfhost:summary` |
@@ -159,7 +159,9 @@ Required baseline:
 - Add `selfhost:readiness` as the read-only deployment readiness overview that
   combines profile files, `.env` status, secret hygiene, public-stack
   origin/route blockers, URLs, declared host ports, and next commands. Add
-  `selfhost:readiness -- --all` as the built-in multi-profile readiness matrix.
+  `selfhost:readiness -- --all` as the built-in multi-profile readiness matrix,
+  and support `--json` on both forms for CI, dashboards, and management scripts
+  through `corepack pnpm --silent run` so stdout remains clean JSON.
 - Require the operator onboarding contract to include `selfhost:readiness`,
   `selfhost:ports`, and `selfhost:ops-report` in the public-stack first-use path
   so the handoff sequence cannot drift back to terminal-only startup/smoke steps.

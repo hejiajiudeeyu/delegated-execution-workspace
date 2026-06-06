@@ -1,0 +1,15 @@
+change_id: CHG-2026-058
+goal: add machine-readable self-host readiness output
+protocol_sha: da3027100cfe9391f7f8d03be18a108ee2804cf6
+client_sha: f1d6a2d8c9b83517cdf6ca9803b223847f880e9a
+platform_sha: 5961309c6b0ca4e8df22dbb5be92ac0845bf8d25
+brand_site_sha: efd9a70255a27f7028deb6d427a70700f12b214e
+owner: hejiajiudeeyu
+risk_level: medium
+affected_scope:
+  - orchestration
+  - brand-site
+  - documentation
+contracts_check: passed
+integration_check: passed
+notes: "Adds --json support to selfhost:readiness for both selected-profile and --all modes so CI, dashboards, and management scripts can consume ok/blockers/next readiness output with the same exit-code semantics through corepack pnpm --silent run. Updates README, runbooks, PRDs, readiness docs, and brand-site Deployability Profiles while keeping protocol/client/platform SHAs unchanged."

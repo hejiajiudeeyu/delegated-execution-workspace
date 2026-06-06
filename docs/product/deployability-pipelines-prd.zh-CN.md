@@ -45,7 +45,9 @@
 - `corepack pnpm run selfhost:profiles`
 - `corepack pnpm run selfhost:quickstart`
 - `corepack pnpm run selfhost:readiness -- --all`
+- `corepack pnpm --silent run selfhost:readiness -- --all --json`
 - `corepack pnpm run selfhost:readiness`
+- `corepack pnpm --silent run selfhost:readiness -- --json`
 - `corepack pnpm run selfhost:doctor`
 - `corepack pnpm run selfhost:preflight`
 - `corepack pnpm run selfhost:status`
@@ -76,7 +78,8 @@
 - readiness 打印单个 profile 的只读部署总览，`readiness --all` 打印内置 profiles
   矩阵；两者都会合并 profile 文件存在性、`.env` 状态、secret hygiene、public-stack
   origin / route 阻断项、URLs、声明 host ports 和下一步命令，但不执行 Docker、不修改文件、
-  不探测网络、不绑定 socket、不打印 secrets
+  不探测网络、不绑定 socket、不打印 secrets；`--json` 会为相同的单 profile 或
+  全 profile readiness 检查输出机器可读的 `ok`、`blockers` 和 `next` 字段
 - doctor 检查本地工具可见性、profile 文件、`.env` 是否存在，以及 secret /
   public-origin hygiene，但不调用 `docker compose`、不启动服务、不探测网络、不打印
   secret 值

@@ -60,7 +60,8 @@ CHG-2026-057:
   evidence steps
 - `selfhost:readiness -- --all` is available as a read-only multi-profile
   readiness matrix, and `selfhost:readiness` remains available as the selected
-  profile readiness overview
+  profile readiness overview; both support `--json` under `corepack pnpm --silent run`
+  for machine-readable automation with the same exit-code semantics
 - `selfhost:backup-validate` is available as a non-destructive backup artifact
   shape check before restore rehearsal
 - `selfhost:restore-plan` is available as a non-destructive recovery rehearsal
@@ -238,7 +239,10 @@ matrix for every built-in profile; `corepack pnpm run selfhost:readiness` prints
 the selected-profile deployment overview. Both combine profile files, `.env`
 status, secret hygiene, public-stack origin/route blockers, URLs, declared host
 ports, and next commands without calling Docker, binding sockets, probing the
-network, mutating files, or printing secret values;
+network, mutating files, or printing secret values; either form accepts
+`--json`, and CI/dashboard/management-script consumers should invoke it through
+`corepack pnpm --silent run` to preserve clean JSON stdout with the same
+readiness exit code;
 `corepack pnpm run selfhost:doctor` now diagnoses local tool visibility,
 profile files, `.env` presence, and secret/public-origin hygiene without calling
 `docker compose`, starting services, probing the network, or printing secret values;
@@ -320,10 +324,10 @@ local loop, selfhost, public-stack safety checks, published-image smoke, and
 Operator Onboarding. Management Console copy now also describes the admin-only
 Billing page as an operator surface, not as client-facing billing readiness, and
 the public-stack command examples include `selfhost:security-review`,
-`selfhost:audit-export`, `selfhost:profiles`, `selfhost:quickstart`, `selfhost:readiness -- --all`, `selfhost:readiness`, `selfhost:doctor`, `selfhost:summary`, `selfhost:ports`,
+`selfhost:audit-export`, `selfhost:profiles`, `selfhost:quickstart`, `selfhost:readiness -- --all`, `selfhost:readiness`, `selfhost:readiness -- --json`, `selfhost:doctor`, `selfhost:summary`, `selfhost:ports`,
 `selfhost:ops-report`,
 `selfhost:backup-validate`, and `selfhost:restore-plan` as pre-exposure safety,
-evidence, quickstart sequencing, readiness overview, port visibility, handoff-report,
+evidence, quickstart sequencing, human-readable and machine-readable readiness overview, port visibility, handoff-report,
 backup-artifact validation, and recovery-rehearsal commands. Capabilities that
 are not ready remain outside the
 green path, and secrets, public origins, and billing readiness must not be
