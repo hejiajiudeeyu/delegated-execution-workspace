@@ -260,6 +260,7 @@ corepack pnpm --silent run selfhost:urls -- --profile public-stack --json
 corepack pnpm run selfhost:ports -- --profile public-stack
 corepack pnpm --silent run selfhost:ports -- --profile public-stack --json
 corepack pnpm run selfhost:ops-report -- --profile public-stack
+corepack pnpm --silent run selfhost:ops-report -- --profile public-stack --json
 corepack pnpm run selfhost:security-review -- --profile public-stack
 corepack pnpm run selfhost:audit-export -- --profile public-stack
 corepack pnpm run selfhost:backup-plan -- --profile public-stack
@@ -281,7 +282,9 @@ prints that key.
 `selfhost:ops-report` writes a Markdown handoff report under
 `exports/selfhost/<profile>/` unless `--output` is provided. It includes URLs,
 host ports, secret hygiene status, and next commands, but never writes raw
-secret values.
+secret values. Use `corepack pnpm --silent run selfhost:ops-report ... --json`
+when dashboards, CI, or management scripts need the same non-secret handoff
+data without creating a Markdown file or parsing terminal prose.
 
 `selfhost:urls` prints the declared URLs for the selected profile without
 calling Docker or probing the network. Use it before `selfhost:up` when checking

@@ -81,6 +81,7 @@ CALL ANYTHING 现在的仓库边界是正确的：
 | Self-host profile 概要 | 第四仓 | `corepack pnpm run selfhost:summary`，以及用于概要卡片的 `--json` |
 | Self-host URL inventory | 第四仓 | `corepack pnpm run selfhost:urls`，以及用于 dashboard 和脚本的 `--json` |
 | Self-host 声明端口 inventory | 第四仓 | `corepack pnpm run selfhost:ports`，以及用于 dashboard 和脚本的 `--json` |
+| Self-host ops handoff | 第四仓 | `corepack pnpm run selfhost:ops-report`，以及用于 dashboard 和管理脚本的 `--json` |
 | Self-host preflight gate | 第四仓 | `corepack pnpm run selfhost:preflight`，以及用于部署控制器的 `--json` |
 | Self-host security review | 第四仓 | `corepack pnpm run selfhost:security-review`，以及用于公开暴露 dashboard 的 `--json` |
 | Self-host backup planning | 第四仓 | `corepack pnpm run selfhost:backup-plan`，以及用于恢复演练脚本的 `--json` |
@@ -154,7 +155,9 @@ CALL ANYTHING 现在的仓库边界是正确的：
 - 增加 `selfhost:audit-export`，让 operator 能把 platform admin audit events 保存成
   本地 JSON 证据，同时不在终端打印 admin key。
 - 增加 `selfhost:ops-report`，让 operator 可以交接一份 Markdown profile 摘要，
-  其中包含 URLs、host ports、安全状态和后续命令，但不包含 secret 值。
+  其中包含 URLs、host ports、安全状态和后续命令，但不包含 secret 值。增加
+  `--json`，让 dashboard 和管理脚本消费同一组不含 secret 的 handoff 数据，而不必解析
+  Markdown。
 - 增加 `selfhost:urls`，让 operator 在启动前看清 profile 声明的 URLs 和
   public-stack routes，并用 `--json` 供 dashboard 和部署脚本消费。
 - 增加 `selfhost:ports`，让 operator 在启动 profile 或暴露 public-stack 前先看清

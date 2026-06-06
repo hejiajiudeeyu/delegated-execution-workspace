@@ -1575,43 +1575,80 @@ function backupStampPlaceholder(profileName) {
   return `backups/selfhost/${profileName}/<stamp>`;
 }
 
-function writeOpsReport(profileName, { output = null } = {}) {
+function opsReportData(profileName) {
   const { profile, dir, envPath } = profilePaths(profileName);
-  const reportPath = path.resolve(ROOT, output || defaultOpsReportPath(profileName));
   const envExists = fs.existsSync(envPath);
   const findings = envExists ? secretFindings(fs.readFileSync(envPath, "utf8"), profileName) : [];
   const backupDir = backupStampPlaceholder(profileName);
-  const commandProfileFlag = profileName === "platform" ? "" : ` -- --profile ${profileName}`;
+  const suffix = commandProfileFlag(profileName);
   const commandWithBackupDir =
     profileName === "platform"
       ? ` -- --backup-dir ${backupDir}`
       : ` -- --profile ${profileName} --backup-dir ${backupDir}`;
+  return {
+    command: "selfhost:ops-report",
+    profile: profileName,
+    deploy_dir: path.relative(ROOT, dir),
+    env_path: path.relative(ROOT, envPath),
+    env_status: envExists ? "present" : "missing",
+    urls: profileUrls(profileName).map(([label, url]) => ({ label, url })),
+    ports: (profile.ports || []).map(([port, service, role]) => ({ port, service, role })),
+    secret_hygiene: envExists
+      ? findings.map((finding) => ({
+          key: finding.key,
+          ok: finding.ok,
+          status: finding.ok ? "set" : finding.message
+        }))
+      : [],
+    operator_commands: [
+      `corepack pnpm run selfhost:preflight${suffix}`,
+      `corepack pnpm run selfhost:security-review${suffix}`,
+      `corepack pnpm run selfhost:audit-export${suffix}`,
+      `corepack pnpm run selfhost:backup-plan${suffix}`,
+      `corepack pnpm run selfhost:backup-validate${commandWithBackupDir}`,
+      `corepack pnpm run selfhost:restore-plan${commandWithBackupDir}`,
+      `corepack pnpm run selfhost:rotate-plan${suffix}`,
+      `corepack pnpm run selfhost:smoke${suffix}`,
+      `corepack pnpm run selfhost:status${suffix}`
+    ],
+    notes: [
+      "non-secret handoff",
+      "does not print secret values",
+      "run backup validation before restore rehearsal",
+      "keep audit exports, backups, and copied .env files in private storage"
+    ]
+  };
+}
+
+function writeOpsReport(profileName, { output = null } = {}) {
+  const data = opsReportData(profileName);
+  const reportPath = path.resolve(ROOT, output || defaultOpsReportPath(profileName));
   const lines = [
     "# Selfhost Ops Report",
     "",
     `generated_at: ${new Date().toISOString()}`,
-    `profile: ${profileName}`,
-    `deploy_dir: ${path.relative(ROOT, dir)}`,
-    `env_path: ${path.relative(ROOT, envPath)}`,
-    `env_status: ${envExists ? "present" : "missing"}`,
+    `profile: ${data.profile}`,
+    `deploy_dir: ${data.deploy_dir}`,
+    `env_path: ${data.env_path}`,
+    `env_status: ${data.env_status}`,
     "",
     "## URLs",
     "",
-    ...profileUrls(profileName).map(([label, url]) => `- ${label}: ${url}`),
+    ...data.urls.map((item) => `- ${item.label}: ${item.url}`),
     "",
     "## Ports",
     "",
-    ...(profile.ports || []).map(([port, service, role]) => `- ${port}: ${service} - ${role}`),
+    ...data.ports.map((item) => `- ${item.port}: ${item.service} - ${item.role}`),
     "",
     "## Secret Hygiene",
     ""
   ];
 
-  if (!envExists) {
+  if (data.env_status !== "present") {
     lines.push("- .env missing: run selfhost:init before treating this profile as ready");
   } else {
-    for (const finding of findings) {
-      lines.push(`- ${finding.key}: ${finding.ok ? "set" : finding.message}`);
+    for (const finding of data.secret_hygiene) {
+      lines.push(`- ${finding.key}: ${finding.status}`);
     }
   }
 
@@ -1619,20 +1656,11 @@ function writeOpsReport(profileName, { output = null } = {}) {
     "",
     "## Operator Commands",
     "",
-    `- corepack pnpm run selfhost:preflight${commandProfileFlag}`,
-    `- corepack pnpm run selfhost:security-review${commandProfileFlag}`,
-    `- corepack pnpm run selfhost:audit-export${commandProfileFlag}`,
-    `- corepack pnpm run selfhost:backup-plan${commandProfileFlag}`,
-    `- corepack pnpm run selfhost:backup-validate${commandWithBackupDir}`,
-    `- corepack pnpm run selfhost:restore-plan${commandWithBackupDir}`,
-    `- corepack pnpm run selfhost:smoke${commandProfileFlag}`,
-    `- corepack pnpm run selfhost:status${commandProfileFlag}`,
+    ...data.operator_commands.map((command) => `- ${command}`),
     "",
     "## Safety Notes",
     "",
-    "- This report intentionally records secret status only, not secret values.",
-    "- Run backup validation before restore rehearsal.",
-    "- Keep audit exports, backups, and copied .env files in private storage.",
+    ...data.notes.map((note) => `- ${note}`),
     ""
   );
 
@@ -1640,6 +1668,19 @@ function writeOpsReport(profileName, { output = null } = {}) {
   fs.writeFileSync(reportPath, `${lines.join("\n")}\n`, "utf8");
   console.log(`[selfhost:ops-report] profile=${profileName}`);
   console.log(`output=${path.relative(ROOT, reportPath)}`);
+}
+
+function printOpsReportJson(profileName) {
+  console.log(
+    JSON.stringify(
+      {
+        generated_at: new Date().toISOString(),
+        ...opsReportData(profileName)
+      },
+      null,
+      2
+    )
+  );
 }
 
 function securityReviewPrerequisites(profileName) {
@@ -1972,6 +2013,10 @@ async function main() {
   }
 
   if (args.command === "ops-report") {
+    if (args.json) {
+      printOpsReportJson(args.profile);
+      return;
+    }
     writeOpsReport(args.profile, { output: args.output });
     return;
   }

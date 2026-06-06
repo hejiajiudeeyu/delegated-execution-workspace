@@ -69,6 +69,7 @@ Required commands:
 - `corepack pnpm --silent run selfhost:ports -- --json`
 - `corepack pnpm run selfhost:logs`
 - `corepack pnpm run selfhost:ops-report`
+- `corepack pnpm --silent run selfhost:ops-report -- --json`
 - `corepack pnpm run selfhost:backup-plan`
 - `corepack pnpm --silent run selfhost:backup-plan -- --json`
 - `corepack pnpm run selfhost:backup-validate`
@@ -122,7 +123,9 @@ Acceptance:
 - audit export writes platform admin audit events to a local JSON artifact
   without printing admin keys
 - ops report writes a Markdown handoff artifact with URLs, host ports, secret
-  hygiene status, and operator commands without raw secret values
+  hygiene status, and operator commands without raw secret values; `--json`
+  returns the same non-secret handoff data for dashboards, CI, and management
+  scripts without writing a Markdown file
 - urls prints the selected profile URL inventory without calling Docker,
   binding sockets, probing the network, or printing secrets; `--json` returns
   the same URL inventory for dashboards and scripts

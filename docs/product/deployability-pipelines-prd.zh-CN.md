@@ -69,6 +69,7 @@
 - `corepack pnpm --silent run selfhost:ports -- --json`
 - `corepack pnpm run selfhost:logs`
 - `corepack pnpm run selfhost:ops-report`
+- `corepack pnpm --silent run selfhost:ops-report -- --json`
 - `corepack pnpm run selfhost:backup-plan`
 - `corepack pnpm --silent run selfhost:backup-plan -- --json`
 - `corepack pnpm run selfhost:backup-validate`
@@ -113,7 +114,8 @@
 - audit export 会把 platform admin audit events 写成本地 JSON 证据，同时不打印
   admin key
 - ops report 会写出包含 URLs、host ports、secret hygiene 状态和 operator 命令的
-  Markdown 交接 artifact，但不包含 raw secret 值
+  Markdown 交接 artifact，但不包含 raw secret 值；`--json` 返回同一组不含 secret
+  的 handoff 数据，供 dashboard、CI 和管理脚本消费，且不会写 Markdown 文件
 - urls 会打印选定 profile 的 URL inventory，但不调用 Docker、不绑定 socket、
   不探测网络、不打印 secrets；`--json` 返回同一组 URL inventory，供 dashboard 和脚本消费
 - ports 会打印选定 profile 声明的 host port 使用情况，但不绑定 socket 或调用 Docker；

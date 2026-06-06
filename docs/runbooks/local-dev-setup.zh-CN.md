@@ -223,6 +223,7 @@ corepack pnpm --silent run selfhost:urls -- --profile public-stack --json
 corepack pnpm run selfhost:ports -- --profile public-stack
 corepack pnpm --silent run selfhost:ports -- --profile public-stack --json
 corepack pnpm run selfhost:ops-report -- --profile public-stack
+corepack pnpm --silent run selfhost:ops-report -- --profile public-stack --json
 corepack pnpm run selfhost:security-review -- --profile public-stack
 corepack pnpm run selfhost:audit-export -- --profile public-stack
 corepack pnpm run selfhost:backup-plan -- --profile public-stack
@@ -242,7 +243,9 @@ endpoint，并把 JSON 证据写入 `exports/audit/<profile>/`；也可以用 `-
 
 `selfhost:ops-report` 会把 Markdown 交接报告写入 `exports/selfhost/<profile>/`；
 也可以用 `--output` 指定路径。报告包含 URLs、host ports、secret hygiene 状态和
-后续命令，但不会写入 raw secret 值。
+后续命令，但不会写入 raw secret 值。当 dashboard、CI 或管理脚本需要同一组不含
+secret 的 handoff 数据，且不想创建 Markdown 文件或解析终端文本时，使用
+`corepack pnpm --silent run selfhost:ops-report ... --json`。
 
 `selfhost:urls` 会打印选定 profile 声明的 URLs，但不会调用 Docker 或探测网络。
 检查 profile 期望暴露哪些 local/public routes 时，应在 `selfhost:up` 前运行它；

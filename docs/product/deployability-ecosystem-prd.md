@@ -78,6 +78,7 @@ The ecosystem is "daily-deployable" when a fresh operator can:
 | Self-host profile summary | fourth repo | `corepack pnpm run selfhost:summary`, plus `--json` for overview cards |
 | Self-host URL inventory | fourth repo | `corepack pnpm run selfhost:urls`, plus `--json` for dashboards and scripts |
 | Self-host declared ports inventory | fourth repo | `corepack pnpm run selfhost:ports`, plus `--json` for dashboards and scripts |
+| Self-host ops handoff | fourth repo | `corepack pnpm run selfhost:ops-report`, plus `--json` for dashboards and management scripts |
 | Self-host preflight gate | fourth repo | `corepack pnpm run selfhost:preflight`, plus `--json` for deployment controllers |
 | Self-host security review | fourth repo | `corepack pnpm run selfhost:security-review`, plus `--json` for public exposure dashboards |
 | Self-host backup planning | fourth repo | `corepack pnpm run selfhost:backup-plan`, plus `--json` for recovery rehearsal scripts |
@@ -155,7 +156,8 @@ Required baseline:
   as local JSON evidence without printing admin keys.
 - Add `selfhost:ops-report` so operators can hand off a Markdown profile
   summary with URLs, host ports, safety posture, and next commands without
-  secret values.
+  secret values. Add `--json` so dashboards and management scripts can consume
+  the same non-secret handoff data without parsing Markdown.
 - Add `selfhost:urls` so operators can inspect declared profile URLs and
   public-stack routes before startup, with `--json` for dashboards and
   deployment scripts.

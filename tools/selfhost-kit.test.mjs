@@ -363,6 +363,31 @@ try {
   assert.ok(!opsReport.stdout.includes(env.get("PLATFORM_ADMIN_API_KEY") || ""));
   assert.ok(!opsReportText.includes(env.get("PLATFORM_ADMIN_API_KEY") || ""));
 
+  const opsReportJson = run(tmpRoot, ["ops-report", "--json"]);
+  assert.equal(opsReportJson.status, 0, opsReportJson.stderr || opsReportJson.stdout);
+  const opsReportBody = JSON.parse(opsReportJson.stdout);
+  assert.equal(opsReportBody.command, "selfhost:ops-report");
+  assert.equal(opsReportBody.profile, "platform");
+  assert.ok(opsReportBody.generated_at);
+  assert.equal(opsReportBody.deploy_dir, "repos/platform/deploy/platform");
+  assert.equal(opsReportBody.env_path, "repos/platform/deploy/platform/.env");
+  assert.equal(opsReportBody.env_status, "present");
+  assert.ok(Array.isArray(opsReportBody.urls));
+  assert.equal(opsReportBody.urls.find((item) => item.label === "Platform API").url, "http://127.0.0.1:8080");
+  assert.ok(Array.isArray(opsReportBody.ports));
+  assert.equal(opsReportBody.ports.find((item) => item.port === "8080").service, "platform-api");
+  assert.ok(Array.isArray(opsReportBody.secret_hygiene));
+  assert.equal(opsReportBody.secret_hygiene.find((item) => item.key === "TOKEN_SECRET").status, "set");
+  assert.match(opsReportBody.operator_commands.join("\n"), /selfhost:preflight/);
+  assert.match(opsReportBody.operator_commands.join("\n"), /selfhost:security-review/);
+  assert.match(opsReportBody.operator_commands.join("\n"), /selfhost:backup-plan/);
+  assert.match(opsReportBody.operator_commands.join("\n"), /selfhost:backup-validate/);
+  assert.match(opsReportBody.operator_commands.join("\n"), /selfhost:restore-plan/);
+  assert.match(opsReportBody.operator_commands.join("\n"), /selfhost:rotate-plan/);
+  assert.ok(Array.isArray(opsReportBody.notes));
+  assert.match(opsReportBody.notes.join("\n"), /does not print secret values/);
+  assert.ok(!opsReportJson.stdout.includes(env.get("PLATFORM_ADMIN_API_KEY") || ""));
+
   const urls = run(tmpRoot, ["urls"]);
   assert.equal(urls.status, 0, urls.stderr || urls.stdout);
   assert.match(urls.stdout, /selfhost:urls/);

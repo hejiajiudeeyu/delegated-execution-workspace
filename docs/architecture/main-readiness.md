@@ -43,7 +43,8 @@ CHG-2026-057:
   helper for the existing platform admin audit endpoint without printing admin
   keys
 - `selfhost:ops-report` is available as a non-secret Markdown operations
-  handoff report with URLs, host ports, secret hygiene status, and next commands
+  handoff report with URLs, host ports, secret hygiene status, and next commands,
+  and supports `--json` for dashboards and management scripts
 - `selfhost:ports` is available as a non-destructive declared host-port list
   before an operator starts a self-host profile
 - `selfhost:summary` is available as a read-only one-screen profile overview
@@ -264,7 +265,8 @@ local JSON artifact under `exports/audit/<profile>/` without printing the admin
 key;
 `corepack pnpm run selfhost:ops-report` writes a Markdown handoff report under
 `exports/selfhost/<profile>/` with URLs, host ports, secret hygiene status, and
-operator commands while omitting raw secret values;
+operator commands while omitting raw secret values; `--json` emits the same
+non-secret handoff data without writing a Markdown file;
 `corepack pnpm run selfhost:ports` prints the selected profile's declared host
 ports without binding sockets, inspecting the local network, or calling Docker;
 `corepack pnpm run selfhost:summary` prints a read-only one-screen profile
@@ -340,7 +342,7 @@ the public-stack command examples include `selfhost:security-review`,
 `selfhost:ops-report`,
 `selfhost:backup-plan`, `selfhost:backup-validate`, `selfhost:restore-plan`, and `selfhost:rotate-plan` as pre-exposure safety,
 evidence, quickstart sequencing, human-readable and machine-readable readiness overview, port visibility, handoff-report,
-backup planning, backup-artifact validation, recovery-rehearsal, and rotation-planning commands. Capabilities that
+machine-readable handoff, backup planning, backup-artifact validation, recovery-rehearsal, and rotation-planning commands. Capabilities that
 are not ready remain outside the
 green path, and secrets, public origins, and billing readiness must not be
 hidden behind green status.
