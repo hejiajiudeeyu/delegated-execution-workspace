@@ -99,6 +99,10 @@ corepack pnpm run selfhost:status -- --profile public-stack
 corepack pnpm run selfhost:smoke -- --profile public-stack
 ```
 
+`selfhost:up` automatically runs the same preflight gate first. If public origin
+or secret hygiene checks fail, it will not start the profile by default; passing
+`--force` is the explicit override.
+
 Operational helpers:
 
 ```bash

@@ -85,7 +85,7 @@ Commands:
   config    Validate docker compose config for the selected profile
   urls      Print useful URLs for the selected profile
   plan      Explain services, URLs, and safety checks for the profile
-  up        Run docker compose up -d for the selected profile
+  up        Run preflight, then docker compose up -d for the selected profile
   down      Run docker compose down for the selected profile
   logs      Run docker compose logs for the selected profile; supports --service and --tail
   rotate    Dry-run secret rotation, or write .env with --confirm
@@ -433,6 +433,18 @@ function printPreflightRoutes(profileName) {
   }
 }
 
+function preflightProfile(profileName) {
+  console.log(`[selfhost:preflight] profile=${profileName}`);
+  console.log("\nSecret hygiene");
+  const secretsOk = checkSecrets(profileName);
+  console.log("\nCompose config");
+  const configResult = composeConfig(profileName);
+  const configOk = configResult.status === 0;
+  console.log(`[${configOk ? "ok" : "fail"}] docker compose config`);
+  printPreflightRoutes(profileName);
+  return secretsOk && configOk;
+}
+
 function printBackupPlan(profileName) {
   const stamp = new Date().toISOString().replace(/[:.]/g, "-");
   const backupDir = `backups/selfhost/${profileName}/${stamp}`;
@@ -505,15 +517,7 @@ async function main() {
   }
 
   if (args.command === "preflight") {
-    console.log(`[selfhost:preflight] profile=${args.profile}`);
-    console.log("\nSecret hygiene");
-    const secretsOk = checkSecrets(args.profile);
-    console.log("\nCompose config");
-    const configResult = composeConfig(args.profile);
-    const configOk = configResult.status === 0;
-    console.log(`[${configOk ? "ok" : "fail"}] docker compose config`);
-    printPreflightRoutes(args.profile);
-    process.exit(secretsOk && configOk ? 0 : 1);
+    process.exit(preflightProfile(args.profile) ? 0 : 1);
   }
 
   if (args.command === "config") {
@@ -548,6 +552,14 @@ async function main() {
 
   if (args.command === "up") {
     initProfile(args.profile, { force: false });
+    const preflightOk = preflightProfile(args.profile);
+    if (!preflightOk && !args.force) {
+      console.log("[selfhost:up] preflight failed; fix the findings or rerun with --force to override.");
+      process.exit(1);
+    }
+    if (!preflightOk && args.force) {
+      console.log("[selfhost:up] warning: preflight failed; continuing because --force was provided.");
+    }
     const result = dockerCompose(args.profile, ["up", "-d"]);
     process.exit(result.status || 0);
   }

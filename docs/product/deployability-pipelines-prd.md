@@ -49,6 +49,8 @@ Acceptance:
 - smoke checks secret hygiene, compose config, and health endpoints
 - preflight checks secret hygiene, compose config, and routes before `up`,
   without requiring services to be running
+- `selfhost:up` reuses the preflight gate by default; it does not continue
+  when preflight fails unless `--force` is passed explicitly
 - logs can be filtered by service and tail length
 - backup and rotation are explicit plans before destructive action
 - selfhost kit has automated coverage for env creation and secret rotation dry-run/confirm behavior
@@ -65,6 +67,8 @@ Required behavior:
 - public route list
 - `selfhost:preflight -- --profile public-stack` checks public routes and
   exposure blockers before `up`
+- `selfhost:up -- --profile public-stack` is blocked by preflight by default
+  so unsafe public origins are not started accidentally
 - clear warning when `PUBLIC_SITE_ADDRESS` is still localhost
 - public-stack smoke fails when the public origin is still unsafe
 

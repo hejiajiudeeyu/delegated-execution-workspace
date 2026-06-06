@@ -48,6 +48,7 @@
 - status 能显示 Docker compose 状态和 health endpoints
 - smoke 同时检查 secret hygiene、compose config 和 health endpoints
 - preflight 在 `up` 前检查 secret hygiene、compose config 和 routes，不要求服务已运行
+- `selfhost:up` 默认复用 preflight gate；未通过时不继续启动，除非显式 `--force`
 - logs 支持按 service 和 tail 行数过滤
 - backup / rotation 在破坏性动作前先输出明确计划
 - selfhost kit 对 env 创建、secret rotation dry-run / confirm 行为有自动化覆盖
@@ -63,6 +64,7 @@
 - 自动生成 admin 和 bootstrap secrets
 - 输出 public route 列表
 - `selfhost:preflight -- --profile public-stack` 在 `up` 前检查 public routes 和暴露前阻断项
+- `selfhost:up -- --profile public-stack` 默认受 preflight 阻断，防止 unsafe public origin 被直接启动
 - 当 `PUBLIC_SITE_ADDRESS` 仍是 localhost 时给出明确 warning
 - 当 public origin 仍不安全时，public-stack smoke 应失败
 

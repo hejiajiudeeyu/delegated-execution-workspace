@@ -81,6 +81,9 @@ corepack pnpm run selfhost:status -- --profile public-stack
 corepack pnpm run selfhost:smoke -- --profile public-stack
 ```
 
+`selfhost:up` 会自动先运行同一组 preflight gate。若 public origin 或 secret
+hygiene 未通过，默认不会继续启动；只有显式传入 `--force` 才会绕过该阻断。
+
 运维辅助命令：
 
 ```bash

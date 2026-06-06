@@ -142,6 +142,11 @@ try {
   assert.ok(!unsafePreflight.stdout.includes(publicEnv.get("PLATFORM_ADMIN_API_KEY") || ""));
   assert.ok(!unsafePreflight.stdout.includes(publicEnv.get("PLATFORM_CONSOLE_BOOTSTRAP_SECRET") || ""));
 
+  const unsafeUp = run(tmpRoot, ["up", "--profile", "public-stack"]);
+  assert.equal(unsafeUp.status, 1, unsafeUp.stderr || unsafeUp.stdout);
+  assert.match(unsafeUp.stdout, /selfhost:preflight/);
+  assert.match(unsafeUp.stdout, /preflight failed/);
+
   const safePublicText = fs
     .readFileSync(publicStack.envPath, "utf8")
     .replace("PUBLIC_SITE_ADDRESS=http://localhost", "PUBLIC_SITE_ADDRESS=https://call.example.com");

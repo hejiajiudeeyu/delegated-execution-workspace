@@ -117,7 +117,9 @@ health endpoints used by that daily path.
 config validation, and route output before services are started;
 `corepack pnpm run selfhost:smoke` remains the post-start health endpoint
 check. For public profiles, unsafe public origin settings are warnings/failures
-instead of being hidden behind a green status.
+instead of being hidden behind a green status. `selfhost:up` reuses the
+preflight gate by default and will not continue when it fails unless `--force`
+is passed explicitly.
 
 ### Console deployability management slice
 

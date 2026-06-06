@@ -109,7 +109,8 @@ health endpoint。
 `corepack pnpm run selfhost:preflight` 现在会在服务启动前组合检查 secret
 hygiene、compose config 和 route 输出；`corepack pnpm run selfhost:smoke`
 用于启动后 health endpoint 检查。对 public profile，不安全的 public origin 不会被包装
-成绿色状态，而是明确 warning / failure。
+成绿色状态，而是明确 warning / failure。`selfhost:up` 默认会复用 preflight gate，
+未通过时不会继续启动；`--force` 是显式 override。
 
 ### Console deployability 管理切片
 
