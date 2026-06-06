@@ -141,6 +141,7 @@ corepack pnpm run test:operator-onboarding
 
 ```bash
 corepack pnpm run selfhost:logs -- --service platform-api --tail 80
+corepack pnpm run selfhost:ops-report -- --profile public-stack
 corepack pnpm run selfhost:security-review -- --profile public-stack
 corepack pnpm run selfhost:audit-export -- --profile public-stack
 corepack pnpm run selfhost:backup-plan
@@ -153,6 +154,10 @@ corepack pnpm run selfhost:rotate -- --confirm
 `selfhost:audit-export` 会读取选定 profile 的 `.env`，调用 platform admin audit
 endpoint，并把 JSON 证据写入 `exports/audit/<profile>/`；也可以用 `--output`
 指定路径。它会使用 admin key 发起请求，但不会把 key 打印到终端。
+
+`selfhost:ops-report` 会把 Markdown 交接报告写入 `exports/selfhost/<profile>/`；
+也可以用 `--output` 指定路径。报告包含 URLs、secret hygiene 状态和后续命令，
+但不会写入 raw secret 值。
 
 `selfhost:backup-validate` 会在恢复演练前检查 backup directory 里 `.env`、
 `postgres.sql` 和 `compose.config.txt` 的存在与大小。它不会读取或打印 `.env`

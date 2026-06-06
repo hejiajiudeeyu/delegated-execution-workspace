@@ -96,6 +96,8 @@ Commands:
   up        Run preflight, then docker compose up -d for the selected profile
   down      Run docker compose down for the selected profile
   logs      Run docker compose logs for the selected profile; supports --service and --tail
+  ops-report
+            Write a non-secret Markdown operations handoff report
   security-review
             Run non-destructive public exposure review checks
   audit-export
@@ -625,6 +627,78 @@ function validateBackup(profileName, backupDir) {
   return ok;
 }
 
+function defaultOpsReportPath(profileName) {
+  const stamp = new Date().toISOString().replace(/[:.]/g, "-");
+  return path.join(ROOT, "exports", "selfhost", profileName, `${stamp}-ops-report.md`);
+}
+
+function backupStampPlaceholder(profileName) {
+  return `backups/selfhost/${profileName}/<stamp>`;
+}
+
+function writeOpsReport(profileName, { output = null } = {}) {
+  const { dir, envPath } = profilePaths(profileName);
+  const reportPath = path.resolve(ROOT, output || defaultOpsReportPath(profileName));
+  const envExists = fs.existsSync(envPath);
+  const findings = envExists ? secretFindings(fs.readFileSync(envPath, "utf8"), profileName) : [];
+  const backupDir = backupStampPlaceholder(profileName);
+  const commandProfileFlag = profileName === "platform" ? "" : ` -- --profile ${profileName}`;
+  const commandWithBackupDir =
+    profileName === "platform"
+      ? ` -- --backup-dir ${backupDir}`
+      : ` -- --profile ${profileName} --backup-dir ${backupDir}`;
+  const lines = [
+    "# Selfhost Ops Report",
+    "",
+    `generated_at: ${new Date().toISOString()}`,
+    `profile: ${profileName}`,
+    `deploy_dir: ${path.relative(ROOT, dir)}`,
+    `env_path: ${path.relative(ROOT, envPath)}`,
+    `env_status: ${envExists ? "present" : "missing"}`,
+    "",
+    "## URLs",
+    "",
+    ...profileUrls(profileName).map(([label, url]) => `- ${label}: ${url}`),
+    "",
+    "## Secret Hygiene",
+    ""
+  ];
+
+  if (!envExists) {
+    lines.push("- .env missing: run selfhost:init before treating this profile as ready");
+  } else {
+    for (const finding of findings) {
+      lines.push(`- ${finding.key}: ${finding.ok ? "set" : finding.message}`);
+    }
+  }
+
+  lines.push(
+    "",
+    "## Operator Commands",
+    "",
+    `- corepack pnpm run selfhost:preflight${commandProfileFlag}`,
+    `- corepack pnpm run selfhost:security-review${commandProfileFlag}`,
+    `- corepack pnpm run selfhost:audit-export${commandProfileFlag}`,
+    `- corepack pnpm run selfhost:backup-plan${commandProfileFlag}`,
+    `- corepack pnpm run selfhost:backup-validate${commandWithBackupDir}`,
+    `- corepack pnpm run selfhost:restore-plan${commandWithBackupDir}`,
+    `- corepack pnpm run selfhost:smoke${commandProfileFlag}`,
+    `- corepack pnpm run selfhost:status${commandProfileFlag}`,
+    "",
+    "## Safety Notes",
+    "",
+    "- This report intentionally records secret status only, not secret values.",
+    "- Run backup validation before restore rehearsal.",
+    "- Keep audit exports, backups, and copied .env files in private storage.",
+    ""
+  );
+
+  fs.mkdirSync(path.dirname(reportPath), { recursive: true });
+  fs.writeFileSync(reportPath, `${lines.join("\n")}\n`, "utf8");
+  console.log(`[selfhost:ops-report] profile=${profileName}`);
+  console.log(`output=${path.relative(ROOT, reportPath)}`);
+}
+
 function securityReviewProfile(profileName) {
   console.log(`[selfhost:security-review] profile=${profileName}`);
   console.log("This command is non-destructive; it reviews local files and compose output only.");
@@ -814,6 +888,11 @@ async function main() {
     }
     const result = dockerCompose(args.profile, logArgs);
     process.exit(result.status || 0);
+  }
+
+  if (args.command === "ops-report") {
+    writeOpsReport(args.profile, { output: args.output });
+    return;
   }
 
   if (args.command === "security-review") {

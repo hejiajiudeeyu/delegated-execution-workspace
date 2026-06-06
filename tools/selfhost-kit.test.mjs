@@ -226,6 +226,23 @@ try {
   assert.match(backupValidate.stdout, /ready for restore-plan review/);
   assert.ok(!backupValidate.stdout.includes(env.get("PLATFORM_ADMIN_API_KEY") || ""));
 
+  const opsReportPath = path.join(tmpRoot, "exports/selfhost/platform/ops-report.md");
+  const opsReport = run(tmpRoot, ["ops-report", "--output", opsReportPath]);
+  assert.equal(opsReport.status, 0, opsReport.stderr || opsReport.stdout);
+  assert.match(opsReport.stdout, /selfhost:ops-report/);
+  assert.match(opsReport.stdout, /exports\/selfhost\/platform\/ops-report\.md/);
+  assert.ok(fs.existsSync(opsReportPath), "ops report should be written");
+  const opsReportText = fs.readFileSync(opsReportPath, "utf8");
+  assert.match(opsReportText, /# Selfhost Ops Report/);
+  assert.match(opsReportText, /profile: platform/);
+  assert.match(opsReportText, /Platform API/);
+  assert.match(opsReportText, /selfhost:security-review/);
+  assert.match(opsReportText, /selfhost:backup-validate/);
+  assert.match(opsReportText, /selfhost:restore-plan/);
+  assert.match(opsReportText, /TOKEN_SECRET: set/);
+  assert.ok(!opsReport.stdout.includes(env.get("PLATFORM_ADMIN_API_KEY") || ""));
+  assert.ok(!opsReportText.includes(env.get("PLATFORM_ADMIN_API_KEY") || ""));
+
   const rotatedEnv = readEnv(envPath);
   await withAuditServer(rotatedEnv.get("PLATFORM_ADMIN_API_KEY") || "", async (auditBaseUrl) => {
     const exportPath = path.join(tmpRoot, "exports/audit/platform/test-audit.json");

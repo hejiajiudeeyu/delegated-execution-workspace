@@ -136,6 +136,8 @@ Required baseline:
   backup/rotation/smoke prerequisites before public exposure.
 - Add `selfhost:audit-export` so operators can save platform admin audit events
   as local JSON evidence without printing admin keys.
+- Add `selfhost:ops-report` so operators can hand off a Markdown profile
+  summary with URLs, safety posture, and next commands without secret values.
 - Add `selfhost:backup-validate` so restore rehearsal starts from a checked
   backup directory shape without reading or printing `.env` secrets.
 - Add `selfhost:restore-plan` so backup artifacts have a visible recovery

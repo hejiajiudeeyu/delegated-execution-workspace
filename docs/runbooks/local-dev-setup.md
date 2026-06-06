@@ -162,6 +162,7 @@ Operational helpers:
 
 ```bash
 corepack pnpm run selfhost:logs -- --service platform-api --tail 80
+corepack pnpm run selfhost:ops-report -- --profile public-stack
 corepack pnpm run selfhost:security-review -- --profile public-stack
 corepack pnpm run selfhost:audit-export -- --profile public-stack
 corepack pnpm run selfhost:backup-plan
@@ -175,6 +176,10 @@ corepack pnpm run selfhost:rotate -- --confirm
 admin audit endpoint, and writes a JSON artifact under `exports/audit/<profile>/`
 unless `--output` is provided. It uses the admin key for the request but never
 prints that key.
+
+`selfhost:ops-report` writes a Markdown handoff report under
+`exports/selfhost/<profile>/` unless `--output` is provided. It includes URLs,
+secret hygiene status, and next commands, but never writes raw secret values.
 
 `selfhost:backup-validate` checks a backup directory for `.env`, `postgres.sql`,
 and `compose.config.txt` presence and size before restore rehearsal. It does not

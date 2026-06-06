@@ -51,6 +51,7 @@ Required commands:
 - `corepack pnpm run selfhost:plan`
 - `corepack pnpm run selfhost:urls`
 - `corepack pnpm run selfhost:logs`
+- `corepack pnpm run selfhost:ops-report`
 - `corepack pnpm run selfhost:backup-plan`
 - `corepack pnpm run selfhost:backup-validate`
 - `corepack pnpm run selfhost:restore-plan`
@@ -74,6 +75,8 @@ Acceptance:
   prerequisites
 - audit export writes platform admin audit events to a local JSON artifact
   without printing admin keys
+- ops report writes a Markdown handoff artifact with URLs, secret hygiene
+  status, and operator commands without raw secret values
 - backup validate checks `.env`, `postgres.sql`, and `compose.config.txt`
   presence/size without reading or printing secret values
 - restore plan prints a recovery rehearsal sequence for backup directories

@@ -52,6 +52,7 @@
     "selfhost:up": "node tools/selfhost-kit.mjs up",
     "selfhost:down": "node tools/selfhost-kit.mjs down",
     "selfhost:logs": "node tools/selfhost-kit.mjs logs",
+    "selfhost:ops-report": "node tools/selfhost-kit.mjs ops-report",
     "selfhost:security-review": "node tools/selfhost-kit.mjs security-review",
     "selfhost:audit-export": "node tools/selfhost-kit.mjs audit-export",
     "selfhost:backup-plan": "node tools/selfhost-kit.mjs backup-plan",
