@@ -32,6 +32,7 @@ source integration loop.
 
 ```bash
 corepack pnpm run selfhost:init -- --profile public-stack
+corepack pnpm run selfhost:readiness -- --profile public-stack
 corepack pnpm run selfhost:ports -- --profile public-stack
 corepack pnpm run selfhost:preflight -- --profile public-stack
 corepack pnpm run selfhost:up -- --profile public-stack
@@ -47,6 +48,9 @@ Expected result:
 - `/gateway/session/setup` initializes the gateway local secret store
 - `/gateway/credentials/platform-admin` persists the platform admin credential
 - `/gateway/proxy/v2/admin/hotlines` proves the authenticated gateway proxy
+- `selfhost:readiness` shows profile files, `.env` status, secret hygiene,
+  public origin/route blockers, URLs, host ports, and next commands before
+  services bind publicly
 - `selfhost:ports` shows declared host ports before services bind publicly
 - `selfhost:ops-report` writes a non-secret Markdown handoff report with URLs,
   host ports, secret hygiene status, and next commands

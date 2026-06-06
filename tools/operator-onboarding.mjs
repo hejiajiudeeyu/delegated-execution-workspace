@@ -111,6 +111,7 @@ function validateContracts() {
       "Branch B",
       "awaiting_admin_approval",
       "node tools/approve-example.mjs",
+      "corepack pnpm run selfhost:readiness -- --profile public-stack",
       "corepack pnpm run selfhost:ports -- --profile public-stack",
       "corepack pnpm run selfhost:ops-report -- --profile public-stack",
       "Success Criteria"
@@ -120,6 +121,7 @@ function validateContracts() {
         "分支 B",
         "awaiting_admin_approval",
         "node tools/approve-example.mjs",
+        "corepack pnpm run selfhost:readiness -- --profile public-stack",
         "corepack pnpm run selfhost:ports -- --profile public-stack",
         "corepack pnpm run selfhost:ops-report -- --profile public-stack",
         "成功标准"
@@ -142,6 +144,7 @@ function printPlan() {
   console.log("[operator:onboarding:plan] public-stack first-use path");
   console.log("\n1. Preflight the public operator stack");
   console.log("   corepack pnpm run selfhost:init -- --profile public-stack");
+  console.log("   corepack pnpm run selfhost:readiness -- --profile public-stack");
   console.log("   corepack pnpm run selfhost:ports -- --profile public-stack");
   console.log("   corepack pnpm run selfhost:preflight -- --profile public-stack");
   console.log("   corepack pnpm run selfhost:urls -- --profile public-stack");

@@ -158,9 +158,9 @@ Required baseline:
 - Add `selfhost:readiness` as the read-only deployment readiness overview that
   combines profile files, `.env` status, secret hygiene, public-stack
   origin/route blockers, URLs, declared host ports, and next commands.
-- Require the operator onboarding contract to include `selfhost:ports` and
-  `selfhost:ops-report` in the public-stack first-use path so the handoff
-  sequence cannot drift back to terminal-only startup/smoke steps.
+- Require the operator onboarding contract to include `selfhost:readiness`,
+  `selfhost:ports`, and `selfhost:ops-report` in the public-stack first-use path
+  so the handoff sequence cannot drift back to terminal-only startup/smoke steps.
 - Add `selfhost:backup-validate` so restore rehearsal starts from a checked
   backup directory shape without reading or printing `.env` secrets.
 - Add `selfhost:restore-plan` so backup artifacts have a visible recovery

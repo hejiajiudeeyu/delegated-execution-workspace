@@ -1,0 +1,14 @@
+change_id: CHG-2026-056
+goal: require self-host readiness in operator onboarding
+protocol_sha: da3027100cfe9391f7f8d03be18a108ee2804cf6
+client_sha: f1d6a2d8c9b83517cdf6ca9803b223847f880e9a
+platform_sha: 5961309c6b0ca4e8df22dbb5be92ac0845bf8d25
+brand_site_sha: ef051924aac27d1ba754cc5387cbbcb433fbd2e7
+owner: hejiajiudeeyu
+risk_level: medium
+affected_scope:
+  - orchestration
+  - documentation
+contracts_check: passed
+integration_check: passed
+notes: "Requires selfhost:readiness in the public-stack operator onboarding plan and source fallback runbooks so first-use handoff includes a read-only deployment overview before ports, preflight, startup, smoke, and ops-report evidence. Keeps protocol/client/platform/brand-site SHAs unchanged."

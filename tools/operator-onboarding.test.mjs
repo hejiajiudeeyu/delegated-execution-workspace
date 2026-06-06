@@ -89,6 +89,7 @@ function writeFixture(root, overrides = {}) {
         "Branch B",
         "awaiting_admin_approval",
         "node tools/approve-example.mjs",
+        "corepack pnpm run selfhost:readiness -- --profile public-stack",
         "corepack pnpm run selfhost:ports -- --profile public-stack",
         "corepack pnpm run selfhost:ops-report -- --profile public-stack",
         "Success Criteria",
@@ -104,6 +105,7 @@ function writeFixture(root, overrides = {}) {
         "分支 B",
         "awaiting_admin_approval",
         "node tools/approve-example.mjs",
+        "corepack pnpm run selfhost:readiness -- --profile public-stack",
         "corepack pnpm run selfhost:ports -- --profile public-stack",
         "corepack pnpm run selfhost:ops-report -- --profile public-stack",
         "成功标准",
@@ -146,6 +148,7 @@ try {
   assert.match(plan.stdout, /\[operator:onboarding:plan\]/);
   assert.match(plan.stdout, /public-stack first-use path/);
   assert.match(plan.stdout, /\/console\//);
+  assert.match(plan.stdout, /corepack pnpm run selfhost:readiness -- --profile public-stack/);
   assert.match(plan.stdout, /corepack pnpm run selfhost:ports -- --profile public-stack/);
   assert.match(plan.stdout, /corepack pnpm run selfhost:ops-report -- --profile public-stack/);
   assert.match(plan.stdout, /corepack pnpm run selfhost:preflight -- --profile public-stack/);
@@ -171,6 +174,37 @@ try {
     assert.match(missingOps.stdout + missingOps.stderr, /source operator branch runbook/);
   } finally {
     fs.rmSync(missingOpsRoot, { recursive: true, force: true });
+  }
+
+  const missingReadinessRoot = fs.mkdtempSync(path.join(os.tmpdir(), "delexec-operator-onboarding-missing-readiness-"));
+  try {
+    writeFixture(missingReadinessRoot, {
+      runbook: [
+        "Branch A",
+        "Branch B",
+        "awaiting_admin_approval",
+        "node tools/approve-example.mjs",
+        "corepack pnpm run selfhost:ports -- --profile public-stack",
+        "corepack pnpm run selfhost:ops-report -- --profile public-stack",
+        "Success Criteria",
+        ""
+      ].join("\n"),
+      runbookZh: [
+        "分支 A",
+        "分支 B",
+        "awaiting_admin_approval",
+        "node tools/approve-example.mjs",
+        "corepack pnpm run selfhost:ports -- --profile public-stack",
+        "corepack pnpm run selfhost:ops-report -- --profile public-stack",
+        "成功标准",
+        ""
+      ].join("\n")
+    });
+    const missingReadiness = run(missingReadinessRoot, ["check"]);
+    assert.equal(missingReadiness.status, 1, missingReadiness.stderr || missingReadiness.stdout);
+    assert.match(missingReadiness.stdout + missingReadiness.stderr, /source operator branch runbook/);
+  } finally {
+    fs.rmSync(missingReadinessRoot, { recursive: true, force: true });
   }
 
   const staleRoot = fs.mkdtempSync(path.join(os.tmpdir(), "delexec-operator-onboarding-stale-"));

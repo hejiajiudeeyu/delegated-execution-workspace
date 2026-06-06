@@ -214,24 +214,25 @@ Required commands:
 
 Required behavior:
 
-- plan prints the public-stack first-use order: generated env, declared port
-  inventory, preflight, `up`, open `/console/`, gateway session setup,
-  credential persistence, route smoke, non-secret ops handoff report, and
-  published-image smoke
+- plan prints the public-stack first-use order: generated env, readiness
+  overview, declared port inventory, preflight, `up`, open `/console/`, gateway
+  session setup, credential persistence, route smoke, non-secret ops handoff
+  report, and published-image smoke
 - check validates that public-stack `Caddyfile`, compose, and README agree on
   `/console/`, `/gateway/*`, and `PLATFORM_CONSOLE_BOOTSTRAP_SECRET`
 - check validates that the platform operator guide no longer claims
   `platform-console` is not bundled
 - check validates that the fourth-repo source operator runbook still covers
   both automatic approval and manual approval pause branches plus the
-  public-stack `selfhost:ports` and `selfhost:ops-report` handoff commands
+  public-stack `selfhost:readiness`, `selfhost:ports`, and
+  `selfhost:ops-report` handoff commands
 - check validates that brand-site Deployability Profiles mark Operator
   Onboarding as a verifiable path, not as planned
 
 Acceptance:
 
 - an operator can find the public-stack first-use URL, admin credential setup
-  flow, declared ports, non-secret handoff report, and gateway proxy
+  flow, readiness overview, declared ports, non-secret handoff report, and gateway proxy
   verification path without reading the full protocol
 - fourth-repo check fails when docs drift away from the actual public-stack
   route contract

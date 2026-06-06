@@ -20,12 +20,12 @@ repositories.
 - `repos/platform`: `5961309c6b0ca4e8df22dbb5be92ac0845bf8d25`
 - `repos/brand-site`: `ef051924aac27d1ba754cc5387cbbcb433fbd2e7`
 
-The current bundle is `changes/CHG-2026-055.yaml`.
+The current bundle is `changes/CHG-2026-056.yaml`.
 
 ## Readiness Verdict
 
 The pinned combination is ready for daily fourth-repo development after
-CHG-2026-055:
+CHG-2026-056:
 
 - submodule SHA integrity is verified
 - boundary governance covers the new platform billing data package
@@ -78,8 +78,8 @@ CHG-2026-055:
   `COMPOSE_NO_BUILD=true`
 - platform-first/operator-first onboarding now has a fourth-repo contract check
   that keeps public-stack `/console/`, gateway session flow, platform docs,
-  brand-site narrative, the source fallback runbook, declared host-port
-  inventory, and the non-secret ops handoff report aligned
+  brand-site narrative, the source fallback runbook, readiness overview,
+  declared host-port inventory, and the non-secret ops handoff report aligned
 - Billing P-1 now has an admin-only API/read-model slice for tenant creation,
   balance lookup, manual recharge capture, and ledger browsing
 - Platform Console now exposes that billing read model through an operator-only
@@ -107,7 +107,7 @@ Observed results:
 - `check:submodules`: passed
 - `check:boundaries`: passed after adding `@delexec/billing-store` to
   `platform/data`
-- `check:bundles`: passed with `CHG-2026-055`
+- `check:bundles`: passed with `CHG-2026-056`
 - `test:contracts`: passed, including `@delexec/billing-store` in platform
   package validation and the `@delexec/platform-api` dependency graph
 - `test:integration`: passed with a successful request/response path
@@ -145,10 +145,12 @@ Observed results:
 - `operator:onboarding:check`: passed for the public-stack `/console/` and
   `/gateway/*` route contract, `PLATFORM_CONSOLE_BOOTSTRAP_SECRET`, platform
   operator guide, brand-site Deployability Profiles, fourth-repo source
-  fallback runbook narrative, `selfhost:ports`, and `selfhost:ops-report`
+  fallback runbook narrative, `selfhost:readiness`, `selfhost:ports`, and
+  `selfhost:ops-report`
 - `test:operator-onboarding`: passed with a fake repo covering the operator
   onboarding plan, stale platform-guide detection, brand-site planned-copy
-  detection, runbook handoff command drift detection, and secret-leak guard
+  detection, readiness/ports/ops-report handoff command drift detection, and
+  secret-leak guard
 - `repos/brand-site` `npm run smoke:deployability-content`: passed for the
   bilingual Deployability Profiles route/content contract, including the
   admin-only Billing console narrative plus `selfhost:security-review` and
