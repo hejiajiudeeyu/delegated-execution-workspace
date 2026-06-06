@@ -108,6 +108,7 @@ Initialize and inspect a self-host profile:
 
 ```bash
 corepack pnpm run selfhost:profiles
+corepack pnpm run selfhost:quickstart
 corepack pnpm run selfhost:doctor
 corepack pnpm run selfhost:init
 corepack pnpm run selfhost:summary
@@ -121,6 +122,7 @@ corepack pnpm run selfhost:smoke
 For the public operator stack:
 
 ```bash
+corepack pnpm run selfhost:quickstart -- --profile public-stack
 corepack pnpm run selfhost:doctor -- --profile public-stack
 corepack pnpm run selfhost:init -- --profile public-stack
 corepack pnpm run selfhost:summary -- --profile public-stack
@@ -139,6 +141,11 @@ or secret hygiene checks fail, it will not start the profile by default; passing
 profiles, purpose, deploy directory, service count, declared host ports, and
 the matching `selfhost:doctor` command without reading `.env` or touching
 Docker.
+
+`selfhost:quickstart` prints the recommended command sequence for a selected
+profile without executing it. Use it when you want the shortest copy-paste
+path from profile discovery to doctor, init, summary, preflight, up, smoke, and
+handoff evidence.
 
 `selfhost:doctor` is the earliest read-only deployment diagnostic. It checks
 local tool visibility, profile files, `.env` presence, and secret/public-origin

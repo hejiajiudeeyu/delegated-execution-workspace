@@ -270,6 +270,19 @@ try {
   assert.match(profiles.stdout, /corepack pnpm run selfhost:doctor -- --profile public-stack/);
   assert.ok(!profiles.stdout.includes(env.get("PLATFORM_ADMIN_API_KEY") || ""));
 
+  const quickstart = run(tmpRoot, ["quickstart"]);
+  assert.equal(quickstart.status, 0, quickstart.stderr || quickstart.stdout);
+  assert.match(quickstart.stdout, /selfhost:quickstart/);
+  assert.match(quickstart.stdout, /profile=platform/);
+  assert.match(quickstart.stdout, /corepack pnpm run selfhost:profiles/);
+  assert.match(quickstart.stdout, /corepack pnpm run selfhost:doctor/);
+  assert.match(quickstart.stdout, /corepack pnpm run selfhost:init/);
+  assert.match(quickstart.stdout, /corepack pnpm run selfhost:summary/);
+  assert.match(quickstart.stdout, /corepack pnpm run selfhost:preflight/);
+  assert.match(quickstart.stdout, /corepack pnpm run selfhost:up/);
+  assert.match(quickstart.stdout, /corepack pnpm run selfhost:smoke/);
+  assert.ok(!quickstart.stdout.includes(env.get("PLATFORM_ADMIN_API_KEY") || ""));
+
   const summary = run(tmpRoot, ["summary"]);
   assert.equal(summary.status, 0, summary.stderr || summary.stdout);
   assert.match(summary.stdout, /selfhost:summary/);
@@ -346,6 +359,17 @@ try {
   assert.match(unsafeDoctor.stdout, /corepack pnpm run selfhost:init -- --profile public-stack/);
   assert.ok(!unsafeDoctor.stdout.includes(publicEnv.get("PLATFORM_ADMIN_API_KEY") || ""));
   assert.ok(!unsafeDoctor.stdout.includes(publicEnv.get("PLATFORM_CONSOLE_BOOTSTRAP_SECRET") || ""));
+
+  const publicQuickstart = run(tmpRoot, ["quickstart", "--profile", "public-stack"]);
+  assert.equal(publicQuickstart.status, 0, publicQuickstart.stderr || publicQuickstart.stdout);
+  assert.match(publicQuickstart.stdout, /profile=public-stack/);
+  assert.match(publicQuickstart.stdout, /corepack pnpm run selfhost:doctor -- --profile public-stack/);
+  assert.match(publicQuickstart.stdout, /corepack pnpm run selfhost:ports -- --profile public-stack/);
+  assert.match(publicQuickstart.stdout, /corepack pnpm run selfhost:security-review -- --profile public-stack/);
+  assert.match(publicQuickstart.stdout, /corepack pnpm run selfhost:ops-report -- --profile public-stack/);
+  assert.match(publicQuickstart.stdout, /corepack pnpm run published-image:smoke -- --image-tag latest/);
+  assert.ok(!publicQuickstart.stdout.includes(publicEnv.get("PLATFORM_ADMIN_API_KEY") || ""));
+  assert.ok(!publicQuickstart.stdout.includes(publicEnv.get("PLATFORM_CONSOLE_BOOTSTRAP_SECRET") || ""));
 
   const publicPorts = run(tmpRoot, ["ports", "--profile", "public-stack"]);
   assert.equal(publicPorts.status, 0, publicPorts.stderr || publicPorts.stdout);

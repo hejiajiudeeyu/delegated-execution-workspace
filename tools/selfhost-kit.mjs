@@ -115,6 +115,8 @@ Commands:
   summary   Print a one-screen non-secret deployment summary
   doctor    Diagnose local files and tool availability before deployment
   profiles  List built-in self-host deployment profiles
+  quickstart
+            Print the recommended command sequence for a profile
   plan      Explain services, URLs, and safety checks for the profile
   up        Run preflight, then docker compose up -d for the selected profile
   down      Run docker compose down for the selected profile
@@ -470,6 +472,33 @@ function printProfiles() {
     console.log(`ports=${ports || "none"}`);
     console.log(`next=corepack pnpm run selfhost:doctor${suffix}`);
   }
+}
+
+function printQuickstart(profileName) {
+  const suffix = commandProfileFlag(profileName);
+  console.log(`[selfhost:quickstart] profile=${profileName}`);
+  console.log("This command prints a recommended sequence only; it does not run Docker or read secret values.");
+  const commands = [
+    "corepack pnpm run selfhost:profiles",
+    `corepack pnpm run selfhost:doctor${suffix}`,
+    `corepack pnpm run selfhost:init${suffix}`,
+    `corepack pnpm run selfhost:summary${suffix}`,
+    `corepack pnpm run selfhost:ports${suffix}`,
+    `corepack pnpm run selfhost:preflight${suffix}`,
+    `corepack pnpm run selfhost:up${suffix}`,
+    `corepack pnpm run selfhost:smoke${suffix}`,
+    `corepack pnpm run selfhost:ops-report${suffix}`
+  ];
+  if (profileName === "public-stack") {
+    commands.push(
+      `corepack pnpm run selfhost:security-review${suffix}`,
+      "corepack pnpm run published-image:smoke -- --image-tag latest",
+      "corepack pnpm run operator:onboarding:check"
+    );
+  }
+  commands.forEach((command, index) => {
+    console.log(`${index + 1}. ${command}`);
+  });
 }
 
 function profileUrls(profileName) {
@@ -991,6 +1020,11 @@ async function main() {
 
   if (args.command === "profiles") {
     printProfiles();
+    return;
+  }
+
+  if (args.command === "quickstart") {
+    printQuickstart(args.profile);
     return;
   }
 

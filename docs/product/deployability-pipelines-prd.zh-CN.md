@@ -43,6 +43,7 @@
 
 - `corepack pnpm run selfhost:init`
 - `corepack pnpm run selfhost:profiles`
+- `corepack pnpm run selfhost:quickstart`
 - `corepack pnpm run selfhost:doctor`
 - `corepack pnpm run selfhost:preflight`
 - `corepack pnpm run selfhost:status`
@@ -68,6 +69,8 @@
 - placeholder secrets 被生成值替换
 - profiles 列出内置部署 profiles、用途、deploy 目录、service 数量、声明 host
   ports 和对应 doctor 命令，但不读取 `.env` 或触碰 Docker
+- quickstart 打印选定 profile 的推荐复制粘贴命令序列，但不执行 Docker、不修改文件、
+  不打印 secrets
 - doctor 检查本地工具可见性、profile 文件、`.env` 是否存在，以及 secret /
   public-origin hygiene，但不调用 `docker compose`、不启动服务、不探测网络、不打印
   secret 值
