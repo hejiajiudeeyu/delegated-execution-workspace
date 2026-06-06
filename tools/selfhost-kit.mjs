@@ -67,6 +67,14 @@ const PROFILES = {
   }
 };
 
+const PUBLIC_STACK_ROUTE_CONTRACT = [
+  ["public edge health", "/healthz", "handle /healthz"],
+  ["platform API health", "/platform/healthz", "handle_path /platform/*"],
+  ["relay health", "/relay/healthz", "handle_path /relay/*"],
+  ["gateway health", "/gateway/healthz", "handle_path /gateway/*"],
+  ["operator console", "/console/", "handle_path /console/*"]
+];
+
 const SECRET_KEYS = new Set([
   "TOKEN_SECRET",
   "PLATFORM_ADMIN_API_KEY",
@@ -159,6 +167,7 @@ function profilePaths(profileName) {
     dir,
     envExamplePath: path.join(dir, ".env.example"),
     envPath: path.join(dir, ".env"),
+    caddyfilePath: path.join(dir, "Caddyfile"),
     composePath: path.join(dir, "docker-compose.yml")
   };
 }
@@ -433,6 +442,43 @@ function printPreflightRoutes(profileName) {
   }
 }
 
+function publicOrigin(profileName) {
+  const { envPath } = profilePaths(profileName);
+  if (profileName !== "public-stack" || !fs.existsSync(envPath)) {
+    return "http://127.0.0.1";
+  }
+  const entries = parseEnv(fs.readFileSync(envPath, "utf8"));
+  return (entries.get("PUBLIC_SITE_ADDRESS") || "http://127.0.0.1").replace(/\/+$/, "");
+}
+
+function checkPublicRouteContract(profileName) {
+  if (profileName !== "public-stack") {
+    return true;
+  }
+
+  const { caddyfilePath } = profilePaths(profileName);
+  const origin = publicOrigin(profileName);
+  let ok = true;
+  console.log("\nPublic route contract");
+  for (const [label, routePath] of PUBLIC_STACK_ROUTE_CONTRACT) {
+    console.log(`- ${label}: GET ${origin}${routePath}`);
+  }
+
+  if (!fs.existsSync(caddyfilePath)) {
+    console.log(`[fail] Caddyfile: ${path.relative(ROOT, caddyfilePath)} missing`);
+    return false;
+  }
+
+  const caddyfile = fs.readFileSync(caddyfilePath, "utf8");
+  for (const [, , caddyPattern] of PUBLIC_STACK_ROUTE_CONTRACT) {
+    const route = caddyPattern.replace(/^handle(?:_path)?\s+/, "");
+    const routeOk = caddyfile.includes(caddyPattern);
+    console.log(`[${routeOk ? "ok" : "fail"}] Caddyfile route ${route}`);
+    ok &&= routeOk;
+  }
+  return ok;
+}
+
 function preflightProfile(profileName) {
   console.log(`[selfhost:preflight] profile=${profileName}`);
   console.log("\nSecret hygiene");
@@ -545,9 +591,10 @@ async function main() {
     const configResult = composeConfig(args.profile);
     const configOk = configResult.status === 0;
     console.log(`[${configOk ? "ok" : "fail"}] docker compose config`);
+    const routeOk = checkPublicRouteContract(args.profile);
     console.log("\nHealth endpoints");
     const healthOk = await checkHealth(args.profile);
-    process.exit(secretsOk && configOk && healthOk ? 0 : 1);
+    process.exit(secretsOk && configOk && routeOk && healthOk ? 0 : 1);
   }
 
   if (args.command === "up") {

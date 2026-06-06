@@ -19,12 +19,12 @@ repositories.
 - `repos/client`: `f1d6a2d8c9b83517cdf6ca9803b223847f880e9a`
 - `repos/platform`: `dc7c654964707badbdda8d02d57a6b56b8cf11a5`
 
-The current bundle is `changes/CHG-2026-034.yaml`.
+The current bundle is `changes/CHG-2026-035.yaml`.
 
 ## Readiness Verdict
 
 The pinned combination is ready for daily fourth-repo development after
-CHG-2026-034:
+CHG-2026-035:
 
 - submodule SHA integrity is verified
 - boundary governance covers the new platform billing data package
@@ -33,6 +33,8 @@ CHG-2026-034:
 - the source integration path succeeds end to end
 - ops-console now has deployability-management explanation, adapter health
   visibility, approval-policy posture, and explicit billing readiness surfaces
+- public-stack smoke now checks the public route contract beyond generic
+  health endpoint reachability
 
 This verdict is intentionally scoped. Billing P-1 M1.1 adds platform
 persistence and schema groundwork, but it does not make billing a complete
@@ -66,10 +68,12 @@ Observed results:
   self-host management spine for generated env, profile discovery, and pre-`up`
   route, compose config, and secret hygiene checks
 - `selfhost:smoke`: passed for the local `platform` profile; the
-  `public-stack` profile intentionally fails while the public origin remains
-  localhost or the stack is not running
+  `public-stack` profile now also prints and validates the edge route contract,
+  and intentionally fails while the public origin remains localhost or the stack
+  is not running
 - `test:selfhost-kit`: passed with temp-profile coverage for env generation
-  and secret rotation dry-run/confirm behavior
+  secret rotation dry-run/confirm behavior, public-stack preflight safety, and
+  public route-contract smoke output
 - `repos/client` `npm run test:unit`: passed with 14 test files and 125 tests,
   including new Runtime deployability panel and Help deployability chapter
   coverage, Skill/MCP adapter runtime status coverage, and Preferences approval
@@ -117,11 +121,13 @@ health endpoints used by that daily path.
 
 `corepack pnpm run selfhost:preflight` now combines secret hygiene, compose
 config validation, and route output before services are started;
-`corepack pnpm run selfhost:smoke` remains the post-start health endpoint
-check. For public profiles, unsafe public origin settings are warnings/failures
-instead of being hidden behind a green status. `selfhost:up` reuses the
-preflight gate by default and will not continue when it fails unless `--force`
-is passed explicitly.
+`corepack pnpm run selfhost:smoke` remains the post-start health endpoint check
+and, for `public-stack`, also validates the edge route contract for `/healthz`,
+`/platform/healthz`, `/relay/healthz`, `/gateway/healthz`, and `/console/`.
+For public profiles, unsafe public origin settings are warnings/failures instead
+of being hidden behind a green status. `selfhost:up` reuses the preflight gate by
+default and will not continue when it fails unless `--force` is passed
+explicitly.
 
 ### Console deployability management slice
 
@@ -149,7 +155,6 @@ These areas still need their own closeout before they should be treated as
 default day-to-day workflows:
 
 - one-command local stack bootstrap
-- profile-specific public-stack smoke beyond health/status
 - MCP host golden-four validation as an executable script
 - billing P-1 beyond M1.1, including API/read model/client-facing surfaces
 - email transport as an end-user default path

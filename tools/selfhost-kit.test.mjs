@@ -87,6 +87,30 @@ function writeMinimalPublicStackProfile(root) {
     ].join("\n"),
     "utf8"
   );
+  fs.writeFileSync(
+    path.join(dir, "Caddyfile"),
+    [
+      "{$PUBLIC_SITE_ADDRESS:http://localhost} {",
+      "  handle /healthz {",
+      "    respond \"ok\" 200",
+      "  }",
+      "  handle_path /platform/* {",
+      "    reverse_proxy platform-api:8080",
+      "  }",
+      "  handle_path /relay/* {",
+      "    reverse_proxy relay:8090",
+      "  }",
+      "  handle_path /gateway/* {",
+      "    reverse_proxy platform-console-gateway:8085",
+      "  }",
+      "  handle_path /console/* {",
+      "    reverse_proxy platform-console-gateway:8085",
+      "  }",
+      "}",
+      ""
+    ].join("\n"),
+    "utf8"
+  );
   return {
     dir,
     envPath: path.join(dir, ".env")
@@ -155,6 +179,17 @@ try {
   assert.equal(safePreflight.status, 0, safePreflight.stderr || safePreflight.stdout);
   assert.match(safePreflight.stdout, /Public routes/);
   assert.match(safePreflight.stdout, /https:\/\/call.example.com/);
+
+  const publicSmoke = run(tmpRoot, ["smoke", "--profile", "public-stack"]);
+  assert.equal(publicSmoke.status, 1, publicSmoke.stderr || publicSmoke.stdout);
+  assert.match(publicSmoke.stdout, /Public route contract/);
+  assert.match(publicSmoke.stdout, /GET https:\/\/call.example.com\/platform\/healthz/);
+  assert.match(publicSmoke.stdout, /GET https:\/\/call.example.com\/relay\/healthz/);
+  assert.match(publicSmoke.stdout, /GET https:\/\/call.example.com\/gateway\/healthz/);
+  assert.match(publicSmoke.stdout, /GET https:\/\/call.example.com\/console\//);
+  assert.match(publicSmoke.stdout, /\[ok\] Caddyfile route \/console\/\*/);
+  assert.ok(!publicSmoke.stdout.includes(publicEnv.get("PLATFORM_ADMIN_API_KEY") || ""));
+  assert.ok(!publicSmoke.stdout.includes(publicEnv.get("PLATFORM_CONSOLE_BOOTSTRAP_SECRET") || ""));
 
   console.log("[selfhost-kit.test] ok");
 } finally {

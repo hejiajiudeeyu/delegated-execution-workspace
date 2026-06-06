@@ -67,10 +67,12 @@
 - `selfhost:up -- --profile public-stack` 默认受 preflight 阻断，防止 unsafe public origin 被直接启动
 - 当 `PUBLIC_SITE_ADDRESS` 仍是 localhost 时给出明确 warning
 - 当 public origin 仍不安全时，public-stack smoke 应失败
+- `selfhost:smoke -- --profile public-stack` 检查 public route contract，不只检查 health endpoint 是否能连通
 
 验收：
 
 - operator 在 `up` 前能看到端口、路由和 secrets 状态
+- smoke 能列出并验证 `/healthz`、`/platform/healthz`、`/relay/healthz`、`/gateway/healthz`、`/console/` 对应的 edge route
 - docs 解释 platform、relay、gateway、console、edge 的角色
 
 ## 管线 D：Management Console

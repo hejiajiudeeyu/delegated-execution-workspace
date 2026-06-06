@@ -71,10 +71,14 @@ Required behavior:
   so unsafe public origins are not started accidentally
 - clear warning when `PUBLIC_SITE_ADDRESS` is still localhost
 - public-stack smoke fails when the public origin is still unsafe
+- `selfhost:smoke -- --profile public-stack` checks the public route contract,
+  not only health endpoint reachability
 
 Acceptance:
 
 - operator can inspect ports, routes, and secrets status before `up`
+- smoke lists and validates edge routes for `/healthz`, `/platform/healthz`,
+  `/relay/healthz`, `/gateway/healthz`, and `/console/`
 - docs describe platform, relay, gateway, console, and edge roles
 
 ## Pipeline D: Management Console
