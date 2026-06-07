@@ -33,6 +33,7 @@
 
 ```bash
 corepack pnpm run selfhost:init -- --profile public-stack
+corepack pnpm --silent run selfhost:init -- --profile public-stack --json
 corepack pnpm run selfhost:readiness -- --profile public-stack
 corepack pnpm run selfhost:ports -- --profile public-stack
 corepack pnpm run selfhost:preflight -- --profile public-stack
@@ -51,6 +52,8 @@ corepack pnpm run operator:onboarding:check
 - `/gateway/proxy/v2/admin/hotlines` 证明已认证 gateway proxy 可用
 - `selfhost:readiness` 在服务公开绑定前展示 profile 文件、`.env` 状态、
   secret hygiene、public origin / route 阻断项、URLs、host ports 和下一步命令
+- `selfhost:init -- --json` 输出 created/hardened `.env` metadata、secret
+  hygiene 状态、warnings 和下一步命令，但不打印 secret 值或 URL 文本行
 - `selfhost:ports` 在服务公开绑定前展示声明的 host ports
 - `selfhost:ops-report` 写出不含 secrets 的 Markdown 交接报告，包含 URLs、
   host ports、secret hygiene 状态和下一步命令

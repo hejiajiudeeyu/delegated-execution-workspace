@@ -78,7 +78,7 @@ CALL ANYTHING 现在的仓库边界是正确的：
 | Self-host quickstart 序列 | 第四仓 | `corepack pnpm run selfhost:quickstart` |
 | Self-host readiness 总览 | 第四仓 | `corepack pnpm run selfhost:readiness -- --all`，以及自动化使用的 `corepack pnpm --silent run ... --json` |
 | Self-host 部署 doctor | 第四仓 | `corepack pnpm run selfhost:doctor`，以及用于诊断面板的 `--json` |
-| Self-host env 生成器 | 第四仓 | `corepack pnpm run selfhost:init` |
+| Self-host env 生成器 | 第四仓 | `corepack pnpm run selfhost:init`，以及 `corepack pnpm --silent run selfhost:init -- --json`，用于输出 created/hardened `.env` metadata，且不打印 secret 值或 URL 文本 |
 | Self-host profile plan | 第四仓 | `corepack pnpm run selfhost:plan`，以及用于生成文档和 dashboard 的 `--json` |
 | Self-host profile 概要 | 第四仓 | `corepack pnpm run selfhost:summary`，以及用于概要卡片的 `--json` |
 | Self-host URL inventory | 第四仓 | `corepack pnpm run selfhost:urls`，以及用于 dashboard 和脚本的 `--json` |
@@ -119,6 +119,8 @@ CALL ANYTHING 现在的仓库边界是正确的：
   输出可能包含敏感值
 - startup metadata 可以机器读取，但省略 init、preflight 和 compose up stdout，因为
   命令输出可能包含敏感值
+- env 初始化 metadata 可以机器读取，输出 created/hardened `.env` 文件、secret
+  hygiene 状态、warnings 和下一步命令，但不打印生成后的 secret 值或 profile URL 文本
 - smoke metadata 可以机器读取，但省略展开后的 compose config stdout，因为它可能包含环境值
 - audit export metadata 可以机器读取，但不打印 admin key 或导出的 audit body
 - local agent loop log metadata 可以机器读取，但不打印本地 relay 或 supervisor
@@ -135,7 +137,8 @@ CALL ANYTHING 现在的仓库边界是正确的：
   `dev:local:logs -- --json`、`dev:local:down -- --json`、
   `selfhost:profiles`、`selfhost:quickstart`、
   `selfhost:readiness -- --all`、`selfhost:readiness`、`selfhost:doctor`、
-  `selfhost:init`、`selfhost:summary`、`selfhost:preflight`、`selfhost:status`、
+  `selfhost:init`、`selfhost:init -- --json`、`selfhost:summary`、
+  `selfhost:preflight`、`selfhost:status`、
   `selfhost:status -- --json`、`selfhost:up -- --json`、`selfhost:logs -- --json`、
   `selfhost:down -- --json`、`selfhost:smoke -- --json`、`dev:doctor`、
   `test:agent-e2e`、`published-image:plan -- --json`、
@@ -217,6 +220,9 @@ CALL ANYTHING 现在的仓库边界是正确的：
   services、声明 host ports 和对应 doctor 命令。
 - 增加 `selfhost:quickstart` 作为选定 profile 的只读复制粘贴序列，覆盖 public-stack
   安全复核和交接证据步骤。
+- 增加 `selfhost:init -- --json`，让首次启动 dashboard、CI 和部署脚本消费
+  created/hardened `.env` metadata、secret hygiene 状态、warnings 和下一步命令，
+  同时不解析终端文本、不打印 secret 值。
 - 增加 `selfhost:readiness` 作为只读部署就绪总览，合并 profile 文件、`.env`
   状态、secret hygiene、public-stack origin / route 阻断项、URLs、声明 host ports
   和下一步命令。增加 `selfhost:readiness -- --all` 作为内置多 profile readiness 矩阵，

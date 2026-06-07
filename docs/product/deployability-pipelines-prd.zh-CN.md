@@ -58,6 +58,7 @@
 必备命令：
 
 - `corepack pnpm run selfhost:init`
+- `corepack pnpm --silent run selfhost:init -- --json`
 - `corepack pnpm run selfhost:profiles`
 - `corepack pnpm --silent run selfhost:profiles -- --json`
 - `corepack pnpm run selfhost:quickstart`
@@ -112,6 +113,9 @@
 
 - `.env` 缺失时从 `.env.example` 创建
 - placeholder secrets 被生成值替换
+- `selfhost:init -- --json` 返回干净的 created/hardened `.env` metadata、
+  secret hygiene 状态、warnings、changed files 和下一步命令，不打印生成后的
+  secret 值或 URL 文本行
 - profiles 列出内置部署 profiles、用途、deploy 目录、service 数量、声明 host
   ports 和对应 doctor 命令，但不读取 `.env` 或触碰 Docker；`--json` 返回同一组
   profile selector 数据，供 console、dashboard 和脚本消费

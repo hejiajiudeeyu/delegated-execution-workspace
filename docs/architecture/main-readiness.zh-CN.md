@@ -18,13 +18,13 @@ protocol/client/platform SHA 组合可用于本地跨仓开发和已认证的源
 - `repos/protocol`：`da3027100cfe9391f7f8d03be18a108ee2804cf6`
 - `repos/client`：`f1d6a2d8c9b83517cdf6ca9803b223847f880e9a`
 - `repos/platform`：`5961309c6b0ca4e8df22dbb5be92ac0845bf8d25`
-- `repos/brand-site`：`690692a0aecc05b20900952f45b643d330dcbf6a`
+- `repos/brand-site`：`d80e36b97e043c81f91cf0cd818f324d672e1518`
 
-当前 bundle 为 `changes/CHG-2026-085.yaml`。
+当前 bundle 为 `changes/CHG-2026-086.yaml`。
 
 ## 当前判断
 
-CHG-2026-085 收口后，当前固定组合已经可以用于日常第四仓开发：
+CHG-2026-086 收口后，当前固定组合已经可以用于日常第四仓开发：
 
 - submodule SHA 完整性已验证
 - 边界治理已覆盖新的 platform billing data package
@@ -127,22 +127,24 @@ corepack pnpm run test:integration
 - `check:submodules`：通过
 - `check:boundaries`：通过，已把 `@delexec/billing-store` 归入
   `platform/data`
-- `check:bundles`：通过，使用 `CHG-2026-085`
+- `check:bundles`：通过，使用 `CHG-2026-086`
 - `test:contracts`：通过，platform package validation 已识别
   `@delexec/billing-store` 和 `@delexec/platform-api` dependency graph
 - `test:integration`：通过，完整 request/response 路径成功
 - `test:agent-e2e`：通过，脚本已改为当前 `/skills/caller/*` 接口面
 - `dev:doctor`：通过，当前本地日常 agent/caller-skill 栈健康
 - `selfhost:profiles` / `selfhost:quickstart` / `selfhost:readiness -- --all` /
-  `selfhost:readiness` / `selfhost:doctor` / `selfhost:init` /
+  `selfhost:readiness` / `selfhost:doctor` / `selfhost:init` / `selfhost:init -- --json` /
   `selfhost:plan` / `selfhost:summary` / `selfhost:urls` / `selfhost:preflight`：已新增为
   self-host 管理骨架，用于发现 profile、复制粘贴启动序列、只读 readiness 矩阵和
-  单 profile 总览、部署诊断、生成 env、输出选定 profile 部署地图、一屏 profile 概要、
+  单 profile 总览、部署诊断、生成 env 与机器可读 created/hardened `.env` metadata、
+  输出选定 profile 部署地图、一屏 profile 概要、
   发现 URLs，并在 `up`
   前检查 routes、compose config 和 secret hygiene
 - `selfhost:smoke`：local `platform` profile 已通过；`public-stack` 现在会输出
   并验证 edge route contract，且在 public origin 仍为 localhost 或栈未启动时会按预期失败
-- `test:selfhost-kit`：通过，用临时 profile 覆盖 env 生成、只读 profile map 输出、
+- `test:selfhost-kit`：通过，用临时 profile 覆盖 env 生成、不泄漏 secret 值或 URL
+  文本的 init JSON metadata、只读 profile map 输出、
   只读 doctor 输出、只读 quickstart 序列、只读 readiness 矩阵和总览、secret rotation dry-run /
   confirm 行为、rotate JSON metadata、一屏 summary 输出、public-stack preflight safety、非破坏性
   security review、不泄漏 secret 的 admin audit export、restore planning 和 public
@@ -168,7 +170,7 @@ corepack pnpm run test:integration
 - `repos/brand-site` `npm run smoke:deployability-content`：通过，覆盖中英双语
   Deployability Profiles 路由与内容契约，包括 admin-only Billing console 叙事和
   `selfhost:security-review` / `selfhost:audit-export` / `selfhost:profiles` / `selfhost:quickstart` / `selfhost:readiness -- --all` / `selfhost:readiness` / `selfhost:doctor` /
-  `selfhost:summary` / `selfhost:ports` / `selfhost:logs -- --json` / `selfhost:ops-report` / `selfhost:status -- --json` / `selfhost:config -- --json` /
+  `selfhost:init -- --json` / `selfhost:init -- --profile public-stack --json` / `selfhost:summary` / `selfhost:ports` / `selfhost:logs -- --json` / `selfhost:ops-report` / `selfhost:status -- --json` / `selfhost:config -- --json` /
   `selfhost:backup-validate` / `selfhost:restore-plan` / `selfhost:rotate -- --profile public-stack --json` / `selfhost:rotate -- --profile public-stack --confirm --json` / `published-image:smoke -- --dry-run --json` 命令
 - `repos/brand-site` `npm run build`：通过，包含 client build、SSR build 和新
   deployability docs routes 的 prerender 输出
@@ -358,7 +360,7 @@ planned：当前本地 loop、selfhost、public-stack safety checks、published-
 smoke 和 Operator Onboarding 已可解释。Management Console 文案也开始说明
 admin-only Billing 页面是 operator surface，不等于 client-facing billing ready；
 public-stack 命令示例已加入 `selfhost:security-review`、`selfhost:audit-export`、`selfhost:audit-export -- --json`、
-`selfhost:profiles`、`selfhost:quickstart`、`selfhost:readiness -- --all`、`selfhost:readiness`、`selfhost:readiness -- --json`、`selfhost:doctor`、`selfhost:summary`、`selfhost:ports`、`selfhost:up -- --json`、`selfhost:smoke -- --json`、`selfhost:logs -- --json`、`selfhost:down -- --json`、`selfhost:ops-report`、`selfhost:backup-validate`、
+`selfhost:profiles`、`selfhost:quickstart`、`selfhost:readiness -- --all`、`selfhost:readiness`、`selfhost:readiness -- --json`、`selfhost:doctor`、`selfhost:init -- --json`、`selfhost:init -- --profile public-stack --json`、`selfhost:summary`、`selfhost:ports`、`selfhost:up -- --json`、`selfhost:smoke -- --json`、`selfhost:logs -- --json`、`selfhost:down -- --json`、`selfhost:ops-report`、`selfhost:backup-validate`、
 `selfhost:plan`、`selfhost:plan -- --json`、`selfhost:backup-plan`、`selfhost:restore-plan`、`selfhost:rotate-plan`、`selfhost:rotate -- --profile public-stack --json`、`selfhost:rotate -- --profile public-stack --confirm --json`，分别作为公开暴露前安全、证据、端口可见性、交接报告、
 启动序列、人工和机器可读 readiness 总览、选定 profile 部署地图、机器可读部署地图、安全启动/日志/停止命令 metadata、机器可读交接、备份计划、备份工件校验、恢复演练、轮换计划和轮换 metadata 命令。仍未 ready 的能力不被包装成绿色状态。
 页面重复强调 secrets、public origin、billing readiness 不能被包装成绿色状态。

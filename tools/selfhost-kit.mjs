@@ -393,30 +393,79 @@ function secretFindings(text, profileName) {
   return findings;
 }
 
-function initProfile(profileName, { force = false } = {}) {
+function secretHygieneStatus(text, profileName) {
+  return secretFindings(text, profileName).map((finding) => ({
+    key: finding.key,
+    ok: finding.ok,
+    status: finding.ok ? "set" : finding.message
+  }));
+}
+
+function initData(profileName, { force = false } = {}) {
   const { envExamplePath, envPath, dir } = profilePaths(profileName);
   if (!fs.existsSync(envExamplePath)) {
     throw new Error(`${envExamplePath} does not exist`);
   }
-  if (fs.existsSync(envPath) && !force) {
-    const current = fs.readFileSync(envPath, "utf8");
-    const hardened = hardenEnv(current, profileName);
-    fs.writeFileSync(envPath, hardened.text, "utf8");
-    console.log(`[selfhost:init] hardened existing ${path.relative(ROOT, envPath)}`);
-    for (const warning of hardened.warnings) {
-      console.log(`[selfhost:init] warning: ${warning}`);
-    }
-    return;
-  }
-
-  const source = fs.readFileSync(envExamplePath, "utf8");
+  const envExists = fs.existsSync(envPath);
+  const shouldHardenExisting = envExists && !force;
+  const source = shouldHardenExisting ? fs.readFileSync(envPath, "utf8") : fs.readFileSync(envExamplePath, "utf8");
   const hardened = hardenEnv(source, profileName);
   fs.mkdirSync(dir, { recursive: true });
   fs.writeFileSync(envPath, hardened.text, { encoding: "utf8", flag: "w" });
-  console.log(`[selfhost:init] wrote ${path.relative(ROOT, envPath)} with generated local secrets`);
-  for (const warning of hardened.warnings) {
+  const relativeEnvPath = path.relative(ROOT, envPath);
+  const explicitSuffix = ` -- --profile ${profileName}`;
+
+  return {
+    command: "selfhost:init",
+    profile: profileName,
+    ok: true,
+    action: shouldHardenExisting ? "hardened" : envExists ? "rewritten" : "created",
+    force,
+    env_path: relativeEnvPath,
+    env_created: !envExists,
+    env_hardened: true,
+    changed_files: [relativeEnvPath],
+    secret_hygiene: secretHygieneStatus(hardened.text, profileName),
+    warnings: hardened.warnings,
+    next_commands: [
+      `corepack pnpm run selfhost:summary${explicitSuffix}`,
+      `corepack pnpm run selfhost:preflight${explicitSuffix}`,
+      `corepack pnpm run selfhost:up${explicitSuffix}`
+    ],
+    notes: [
+      "creates or hardens the selected profile .env file",
+      "does not print secret values",
+      "JSON output omits profile URLs so automation can parse stdout safely"
+    ]
+  };
+}
+
+function initProfile(profileName, { force = false } = {}) {
+  const data = initData(profileName, { force });
+  if (data.action === "hardened") {
+    console.log(`[selfhost:init] hardened existing ${data.env_path}`);
+  } else {
+    console.log(`[selfhost:init] wrote ${data.env_path} with generated local secrets`);
+  }
+  for (const warning of data.warnings) {
     console.log(`[selfhost:init] warning: ${warning}`);
   }
+  return data;
+}
+
+function printInitJson(profileName, options = {}) {
+  const data = initData(profileName, options);
+  console.log(
+    JSON.stringify(
+      {
+        generated_at: new Date().toISOString(),
+        ...data
+      },
+      null,
+      2
+    )
+  );
+  return data.ok;
 }
 
 function dockerCompose(profileName, args, stdio = "inherit") {
@@ -2425,6 +2474,9 @@ async function main() {
   }
 
   if (args.command === "init") {
+    if (args.json) {
+      process.exit(printInitJson(args.profile, { force: args.force }) ? 0 : 1);
+    }
     initProfile(args.profile, { force: args.force });
     printUrls(args.profile);
     return;

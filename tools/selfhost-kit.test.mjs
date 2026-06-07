@@ -248,6 +248,64 @@ function writeFakeDocker(root) {
 
 const tmpRoot = fs.mkdtempSync(path.join(os.tmpdir(), "delexec-selfhost-kit-test-"));
 try {
+  const initJsonRoot = path.join(tmpRoot, "init-json");
+  fs.mkdirSync(initJsonRoot, { recursive: true });
+  const initJsonProfile = writeMinimalProfile(initJsonRoot);
+  const initJsonCreated = run(initJsonRoot, ["init", "--json"]);
+  assert.equal(initJsonCreated.status, 0, initJsonCreated.stderr || initJsonCreated.stdout);
+  const initJsonCreatedBody = JSON.parse(initJsonCreated.stdout);
+  assert.equal(initJsonCreatedBody.command, "selfhost:init");
+  assert.equal(initJsonCreatedBody.profile, "platform");
+  assert.equal(initJsonCreatedBody.ok, true);
+  assert.ok(initJsonCreatedBody.generated_at);
+  assert.equal(initJsonCreatedBody.action, "created");
+  assert.equal(initJsonCreatedBody.env_path, "repos/platform/deploy/platform/.env");
+  assert.equal(initJsonCreatedBody.env_created, true);
+  assert.equal(initJsonCreatedBody.env_hardened, true);
+  assert.match(initJsonCreatedBody.changed_files.join("\n"), /repos\/platform\/deploy\/platform\/\.env/);
+  assert.ok(Array.isArray(initJsonCreatedBody.secret_hygiene));
+  assert.equal(initJsonCreatedBody.secret_hygiene.find((item) => item.key === "TOKEN_SECRET").status, "set");
+  assert.equal(initJsonCreatedBody.secret_hygiene.find((item) => item.key === "PLATFORM_ADMIN_API_KEY").status, "set");
+  assert.ok(Array.isArray(initJsonCreatedBody.warnings));
+  assert.match(initJsonCreatedBody.next_commands.join("\n"), /selfhost:summary/);
+  assert.match(initJsonCreatedBody.next_commands.join("\n"), /selfhost:preflight/);
+  assert.match(initJsonCreatedBody.notes.join("\n"), /does not print secret values/);
+  const initJsonEnv = readEnv(initJsonProfile.envPath);
+  assert.ok(!initJsonCreated.stdout.includes(initJsonEnv.get("PLATFORM_ADMIN_API_KEY") || ""));
+  assert.ok(!initJsonCreated.stdout.includes(initJsonEnv.get("TOKEN_SECRET") || ""));
+  assert.ok(!initJsonCreated.stdout.includes("Platform API:"));
+
+  const initJsonHardened = run(initJsonRoot, ["init", "--json"]);
+  assert.equal(initJsonHardened.status, 0, initJsonHardened.stderr || initJsonHardened.stdout);
+  const initJsonHardenedBody = JSON.parse(initJsonHardened.stdout);
+  assert.equal(initJsonHardenedBody.command, "selfhost:init");
+  assert.equal(initJsonHardenedBody.profile, "platform");
+  assert.equal(initJsonHardenedBody.ok, true);
+  assert.equal(initJsonHardenedBody.action, "hardened");
+  assert.equal(initJsonHardenedBody.env_created, false);
+  assert.equal(initJsonHardenedBody.env_hardened, true);
+  assert.deepEqual(initJsonHardenedBody.changed_files, ["repos/platform/deploy/platform/.env"]);
+  assert.ok(!initJsonHardened.stdout.includes(initJsonEnv.get("PLATFORM_ADMIN_API_KEY") || ""));
+
+  const initJsonPublicRoot = path.join(tmpRoot, "init-json-public");
+  fs.mkdirSync(initJsonPublicRoot, { recursive: true });
+  const initJsonPublicProfile = writeMinimalPublicStackProfile(initJsonPublicRoot);
+  const initJsonPublic = run(initJsonPublicRoot, ["init", "--profile", "public-stack", "--json"]);
+  assert.equal(initJsonPublic.status, 0, initJsonPublic.stderr || initJsonPublic.stdout);
+  const initJsonPublicBody = JSON.parse(initJsonPublic.stdout);
+  assert.equal(initJsonPublicBody.command, "selfhost:init");
+  assert.equal(initJsonPublicBody.profile, "public-stack");
+  assert.equal(initJsonPublicBody.ok, true);
+  assert.equal(initJsonPublicBody.action, "created");
+  assert.equal(initJsonPublicBody.env_path, "repos/platform/deploy/public-stack/.env");
+  assert.match(initJsonPublicBody.warnings.join("\n"), /PUBLIC_SITE_ADDRESS still points at localhost/);
+  assert.equal(initJsonPublicBody.secret_hygiene.find((item) => item.key === "PLATFORM_CONSOLE_BOOTSTRAP_SECRET").status, "set");
+  assert.equal(initJsonPublicBody.secret_hygiene.find((item) => item.key === "PUBLIC_SITE_ADDRESS").ok, false);
+  const initJsonPublicEnv = readEnv(initJsonPublicProfile.envPath);
+  assert.ok(!initJsonPublic.stdout.includes(initJsonPublicEnv.get("PLATFORM_ADMIN_API_KEY") || ""));
+  assert.ok(!initJsonPublic.stdout.includes(initJsonPublicEnv.get("PLATFORM_CONSOLE_BOOTSTRAP_SECRET") || ""));
+  assert.ok(!initJsonPublic.stdout.includes("Console:"));
+
   const { envPath } = writeMinimalProfile(tmpRoot);
 
   const init = run(tmpRoot, ["init"]);

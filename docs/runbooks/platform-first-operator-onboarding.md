@@ -32,6 +32,7 @@ source integration loop.
 
 ```bash
 corepack pnpm run selfhost:init -- --profile public-stack
+corepack pnpm --silent run selfhost:init -- --profile public-stack --json
 corepack pnpm run selfhost:readiness -- --profile public-stack
 corepack pnpm run selfhost:ports -- --profile public-stack
 corepack pnpm run selfhost:preflight -- --profile public-stack
@@ -51,6 +52,9 @@ Expected result:
 - `selfhost:readiness` shows profile files, `.env` status, secret hygiene,
   public origin/route blockers, URLs, host ports, and next commands before
   services bind publicly
+- `selfhost:init -- --json` reports created/hardened `.env` metadata, secret
+  hygiene statuses, warnings, and next commands without printing secret values
+  or URL prose
 - `selfhost:ports` shows declared host ports before services bind publicly
 - `selfhost:ops-report` writes a non-secret Markdown handoff report with URLs,
   host ports, secret hygiene status, and next commands

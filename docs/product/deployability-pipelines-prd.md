@@ -62,6 +62,7 @@ Goal: make `repos/platform/deploy/platform` safe to initialize and inspect.
 Required commands:
 
 - `corepack pnpm run selfhost:init`
+- `corepack pnpm --silent run selfhost:init -- --json`
 - `corepack pnpm run selfhost:profiles`
 - `corepack pnpm --silent run selfhost:profiles -- --json`
 - `corepack pnpm run selfhost:quickstart`
@@ -116,6 +117,9 @@ Acceptance:
 
 - `.env` is created from `.env.example` when missing
 - placeholder secrets are replaced with generated values
+- `selfhost:init -- --json` returns clean created/hardened `.env` metadata,
+  secret hygiene statuses, warnings, changed files, and next commands without
+  printing generated secret values or URL prose
 - profiles lists built-in deployment profiles, purpose, deploy directories,
   service counts, declared host ports, and matching doctor commands without
   reading `.env` or touching Docker; `--json` returns the same profile selector
@@ -269,6 +273,8 @@ Acceptance:
 - `/docs/deployability-profiles` and `/en/docs/deployability-profiles` explain
   Local Agent Loop, Selfhost Platform, Public Stack, Management Console,
   ready-now versus planned boundaries, and secret-safety defaults
+- Deployability Profiles include `selfhost:init -- --json` and the public-stack
+  variant as machine-readable first-run initialization commands
 - console prototype highlights management rather than only visual polish
 - self-host messaging is honest about what is ready now versus planned
 - brand-site build and deployability-content smoke pass

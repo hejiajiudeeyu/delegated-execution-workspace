@@ -18,14 +18,14 @@ repositories.
 - `repos/protocol`: `da3027100cfe9391f7f8d03be18a108ee2804cf6`
 - `repos/client`: `f1d6a2d8c9b83517cdf6ca9803b223847f880e9a`
 - `repos/platform`: `5961309c6b0ca4e8df22dbb5be92ac0845bf8d25`
-- `repos/brand-site`: `690692a0aecc05b20900952f45b643d330dcbf6a`
+- `repos/brand-site`: `d80e36b97e043c81f91cf0cd818f324d672e1518`
 
-The current bundle is `changes/CHG-2026-085.yaml`.
+The current bundle is `changes/CHG-2026-086.yaml`.
 
 ## Readiness Verdict
 
 The pinned combination is ready for daily fourth-repo development after
-CHG-2026-085:
+CHG-2026-086:
 
 - submodule SHA integrity is verified
 - boundary governance covers the new platform billing data package
@@ -144,7 +144,7 @@ Observed results:
 - `check:submodules`: passed
 - `check:boundaries`: passed after adding `@delexec/billing-store` to
   `platform/data`
-- `check:bundles`: passed with `CHG-2026-085`
+- `check:bundles`: passed with `CHG-2026-086`
 - `test:contracts`: passed, including `@delexec/billing-store` in platform
   package validation and the `@delexec/platform-api` dependency graph
 - `test:integration`: passed with a successful request/response path
@@ -152,11 +152,12 @@ Observed results:
   `/skills/caller/*` surface
 - `dev:doctor`: passed for the local daily agent/caller-skill stack
 - `selfhost:profiles` / `selfhost:quickstart` / `selfhost:readiness -- --all` /
-  `selfhost:readiness` / `selfhost:doctor` / `selfhost:init` /
+  `selfhost:readiness` / `selfhost:doctor` / `selfhost:init` / `selfhost:init -- --json` /
   `selfhost:plan` / `selfhost:summary` / `selfhost:urls` / `selfhost:preflight`: added as the
   first self-host management spine for profile discovery, copy-paste startup
   sequencing, read-only readiness matrix and selected-profile overview,
-  deployment diagnostics, generated env, selected-profile deployment maps,
+  deployment diagnostics, generated env plus machine-readable created/hardened
+  `.env` metadata, selected-profile deployment maps,
   one-screen profile overview, URL
   discovery, and pre-`up` route, compose config, and secret hygiene checks
 - `selfhost:smoke`: passed for the local `platform` profile; the
@@ -164,6 +165,7 @@ Observed results:
   and intentionally fails while the public origin remains localhost or the stack
   is not running
 - `test:selfhost-kit`: passed with temp-profile coverage for env generation,
+  init JSON metadata without secret values or URL prose,
   read-only profile map output, read-only doctor output, one-screen summary
   output, read-only quickstart sequences, read-only readiness matrix and overviews,
   secret rotation dry-run/confirm behavior, rotate JSON metadata, public-stack preflight safety,
@@ -195,7 +197,7 @@ Observed results:
 - `repos/brand-site` `npm run smoke:deployability-content`: passed for the
   bilingual Deployability Profiles route/content contract, including the
   admin-only Billing console narrative plus `selfhost:security-review` and
-  `selfhost:audit-export` / `selfhost:profiles` / `selfhost:quickstart` / `selfhost:readiness -- --all` / `selfhost:readiness` / `selfhost:doctor` / `selfhost:summary` / `selfhost:ports` /
+  `selfhost:audit-export` / `selfhost:profiles` / `selfhost:quickstart` / `selfhost:readiness -- --all` / `selfhost:readiness` / `selfhost:doctor` / `selfhost:init -- --json` / `selfhost:init -- --profile public-stack --json` / `selfhost:summary` / `selfhost:ports` /
   `selfhost:ops-report` / `selfhost:status -- --json` / `selfhost:config -- --json` / `selfhost:backup-validate` / `selfhost:restore-plan` / `selfhost:rotate -- --profile public-stack --json` / `selfhost:rotate -- --profile public-stack --confirm --json` / `published-image:smoke -- --dry-run --json`
   commands
 - `repos/brand-site` `npm run build`: passed, including client build, SSR
@@ -421,7 +423,7 @@ local loop, selfhost, public-stack safety checks, published-image smoke, and
 Operator Onboarding. Management Console copy now also describes the admin-only
 Billing page as an operator surface, not as client-facing billing readiness, and
 the public-stack command examples include `selfhost:security-review`,
-`selfhost:audit-export`, `selfhost:audit-export -- --json`, `selfhost:profiles`, `selfhost:quickstart`, `selfhost:readiness -- --all`, `selfhost:readiness`, `selfhost:readiness -- --json`, `selfhost:doctor`, `selfhost:summary`, `selfhost:ports`,
+`selfhost:audit-export`, `selfhost:audit-export -- --json`, `selfhost:profiles`, `selfhost:quickstart`, `selfhost:readiness -- --all`, `selfhost:readiness`, `selfhost:readiness -- --json`, `selfhost:doctor`, `selfhost:init -- --json`, `selfhost:init -- --profile public-stack --json`, `selfhost:summary`, `selfhost:ports`,
 `selfhost:up -- --json`, `selfhost:smoke -- --json`, `selfhost:logs -- --json`, `selfhost:down -- --json`, `selfhost:ops-report`,
 `selfhost:plan`, `selfhost:plan -- --json`, `selfhost:backup-plan`, `selfhost:backup-validate`, `selfhost:restore-plan`, `selfhost:rotate-plan`, `selfhost:rotate -- --profile public-stack --json`, and `selfhost:rotate -- --profile public-stack --confirm --json` as pre-exposure safety,
 evidence, quickstart sequencing, human-readable and machine-readable readiness overview, selected-profile deployment maps, port visibility, safe startup/log/stop command metadata, handoff-report,

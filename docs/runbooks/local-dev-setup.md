@@ -132,6 +132,7 @@ corepack pnpm --silent run selfhost:readiness -- --json
 corepack pnpm run selfhost:doctor
 corepack pnpm --silent run selfhost:doctor -- --json
 corepack pnpm run selfhost:init
+corepack pnpm --silent run selfhost:init -- --json
 corepack pnpm run selfhost:summary
 corepack pnpm --silent run selfhost:summary -- --json
 corepack pnpm run selfhost:plan
@@ -168,6 +169,7 @@ corepack pnpm --silent run selfhost:readiness -- --profile public-stack --json
 corepack pnpm run selfhost:doctor -- --profile public-stack
 corepack pnpm --silent run selfhost:doctor -- --profile public-stack --json
 corepack pnpm run selfhost:init -- --profile public-stack
+corepack pnpm --silent run selfhost:init -- --profile public-stack --json
 corepack pnpm run selfhost:summary -- --profile public-stack
 corepack pnpm --silent run selfhost:summary -- --profile public-stack --json
 corepack pnpm run selfhost:plan -- --profile public-stack
@@ -203,8 +205,13 @@ deployment scripts.
 
 `selfhost:up -- --json` keeps the same init, preflight, and Docker compose
 startup sequence while returning machine-readable init, preflight, compose-up,
-blocker, and note fields. The JSON form intentionally omits init, preflight, and
-Docker compose up stdout because command output may contain sensitive values.
+blockers, and notes. JSON form intentionally omits init, preflight, and Docker
+compose up stdout because command output may contain sensitive values.
+
+`selfhost:init -- --json` creates or hardens the selected profile `.env` and
+prints clean machine-readable metadata: action, changed files, secret hygiene
+statuses, warnings, and next commands. It does not print generated secret values
+or URL prose such as the Platform API / Console lines.
 
 `selfhost:status` is the runtime management snapshot after a profile is started.
 It calls Docker compose `ps`, checks secret hygiene status, and probes configured

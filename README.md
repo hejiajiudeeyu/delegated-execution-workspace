@@ -150,6 +150,7 @@ corepack pnpm --silent run selfhost:readiness -- --json
 corepack pnpm run selfhost:doctor
 corepack pnpm --silent run selfhost:doctor -- --json
 corepack pnpm run selfhost:init
+corepack pnpm --silent run selfhost:init -- --json
 corepack pnpm run selfhost:summary
 corepack pnpm --silent run selfhost:summary -- --json
 corepack pnpm run selfhost:plan
@@ -197,6 +198,7 @@ corepack pnpm --silent run selfhost:readiness -- --profile public-stack --json
 corepack pnpm run selfhost:doctor -- --profile public-stack
 corepack pnpm --silent run selfhost:doctor -- --profile public-stack --json
 corepack pnpm run selfhost:init -- --profile public-stack
+corepack pnpm --silent run selfhost:init -- --profile public-stack --json
 corepack pnpm run selfhost:summary -- --profile public-stack
 corepack pnpm --silent run selfhost:summary -- --profile public-stack --json
 corepack pnpm run selfhost:plan -- --profile public-stack
@@ -241,6 +243,10 @@ Notes:
 
 - Use the top-level `corepack pnpm install` as the default workspace install path.
 - Standalone `npm install` inside `repos/platform` may restore the last published `@delexec/contracts` tarball. Run `corepack pnpm run sync:local-contracts` or any fourth-repo validation command to relink the current local protocol package before checking cross-repo changes.
+- Use `corepack pnpm --silent run selfhost:init ... --json` when a dashboard,
+  CI job, or deployment script needs created/hardened `.env` metadata, secret
+  hygiene statuses, warnings, and next commands without parsing terminal prose.
+  The JSON form does not print secret values or profile URL prose.
 
 Inspect the Nx workspace:
 

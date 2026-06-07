@@ -75,7 +75,7 @@ The ecosystem is "daily-deployable" when a fresh operator can:
 | Self-host quickstart sequence | fourth repo | `corepack pnpm run selfhost:quickstart` |
 | Self-host readiness overview | fourth repo | `corepack pnpm run selfhost:readiness -- --all`, plus `corepack pnpm --silent run ... --json` for automation |
 | Self-host deployment doctor | fourth repo | `corepack pnpm run selfhost:doctor`, plus `--json` for diagnostic panels |
-| Self-host env generator | fourth repo | `corepack pnpm run selfhost:init` |
+| Self-host env generator | fourth repo | `corepack pnpm run selfhost:init`, plus `corepack pnpm --silent run selfhost:init -- --json` for created/hardened `.env` metadata without secret values or URL prose |
 | Self-host profile plan | fourth repo | `corepack pnpm run selfhost:plan`, plus `--json` for generated docs and dashboards |
 | Self-host profile summary | fourth repo | `corepack pnpm run selfhost:summary`, plus `--json` for overview cards |
 | Self-host URL inventory | fourth repo | `corepack pnpm run selfhost:urls`, plus `--json` for dashboards and scripts |
@@ -121,6 +121,9 @@ Required baseline:
   compose output may contain sensitive values
 - machine-readable startup metadata that omits init, preflight, and compose up
   stdout because command output may contain sensitive values
+- machine-readable env initialization metadata that reports created/hardened
+  `.env` files, secret hygiene statuses, warnings, and next commands without
+  printing generated secret values or profile URL prose
 - machine-readable smoke metadata that omits expanded compose config stdout
   because it can contain environment values
 - machine-readable audit export metadata that does not print admin keys or the
@@ -138,7 +141,8 @@ Required baseline:
   `dev:local:logs -- --json`, `dev:local:down -- --json`,
   `selfhost:profiles`, `selfhost:quickstart`,
   `selfhost:readiness -- --all`, `selfhost:readiness`, `selfhost:doctor`,
-  `selfhost:init`, `selfhost:summary`, `selfhost:preflight`, `selfhost:status`,
+  `selfhost:init`, `selfhost:init -- --json`, `selfhost:summary`,
+  `selfhost:preflight`, `selfhost:status`,
   `selfhost:status -- --json`, `selfhost:up -- --json`, `selfhost:logs -- --json`,
   `selfhost:down -- --json`, `selfhost:smoke -- --json`, `dev:doctor`,
   `test:agent-e2e`, `published-image:plan -- --json`,
@@ -233,6 +237,10 @@ Required baseline:
   deploy directories, services, declared host ports, and matching doctor commands.
 - Add `selfhost:quickstart` as the read-only copy-paste sequence for a selected
   profile, including public-stack safety and handoff evidence steps.
+- Add `selfhost:init -- --json` so first-run dashboards, CI jobs, and deployment
+  scripts can consume created/hardened `.env` metadata, secret hygiene statuses,
+  warnings, and next commands without parsing terminal prose or printing secret
+  values.
 - Add `selfhost:readiness` as the read-only deployment readiness overview that
   combines profile files, `.env` status, secret hygiene, public-stack
   origin/route blockers, URLs, declared host ports, and next commands. Add
