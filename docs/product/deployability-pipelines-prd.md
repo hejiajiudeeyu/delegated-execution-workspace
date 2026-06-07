@@ -17,8 +17,11 @@ Required commands:
 - `corepack pnpm --silent run deployability:overview -- --json`
 - `corepack pnpm run compat:status`
 - `corepack pnpm --silent run compat:status -- --json`
+- `corepack pnpm run deployability:handoff`
+- `corepack pnpm --silent run deployability:handoff -- --json`
 - `corepack pnpm run test:deployability-overview`
 - `corepack pnpm run test:compat-status`
+- `corepack pnpm run test:deployability-handoff`
 
 Acceptance:
 
@@ -39,6 +42,10 @@ Acceptance:
   secret values
 - dirty submodules are visible warnings, while latest-bundle SHA mismatches and
   dirty gitlink markers remain blockers
+- `deployability:handoff` writes a non-secret Markdown report under
+  `exports/deployability/` unless `--output` is provided, and its JSON form
+  returns the same bundle, compatibility, command-map, safety-note, and
+  next-command metadata without terminal prose or secret values
 
 ## Pipeline A: Local Agent Loop
 

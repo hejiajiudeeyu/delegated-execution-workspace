@@ -18,14 +18,14 @@ repositories.
 - `repos/protocol`: `da3027100cfe9391f7f8d03be18a108ee2804cf6`
 - `repos/client`: `f1d6a2d8c9b83517cdf6ca9803b223847f880e9a`
 - `repos/platform`: `5961309c6b0ca4e8df22dbb5be92ac0845bf8d25`
-- `repos/brand-site`: `9b0e58d667a3eba8550062933a9c0eee8c981731`
+- `repos/brand-site`: `4f15b136c1649f289ed0d0e9b839d600cf027d92`
 
-The current bundle is `changes/CHG-2026-090.yaml`.
+The current bundle is `changes/CHG-2026-091.yaml`.
 
 ## Readiness Verdict
 
 The pinned combination is ready for daily fourth-repo development after
-CHG-2026-090:
+CHG-2026-091:
 
 - submodule SHA integrity is verified
 - boundary governance covers the new platform billing data package
@@ -123,6 +123,11 @@ CHG-2026-090:
   submodule worktrees as warnings, and keeps ledger mismatches or dirty gitlink
   markers as blockers without reading `.env`, calling Docker, probing networks,
   or printing secrets
+- `deployability:handoff` is available as a non-secret ecosystem handoff report
+  under `exports/deployability/`, combining current bundle metadata,
+  compatibility warnings, command map, safety notes, and next validation
+  commands, and supports `--json` without reading `.env`, calling Docker,
+  binding ports, probing networks, or printing secrets
 - published-image smoke now has a fourth-repo entry point that reviews
   public-stack release images and delegates to platform smoke with
   `COMPOSE_NO_BUILD=true`
@@ -157,7 +162,7 @@ Observed results:
 - `check:submodules`: passed
 - `check:boundaries`: passed after adding `@delexec/billing-store` to
   `platform/data`
-- `check:bundles`: passed with `CHG-2026-090`
+- `check:bundles`: passed with `CHG-2026-091`
 - `test:contracts`: passed, including `@delexec/billing-store` in platform
   package validation and the `@delexec/platform-api` dependency graph
 - `test:integration`: passed with a successful request/response path
@@ -169,10 +174,14 @@ Observed results:
 - `deployability:overview -- --json`: passed, reporting five deployability
   paths, human commands, JSON entry points, safety defaults, and next commands
   without terminal `[ok]` / `[fail]` prose or secret values
-- `compat:status -- --json`: passed, reporting `CHG-2026-089` before this
+- `compat:status -- --json`: passed, reporting `CHG-2026-090` before this
   bundle update as matching the current protocol/client/platform/brand-site
   gitlinks; it also surfaced existing dirty submodule worktrees as warnings
   without treating them as ledger blockers
+- `deployability:handoff -- --json`: passed, writing a Markdown handoff report
+  under `exports/deployability/` while returning current bundle, compatibility,
+  command-map, safety-note, and next-validation metadata without terminal prose
+  or secret values
 - `selfhost:profiles` / `selfhost:quickstart` / `selfhost:readiness -- --all` /
   `selfhost:readiness` / `selfhost:doctor` / `selfhost:init` / `selfhost:init -- --json` /
   `selfhost:plan` / `selfhost:summary` / `selfhost:urls` / `selfhost:preflight`: added as the
@@ -222,7 +231,7 @@ Observed results:
   bilingual Deployability Profiles route/content contract, including the
   admin-only Billing console narrative plus `selfhost:security-review` and
   `selfhost:audit-export` / `selfhost:profiles` / `selfhost:quickstart` / `selfhost:readiness -- --all` / `selfhost:readiness` / `selfhost:doctor` / `selfhost:init -- --json` / `selfhost:init -- --profile public-stack --json` / `selfhost:summary` / `selfhost:ports` /
-  `selfhost:ops-report` / `selfhost:status -- --json` / `selfhost:config -- --json` / `selfhost:backup-validate` / `selfhost:restore-plan` / `selfhost:rotate -- --profile public-stack --json` / `selfhost:rotate -- --profile public-stack --confirm --json` / `operator:onboarding:check -- --json` / `published-image:smoke -- --dry-run --json`
+  `selfhost:ops-report` / `selfhost:status -- --json` / `selfhost:config -- --json` / `selfhost:backup-validate` / `selfhost:restore-plan` / `selfhost:rotate -- --profile public-stack --json` / `selfhost:rotate -- --profile public-stack --confirm --json` / `deployability:handoff` / `deployability:handoff -- --json` / `operator:onboarding:check -- --json` / `published-image:smoke -- --dry-run --json`
   commands
 - `repos/brand-site` `npm run build`: passed, including client build, SSR
   build, and prerender output for the new deployability docs routes
@@ -448,7 +457,7 @@ Operator Onboarding. Management Console copy now also describes the admin-only
 Billing page as an operator surface, not as client-facing billing readiness, and
 the public-stack command examples include `selfhost:security-review`,
 `selfhost:audit-export`, `selfhost:audit-export -- --json`, `selfhost:profiles`, `selfhost:quickstart`, `selfhost:readiness -- --all`, `selfhost:readiness`, `selfhost:readiness -- --json`, `selfhost:doctor`, `selfhost:init -- --json`, `selfhost:init -- --profile public-stack --json`, `selfhost:summary`, `selfhost:ports`,
-`selfhost:up -- --json`, `selfhost:smoke -- --json`, `selfhost:logs -- --json`, `selfhost:down -- --json`, `selfhost:ops-report`, `operator:onboarding:check -- --json`,
+`selfhost:up -- --json`, `selfhost:smoke -- --json`, `selfhost:logs -- --json`, `selfhost:down -- --json`, `selfhost:ops-report`, `deployability:handoff`, `operator:onboarding:check -- --json`,
 `selfhost:plan`, `selfhost:plan -- --json`, `selfhost:backup-plan`, `selfhost:backup-validate`, `selfhost:restore-plan`, `selfhost:rotate-plan`, `selfhost:rotate -- --profile public-stack --json`, and `selfhost:rotate -- --profile public-stack --confirm --json` as pre-exposure safety,
 evidence, quickstart sequencing, human-readable and machine-readable readiness overview, selected-profile deployment maps, port visibility, safe startup/log/stop command metadata, handoff-report,
 machine-readable handoff, backup planning, backup-artifact validation, recovery-rehearsal, rotation-planning, and rotation-metadata commands. Capabilities that

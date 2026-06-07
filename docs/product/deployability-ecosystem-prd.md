@@ -70,6 +70,7 @@ The ecosystem is "daily-deployable" when a fresh operator can:
 | Compatibility ledger | fourth repo | change bundles and required gates |
 | Compatibility status | fourth repo | `corepack pnpm run compat:status`, plus `corepack pnpm --silent run compat:status -- --json` for current bundle, submodule SHA, dirty-worktree, blocker, and warning metadata |
 | Deployability overview | fourth repo | `corepack pnpm run deployability:overview`, plus `corepack pnpm --silent run deployability:overview -- --json` as the read-only command map for all deployment and management paths |
+| Deployability handoff | fourth repo | `corepack pnpm run deployability:handoff`, plus `corepack pnpm --silent run deployability:handoff -- --json` for a non-secret ecosystem handoff report under `exports/deployability/` |
 | Daily local doctor | fourth repo | `corepack pnpm run dev:doctor`, plus `corepack pnpm --silent run dev:doctor -- --json` for dashboards and scripts |
 | Local agent loop management metadata | fourth repo | `corepack pnpm run dev:local:plan`, `dev:local:up`, `dev:local:status`, `dev:local:logs`, and `dev:local:down`, plus `--json` for dashboards and scripts |
 | Agent-facing smoke | fourth repo | `corepack pnpm run test:agent-e2e` |
@@ -145,12 +146,17 @@ Required baseline:
   bundle, submodule SHAs, ledger matches, dirty submodules, blockers, warnings,
   and next commands without reading `.env`, calling Docker, probing networks, or
   printing secrets
+- machine-readable deployability handoff metadata, paired with a non-secret
+  Markdown report, that combines current bundle, compatibility warnings,
+  command map, safety notes, and next validation commands without reading
+  `.env`, calling Docker, probing networks, or printing secrets
 
 ## 8. Success Metrics
 
 - A fresh checkout can run `deployability:overview`,
   `deployability:overview -- --json`, `compat:status`,
-  `compat:status -- --json`, `dev:local:plan -- --json`,
+  `compat:status -- --json`, `deployability:handoff`,
+  `deployability:handoff -- --json`, `dev:local:plan -- --json`,
   `dev:local:up -- --json`, `dev:local:status -- --json`,
   `dev:local:logs -- --json`, `dev:local:down -- --json`,
   `selfhost:profiles`, `selfhost:quickstart`,

@@ -16,8 +16,11 @@ onboarding 或 release-image 路径前，先给出一个只读命令地图和一
 - `corepack pnpm --silent run deployability:overview -- --json`
 - `corepack pnpm run compat:status`
 - `corepack pnpm --silent run compat:status -- --json`
+- `corepack pnpm run deployability:handoff`
+- `corepack pnpm --silent run deployability:handoff -- --json`
 - `corepack pnpm run test:deployability-overview`
 - `corepack pnpm run test:compat-status`
+- `corepack pnpm run test:deployability-handoff`
 
 验收：
 
@@ -34,6 +37,10 @@ onboarding 或 release-image 路径前，先给出一个只读命令地图和一
   Docker、不探测网络、不打印 secret 值
 - dirty submodules 是可见 warnings；最新 bundle SHA mismatch 和 dirty gitlink
   marker 仍然是 blockers
+- `deployability:handoff` 会把不含 secret 的 Markdown 报告写入
+  `exports/deployability/`，也可以用 `--output` 指定路径；JSON 形式输出同一组
+  bundle、compatibility、command-map、安全说明和下一步命令 metadata，不混入终端
+  文本或 secret 值
 
 ## 管线 A：Local Agent Loop
 

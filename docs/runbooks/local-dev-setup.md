@@ -115,6 +115,8 @@ corepack pnpm run deployability:overview
 corepack pnpm --silent run deployability:overview -- --json
 corepack pnpm run compat:status
 corepack pnpm --silent run compat:status -- --json
+corepack pnpm run deployability:handoff
+corepack pnpm --silent run deployability:handoff -- --json
 corepack pnpm run dev:doctor
 corepack pnpm --silent run dev:doctor -- --json
 corepack pnpm run test:agent-e2e
@@ -132,6 +134,12 @@ probing networks, or printing secret values.
 current submodule gitlinks to the latest `changes/CHG-*.yaml`, reports dirty
 submodule worktrees as warnings, and keeps ledger mismatches as blockers. Its
 JSON form does not read `.env`, call Docker, probe networks, or print secrets.
+
+`deployability:handoff` writes a non-secret Markdown handoff report under
+`exports/deployability/` unless `--output` is provided. It combines the current
+bundle, compatibility warnings, command map, safety notes, and next validation
+commands. Its JSON form writes the same report and returns metadata without
+reading `.env`, calling Docker, probing networks, or printing secret values.
 
 `dev:doctor -- --json` reports local prerequisites, runtime health,
 caller-skill manifest/search checks, blockers, and next commands as clean JSON.
