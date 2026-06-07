@@ -17,6 +17,11 @@ const TRACKS = [
         json_command: "corepack pnpm --silent run compat:status -- --json"
       },
       {
+        label: "Review command safety posture",
+        command: "corepack pnpm run deployability:safety",
+        json_command: "corepack pnpm --silent run deployability:safety -- --json"
+      },
+      {
         label: "Create a non-secret daily handoff",
         command: "corepack pnpm run deployability:handoff",
         json_command: "corepack pnpm --silent run deployability:handoff -- --json"
@@ -120,6 +125,7 @@ const SAFETY_DEFAULTS = [
 
 const NEXT_COMMANDS = [
   "corepack pnpm run deployability:overview",
+  "corepack pnpm run deployability:safety",
   "corepack pnpm run compat:status",
   "corepack pnpm run deployability:handoff",
   "corepack pnpm run check:submodules",

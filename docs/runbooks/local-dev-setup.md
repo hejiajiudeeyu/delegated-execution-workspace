@@ -115,6 +115,8 @@ corepack pnpm run deployability:overview
 corepack pnpm --silent run deployability:overview -- --json
 corepack pnpm run deployability:quickstart
 corepack pnpm --silent run deployability:quickstart -- --json
+corepack pnpm run deployability:safety
+corepack pnpm --silent run deployability:safety -- --json
 corepack pnpm run compat:status
 corepack pnpm --silent run compat:status -- --json
 corepack pnpm run deployability:handoff
@@ -137,6 +139,12 @@ checkout. It lists ordered tracks for daily development, self-host platform,
 public-stack exposure review, and release-image review without running those
 commands. Its JSON form returns the same track and step metadata without
 reading `.env`, calling Docker, probing networks, or printing secret values.
+
+`deployability:safety` is the read-only command posture matrix. It describes
+which deployability commands are read-only, write files, start or stop services,
+call Docker, probe networks, or print private terminal text. Its JSON form is
+safe for dashboards and does not read `.env`, call Docker, probe networks, or
+print secret values.
 
 `compat:status` is the read-only compatibility-ledger snapshot. It compares the
 current submodule gitlinks to the latest `changes/CHG-*.yaml`, reports dirty

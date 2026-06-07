@@ -71,6 +71,7 @@ The ecosystem is "daily-deployable" when a fresh operator can:
 | Compatibility status | fourth repo | `corepack pnpm run compat:status`, plus `corepack pnpm --silent run compat:status -- --json` for current bundle, submodule SHA, dirty-worktree, blocker, and warning metadata |
 | Deployability overview | fourth repo | `corepack pnpm run deployability:overview`, plus `corepack pnpm --silent run deployability:overview -- --json` as the read-only command map for all deployment and management paths |
 | Deployability quickstart | fourth repo | `corepack pnpm run deployability:quickstart`, plus `corepack pnpm --silent run deployability:quickstart -- --json` as the read-only first-use guide for daily development, self-host, public-stack, and release-review paths |
+| Deployability safety matrix | fourth repo | `corepack pnpm run deployability:safety`, plus `corepack pnpm --silent run deployability:safety -- --json` as the descriptive read/write/startup/network/logging posture map for deployment commands |
 | Deployability handoff | fourth repo | `corepack pnpm run deployability:handoff`, plus `corepack pnpm --silent run deployability:handoff -- --json` for a non-secret ecosystem handoff report under `exports/deployability/` |
 | Daily local doctor | fourth repo | `corepack pnpm run dev:doctor`, plus `corepack pnpm --silent run dev:doctor -- --json` for dashboards and scripts |
 | Local agent loop management metadata | fourth repo | `corepack pnpm run dev:local:plan`, `dev:local:up`, `dev:local:status`, `dev:local:logs`, and `dev:local:down`, plus `--json` for dashboards and scripts |
@@ -147,6 +148,10 @@ Required baseline:
   tracks, ordered commands, JSON entry points, safety notes, and next commands
   without reading `.env`, calling Docker, binding ports, probing networks, or
   printing secrets
+- machine-readable deployability safety metadata that lists command categories,
+  read/write/startup/network/logging posture, CI/dashboard suitability, safety
+  notes, and next commands without reading `.env`, calling Docker, binding
+  ports, probing networks, or printing secrets
 - machine-readable compatibility status metadata that reports the current
   bundle, submodule SHAs, ledger matches, dirty submodules, blockers, warnings,
   and next commands without reading `.env`, calling Docker, probing networks, or
@@ -160,7 +165,8 @@ Required baseline:
 
 - A fresh checkout can run `deployability:overview`,
   `deployability:overview -- --json`, `deployability:quickstart`,
-  `deployability:quickstart -- --json`, `compat:status`,
+  `deployability:quickstart -- --json`, `deployability:safety`,
+  `deployability:safety -- --json`, `compat:status`,
   `compat:status -- --json`, `deployability:handoff`,
   `deployability:handoff -- --json`, `dev:local:plan -- --json`,
   `dev:local:up -- --json`, `dev:local:status -- --json`,

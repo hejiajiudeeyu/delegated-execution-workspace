@@ -74,6 +74,7 @@ CALL ANYTHING 现在的仓库边界是正确的：
 | 兼容状态 | 第四仓 | `corepack pnpm run compat:status`，以及给当前 bundle、submodule SHA、dirty worktree、blockers 和 warnings metadata 使用的 `corepack pnpm --silent run compat:status -- --json` |
 | 可部署性总览 | 第四仓 | `corepack pnpm run deployability:overview`，以及作为全部部署/管理路径只读命令地图的 `corepack pnpm --silent run deployability:overview -- --json` |
 | 可部署性 quickstart | 第四仓 | `corepack pnpm run deployability:quickstart`，以及作为 daily development、self-host、public-stack 和 release-review 路径只读首次使用指南的 `corepack pnpm --silent run deployability:quickstart -- --json` |
+| 可部署性安全矩阵 | 第四仓 | `corepack pnpm run deployability:safety`，以及作为部署命令 read/write/startup/network/logging 姿态说明矩阵的 `corepack pnpm --silent run deployability:safety -- --json` |
 | 可部署性交接报告 | 第四仓 | `corepack pnpm run deployability:handoff`，以及用于输出 `exports/deployability/` 下不含 secret 的生态交接报告 metadata 的 `corepack pnpm --silent run deployability:handoff -- --json` |
 | 日常本地 doctor | 第四仓 | `corepack pnpm run dev:doctor`，以及给 dashboard 和脚本使用的 `corepack pnpm --silent run dev:doctor -- --json` |
 | Local agent loop 管理 metadata | 第四仓 | `corepack pnpm run dev:local:plan`、`dev:local:up`、`dev:local:status`、`dev:local:logs` 和 `dev:local:down`，并提供 `--json` 供 dashboard 和脚本消费 |
@@ -140,6 +141,9 @@ CALL ANYTHING 现在的仓库边界是正确的：
 - 可部署性 quickstart metadata 可以机器读取，列出首次使用 tracks、有序命令、JSON
   入口、安全说明和下一步命令，但不读取 `.env`、不调用 Docker、不绑定端口、不探测网络、
   不打印 secret 值
+- 可部署性安全矩阵 metadata 可以机器读取，列出命令分类、read/write/startup/network/logging
+  姿态、CI / dashboard 适用性、安全说明和下一步命令，但不读取 `.env`、不调用 Docker、
+  不绑定端口、不探测网络、不打印 secret 值
 - 兼容状态 metadata 可以机器读取，输出当前 bundle、submodule SHAs、ledger matches、
   dirty submodules、blockers、warnings 和下一步命令，但不读取 `.env`、不调用 Docker、
   不探测网络、不打印 secret 值
@@ -151,7 +155,8 @@ CALL ANYTHING 现在的仓库边界是正确的：
 
 - fresh checkout 可以运行 `deployability:overview`、
   `deployability:overview -- --json`、`deployability:quickstart`、
-  `deployability:quickstart -- --json`、`compat:status`、`compat:status -- --json`、
+  `deployability:quickstart -- --json`、`deployability:safety`、
+  `deployability:safety -- --json`、`compat:status`、`compat:status -- --json`、
   `deployability:handoff`、`deployability:handoff -- --json`、
   `dev:local:plan -- --json`、
   `dev:local:up -- --json`、`dev:local:status -- --json`、

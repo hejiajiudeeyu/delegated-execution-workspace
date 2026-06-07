@@ -17,12 +17,15 @@ Required commands:
 - `corepack pnpm --silent run deployability:overview -- --json`
 - `corepack pnpm run deployability:quickstart`
 - `corepack pnpm --silent run deployability:quickstart -- --json`
+- `corepack pnpm run deployability:safety`
+- `corepack pnpm --silent run deployability:safety -- --json`
 - `corepack pnpm run compat:status`
 - `corepack pnpm --silent run compat:status -- --json`
 - `corepack pnpm run deployability:handoff`
 - `corepack pnpm --silent run deployability:handoff -- --json`
 - `corepack pnpm run test:deployability-overview`
 - `corepack pnpm run test:deployability-quickstart`
+- `corepack pnpm run test:deployability-safety`
 - `corepack pnpm run test:compat-status`
 - `corepack pnpm run test:deployability-handoff`
 
@@ -38,6 +41,12 @@ Acceptance:
   Release Review as ordered first-use tracks without executing commands
 - `deployability:quickstart -- --json` emits clean track, step, safety-default,
   and next-command metadata without terminal prose or secret values
+- safety matrix lists read/write/startup/stop/Docker/network/logging posture
+  for top-level, local-loop, self-host, public-stack, and release-review
+  commands without executing commands
+- `deployability:safety -- --json` emits clean command posture, CI/dashboard
+  suitability, safety-default, and next-command metadata without terminal prose
+  or secret values
 - `deployability:overview -- --json` emits clean pipeline, safety-default, and
   next-command metadata without terminal `[ok]` / `[fail]` prose or secret
   values

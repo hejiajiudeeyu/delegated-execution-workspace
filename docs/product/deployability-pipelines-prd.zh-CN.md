@@ -16,12 +16,15 @@ onboarding 或 release-image 路径前，先给出一个只读命令地图和一
 - `corepack pnpm --silent run deployability:overview -- --json`
 - `corepack pnpm run deployability:quickstart`
 - `corepack pnpm --silent run deployability:quickstart -- --json`
+- `corepack pnpm run deployability:safety`
+- `corepack pnpm --silent run deployability:safety -- --json`
 - `corepack pnpm run compat:status`
 - `corepack pnpm --silent run compat:status -- --json`
 - `corepack pnpm run deployability:handoff`
 - `corepack pnpm --silent run deployability:handoff -- --json`
 - `corepack pnpm run test:deployability-overview`
 - `corepack pnpm run test:deployability-quickstart`
+- `corepack pnpm run test:deployability-safety`
 - `corepack pnpm run test:compat-status`
 - `corepack pnpm run test:deployability-handoff`
 
@@ -35,6 +38,11 @@ onboarding 或 release-image 路径前，先给出一个只读命令地图和一
   Release Review 四条首次使用路径，按顺序给出命令，但不执行命令
 - `deployability:quickstart -- --json` 输出干净的 track、step、安全默认值和下一步命令
   metadata，不混入终端文本或 secret 值
+- safety matrix 会列出 top-level、local-loop、self-host、public-stack 和
+  release-review 命令的 read/write/startup/stop/Docker/network/logging 姿态，
+  但不执行命令
+- `deployability:safety -- --json` 输出干净的命令姿态、CI / dashboard 适用性、
+  安全默认值和下一步命令 metadata，不混入终端文本或 secret 值
 - `deployability:overview -- --json` 输出干净的 pipeline、安全默认值和下一步命令
   metadata，不混入终端 `[ok]` / `[fail]` 文本或 secret 值
 - docs 和 brand-site 把它描述成第一张命令地图，而不是替代各管线自己的
