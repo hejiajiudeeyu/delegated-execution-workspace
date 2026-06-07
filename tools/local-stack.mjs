@@ -9,14 +9,15 @@ const STATE_DIR = path.join(ROOT, ".run", "local-stack");
 const SERVICES = ["relay", "supervisor"];
 
 function usage() {
-  console.log(`Usage: node tools/local-stack.mjs <command> [--dry-run] [--service name] [--tail lines] [--keep-platform]
+  console.log(`Usage: node tools/local-stack.mjs <command> [--dry-run] [--service name] [--tail lines] [--keep-platform] [--json]
 
 Commands:
   plan    Print the local stack boot order and managed processes
   up      Initialize and start platform, relay, client bootstrap, and supervisor
   status  Show managed process state and the next verification commands
   down    Stop managed relay/supervisor processes and platform compose profile
-  logs    Print local-stack managed process logs; supports --service and --tail
+  logs    Print local-stack managed process logs; supports --service and --tail.
+          With --json, prints safe log metadata only, not raw log lines.
 
 Default service for logs: all`);
 }
@@ -27,7 +28,8 @@ function parseArgs(argv) {
     dryRun: false,
     service: "all",
     tail: 120,
-    keepPlatform: false
+    keepPlatform: false,
+    json: false
   };
   for (let index = 3; index < argv.length; index += 1) {
     const value = argv[index];
@@ -37,6 +39,10 @@ function parseArgs(argv) {
     }
     if (value === "--keep-platform") {
       args.keepPlatform = true;
+      continue;
+    }
+    if (value === "--json") {
+      args.json = true;
       continue;
     }
     if (value === "--service") {
@@ -80,6 +86,19 @@ function pidPath(service) {
 
 function logPath(service) {
   return path.join(STATE_DIR, `${service}.log`);
+}
+
+function printJson(data) {
+  console.log(
+    JSON.stringify(
+      {
+        generated_at: new Date().toISOString(),
+        ...data
+      },
+      null,
+      2
+    )
+  );
 }
 
 function readPid(service) {
@@ -163,27 +182,116 @@ function stopManaged(service, { dryRun = false } = {}) {
   return 0;
 }
 
+function planData() {
+  return {
+    command: "dev:local:plan",
+    ok: true,
+    state_dir: rel(STATE_DIR),
+    steps: [
+      "corepack pnpm run selfhost:up -- --profile platform",
+      "corepack pnpm run dev:relay",
+      "corepack pnpm run dev:client:bootstrap",
+      "corepack pnpm run dev:client:supervisor",
+      "corepack pnpm run dev:doctor",
+      "corepack pnpm run test:agent-e2e",
+      "corepack pnpm run mcp:golden-four"
+    ],
+    managed_services: SERVICES.map((service) => ({
+      name: service,
+      pid_file: rel(pidPath(service)),
+      log: rel(logPath(service))
+    })),
+    notes: [
+      "does not start services",
+      "does not read or print secret values",
+      "use dev:local:status -- --json after startup for runtime metadata"
+    ]
+  };
+}
+
 function printPlan() {
+  const data = planData();
   console.log("[local-stack:plan] one-command local agent loop bootstrap");
-  console.log("1. corepack pnpm run selfhost:up -- --profile platform");
+  console.log(`1. ${data.steps[0]}`);
   console.log("2. corepack pnpm run dev:relay          # managed as relay");
-  console.log("3. corepack pnpm run dev:client:bootstrap");
+  console.log(`3. ${data.steps[2]}`);
   console.log("4. corepack pnpm run dev:client:supervisor  # managed as supervisor");
   console.log("5. Verify with dev:doctor, test:agent-e2e, and mcp:golden-four");
-  console.log(`state_dir=${rel(STATE_DIR)}`);
+  console.log(`state_dir=${data.state_dir}`);
+}
+
+function statusData() {
+  return {
+    command: "dev:local:status",
+    ok: true,
+    state_dir: rel(STATE_DIR),
+    services: SERVICES.map((service) => {
+      const pid = readPid(service);
+      const running = isAlive(pid);
+      return {
+        name: service,
+        running,
+        pid: pid || null,
+        log: rel(logPath(service))
+      };
+    }),
+    verification: [
+      "corepack pnpm run dev:doctor",
+      "corepack pnpm run test:agent-e2e",
+      "corepack pnpm run mcp:golden-four"
+    ],
+    notes: [
+      "does not print secret values",
+      "log files may contain sensitive local runtime output; use dev:local:logs -- --json for metadata-only log checks"
+    ]
+  };
 }
 
 function printStatus() {
+  const data = statusData();
   console.log("[local-stack:status]");
-  for (const service of SERVICES) {
-    const pid = readPid(service);
-    const state = isAlive(pid) ? `running pid=${pid}` : "stopped";
-    console.log(`- ${service}: ${state} log=${rel(logPath(service))}`);
+  for (const service of data.services) {
+    const state = service.running ? `running pid=${service.pid}` : "stopped";
+    console.log(`- ${service.name}: ${state} log=${service.log}`);
   }
   console.log("\nVerification:");
-  console.log("- corepack pnpm run dev:doctor");
-  console.log("- corepack pnpm run test:agent-e2e");
-  console.log("- corepack pnpm run mcp:golden-four");
+  for (const command of data.verification) {
+    console.log(`- ${command}`);
+  }
+}
+
+function logEntriesData(serviceName, tail) {
+  const services = serviceName === "all" ? SERVICES : [serviceName];
+  return services.map((service) => {
+    const file = logPath(service);
+    const entry = {
+      service,
+      log: rel(file),
+      exists: fs.existsSync(file),
+      available_lines: 0,
+      requested_tail: tail,
+      printed_lines: 0
+    };
+    if (entry.exists) {
+      const lines = fs.readFileSync(file, "utf8").split(/\r?\n/);
+      entry.available_lines = lines.filter((line, index) => line || index < lines.length - 1).length;
+    }
+    return entry;
+  });
+}
+
+function logsData(serviceName, tail) {
+  return {
+    command: "dev:local:logs",
+    ok: true,
+    service: serviceName,
+    tail,
+    logs: logEntriesData(serviceName, tail),
+    notes: [
+      "does not print raw log lines because local agent and supervisor logs may contain sensitive values",
+      "use text mode only in a private operator terminal when raw logs are needed"
+    ]
+  };
 }
 
 function printLogs(serviceName, tail) {
@@ -265,6 +373,10 @@ async function main() {
     return;
   }
   if (args.command === "plan") {
+    if (args.json) {
+      printJson(planData());
+      return;
+    }
     printPlan();
     return;
   }
@@ -272,6 +384,10 @@ async function main() {
     process.exit(up(args));
   }
   if (args.command === "status") {
+    if (args.json) {
+      printJson(statusData());
+      return;
+    }
     printStatus();
     return;
   }
@@ -279,6 +395,10 @@ async function main() {
     process.exit(down(args));
   }
   if (args.command === "logs") {
+    if (args.json) {
+      printJson(logsData(args.service, args.tail));
+      return;
+    }
     printLogs(args.service, args.tail);
     return;
   }

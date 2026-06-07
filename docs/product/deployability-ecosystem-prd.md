@@ -69,6 +69,7 @@ The ecosystem is "daily-deployable" when a fresh operator can:
 | --- | --- | --- |
 | Compatibility ledger | fourth repo | change bundles and required gates |
 | Daily local doctor | fourth repo | `corepack pnpm run dev:doctor` |
+| Local agent loop management metadata | fourth repo | `corepack pnpm run dev:local:plan`, `dev:local:status`, and `dev:local:logs`, plus `--json` for dashboards and scripts |
 | Agent-facing smoke | fourth repo | `corepack pnpm run test:agent-e2e` |
 | Self-host deployment map | fourth repo | `corepack pnpm run selfhost:profiles` |
 | Self-host quickstart sequence | fourth repo | `corepack pnpm run selfhost:quickstart` |
@@ -121,10 +122,14 @@ Required baseline:
   because it can contain environment values
 - machine-readable audit export metadata that does not print admin keys or the
   exported audit body
+- machine-readable local agent loop log metadata that does not print raw local
+  relay or supervisor log lines
 
 ## 8. Success Metrics
 
-- A fresh checkout can run `selfhost:profiles`, `selfhost:quickstart`,
+- A fresh checkout can run `dev:local:plan -- --json`,
+  `dev:local:status -- --json`, `dev:local:logs -- --json`,
+  `selfhost:profiles`, `selfhost:quickstart`,
   `selfhost:readiness -- --all`, `selfhost:readiness`, `selfhost:doctor`,
   `selfhost:init`, `selfhost:summary`, `selfhost:preflight`, `selfhost:status`,
   `selfhost:status -- --json`, `selfhost:up -- --json`, `selfhost:logs -- --json`,

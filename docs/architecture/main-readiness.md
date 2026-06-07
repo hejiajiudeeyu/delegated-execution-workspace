@@ -18,14 +18,14 @@ repositories.
 - `repos/protocol`: `da3027100cfe9391f7f8d03be18a108ee2804cf6`
 - `repos/client`: `f1d6a2d8c9b83517cdf6ca9803b223847f880e9a`
 - `repos/platform`: `5961309c6b0ca4e8df22dbb5be92ac0845bf8d25`
-- `repos/brand-site`: `36bd2be7de9dd0761c9c8279a504cfa75179a4ca`
+- `repos/brand-site`: `84d87e4e7f17c950f372130a3864dbf67ba637a2`
 
-The current bundle is `changes/CHG-2026-080.yaml`.
+The current bundle is `changes/CHG-2026-081.yaml`.
 
 ## Readiness Verdict
 
 The pinned combination is ready for daily fourth-repo development after
-CHG-2026-080:
+CHG-2026-081:
 
 - submodule SHA integrity is verified
 - boundary governance covers the new platform billing data package
@@ -102,7 +102,9 @@ CHG-2026-080:
   the operator-only Billing console slice, plus the new profiles/doctor/summary/security-review
   and quickstart/readiness/audit-export/ports/ops-report/backup-validate/restore-plan/rotate-plan gates
 - one-command local stack bootstrap is available through managed
-  `dev:local:*` commands
+  `dev:local:*` commands, with `--json` metadata for plan/status/logs so
+  dashboards and scripts can inspect the local loop without parsing terminal
+  prose or printing raw log lines
 - published-image smoke now has a fourth-repo entry point that reviews
   public-stack release images and delegates to platform smoke with
   `COMPOSE_NO_BUILD=true`
@@ -137,7 +139,7 @@ Observed results:
 - `check:submodules`: passed
 - `check:boundaries`: passed after adding `@delexec/billing-store` to
   `platform/data`
-- `check:bundles`: passed with `CHG-2026-080`
+- `check:bundles`: passed with `CHG-2026-081`
 - `test:contracts`: passed, including `@delexec/billing-store` in platform
   package validation and the `@delexec/platform-api` dependency graph
 - `test:integration`: passed with a successful request/response path
@@ -165,7 +167,8 @@ Observed results:
 - `test:mcp-golden-four`: passed with a fake MCP streamable HTTP host and
   secret-leak guard for the executable golden-four smoke
 - `test:local-stack`: passed for one-command local stack command sequencing,
-  managed process status/log behavior, and secret-leak guard
+  managed process status/log behavior, JSON plan/status/log metadata, and
+  secret-leak guard
 - `published-image:plan` / `published-image:smoke -- --dry-run`: passed for
   public-stack release image registry/tag visibility, the `COMPOSE_NO_BUILD=true`
   delegated command, and strict smoke defaults
@@ -251,6 +254,10 @@ the daily agent loop. It initializes and starts the platform profile, starts
 relay as a managed background process, runs client bootstrap, then starts the
 ops supervisor as a managed background process. `dev:local:status`,
 `dev:local:logs`, and `dev:local:down` provide the matching management surface.
+`dev:local:plan -- --json`, `dev:local:status -- --json`, and
+`dev:local:logs -- --json` provide machine-readable metadata for dashboards and
+scripts; the logs JSON path reports log file metadata only and does not print
+raw log lines.
 
 `corepack pnpm run mcp:golden-four` validates the MCP host-facing path as an
 executable smoke: six-tool discovery, workspace-summary hotline search, request

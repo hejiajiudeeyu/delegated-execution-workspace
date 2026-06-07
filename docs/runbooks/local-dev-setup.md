@@ -61,8 +61,10 @@ corepack pnpm run test:integration
 ```bash
 # One-command managed local loop:
 corepack pnpm run dev:local:plan
+corepack pnpm --silent run dev:local:plan -- --json
 corepack pnpm run dev:local:up
 corepack pnpm run dev:local:status
+corepack pnpm --silent run dev:local:status -- --json
 
 # Manual fallback, if you want separate terminals:
 corepack pnpm run dev:platform
@@ -86,7 +88,14 @@ Inspect managed process logs with:
 ```bash
 corepack pnpm run dev:local:logs -- --service relay --tail 80
 corepack pnpm run dev:local:logs -- --service supervisor --tail 80
+corepack pnpm --silent run dev:local:logs -- --service supervisor --tail 80 --json
 ```
+
+`dev:local:plan -- --json` emits the boot sequence and managed service files
+without starting services or reading secrets. `dev:local:status -- --json`
+emits managed relay/supervisor state and verification commands. `dev:local:logs
+-- --json` emits log file metadata only and does not print raw log lines,
+because local agent and supervisor logs can contain sensitive runtime output.
 
 Optional console UI for browser-side inspection still runs separately:
 

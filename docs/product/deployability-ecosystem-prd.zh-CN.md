@@ -72,6 +72,7 @@ CALL ANYTHING 现在的仓库边界是正确的：
 | --- | --- | --- |
 | 兼容性台账 | 第四仓 | change bundles 和必跑 gates |
 | 日常本地 doctor | 第四仓 | `corepack pnpm run dev:doctor` |
+| Local agent loop 管理 metadata | 第四仓 | `corepack pnpm run dev:local:plan`、`dev:local:status` 和 `dev:local:logs`，并提供 `--json` 供 dashboard 和脚本消费 |
 | Agent-facing smoke | 第四仓 | `corepack pnpm run test:agent-e2e` |
 | Self-host 部署地图 | 第四仓 | `corepack pnpm run selfhost:profiles` |
 | Self-host quickstart 序列 | 第四仓 | `corepack pnpm run selfhost:quickstart` |
@@ -120,10 +121,14 @@ CALL ANYTHING 现在的仓库边界是正确的：
   命令输出可能包含敏感值
 - smoke metadata 可以机器读取，但省略展开后的 compose config stdout，因为它可能包含环境值
 - audit export metadata 可以机器读取，但不打印 admin key 或导出的 audit body
+- local agent loop log metadata 可以机器读取，但不打印本地 relay 或 supervisor
+  raw log lines
 
 ## 8. 成功指标
 
-- fresh checkout 可以运行 `selfhost:profiles`、`selfhost:quickstart`、
+- fresh checkout 可以运行 `dev:local:plan -- --json`、
+  `dev:local:status -- --json`、`dev:local:logs -- --json`、
+  `selfhost:profiles`、`selfhost:quickstart`、
   `selfhost:readiness -- --all`、`selfhost:readiness`、`selfhost:doctor`、
   `selfhost:init`、`selfhost:summary`、`selfhost:preflight`、`selfhost:status`、
   `selfhost:status -- --json`、`selfhost:up -- --json`、`selfhost:logs -- --json`、

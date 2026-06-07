@@ -13,9 +13,12 @@
 
 - `corepack pnpm run dev:doctor`
 - `corepack pnpm run dev:local:plan`
+- `corepack pnpm --silent run dev:local:plan -- --json`
 - `corepack pnpm run dev:local:up`
 - `corepack pnpm run dev:local:status`
+- `corepack pnpm --silent run dev:local:status -- --json`
 - `corepack pnpm run dev:local:logs`
+- `corepack pnpm --silent run dev:local:logs -- --json`
 - `corepack pnpm run test:agent-e2e`
 - `corepack pnpm run test:local-stack`
 - `corepack pnpm run test:mcp-golden-four`
@@ -29,6 +32,12 @@
 - 一键本地 bootstrap 能按文档顺序启动 platform、relay、client bootstrap 和
   supervisor
 - 托管 relay / supervisor 的 status、logs、down 命令可用
+- `dev:local:plan -- --json` 输出同一套启动顺序、state directory、托管 service
+  pid / log 文件和 safety notes，但不启动服务、不读取 secrets
+- `dev:local:status -- --json` 输出 relay / supervisor running state、pid / log
+  metadata 和下一步验证命令，不打印 secret 值
+- `dev:local:logs -- --json` 只输出日志文件存在性和 line-count metadata，不打印
+  raw log lines，因为本地 relay / supervisor 日志可能包含敏感 runtime 输出
 - 六个 caller-skill actions 可见
 - 内置 workspace-summary Hotline 能端到端跑通
 - 可执行 MCP golden-four smoke 能验证 tool discovery、hotline search、

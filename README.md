@@ -114,9 +114,12 @@ Check whether the local daily agent/caller-skill development stack is ready:
 
 ```bash
 corepack pnpm run dev:local:plan
+corepack pnpm --silent run dev:local:plan -- --json
 corepack pnpm run dev:local:up
 corepack pnpm run dev:local:status
+corepack pnpm --silent run dev:local:status -- --json
 corepack pnpm run dev:local:logs
+corepack pnpm --silent run dev:local:logs -- --json
 corepack pnpm run dev:doctor
 corepack pnpm run test:agent-e2e
 corepack pnpm run mcp:golden-four
@@ -239,6 +242,7 @@ Start local source integration:
 
 ```bash
 corepack pnpm run dev:local:up
+corepack pnpm --silent run dev:local:status -- --json
 
 # Or run the underlying steps manually:
 corepack pnpm run dev:platform

@@ -49,8 +49,10 @@ corepack pnpm run test:integration
 ```bash
 # 一键托管本地 loop：
 corepack pnpm run dev:local:plan
+corepack pnpm --silent run dev:local:plan -- --json
 corepack pnpm run dev:local:up
 corepack pnpm run dev:local:status
+corepack pnpm --silent run dev:local:status -- --json
 
 # 如果你想拆成多个终端，也可以用底层命令：
 corepack pnpm run dev:platform
@@ -73,7 +75,13 @@ corepack pnpm run dev:local:down
 ```bash
 corepack pnpm run dev:local:logs -- --service relay --tail 80
 corepack pnpm run dev:local:logs -- --service supervisor --tail 80
+corepack pnpm --silent run dev:local:logs -- --service supervisor --tail 80 --json
 ```
+
+`dev:local:plan -- --json` 会输出启动顺序和托管 service 文件，但不启动服务、
+不读取 secrets。`dev:local:status -- --json` 会输出 relay / supervisor 的托管状态和
+后续验证命令。`dev:local:logs -- --json` 只输出日志文件 metadata，不打印 raw log
+lines，因为本地 agent 和 supervisor 日志可能包含敏感 runtime 输出。
 
 检查日常本地栈健康状态：
 
