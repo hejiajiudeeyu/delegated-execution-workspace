@@ -18,14 +18,14 @@ repositories.
 - `repos/protocol`: `da3027100cfe9391f7f8d03be18a108ee2804cf6`
 - `repos/client`: `f1d6a2d8c9b83517cdf6ca9803b223847f880e9a`
 - `repos/platform`: `5961309c6b0ca4e8df22dbb5be92ac0845bf8d25`
-- `repos/brand-site`: `9a2b505afe1917f9f4e389e672853c316490b190`
+- `repos/brand-site`: `36bd2be7de9dd0761c9c8279a504cfa75179a4ca`
 
-The current bundle is `changes/CHG-2026-079.yaml`.
+The current bundle is `changes/CHG-2026-080.yaml`.
 
 ## Readiness Verdict
 
 The pinned combination is ready for daily fourth-repo development after
-CHG-2026-079:
+CHG-2026-080:
 
 - submodule SHA integrity is verified
 - boundary governance covers the new platform billing data package
@@ -41,7 +41,8 @@ CHG-2026-079:
   backup/rotation/smoke prerequisites
 - `selfhost:audit-export` is available as a local JSON audit evidence export
   helper for the existing platform admin audit endpoint without printing admin
-  keys
+  keys, and supports `--json` for export metadata without printing the exported
+  audit body
 - `selfhost:ops-report` is available as a non-secret Markdown operations
   handoff report with URLs, host ports, secret hygiene status, and next commands,
   and supports `--json` for dashboards and management scripts
@@ -136,7 +137,7 @@ Observed results:
 - `check:submodules`: passed
 - `check:boundaries`: passed after adding `@delexec/billing-store` to
   `platform/data`
-- `check:bundles`: passed with `CHG-2026-079`
+- `check:bundles`: passed with `CHG-2026-080`
 - `test:contracts`: passed, including `@delexec/billing-store` in platform
   package validation and the `@delexec/platform-api` dependency graph
 - `test:integration`: passed with a successful request/response path
@@ -289,7 +290,8 @@ run before treating a public stack as exposure-ready;
 `corepack pnpm run selfhost:audit-export` reads the selected profile `.env`,
 calls the existing platform admin audit endpoint, and writes the response as a
 local JSON artifact under `exports/audit/<profile>/` without printing the admin
-key;
+key; `--json` emits source URL, output path, limit, item count, and safety notes
+without printing the admin key or exported audit body;
 `corepack pnpm run selfhost:ops-report` writes a Markdown handoff report under
 `exports/selfhost/<profile>/` with URLs, host ports, secret hygiene status, and
 operator commands while omitting raw secret values; `--json` emits the same
@@ -394,7 +396,7 @@ local loop, selfhost, public-stack safety checks, published-image smoke, and
 Operator Onboarding. Management Console copy now also describes the admin-only
 Billing page as an operator surface, not as client-facing billing readiness, and
 the public-stack command examples include `selfhost:security-review`,
-`selfhost:audit-export`, `selfhost:profiles`, `selfhost:quickstart`, `selfhost:readiness -- --all`, `selfhost:readiness`, `selfhost:readiness -- --json`, `selfhost:doctor`, `selfhost:summary`, `selfhost:ports`,
+`selfhost:audit-export`, `selfhost:audit-export -- --json`, `selfhost:profiles`, `selfhost:quickstart`, `selfhost:readiness -- --all`, `selfhost:readiness`, `selfhost:readiness -- --json`, `selfhost:doctor`, `selfhost:summary`, `selfhost:ports`,
 `selfhost:up -- --json`, `selfhost:smoke -- --json`, `selfhost:logs -- --json`, `selfhost:down -- --json`, `selfhost:ops-report`,
 `selfhost:plan`, `selfhost:plan -- --json`, `selfhost:backup-plan`, `selfhost:backup-validate`, `selfhost:restore-plan`, and `selfhost:rotate-plan` as pre-exposure safety,
 evidence, quickstart sequencing, human-readable and machine-readable readiness overview, selected-profile deployment maps, port visibility, safe startup/log/stop command metadata, handoff-report,

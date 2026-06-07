@@ -63,6 +63,7 @@
 - `corepack pnpm run selfhost:security-review`
 - `corepack pnpm --silent run selfhost:security-review -- --json`
 - `corepack pnpm run selfhost:audit-export`
+- `corepack pnpm --silent run selfhost:audit-export -- --json`
 - `corepack pnpm run selfhost:config`
 - `corepack pnpm --silent run selfhost:config -- --json`
 - `corepack pnpm run selfhost:plan`
@@ -136,7 +137,8 @@
 - security review 是非破坏性的公开暴露前 gate，会检查 secret hygiene、compose
   config、route contract 和 backup / rotation / smoke 前置动作
 - audit export 会把 platform admin audit events 写成本地 JSON 证据，同时不打印
-  admin key
+  admin key；`--json` 返回 source URL、output path、limit、item count 和
+  safety notes 等导出 metadata，同时不打印 admin key 或导出的 audit body
 - ops report 会写出包含 URLs、host ports、secret hygiene 状态和 operator 命令的
   Markdown 交接 artifact，但不包含 raw secret 值；`--json` 返回同一组不含 secret
   的 handoff 数据，供 dashboard、CI 和管理脚本消费，且不会写 Markdown 文件

@@ -85,6 +85,7 @@ The ecosystem is "daily-deployable" when a fresh operator can:
 | Self-host smoke acceptance | fourth repo | `corepack pnpm run selfhost:smoke`, plus `--json` for CI, dashboards, and management scripts |
 | Self-host compose config validation | fourth repo | `corepack pnpm run selfhost:config`, plus `--json` for CI and dashboards |
 | Self-host security review | fourth repo | `corepack pnpm run selfhost:security-review`, plus `--json` for public exposure dashboards |
+| Self-host audit evidence export | fourth repo | `corepack pnpm run selfhost:audit-export`, plus `--json` for export metadata |
 | Self-host backup planning | fourth repo | `corepack pnpm run selfhost:backup-plan`, plus `--json` for recovery rehearsal scripts |
 | Self-host backup validation | fourth repo | `corepack pnpm run selfhost:backup-validate`, plus `--json` for recovery rehearsal scripts |
 | Self-host restore rehearsal | fourth repo | `corepack pnpm run selfhost:restore-plan`, plus `--json` for recovery rehearsal scripts |
@@ -118,6 +119,8 @@ Required baseline:
   stdout because command output may contain sensitive values
 - machine-readable smoke metadata that omits expanded compose config stdout
   because it can contain environment values
+- machine-readable audit export metadata that does not print admin keys or the
+  exported audit body
 
 ## 8. Success Metrics
 
@@ -126,8 +129,8 @@ Required baseline:
   `selfhost:init`, `selfhost:summary`, `selfhost:preflight`, `selfhost:status`,
   `selfhost:status -- --json`, `selfhost:up -- --json`, `selfhost:logs -- --json`,
   `selfhost:down -- --json`, `selfhost:smoke -- --json`, `dev:doctor`,
-  `test:agent-e2e`, `published-image:plan`, `selfhost:security-review`, and
-  `operator:onboarding:check`.
+  `test:agent-e2e`, `published-image:plan`, `selfhost:security-review`,
+  `selfhost:audit-export -- --json`, and `operator:onboarding:check`.
 - Platform billing operators have an admin-only API and Platform Console page
   for tenant setup, balance inspection, manual recharge capture, and ledger
   browsing, while end-user billing remains outside the ready verdict.
@@ -185,7 +188,9 @@ Required baseline:
   consume the same read-only profile purpose, services, URLs, and safety checks
   that operators see in terminal output.
 - Add `selfhost:audit-export` so operators can save platform admin audit events
-  as local JSON evidence without printing admin keys.
+  as local JSON evidence without printing admin keys. Add `--json` so dashboards,
+  CI, and management scripts can consume source URL, output path, limit, item
+  count, and safety notes without printing the admin key or exported audit body.
 - Add `selfhost:ops-report` so operators can hand off a Markdown profile
   summary with URLs, host ports, safety posture, and next commands without
   secret values. Add `--json` so dashboards and management scripts can consume

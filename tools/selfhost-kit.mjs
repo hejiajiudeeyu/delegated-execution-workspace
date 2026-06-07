@@ -128,7 +128,7 @@ Commands:
   security-review
             Run non-destructive public exposure review checks
   audit-export
-            Export platform admin audit events to a local JSON file
+            Export platform admin audit events to a local JSON file; --json reports metadata
   rotate    Dry-run secret rotation, or write .env with --confirm
   rotate-plan
             Print the manual secret rotation checklist
@@ -2229,7 +2229,7 @@ function defaultAuditExportPath(profileName) {
   return path.join(ROOT, "exports", "audit", profileName, `${stamp}.json`);
 }
 
-async function auditExportProfile(profileName, { limit = "100", output = null, auditBaseUrl = null } = {}) {
+async function auditExportData(profileName, { limit = "100", output = null, auditBaseUrl = null } = {}) {
   const { envPath } = profilePaths(profileName);
   if (!fs.existsSync(envPath)) {
     throw new Error(`${path.relative(ROOT, envPath)} missing; run selfhost:init first`);
@@ -2275,10 +2275,43 @@ async function auditExportProfile(profileName, { limit = "100", output = null, a
   );
 
   const itemCount = Array.isArray(body?.items) ? body.items.length : 0;
+  return {
+    command: "selfhost:audit-export",
+    profile: profileName,
+    ok: true,
+    source_url: sourceUrl,
+    output: path.relative(ROOT, outputPath),
+    limit: numericLimit,
+    item_count: itemCount,
+    notes: [
+      "writes platform admin audit events to a local JSON artifact",
+      "does not print admin keys",
+      "terminal metadata does not include the exported audit body",
+      "store exported audit artifacts privately if they contain operator-sensitive evidence"
+    ]
+  };
+}
+
+async function auditExportProfile(profileName, options = {}) {
+  const data = await auditExportData(profileName, options);
   console.log(`[selfhost:audit-export] profile=${profileName}`);
-  console.log(`source=${sourceUrl}`);
-  console.log(`output=${path.relative(ROOT, outputPath)}`);
-  console.log(`items=${itemCount}`);
+  console.log(`source=${data.source_url}`);
+  console.log(`output=${data.output}`);
+  console.log(`items=${data.item_count}`);
+}
+
+async function printAuditExportJson(profileName, options = {}) {
+  const data = await auditExportData(profileName, options);
+  console.log(
+    JSON.stringify(
+      {
+        generated_at: new Date().toISOString(),
+        ...data
+      },
+      null,
+      2
+    )
+  );
 }
 
 function rotateProfile(profileName, { confirm = false } = {}) {
@@ -2492,6 +2525,14 @@ async function main() {
   }
 
   if (args.command === "audit-export") {
+    if (args.json) {
+      await printAuditExportJson(args.profile, {
+        limit: args.limit,
+        output: args.output,
+        auditBaseUrl: args.auditBaseUrl
+      });
+      return;
+    }
     await auditExportProfile(args.profile, {
       limit: args.limit,
       output: args.output,

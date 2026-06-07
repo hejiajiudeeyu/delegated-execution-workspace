@@ -332,6 +332,7 @@ corepack pnpm run selfhost:ops-report -- --profile public-stack
 corepack pnpm --silent run selfhost:ops-report -- --profile public-stack --json
 corepack pnpm run selfhost:security-review -- --profile public-stack
 corepack pnpm run selfhost:audit-export -- --profile public-stack
+corepack pnpm --silent run selfhost:audit-export -- --profile public-stack --json
 corepack pnpm run selfhost:backup-plan -- --profile public-stack
 corepack pnpm --silent run selfhost:backup-plan -- --profile public-stack --json
 corepack pnpm run selfhost:backup-validate -- --profile public-stack --backup-dir backups/selfhost/public-stack/<stamp>
@@ -346,7 +347,10 @@ corepack pnpm run selfhost:rotate -- --confirm
 `selfhost:audit-export` reads the selected profile `.env`, calls the platform
 admin audit endpoint, and writes a JSON artifact under `exports/audit/<profile>/`
 unless `--output` is provided. It uses the admin key for the request but never
-prints that key.
+prints that key. Use `corepack pnpm --silent run selfhost:audit-export ... --json`
+when dashboards, CI, or management scripts need source URL, output path, limit,
+item count, and safety notes without printing the admin key or exported audit
+body.
 
 `selfhost:ops-report` writes a Markdown handoff report under
 `exports/selfhost/<profile>/` unless `--output` is provided. It includes URLs,

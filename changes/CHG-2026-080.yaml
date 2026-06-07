@@ -1,0 +1,15 @@
+change_id: CHG-2026-080
+goal: add machine-readable self-host audit export metadata
+protocol_sha: da3027100cfe9391f7f8d03be18a108ee2804cf6
+client_sha: f1d6a2d8c9b83517cdf6ca9803b223847f880e9a
+platform_sha: 5961309c6b0ca4e8df22dbb5be92ac0845bf8d25
+brand_site_sha: 36bd2be7de9dd0761c9c8279a504cfa75179a4ca
+owner: hejiajiudeeyu
+risk_level: low
+affected_scope:
+  - orchestration
+  - brand-site
+  - documentation
+contracts_check: passed
+integration_check: passed
+notes: "Adds selfhost:audit-export -- --json so CI, dashboards, and management scripts can inspect audit export metadata including source URL, output path, limit, item count, and safety notes without printing the platform admin key or exported audit body. The export artifact still contains the fetched audit response and must be stored privately when it contains operator-sensitive evidence. Text audit-export behavior remains available for private operator terminals. Updates README, runbooks, deployability PRDs, main readiness docs, and brand-site Deployability Profiles while keeping protocol/client/platform SHAs unchanged."

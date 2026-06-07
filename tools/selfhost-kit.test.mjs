@@ -833,6 +833,34 @@ try {
     const exported = JSON.parse(fs.readFileSync(exportPath, "utf8"));
     assert.equal(exported.profile, "platform");
     assert.equal(exported.body.items[0].action, "security.reviewed");
+
+    const exportJsonRelativePath = "exports/audit/platform/test-audit-json.json";
+    const exportJsonPath = path.join(tmpRoot, exportJsonRelativePath);
+    const auditExportJson = await runAsync(tmpRoot, [
+      "audit-export",
+      "--audit-base-url",
+      auditBaseUrl,
+      "--limit",
+      "5",
+      "--output",
+      exportJsonRelativePath,
+      "--json"
+    ]);
+    assert.equal(auditExportJson.status, 0, auditExportJson.stderr || auditExportJson.stdout);
+    const auditExportBody = JSON.parse(auditExportJson.stdout);
+    assert.equal(auditExportBody.command, "selfhost:audit-export");
+    assert.equal(auditExportBody.profile, "platform");
+    assert.equal(auditExportBody.ok, true);
+    assert.equal(auditExportBody.limit, 5);
+    assert.equal(auditExportBody.item_count, 1);
+    assert.equal(auditExportBody.output, exportJsonRelativePath);
+    assert.equal(auditExportBody.source_url, `${auditBaseUrl}/v1/admin/audit-events?limit=5`);
+    assert.ok(Array.isArray(auditExportBody.notes));
+    assert.match(auditExportBody.notes.join("\n"), /does not print admin keys/);
+    assert.ok(!auditExportJson.stdout.includes(rotatedEnv.get("PLATFORM_ADMIN_API_KEY") || ""));
+    const exportedJson = JSON.parse(fs.readFileSync(exportJsonPath, "utf8"));
+    assert.equal(exportedJson.profile, "platform");
+    assert.equal(exportedJson.body.items[0].action, "security.reviewed");
   });
 
   const publicStack = writeMinimalPublicStackProfile(tmpRoot);

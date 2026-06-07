@@ -165,6 +165,7 @@ corepack pnpm --silent run selfhost:smoke -- --json
 corepack pnpm run selfhost:security-review
 corepack pnpm --silent run selfhost:security-review -- --json
 corepack pnpm run selfhost:audit-export
+corepack pnpm --silent run selfhost:audit-export -- --json
 corepack pnpm run selfhost:config
 corepack pnpm --silent run selfhost:config -- --json
 corepack pnpm run selfhost:backup-plan
@@ -201,6 +202,7 @@ corepack pnpm --silent run selfhost:up -- --profile public-stack --json
 corepack pnpm run selfhost:security-review -- --profile public-stack
 corepack pnpm --silent run selfhost:security-review -- --profile public-stack --json
 corepack pnpm run selfhost:audit-export -- --profile public-stack
+corepack pnpm --silent run selfhost:audit-export -- --profile public-stack --json
 corepack pnpm run selfhost:config -- --profile public-stack
 corepack pnpm --silent run selfhost:config -- --profile public-stack --json
 corepack pnpm run selfhost:backup-plan -- --profile public-stack

@@ -88,6 +88,7 @@ CALL ANYTHING 现在的仓库边界是正确的：
 | Self-host smoke acceptance | 第四仓 | `corepack pnpm run selfhost:smoke`，以及用于 CI、dashboard 和管理脚本的 `--json` |
 | Self-host compose config validation | 第四仓 | `corepack pnpm run selfhost:config`，以及用于 CI 和 dashboard 的 `--json` |
 | Self-host security review | 第四仓 | `corepack pnpm run selfhost:security-review`，以及用于公开暴露 dashboard 的 `--json` |
+| Self-host audit evidence export | 第四仓 | `corepack pnpm run selfhost:audit-export`，以及用于导出 metadata 的 `--json` |
 | Self-host backup planning | 第四仓 | `corepack pnpm run selfhost:backup-plan`，以及用于恢复演练脚本的 `--json` |
 | Self-host backup validation | 第四仓 | `corepack pnpm run selfhost:backup-validate`，以及用于恢复演练脚本的 `--json` |
 | Self-host restore rehearsal | 第四仓 | `corepack pnpm run selfhost:restore-plan`，以及用于恢复演练脚本的 `--json` |
@@ -118,6 +119,7 @@ CALL ANYTHING 现在的仓库边界是正确的：
 - startup metadata 可以机器读取，但省略 init、preflight 和 compose up stdout，因为
   命令输出可能包含敏感值
 - smoke metadata 可以机器读取，但省略展开后的 compose config stdout，因为它可能包含环境值
+- audit export metadata 可以机器读取，但不打印 admin key 或导出的 audit body
 
 ## 8. 成功指标
 
@@ -127,7 +129,7 @@ CALL ANYTHING 现在的仓库边界是正确的：
   `selfhost:status -- --json`、`selfhost:up -- --json`、`selfhost:logs -- --json`、
   `selfhost:down -- --json`、`selfhost:smoke -- --json`、`dev:doctor`、
   `test:agent-e2e`、`published-image:plan`、
-  `selfhost:security-review` 和 `operator:onboarding:check`
+  `selfhost:security-review`、`selfhost:audit-export -- --json` 和 `operator:onboarding:check`
 - platform billing operator 已有 admin-only API 和 Platform Console 页面，可做
   tenant setup、balance inspection、人工 recharge capture 和 ledger 浏览；终端用户
   billing 仍不进入 ready 结论
@@ -178,7 +180,9 @@ CALL ANYTHING 现在的仓库边界是正确的：
 - 增加 `selfhost:plan -- --json`，让生成文档、dashboard 和脚本能消费与终端输出一致的
   只读 profile purpose、services、URLs 和 safety checks。
 - 增加 `selfhost:audit-export`，让 operator 能把 platform admin audit events 保存成
-  本地 JSON 证据，同时不在终端打印 admin key。
+  本地 JSON 证据，同时不在终端打印 admin key。增加 `--json`，让 dashboard、CI
+  和管理脚本消费 source URL、output path、limit、item count 和 safety notes，
+  同时不打印 admin key 或导出的 audit body。
 - 增加 `selfhost:ops-report`，让 operator 可以交接一份 Markdown profile 摘要，
   其中包含 URLs、host ports、安全状态和后续命令，但不包含 secret 值。增加
   `--json`，让 dashboard 和管理脚本消费同一组不含 secret 的 handoff 数据，而不必解析

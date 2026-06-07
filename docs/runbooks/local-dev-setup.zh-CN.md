@@ -287,6 +287,7 @@ corepack pnpm run selfhost:ops-report -- --profile public-stack
 corepack pnpm --silent run selfhost:ops-report -- --profile public-stack --json
 corepack pnpm run selfhost:security-review -- --profile public-stack
 corepack pnpm run selfhost:audit-export -- --profile public-stack
+corepack pnpm --silent run selfhost:audit-export -- --profile public-stack --json
 corepack pnpm run selfhost:backup-plan -- --profile public-stack
 corepack pnpm --silent run selfhost:backup-plan -- --profile public-stack --json
 corepack pnpm run selfhost:backup-validate -- --profile public-stack --backup-dir backups/selfhost/public-stack/<stamp>
@@ -300,7 +301,10 @@ corepack pnpm run selfhost:rotate -- --confirm
 
 `selfhost:audit-export` 会读取选定 profile 的 `.env`，调用 platform admin audit
 endpoint，并把 JSON 证据写入 `exports/audit/<profile>/`；也可以用 `--output`
-指定路径。它会使用 admin key 发起请求，但不会把 key 打印到终端。
+指定路径。它会使用 admin key 发起请求，但不会把 key 打印到终端。当 dashboard、
+CI 或管理脚本需要 source URL、output path、limit、item count 和 safety notes，
+但不想打印 admin key 或导出的 audit body 时，使用
+`corepack pnpm --silent run selfhost:audit-export ... --json`。
 
 `selfhost:ops-report` 会把 Markdown 交接报告写入 `exports/selfhost/<profile>/`；
 也可以用 `--output` 指定路径。报告包含 URLs、host ports、secret hygiene 状态和

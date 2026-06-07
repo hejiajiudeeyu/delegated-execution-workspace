@@ -63,6 +63,7 @@ Required commands:
 - `corepack pnpm run selfhost:security-review`
 - `corepack pnpm --silent run selfhost:security-review -- --json`
 - `corepack pnpm run selfhost:audit-export`
+- `corepack pnpm --silent run selfhost:audit-export -- --json`
 - `corepack pnpm run selfhost:config`
 - `corepack pnpm --silent run selfhost:config -- --json`
 - `corepack pnpm run selfhost:plan`
@@ -152,7 +153,9 @@ Acceptance:
   hygiene, compose config, route contracts, and backup/rotation/smoke
   prerequisites
 - audit export writes platform admin audit events to a local JSON artifact
-  without printing admin keys
+  without printing admin keys; `--json` returns export metadata including source
+  URL, output path, limit, item count, and safety notes without printing the
+  admin key or exported audit body
 - ops report writes a Markdown handoff artifact with URLs, host ports, secret
   hygiene status, and operator commands without raw secret values; `--json`
   returns the same non-secret handoff data for dashboards, CI, and management
