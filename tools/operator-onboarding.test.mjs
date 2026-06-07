@@ -170,6 +170,7 @@ try {
   assert.ok(planBody.phases.find((phase) => phase.id === "contract_validation"));
   assert.match(JSON.stringify(planBody), /corepack pnpm --silent run selfhost:readiness -- --profile public-stack --json/);
   assert.match(JSON.stringify(planBody), /corepack pnpm run operator:onboarding:check/);
+  assert.match(JSON.stringify(planBody), /corepack pnpm --silent run operator:onboarding:check -- --json/);
   assert.equal(planBody.next, "corepack pnpm run operator:onboarding:check");
   assert.ok(!planJson.stdout.includes("sk_admin_must_not_leak"));
 
@@ -180,6 +181,22 @@ try {
   assert.match(check.stdout, /brand-site operator narrative/);
   assert.ok(!check.stdout.includes("sk_admin_must_not_leak"));
 
+  const checkJson = run(tmpRoot, ["check", "--json"]);
+  assert.equal(checkJson.status, 0, checkJson.stderr || checkJson.stdout);
+  const checkBody = JSON.parse(checkJson.stdout);
+  assert.equal(checkBody.command, "operator:onboarding:check");
+  assert.equal(checkBody.ok, true);
+  assert.ok(checkBody.generated_at);
+  assert.ok(Array.isArray(checkBody.checks));
+  assert.ok(checkBody.checks.find((item) => item.key === "public_stack_console_contract"));
+  assert.ok(checkBody.checks.find((item) => item.key === "source_operator_branch_runbook"));
+  assert.ok(checkBody.checks.find((item) => item.key === "brand_site_operator_narrative"));
+  assert.deepEqual(checkBody.blockers, []);
+  assert.match(checkBody.next_commands.join("\n"), /operator:onboarding:plan/);
+  assert.match(checkBody.next_commands.join("\n"), /test:operator-onboarding/);
+  assert.ok(!checkJson.stdout.includes("[ok]"));
+  assert.ok(!checkJson.stdout.includes("sk_admin_must_not_leak"));
+
   const missingOpsRoot = fs.mkdtempSync(path.join(os.tmpdir(), "delexec-operator-onboarding-missing-ops-"));
   try {
     writeFixture(missingOpsRoot, {
@@ -189,6 +206,16 @@ try {
     const missingOps = run(missingOpsRoot, ["check"]);
     assert.equal(missingOps.status, 1, missingOps.stderr || missingOps.stdout);
     assert.match(missingOps.stdout + missingOps.stderr, /source operator branch runbook/);
+
+    const missingOpsJson = run(missingOpsRoot, ["check", "--json"]);
+    assert.equal(missingOpsJson.status, 1, missingOpsJson.stderr || missingOpsJson.stdout);
+    const missingOpsBody = JSON.parse(missingOpsJson.stdout);
+    assert.equal(missingOpsBody.command, "operator:onboarding:check");
+    assert.equal(missingOpsBody.ok, false);
+    assert.match(missingOpsBody.blockers.join("\n"), /source operator branch runbook/);
+    assert.equal(missingOpsBody.checks.find((item) => item.key === "source_operator_branch_runbook").ok, false);
+    assert.ok(!missingOpsJson.stdout.includes("[fail]"));
+    assert.ok(!missingOpsJson.stdout.includes("sk_admin_must_not_leak"));
   } finally {
     fs.rmSync(missingOpsRoot, { recursive: true, force: true });
   }

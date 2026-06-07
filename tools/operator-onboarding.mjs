@@ -65,12 +65,17 @@ function checkItem(label, ok, detail = "") {
   return ok;
 }
 
-function validateContracts() {
-  let ok = true;
-  const record = (label, passed, detail = "") => {
-    ok = checkItem(label, passed, detail) && ok;
+function checkData() {
+  const checks = [];
+  const record = (key, label, passed, detail = "", files = []) => {
+    checks.push({
+      key,
+      label,
+      ok: Boolean(passed),
+      detail,
+      files
+    });
   };
-
   const caddyfile = read(FILES.caddyfile);
   const compose = read(FILES.compose);
   const publicReadme = read(FILES.publicReadme);
@@ -82,11 +87,13 @@ function validateContracts() {
   const brandEn = read(FILES.brandEn);
 
   record(
+    "public_stack_console_contract",
     "public-stack console contract",
     includesAll(caddyfile, ["redir / /console/", "handle_path /gateway/*", "handle_path /console/*"]) &&
       includesAll(compose, ["platform-console-gateway", "PLATFORM_CONSOLE_BOOTSTRAP_SECRET"]) &&
       includesAll(publicReadme, ["platform-console", "platform-console-gateway", "/console/", "/gateway/session/setup"]),
-    "compose, Caddyfile, and README expose /console and gateway setup"
+    "compose, Caddyfile, and README expose /console and gateway setup",
+    [FILES.caddyfile, FILES.compose, FILES.publicReadme]
   );
 
   const guideHasOperatorFlow =
@@ -106,12 +113,25 @@ function validateContracts() {
       "/gateway/credentials/platform-admin",
       "/gateway/proxy/v2/admin/hotlines"
     ]);
-  record("platform operator guide flow", guideHasOperatorFlow, "console route and gateway credential flow documented");
+  record(
+    "platform_operator_guide_flow",
+    "platform operator guide flow",
+    guideHasOperatorFlow,
+    "console route and gateway credential flow documented",
+    [FILES.platformGuide, FILES.platformGuideZh]
+  );
 
   const guideStale = stalePlatformLimitation(platformGuide) || stalePlatformLimitation(platformGuideZh);
-  record("platform operator guide stale limitation", !guideStale, "must not say public-stack lacks bundled console");
+  record(
+    "platform_operator_guide_stale_limitation",
+    "platform operator guide stale limitation",
+    !guideStale,
+    "must not say public-stack lacks bundled console",
+    [FILES.platformGuide, FILES.platformGuideZh]
+  );
 
   record(
+    "source_operator_branch_runbook",
     "source operator branch runbook",
     includesAll(runbook, [
       "Branch A",
@@ -133,18 +153,72 @@ function validateContracts() {
         "corepack pnpm run selfhost:ops-report -- --profile public-stack",
         "成功标准"
       ]),
-    "automatic and manual approval branches plus public-stack handoff commands remain documented"
+    "automatic and manual approval branches plus public-stack handoff commands remain documented",
+    [FILES.runbook, FILES.runbookZh]
   );
 
   const brandHasOperatorNarrative =
     includesAll(brandZh, ["Operator Onboarding", "operator:onboarding:check", "published-image:smoke", "/console/"]) &&
     includesAll(brandEn, ["Operator Onboarding", "operator:onboarding:check", "published-image:smoke", "/console/"]);
-  record("brand-site operator narrative", brandHasOperatorNarrative, "public docs expose the verifiable operator path");
+  record(
+    "brand_site_operator_narrative",
+    "brand-site operator narrative",
+    brandHasOperatorNarrative,
+    "public docs expose the verifiable operator path",
+    [FILES.brandZh, FILES.brandEn]
+  );
 
   const brandStale = staleBrandCopy(brandZh) || staleBrandCopy(brandEn);
-  record("brand-site planned onboarding copy", !brandStale, "must not label current operator onboarding as planned");
+  record(
+    "brand_site_planned_onboarding_copy",
+    "brand-site planned onboarding copy",
+    !brandStale,
+    "must not label current operator onboarding as planned",
+    [FILES.brandZh, FILES.brandEn]
+  );
 
+  const blockers = checks.filter((item) => !item.ok).map((item) => `${item.label}: ${item.detail}`);
+  return {
+    command: "operator:onboarding:check",
+    profile: "public-stack",
+    ok: blockers.length === 0,
+    checks,
+    blockers,
+    next_commands: [
+      "corepack pnpm run operator:onboarding:plan",
+      "corepack pnpm --silent run operator:onboarding:plan -- --json",
+      "corepack pnpm run test:operator-onboarding"
+    ],
+    notes: [
+      "validates public-stack, platform guide, runbook, and brand-site onboarding contracts",
+      "does not read .env files or print secret values",
+      "platform, client, and protocol repos remain the runtime truth sources"
+    ]
+  };
+}
+
+function validateContracts() {
+  const data = checkData();
+  let ok = true;
+  for (const item of data.checks) {
+    ok = checkItem(item.label, item.ok, item.detail) && ok;
+  }
   return ok;
+}
+
+function printCheckJson() {
+  const data = checkData();
+  console.log(
+    JSON.stringify(
+      {
+        generated_at: new Date().toISOString(),
+        ...data
+      },
+      null,
+      2
+    )
+  );
+  return data.ok;
 }
 
 function onboardingPlan() {
@@ -188,6 +262,7 @@ function onboardingPlan() {
         title: "Validate docs and onboarding contract",
         commands: [
           "corepack pnpm run operator:onboarding:check",
+          "corepack pnpm --silent run operator:onboarding:check -- --json",
           "corepack pnpm run test:operator-onboarding"
         ]
       },
@@ -252,6 +327,9 @@ function main() {
     return 0;
   }
   if (command === "check") {
+    if (json) {
+      return printCheckJson() ? 0 : 1;
+    }
     console.log("[operator:onboarding:check]");
     return validateContracts() ? 0 : 1;
   }

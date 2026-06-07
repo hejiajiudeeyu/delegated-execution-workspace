@@ -339,12 +339,13 @@ Check the operator first-use contract:
 corepack pnpm run operator:onboarding:plan
 corepack pnpm --silent run operator:onboarding:plan -- --json
 corepack pnpm run operator:onboarding:check
+corepack pnpm --silent run operator:onboarding:check -- --json
 corepack pnpm run test:operator-onboarding
 ```
 
-Use the `--json` form when a console, CI job, or deployment script needs the
-public-stack first-use phases, commands, safety notes, and next validation step
-without parsing terminal prose.
+Use the `--json` forms when a console, CI job, or deployment script needs the
+public-stack first-use phases, commands, safety notes, check results, blockers,
+and next validation steps without parsing terminal prose.
 
 Operational helpers:
 

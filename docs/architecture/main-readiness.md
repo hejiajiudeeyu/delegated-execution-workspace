@@ -18,14 +18,14 @@ repositories.
 - `repos/protocol`: `da3027100cfe9391f7f8d03be18a108ee2804cf6`
 - `repos/client`: `f1d6a2d8c9b83517cdf6ca9803b223847f880e9a`
 - `repos/platform`: `5961309c6b0ca4e8df22dbb5be92ac0845bf8d25`
-- `repos/brand-site`: `d80e36b97e043c81f91cf0cd818f324d672e1518`
+- `repos/brand-site`: `e8394109cee9d9550a41d29395dd2da9bae04351`
 
-The current bundle is `changes/CHG-2026-086.yaml`.
+The current bundle is `changes/CHG-2026-087.yaml`.
 
 ## Readiness Verdict
 
 The pinned combination is ready for daily fourth-repo development after
-CHG-2026-086:
+CHG-2026-087:
 
 - submodule SHA integrity is verified
 - boundary governance covers the new platform billing data package
@@ -144,7 +144,7 @@ Observed results:
 - `check:submodules`: passed
 - `check:boundaries`: passed after adding `@delexec/billing-store` to
   `platform/data`
-- `check:bundles`: passed with `CHG-2026-086`
+- `check:bundles`: passed with `CHG-2026-087`
 - `test:contracts`: passed, including `@delexec/billing-store` in platform
   package validation and the `@delexec/platform-api` dependency graph
 - `test:integration`: passed with a successful request/response path
@@ -189,7 +189,9 @@ Observed results:
   `/gateway/*` route contract, `PLATFORM_CONSOLE_BOOTSTRAP_SECRET`, platform
   operator guide, brand-site Deployability Profiles, fourth-repo source
   fallback runbook narrative, `selfhost:readiness`, `selfhost:ports`, and
-  `selfhost:ops-report`
+  `selfhost:ops-report`; `operator:onboarding:check -- --json` returns the same
+  check results, file references, blockers, notes, and next commands as clean
+  JSON without printing secret values
 - `test:operator-onboarding`: passed with a fake repo covering the operator
   onboarding plan, stale platform-guide detection, brand-site planned-copy
   detection, readiness/ports/ops-report handoff command drift detection, and
@@ -198,7 +200,7 @@ Observed results:
   bilingual Deployability Profiles route/content contract, including the
   admin-only Billing console narrative plus `selfhost:security-review` and
   `selfhost:audit-export` / `selfhost:profiles` / `selfhost:quickstart` / `selfhost:readiness -- --all` / `selfhost:readiness` / `selfhost:doctor` / `selfhost:init -- --json` / `selfhost:init -- --profile public-stack --json` / `selfhost:summary` / `selfhost:ports` /
-  `selfhost:ops-report` / `selfhost:status -- --json` / `selfhost:config -- --json` / `selfhost:backup-validate` / `selfhost:restore-plan` / `selfhost:rotate -- --profile public-stack --json` / `selfhost:rotate -- --profile public-stack --confirm --json` / `published-image:smoke -- --dry-run --json`
+  `selfhost:ops-report` / `selfhost:status -- --json` / `selfhost:config -- --json` / `selfhost:backup-validate` / `selfhost:restore-plan` / `selfhost:rotate -- --profile public-stack --json` / `selfhost:rotate -- --profile public-stack --confirm --json` / `operator:onboarding:check -- --json` / `published-image:smoke -- --dry-run --json`
   commands
 - `repos/brand-site` `npm run build`: passed, including client build, SSR
   build, and prerender output for the new deployability docs routes
@@ -424,7 +426,7 @@ Operator Onboarding. Management Console copy now also describes the admin-only
 Billing page as an operator surface, not as client-facing billing readiness, and
 the public-stack command examples include `selfhost:security-review`,
 `selfhost:audit-export`, `selfhost:audit-export -- --json`, `selfhost:profiles`, `selfhost:quickstart`, `selfhost:readiness -- --all`, `selfhost:readiness`, `selfhost:readiness -- --json`, `selfhost:doctor`, `selfhost:init -- --json`, `selfhost:init -- --profile public-stack --json`, `selfhost:summary`, `selfhost:ports`,
-`selfhost:up -- --json`, `selfhost:smoke -- --json`, `selfhost:logs -- --json`, `selfhost:down -- --json`, `selfhost:ops-report`,
+`selfhost:up -- --json`, `selfhost:smoke -- --json`, `selfhost:logs -- --json`, `selfhost:down -- --json`, `selfhost:ops-report`, `operator:onboarding:check -- --json`,
 `selfhost:plan`, `selfhost:plan -- --json`, `selfhost:backup-plan`, `selfhost:backup-validate`, `selfhost:restore-plan`, `selfhost:rotate-plan`, `selfhost:rotate -- --profile public-stack --json`, and `selfhost:rotate -- --profile public-stack --confirm --json` as pre-exposure safety,
 evidence, quickstart sequencing, human-readable and machine-readable readiness overview, selected-profile deployment maps, port visibility, safe startup/log/stop command metadata, handoff-report,
 machine-readable handoff, backup planning, backup-artifact validation, recovery-rehearsal, rotation-planning, and rotation-metadata commands. Capabilities that

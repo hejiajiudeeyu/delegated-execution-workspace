@@ -96,7 +96,7 @@ CALL ANYTHING 现在的仓库边界是正确的：
 | Self-host 轮换计划与执行 metadata | 第四仓 | `corepack pnpm run selfhost:rotate-plan`，以及 `selfhost:rotate -- --json` / `selfhost:rotate -- --confirm --json`，用于安全 dry-run 和 confirmed rotation metadata |
 | Compose 生命周期 wrapper | 第四仓 | 委托到 `repos/platform/deploy/*`；`selfhost:up -- --json`、`selfhost:logs -- --json` 和 `selfhost:down -- --json` 输出不含 raw compose stdout 的命令 metadata |
 | Published-image smoke wrapper | 第四仓 | 委托到 `repos/platform` 的 public-stack smoke；`published-image:plan -- --json` 和 `published-image:smoke -- --dry-run --json` 供 release dashboard 和管理脚本消费 |
-| Operator onboarding contract | 第四仓 | `operator:onboarding:check` 校验 public-stack/brand-site/runbook 一致性 |
+| Operator onboarding contract | 第四仓 | `operator:onboarding:check` 校验 public-stack/brand-site/runbook 一致性；`operator:onboarding:check -- --json` 给 CI 和 dashboard 输出检查结果与 blockers |
 | Public stack deploy manifest | `repos/platform` | 现有 `deploy/public-stack` |
 | Billing admin read model | `repos/platform` | admin-only tenant、balance、recharge、ledger endpoints 和 Platform Console 管理页 |
 | Runtime console | `repos/client` / `repos/platform` | 状态、日志、设置、审批 |
@@ -143,7 +143,8 @@ CALL ANYTHING 现在的仓库边界是正确的：
   `selfhost:down -- --json`、`selfhost:smoke -- --json`、`dev:doctor`、
   `test:agent-e2e`、`published-image:plan -- --json`、
   `published-image:smoke -- --dry-run --json`、
-  `selfhost:security-review`、`selfhost:audit-export -- --json` 和 `operator:onboarding:check`
+  `selfhost:security-review`、`selfhost:audit-export -- --json`、`operator:onboarding:check`
+  和 `operator:onboarding:check -- --json`
 - platform billing operator 已有 admin-only API 和 Platform Console 页面，可做
   tenant setup、balance inspection、人工 recharge capture 和 ledger 浏览；终端用户
   billing 仍不进入 ready 结论

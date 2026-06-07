@@ -18,13 +18,13 @@ protocol/client/platform SHA 组合可用于本地跨仓开发和已认证的源
 - `repos/protocol`：`da3027100cfe9391f7f8d03be18a108ee2804cf6`
 - `repos/client`：`f1d6a2d8c9b83517cdf6ca9803b223847f880e9a`
 - `repos/platform`：`5961309c6b0ca4e8df22dbb5be92ac0845bf8d25`
-- `repos/brand-site`：`d80e36b97e043c81f91cf0cd818f324d672e1518`
+- `repos/brand-site`：`e8394109cee9d9550a41d29395dd2da9bae04351`
 
-当前 bundle 为 `changes/CHG-2026-086.yaml`。
+当前 bundle 为 `changes/CHG-2026-087.yaml`。
 
 ## 当前判断
 
-CHG-2026-086 收口后，当前固定组合已经可以用于日常第四仓开发：
+CHG-2026-087 收口后，当前固定组合已经可以用于日常第四仓开发：
 
 - submodule SHA 完整性已验证
 - 边界治理已覆盖新的 platform billing data package
@@ -127,7 +127,7 @@ corepack pnpm run test:integration
 - `check:submodules`：通过
 - `check:boundaries`：通过，已把 `@delexec/billing-store` 归入
   `platform/data`
-- `check:bundles`：通过，使用 `CHG-2026-086`
+- `check:bundles`：通过，使用 `CHG-2026-087`
 - `test:contracts`：通过，platform package validation 已识别
   `@delexec/billing-store` 和 `@delexec/platform-api` dependency graph
 - `test:integration`：通过，完整 request/response 路径成功
@@ -163,7 +163,9 @@ corepack pnpm run test:integration
 - `operator:onboarding:check`：通过，验证 public-stack `/console/` 与
   `/gateway/*` route contract、`PLATFORM_CONSOLE_BOOTSTRAP_SECRET`、platform
   operator guide、brand-site Deployability Profiles 和第四仓 source fallback
-  runbook 叙事、`selfhost:readiness`、`selfhost:ports`、`selfhost:ops-report` 一致
+  runbook 叙事、`selfhost:readiness`、`selfhost:ports`、`selfhost:ops-report` 一致；
+  `operator:onboarding:check -- --json` 会以干净 JSON 输出同一组检查结果、文件引用、
+  blockers、notes 和下一步命令，不打印 secret 值
 - `test:operator-onboarding`：通过，用 fake repo 覆盖 operator onboarding plan、
   stale platform guide 检出、brand-site planned copy 检出、runbook 交接命令漂移检出
   中的 readiness / ports / ops-report 漂移检出和 secret-leak guard
@@ -171,7 +173,7 @@ corepack pnpm run test:integration
   Deployability Profiles 路由与内容契约，包括 admin-only Billing console 叙事和
   `selfhost:security-review` / `selfhost:audit-export` / `selfhost:profiles` / `selfhost:quickstart` / `selfhost:readiness -- --all` / `selfhost:readiness` / `selfhost:doctor` /
   `selfhost:init -- --json` / `selfhost:init -- --profile public-stack --json` / `selfhost:summary` / `selfhost:ports` / `selfhost:logs -- --json` / `selfhost:ops-report` / `selfhost:status -- --json` / `selfhost:config -- --json` /
-  `selfhost:backup-validate` / `selfhost:restore-plan` / `selfhost:rotate -- --profile public-stack --json` / `selfhost:rotate -- --profile public-stack --confirm --json` / `published-image:smoke -- --dry-run --json` 命令
+  `selfhost:backup-validate` / `selfhost:restore-plan` / `selfhost:rotate -- --profile public-stack --json` / `selfhost:rotate -- --profile public-stack --confirm --json` / `operator:onboarding:check -- --json` / `published-image:smoke -- --dry-run --json` 命令
 - `repos/brand-site` `npm run build`：通过，包含 client build、SSR build 和新
   deployability docs routes 的 prerender 输出
 - `repos/platform` platform-console view-model unit test：通过，覆盖 Billing
@@ -360,7 +362,7 @@ planned：当前本地 loop、selfhost、public-stack safety checks、published-
 smoke 和 Operator Onboarding 已可解释。Management Console 文案也开始说明
 admin-only Billing 页面是 operator surface，不等于 client-facing billing ready；
 public-stack 命令示例已加入 `selfhost:security-review`、`selfhost:audit-export`、`selfhost:audit-export -- --json`、
-`selfhost:profiles`、`selfhost:quickstart`、`selfhost:readiness -- --all`、`selfhost:readiness`、`selfhost:readiness -- --json`、`selfhost:doctor`、`selfhost:init -- --json`、`selfhost:init -- --profile public-stack --json`、`selfhost:summary`、`selfhost:ports`、`selfhost:up -- --json`、`selfhost:smoke -- --json`、`selfhost:logs -- --json`、`selfhost:down -- --json`、`selfhost:ops-report`、`selfhost:backup-validate`、
+`selfhost:profiles`、`selfhost:quickstart`、`selfhost:readiness -- --all`、`selfhost:readiness`、`selfhost:readiness -- --json`、`selfhost:doctor`、`selfhost:init -- --json`、`selfhost:init -- --profile public-stack --json`、`selfhost:summary`、`selfhost:ports`、`selfhost:up -- --json`、`selfhost:smoke -- --json`、`selfhost:logs -- --json`、`selfhost:down -- --json`、`selfhost:ops-report`、`operator:onboarding:check -- --json`、`selfhost:backup-validate`、
 `selfhost:plan`、`selfhost:plan -- --json`、`selfhost:backup-plan`、`selfhost:restore-plan`、`selfhost:rotate-plan`、`selfhost:rotate -- --profile public-stack --json`、`selfhost:rotate -- --profile public-stack --confirm --json`，分别作为公开暴露前安全、证据、端口可见性、交接报告、
 启动序列、人工和机器可读 readiness 总览、选定 profile 部署地图、机器可读部署地图、安全启动/日志/停止命令 metadata、机器可读交接、备份计划、备份工件校验、恢复演练、轮换计划和轮换 metadata 命令。仍未 ready 的能力不被包装成绿色状态。
 页面重复强调 secrets、public origin、billing readiness 不能被包装成绿色状态。

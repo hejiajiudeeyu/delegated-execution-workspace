@@ -336,6 +336,7 @@ Required commands:
 - `corepack pnpm run operator:onboarding:plan`
 - `corepack pnpm --silent run operator:onboarding:plan -- --json`
 - `corepack pnpm run operator:onboarding:check`
+- `corepack pnpm --silent run operator:onboarding:check -- --json`
 - `corepack pnpm run test:operator-onboarding`
 
 Required behavior:
@@ -357,6 +358,9 @@ Required behavior:
   `selfhost:ops-report` handoff commands
 - check validates that brand-site Deployability Profiles mark Operator
   Onboarding as a verifiable path, not as planned
+- check `--json` emits the same pass/fail checks, file references, blockers,
+  safety notes, and next validation commands without parsing terminal prose or
+  printing secrets
 
 Acceptance:
 
@@ -365,6 +369,8 @@ Acceptance:
   verification path without reading the full protocol
 - a management surface or CI job can consume the first-use plan as clean JSON
   through `corepack pnpm --silent run operator:onboarding:plan -- --json`
+- a management surface or CI job can consume onboarding contract check results
+  as clean JSON through `corepack pnpm --silent run operator:onboarding:check -- --json`
 - fourth-repo check fails when docs drift away from the actual public-stack
   route contract
 - this path still does not claim billing, email transport, or marketplace

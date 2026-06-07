@@ -93,7 +93,7 @@ The ecosystem is "daily-deployable" when a fresh operator can:
 | Self-host rotation planning and execution metadata | fourth repo | `corepack pnpm run selfhost:rotate-plan`, plus `selfhost:rotate -- --json` / `selfhost:rotate -- --confirm --json` for safe dry-run and confirmed-rotation metadata |
 | Compose lifecycle wrapper | fourth repo | delegate to `repos/platform/deploy/*`; `selfhost:up -- --json`, `selfhost:logs -- --json`, and `selfhost:down -- --json` emit command metadata without raw compose stdout |
 | Published-image smoke wrapper | fourth repo | delegate to `repos/platform` public-stack smoke; `published-image:plan -- --json` and `published-image:smoke -- --dry-run --json` for release dashboards and management scripts |
-| Operator onboarding contract | fourth repo | `operator:onboarding:check` keeps public-stack, brand-site, and runbooks aligned |
+| Operator onboarding contract | fourth repo | `operator:onboarding:check` keeps public-stack, brand-site, and runbooks aligned; `operator:onboarding:check -- --json` emits check results and blockers for CI and dashboards |
 | Public stack deploy manifests | `repos/platform` | existing `deploy/public-stack` |
 | Billing admin read model | `repos/platform` | admin-only tenant, balance, recharge, and ledger endpoints plus Platform Console management page |
 | Runtime console | `repos/client` and `repos/platform` | status, logs, settings, approvals |
@@ -147,7 +147,8 @@ Required baseline:
   `selfhost:down -- --json`, `selfhost:smoke -- --json`, `dev:doctor`,
   `test:agent-e2e`, `published-image:plan -- --json`,
   `published-image:smoke -- --dry-run --json`, `selfhost:security-review`,
-  `selfhost:audit-export -- --json`, and `operator:onboarding:check`.
+  `selfhost:audit-export -- --json`, `operator:onboarding:check`, and
+  `operator:onboarding:check -- --json`.
 - Platform billing operators have an admin-only API and Platform Console page
   for tenant setup, balance inspection, manual recharge capture, and ledger
   browsing, while end-user billing remains outside the ready verdict.

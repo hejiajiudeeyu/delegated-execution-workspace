@@ -288,6 +288,7 @@
 - `corepack pnpm run operator:onboarding:plan`
 - `corepack pnpm --silent run operator:onboarding:plan -- --json`
 - `corepack pnpm run operator:onboarding:check`
+- `corepack pnpm --silent run operator:onboarding:check -- --json`
 - `corepack pnpm run test:operator-onboarding`
 
 必备行为：
@@ -305,6 +306,8 @@
   `selfhost:ops-report` 交接命令
 - check 校验 brand-site Deployability Profiles 把 Operator Onboarding 标成可验证路径，
   而不是 planned
+- check `--json` 输出同一组 pass/fail checks、文件引用、blockers、安全说明和下一步
+  验证命令，不需要解析终端文本，也不打印 secrets
 
 验收：
 
@@ -313,6 +316,8 @@
   如何验证 gateway proxy
 - 管理 surface 或 CI job 可以通过 `corepack pnpm --silent run operator:onboarding:plan -- --json`
   消费干净 JSON 版 first-use plan
+- 管理 surface 或 CI job 可以通过 `corepack pnpm --silent run operator:onboarding:check -- --json`
+  消费干净 JSON 版 onboarding contract check results
 - 文档与实际 public-stack route contract 不一致时，第四仓 check 失败
 - 这条路径仍不把 billing、email transport 或 marketplace production readiness 包装成已完成
 - billing 管理证据只覆盖 admin-only Platform Console 页面，不能被描述成终端用户
