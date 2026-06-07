@@ -88,7 +88,7 @@ The ecosystem is "daily-deployable" when a fresh operator can:
 | Self-host backup validation | fourth repo | `corepack pnpm run selfhost:backup-validate`, plus `--json` for recovery rehearsal scripts |
 | Self-host restore rehearsal | fourth repo | `corepack pnpm run selfhost:restore-plan`, plus `--json` for recovery rehearsal scripts |
 | Self-host rotation planning | fourth repo | `corepack pnpm run selfhost:rotate-plan`, plus `--json` for operator runbooks and dashboards |
-| Compose lifecycle wrapper | fourth repo | delegate to `repos/platform/deploy/*`; `selfhost:logs -- --json` emits command metadata without raw log stdout |
+| Compose lifecycle wrapper | fourth repo | delegate to `repos/platform/deploy/*`; `selfhost:logs -- --json` and `selfhost:down -- --json` emit command metadata without raw compose stdout |
 | Published-image smoke wrapper | fourth repo | delegate to `repos/platform` public-stack smoke |
 | Operator onboarding contract | fourth repo | `operator:onboarding:check` keeps public-stack, brand-site, and runbooks aligned |
 | Public stack deploy manifests | `repos/platform` | existing `deploy/public-stack` |
@@ -111,13 +111,16 @@ Required baseline:
   because it can contain environment values
 - machine-readable logs metadata that omits raw log stdout because application
   logs may contain sensitive values
+- machine-readable stop-command metadata that omits compose down stdout because
+  compose output may contain sensitive values
 
 ## 8. Success Metrics
 
 - A fresh checkout can run `selfhost:profiles`, `selfhost:quickstart`,
   `selfhost:readiness -- --all`, `selfhost:readiness`, `selfhost:doctor`,
   `selfhost:init`, `selfhost:summary`, `selfhost:preflight`, `selfhost:status`,
-  `selfhost:status -- --json`, `selfhost:logs -- --json`, `dev:doctor`, `test:agent-e2e`, `published-image:plan`, `selfhost:security-review`, and
+  `selfhost:status -- --json`, `selfhost:logs -- --json`,
+  `selfhost:down -- --json`, `dev:doctor`, `test:agent-e2e`, `published-image:plan`, `selfhost:security-review`, and
   `operator:onboarding:check`.
 - Platform billing operators have an admin-only API and Platform Console page
   for tenant setup, balance inspection, manual recharge capture, and ledger
@@ -141,6 +144,9 @@ Required baseline:
 - Add `selfhost:logs -- --json` so dashboards and management scripts can check
   log command execution, service filter, tail size, and stderr metadata without
   embedding raw application log stdout.
+- Add `selfhost:down -- --json` so dashboards and management scripts can check
+  stop command execution, exit status, blockers, and stderr metadata without
+  embedding raw Docker compose down stdout.
 - Add smoke checks per profile.
 - Add explicit failure messages for unsafe secrets.
 

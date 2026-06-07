@@ -121,7 +121,7 @@ Commands:
             Print the recommended command sequence for a profile
   plan      Explain services, URLs, and safety checks for the profile
   up        Run preflight, then docker compose up -d for the selected profile
-  down      Run docker compose down for the selected profile
+  down      Run docker compose down; --json omits stdout and reports metadata
   logs      Run docker compose logs; --json omits log stdout and reports metadata
   ops-report
             Write a non-secret Markdown operations handoff report
@@ -600,6 +600,45 @@ function logsData(profileName, { service = null, tail = "120" } = {}) {
 
 function printLogsJson(profileName, options) {
   const data = logsData(profileName, options);
+  console.log(
+    JSON.stringify(
+      {
+        generated_at: new Date().toISOString(),
+        ...data
+      },
+      null,
+      2
+    )
+  );
+  return data.ok;
+}
+
+function downData(profileName) {
+  const downArgs = ["down"];
+  const downResult = dockerCompose(profileName, downArgs, "pipe");
+  const downOk = downResult.status === 0;
+  return {
+    command: "selfhost:down",
+    profile: profileName,
+    ok: downOk,
+    compose_down: {
+      ok: downOk,
+      status: downOk ? "ok" : "fail",
+      exit_code: downResult.status ?? 1,
+      args: downArgs,
+      stderr_lines: (downResult.stderr || "").trim().split(/\r?\n/).filter(Boolean)
+    },
+    blockers: downOk ? [] : ["docker compose down failed"],
+    notes: [
+      "runs docker compose down for the selected profile",
+      "does not include docker compose down stdout because compose output may include sensitive values",
+      "use text mode in a private operator terminal when raw compose output is required"
+    ]
+  };
+}
+
+function printDownJson(profileName) {
+  const data = downData(profileName);
   console.log(
     JSON.stringify(
       {
@@ -2252,6 +2291,9 @@ async function main() {
   }
 
   if (args.command === "down") {
+    if (args.json) {
+      process.exit(printDownJson(args.profile) ? 0 : 1);
+    }
     const result = dockerCompose(args.profile, ["down"]);
     process.exit(result.status || 0);
   }

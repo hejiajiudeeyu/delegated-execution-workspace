@@ -113,6 +113,8 @@ corepack pnpm run selfhost:status
 corepack pnpm --silent run selfhost:status -- --json
 corepack pnpm run selfhost:logs
 corepack pnpm --silent run selfhost:logs -- --json
+corepack pnpm run selfhost:down
+corepack pnpm --silent run selfhost:down -- --json
 corepack pnpm run selfhost:smoke
 corepack pnpm run selfhost:security-review
 corepack pnpm --silent run selfhost:security-review -- --json
@@ -146,6 +148,8 @@ corepack pnpm run selfhost:status -- --profile public-stack
 corepack pnpm --silent run selfhost:status -- --profile public-stack --json
 corepack pnpm run selfhost:logs -- --profile public-stack
 corepack pnpm --silent run selfhost:logs -- --profile public-stack --json
+corepack pnpm run selfhost:down -- --profile public-stack
+corepack pnpm --silent run selfhost:down -- --profile public-stack --json
 corepack pnpm run selfhost:smoke -- --profile public-stack
 corepack pnpm run selfhost:config -- --profile public-stack
 corepack pnpm --silent run selfhost:config -- --profile public-stack --json
@@ -167,6 +171,11 @@ safety notes 且不想解析终端文本时，使用
 stderr lines、service filter 和 tail size 时，使用
 `corepack pnpm --silent run selfhost:logs ... --json`；JSON 形式会刻意省略 Docker
 compose logs stdout，因为应用日志可能包含敏感值。
+
+`selfhost:down` 会通过 Docker compose 停止选定 profile。当 dashboard、管理脚本或
+runbook 需要 stop command metadata、exit code、stderr lines 和 blockers 时，使用
+`corepack pnpm --silent run selfhost:down ... --json`；JSON 形式会刻意省略 Docker
+compose down stdout，因为 compose 输出可能包含敏感值。
 
 `selfhost:config` 会校验选定 profile 的 Docker compose config。文本形式会给私有
 operator 终端打印 compose 输出；JSON 形式会刻意省略 compose stdout，因为展开后的

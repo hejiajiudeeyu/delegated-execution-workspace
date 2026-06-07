@@ -132,6 +132,8 @@ corepack pnpm run selfhost:status
 corepack pnpm --silent run selfhost:status -- --json
 corepack pnpm run selfhost:logs
 corepack pnpm --silent run selfhost:logs -- --json
+corepack pnpm run selfhost:down
+corepack pnpm --silent run selfhost:down -- --json
 corepack pnpm run selfhost:smoke
 corepack pnpm run selfhost:security-review
 corepack pnpm --silent run selfhost:security-review -- --json
@@ -165,6 +167,8 @@ corepack pnpm run selfhost:status -- --profile public-stack
 corepack pnpm --silent run selfhost:status -- --profile public-stack --json
 corepack pnpm run selfhost:logs -- --profile public-stack
 corepack pnpm --silent run selfhost:logs -- --profile public-stack --json
+corepack pnpm run selfhost:down -- --profile public-stack
+corepack pnpm --silent run selfhost:down -- --profile public-stack --json
 corepack pnpm run selfhost:smoke -- --profile public-stack
 corepack pnpm run selfhost:config -- --profile public-stack
 corepack pnpm --silent run selfhost:config -- --profile public-stack --json
@@ -190,6 +194,12 @@ safety notes without parsing terminal prose.
 management scripts only need command metadata, exit code, stderr lines, service
 filter, and tail size; the JSON form intentionally omits Docker compose logs
 stdout because application logs may contain sensitive values.
+
+`selfhost:down` stops the selected profile through Docker compose. Use
+`corepack pnpm --silent run selfhost:down ... --json` when dashboards,
+management scripts, or runbooks need the stop command metadata, exit code,
+stderr lines, and blockers; the JSON form intentionally omits Docker compose
+down stdout because compose output may contain sensitive values.
 
 `selfhost:config` validates the selected profile's Docker compose config. The
 text form prints the compose output for a private operator terminal; the JSON

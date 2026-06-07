@@ -20,12 +20,12 @@ repositories.
 - `repos/platform`: `5961309c6b0ca4e8df22dbb5be92ac0845bf8d25`
 - `repos/brand-site`: `9a2b505afe1917f9f4e389e672853c316490b190`
 
-The current bundle is `changes/CHG-2026-076.yaml`.
+The current bundle is `changes/CHG-2026-077.yaml`.
 
 ## Readiness Verdict
 
 The pinned combination is ready for daily fourth-repo development after
-CHG-2026-076:
+CHG-2026-077:
 
 - submodule SHA integrity is verified
 - boundary governance covers the new platform billing data package
@@ -53,6 +53,10 @@ CHG-2026-076:
   supports `--json` for command metadata, service/tail filters, exit code, and
   stderr metadata while omitting raw log stdout because application logs may
   contain sensitive values
+- `selfhost:down` is available as the selected-profile stop command, and
+  supports `--json` for command metadata, exit code, blockers, and stderr
+  metadata while omitting compose down stdout because compose output may contain
+  sensitive values
 - `selfhost:config` is available as the compose config validation command, and
   supports `--json` for pass/fail, blocker, and stderr metadata while omitting
   expanded compose stdout because it can contain environment values
@@ -129,7 +133,7 @@ Observed results:
 - `check:submodules`: passed
 - `check:boundaries`: passed after adding `@delexec/billing-store` to
   `platform/data`
-- `check:bundles`: passed with `CHG-2026-076`
+- `check:bundles`: passed with `CHG-2026-077`
 - `test:contracts`: passed, including `@delexec/billing-store` in platform
   package validation and the `@delexec/platform-api` dependency graph
 - `test:integration`: passed with a successful request/response path
@@ -296,6 +300,10 @@ dashboards and management scripts;
 supports `--service` and `--tail`; `--json` emits command metadata, selected
 service, tail size, exit code, and stderr metadata while omitting raw log stdout
 because application logs may contain sensitive values;
+`corepack pnpm run selfhost:down` stops the selected profile through Docker
+compose; `--json` emits command metadata, exit code, blockers, and stderr
+metadata while omitting compose down stdout because compose output may contain
+sensitive values;
 `corepack pnpm run selfhost:config` validates the selected profile compose
 config. The text form prints compose output for a private operator terminal;
 `--json` emits pass/fail, blocker, and stderr metadata while omitting expanded
@@ -372,9 +380,9 @@ Operator Onboarding. Management Console copy now also describes the admin-only
 Billing page as an operator surface, not as client-facing billing readiness, and
 the public-stack command examples include `selfhost:security-review`,
 `selfhost:audit-export`, `selfhost:profiles`, `selfhost:quickstart`, `selfhost:readiness -- --all`, `selfhost:readiness`, `selfhost:readiness -- --json`, `selfhost:doctor`, `selfhost:summary`, `selfhost:ports`,
-`selfhost:logs -- --json`, `selfhost:ops-report`,
+`selfhost:logs -- --json`, `selfhost:down -- --json`, `selfhost:ops-report`,
 `selfhost:plan`, `selfhost:plan -- --json`, `selfhost:backup-plan`, `selfhost:backup-validate`, `selfhost:restore-plan`, and `selfhost:rotate-plan` as pre-exposure safety,
-evidence, quickstart sequencing, human-readable and machine-readable readiness overview, selected-profile deployment maps, port visibility, safe log command metadata, handoff-report,
+evidence, quickstart sequencing, human-readable and machine-readable readiness overview, selected-profile deployment maps, port visibility, safe log and stop command metadata, handoff-report,
 machine-readable handoff, backup planning, backup-artifact validation, recovery-rehearsal, and rotation-planning commands. Capabilities that
 are not ready remain outside the
 green path, and secrets, public origins, and billing readiness must not be

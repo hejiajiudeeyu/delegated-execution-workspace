@@ -229,6 +229,10 @@ function writeFakeDocker(root) {
       "  console.log('platform-api booted with PLATFORM_ADMIN_API_KEY=sk_admin_fake_secret_from_logs');",
       "  process.exit(0);",
       "}",
+      "if (args.includes('down')) {",
+      "  console.log('stopped platform-api with PLATFORM_ADMIN_API_KEY=sk_admin_fake_secret_from_down');",
+      "  process.exit(0);",
+      "}",
       "process.exit(0);",
       ""
     ].join("\n"),
@@ -583,6 +587,26 @@ try {
   assert.match(logsBody.notes.join("\n"), /does not include docker compose logs stdout/);
   assert.ok(!logsJson.stdout.includes("sk_admin_fake_secret_from_logs"));
   assert.ok(!logsJson.stdout.includes(env.get("PLATFORM_ADMIN_API_KEY") || ""));
+
+  const downJson = run(tmpRoot, ["down", "--json"], {
+    env: {
+      ...process.env,
+      PATH: `${fakeDockerBin}${path.delimiter}${process.env.PATH || ""}`
+    }
+  });
+  assert.equal(downJson.status, 0, downJson.stderr || downJson.stdout);
+  const downBody = JSON.parse(downJson.stdout);
+  assert.equal(downBody.command, "selfhost:down");
+  assert.equal(downBody.profile, "platform");
+  assert.equal(downBody.ok, true);
+  assert.equal(downBody.compose_down.status, "ok");
+  assert.equal(downBody.compose_down.exit_code, 0);
+  assert.deepEqual(downBody.compose_down.args, ["down"]);
+  assert.deepEqual(downBody.blockers, []);
+  assert.ok(Array.isArray(downBody.notes));
+  assert.match(downBody.notes.join("\n"), /does not include docker compose down stdout/);
+  assert.ok(!downJson.stdout.includes("sk_admin_fake_secret_from_down"));
+  assert.ok(!downJson.stdout.includes(env.get("PLATFORM_ADMIN_API_KEY") || ""));
 
   const profiles = run(tmpRoot, ["profiles"]);
   assert.equal(profiles.status, 0, profiles.stderr || profiles.stdout);

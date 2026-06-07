@@ -156,6 +156,8 @@ corepack pnpm run selfhost:status
 corepack pnpm --silent run selfhost:status -- --json
 corepack pnpm run selfhost:logs
 corepack pnpm --silent run selfhost:logs -- --json
+corepack pnpm run selfhost:down
+corepack pnpm --silent run selfhost:down -- --json
 corepack pnpm run selfhost:smoke
 corepack pnpm run selfhost:security-review
 corepack pnpm --silent run selfhost:security-review -- --json
@@ -208,6 +210,8 @@ corepack pnpm run selfhost:status -- --profile public-stack
 corepack pnpm --silent run selfhost:status -- --profile public-stack --json
 corepack pnpm run selfhost:logs -- --profile public-stack
 corepack pnpm --silent run selfhost:logs -- --profile public-stack --json
+corepack pnpm run selfhost:down -- --profile public-stack
+corepack pnpm --silent run selfhost:down -- --profile public-stack --json
 ```
 
 Notes:
