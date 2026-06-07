@@ -117,6 +117,8 @@ corepack pnpm run deployability:quickstart
 corepack pnpm --silent run deployability:quickstart -- --json
 corepack pnpm run deployability:safety
 corepack pnpm --silent run deployability:safety -- --json
+corepack pnpm run deployability:doctor
+corepack pnpm --silent run deployability:doctor -- --json
 corepack pnpm run compat:status
 corepack pnpm --silent run compat:status -- --json
 corepack pnpm run deployability:handoff
@@ -145,6 +147,13 @@ which deployability commands are read-only, write files, start or stop services,
 call Docker, probe networks, or print private terminal text. Its JSON form is
 safe for dashboards and does not read `.env`, call Docker, probe networks, or
 print secret values.
+
+`deployability:doctor` is the read-only deployability alignment snapshot. It
+checks the compatibility ledger, top-level scripts, documentation, brand-site,
+and safety contract before an operator continues to pipeline-specific
+diagnostics. Its JSON form reports checks, blockers, warnings, evidence, and
+next commands without reading `.env`, calling Docker, probing networks, or
+printing secret values.
 
 `compat:status` is the read-only compatibility-ledger snapshot. It compares the
 current submodule gitlinks to the latest `changes/CHG-*.yaml`, reports dirty

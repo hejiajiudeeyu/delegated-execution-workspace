@@ -36,6 +36,23 @@ const MATRIX = [
     notes: "fresh-checkout first-use guide"
   },
   {
+    command: "corepack pnpm run deployability:doctor",
+    json_command: "corepack pnpm --silent run deployability:doctor -- --json",
+    category: "top_level",
+    posture: "read_only",
+    reads_env: false,
+    writes_files: false,
+    starts_services: false,
+    stops_services: false,
+    calls_docker: false,
+    probes_network: false,
+    private_terminal_text: false,
+    public_exposure_gate: false,
+    ci_safe: true,
+    dashboard_safe: true,
+    notes: "read-only readiness snapshot for compatibility, scripts, docs, brand-site, and safety contract alignment"
+  },
+  {
     command: "corepack pnpm run compat:status",
     json_command: "corepack pnpm --silent run compat:status -- --json",
     category: "top_level",

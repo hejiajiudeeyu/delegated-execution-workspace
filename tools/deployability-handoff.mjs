@@ -35,6 +35,11 @@ const COMMAND_MAP = [
     purpose: "review read/write/startup/network/logging posture for deployability commands"
   },
   {
+    command: "corepack pnpm run deployability:doctor",
+    json_command: "corepack pnpm --silent run deployability:doctor -- --json",
+    purpose: "run one read-only readiness snapshot for compatibility, command scripts, docs, brand-site, and safety-contract alignment"
+  },
+  {
     command: "corepack pnpm run dev:doctor",
     json_command: "corepack pnpm --silent run dev:doctor -- --json",
     purpose: "diagnose the local caller-skill and MCP development loop"

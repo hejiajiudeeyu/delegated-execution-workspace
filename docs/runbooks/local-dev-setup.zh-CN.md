@@ -96,6 +96,8 @@ corepack pnpm run deployability:quickstart
 corepack pnpm --silent run deployability:quickstart -- --json
 corepack pnpm run deployability:safety
 corepack pnpm --silent run deployability:safety -- --json
+corepack pnpm run deployability:doctor
+corepack pnpm --silent run deployability:doctor -- --json
 corepack pnpm run compat:status
 corepack pnpm --silent run compat:status -- --json
 corepack pnpm run deployability:handoff
@@ -121,6 +123,11 @@ daily development、self-host platform、public-stack 公开暴露复核和 rele
 会写文件、会启动或停止服务、会调用 Docker、会探测网络，或会输出私有终端文本。
 JSON 形式适合 dashboard 消费，且不读取 `.env`、不调用 Docker、不探测网络、不打印
 secret 值。
+
+`deployability:doctor` 是只读 deployability 对齐快照。它会在 operator 进入具体
+管线诊断前检查 compatibility ledger、顶层 scripts、文档、brand-site 和
+safety contract。JSON 形式输出 checks、blockers、warnings、evidence 和下一步命令，
+但不读取 `.env`、不调用 Docker、不探测网络、不打印 secret 值。
 
 `compat:status` 是只读兼容台账快照。它会把当前 submodule gitlinks 和最新
 `changes/CHG-*.yaml` 对齐检查，把 dirty submodule worktree 报成 warnings，并把

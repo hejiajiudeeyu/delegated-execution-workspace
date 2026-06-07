@@ -95,6 +95,7 @@ try {
   assert.ok(body.command_map.some((item) => item.command === "corepack pnpm run deployability:overview"));
   assert.ok(body.command_map.some((item) => item.command === "corepack pnpm run deployability:quickstart"));
   assert.ok(body.command_map.some((item) => item.command === "corepack pnpm run deployability:safety"));
+  assert.ok(body.command_map.some((item) => item.command === "corepack pnpm run deployability:doctor"));
   assert.ok(body.command_map.some((item) => item.command === "corepack pnpm run compat:status"));
   assert.ok(body.next_commands.includes("corepack pnpm run check:submodules"));
   assert.ok(!json.stdout.includes("sk_handoff_must_not_leak"));

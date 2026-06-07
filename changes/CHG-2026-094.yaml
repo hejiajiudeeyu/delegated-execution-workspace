@@ -1,0 +1,15 @@
+change_id: CHG-2026-094
+goal: add deployability doctor readiness snapshot
+protocol_sha: da3027100cfe9391f7f8d03be18a108ee2804cf6
+client_sha: f1d6a2d8c9b83517cdf6ca9803b223847f880e9a
+platform_sha: 5961309c6b0ca4e8df22dbb5be92ac0845bf8d25
+brand_site_sha: 8cfc87b59f1529bd80847baeccee3fe564303f57
+owner: hejiajiudeeyu
+risk_level: low
+affected_scope:
+  - orchestration
+  - brand-site
+  - documentation
+contracts_check: passed
+integration_check: passed
+notes: "Adds deployability:doctor and deployability:doctor -- --json as a fourth-repo, read-only deployability readiness snapshot. The command checks compatibility ledger, top-level scripts, documentation, brand-site, and safety-contract alignment while treating dirty submodule worktrees as warnings and bundle mismatches or dirty gitlink markers as blockers. It does not read .env files, call Docker, bind ports, probe networks, or print secrets. Updates README, deployability PRDs, local-dev runbooks, main readiness docs, deployability overview/quickstart/safety/handoff metadata, and brand-site Deployability Profiles while keeping protocol/client/platform SHAs unchanged."

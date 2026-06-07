@@ -18,14 +18,14 @@ repositories.
 - `repos/protocol`: `da3027100cfe9391f7f8d03be18a108ee2804cf6`
 - `repos/client`: `f1d6a2d8c9b83517cdf6ca9803b223847f880e9a`
 - `repos/platform`: `5961309c6b0ca4e8df22dbb5be92ac0845bf8d25`
-- `repos/brand-site`: `12e4071371d13df85bf861a8dbd1b79c13d1212c`
+- `repos/brand-site`: `8cfc87b59f1529bd80847baeccee3fe564303f57`
 
-The current bundle is `changes/CHG-2026-093.yaml`.
+The current bundle is `changes/CHG-2026-094.yaml`.
 
 ## Readiness Verdict
 
 The pinned combination is ready for daily fourth-repo development after
-CHG-2026-093:
+CHG-2026-094:
 
 - submodule SHA integrity is verified
 - boundary governance covers the new platform billing data package
@@ -129,6 +129,11 @@ CHG-2026-093:
   may print private terminal text, or gates public exposure, and supports
   `--json` without reading `.env`, calling Docker, binding ports, probing
   networks, or printing secrets
+- `deployability:doctor` is available as a read-only deployability readiness
+  snapshot for compatibility ledger, top-level scripts, documentation,
+  brand-site, and safety-contract alignment, and supports
+  `corepack pnpm --silent run deployability:doctor -- --json` without reading
+  `.env`, calling Docker, binding ports, probing networks, or printing secrets
 - `compat:status` is available as a read-only compatibility-ledger snapshot
   that compares latest-bundle SHAs to current submodule gitlinks, reports dirty
   submodule worktrees as warnings, and keeps ledger mismatches or dirty gitlink
@@ -173,7 +178,7 @@ Observed results:
 - `check:submodules`: passed
 - `check:boundaries`: passed after adding `@delexec/billing-store` to
   `platform/data`
-- `check:bundles`: passed with `CHG-2026-093`
+- `check:bundles`: passed with `CHG-2026-094`
 - `test:contracts`: passed, including `@delexec/billing-store` in platform
   package validation and the `@delexec/platform-api` dependency graph
 - `test:integration`: passed with a successful request/response path
@@ -192,6 +197,10 @@ Observed results:
   Docker, network, private-terminal-text, public-exposure-gate, CI-safe, and
   dashboard-safe posture for deployability, selfhost, dev, and release commands
   without terminal prose or secret values
+- `deployability:doctor -- --json`: passed, reporting compatibility ledger,
+  top-level scripts, documentation, brand-site, and safety-contract checks,
+  warnings, blockers, evidence, safety defaults, and next commands without
+  terminal prose or secret values
 - `compat:status -- --json`: passed, reporting the current bundle as matching
   the current protocol/client/platform/brand-site gitlinks; it also surfaced
   existing dirty submodule worktrees as warnings without treating them as ledger
@@ -249,7 +258,7 @@ Observed results:
   bilingual Deployability Profiles route/content contract, including the
   admin-only Billing console narrative plus `selfhost:security-review` and
   `selfhost:audit-export` / `selfhost:profiles` / `selfhost:quickstart` / `selfhost:readiness -- --all` / `selfhost:readiness` / `selfhost:doctor` / `selfhost:init -- --json` / `selfhost:init -- --profile public-stack --json` / `selfhost:summary` / `selfhost:ports` /
-  `selfhost:ops-report` / `selfhost:status -- --json` / `selfhost:config -- --json` / `selfhost:backup-validate` / `selfhost:restore-plan` / `selfhost:rotate -- --profile public-stack --json` / `selfhost:rotate -- --profile public-stack --confirm --json` / `deployability:quickstart` / `deployability:quickstart -- --json` / `deployability:safety` / `deployability:safety -- --json` / `deployability:handoff` / `deployability:handoff -- --json` / `operator:onboarding:check -- --json` / `published-image:smoke -- --dry-run --json`
+  `selfhost:ops-report` / `selfhost:status -- --json` / `selfhost:config -- --json` / `selfhost:backup-validate` / `selfhost:restore-plan` / `selfhost:rotate -- --profile public-stack --json` / `selfhost:rotate -- --profile public-stack --confirm --json` / `deployability:quickstart` / `deployability:quickstart -- --json` / `deployability:safety` / `deployability:safety -- --json` / `deployability:doctor` / `corepack pnpm run deployability:doctor` / `corepack pnpm --silent run deployability:doctor -- --json` / `deployability:handoff` / `deployability:handoff -- --json` / `operator:onboarding:check -- --json` / `published-image:smoke -- --dry-run --json`
   commands
 - `repos/brand-site` `npm run build`: passed, including client build, SSR
   build, and prerender output for the new deployability docs routes
@@ -475,7 +484,7 @@ Operator Onboarding. Management Console copy now also describes the admin-only
 Billing page as an operator surface, not as client-facing billing readiness, and
 the public-stack command examples include `selfhost:security-review`,
 `selfhost:audit-export`, `selfhost:audit-export -- --json`, `selfhost:profiles`, `selfhost:quickstart`, `selfhost:readiness -- --all`, `selfhost:readiness`, `selfhost:readiness -- --json`, `selfhost:doctor`, `selfhost:init -- --json`, `selfhost:init -- --profile public-stack --json`, `selfhost:summary`, `selfhost:ports`,
-`selfhost:up -- --json`, `selfhost:smoke -- --json`, `selfhost:logs -- --json`, `selfhost:down -- --json`, `selfhost:ops-report`, `deployability:safety`, `deployability:safety -- --json`, `deployability:handoff`, `operator:onboarding:check -- --json`,
+`selfhost:up -- --json`, `selfhost:smoke -- --json`, `selfhost:logs -- --json`, `selfhost:down -- --json`, `selfhost:ops-report`, `deployability:safety`, `deployability:safety -- --json`, `deployability:doctor`, `corepack pnpm run deployability:doctor`, `corepack pnpm --silent run deployability:doctor -- --json`, `deployability:handoff`, `operator:onboarding:check -- --json`,
 `selfhost:plan`, `selfhost:plan -- --json`, `selfhost:backup-plan`, `selfhost:backup-validate`, `selfhost:restore-plan`, `selfhost:rotate-plan`, `selfhost:rotate -- --profile public-stack --json`, and `selfhost:rotate -- --profile public-stack --confirm --json` as pre-exposure safety,
 evidence, quickstart sequencing, human-readable and machine-readable readiness overview, selected-profile deployment maps, port visibility, safe startup/log/stop command metadata, handoff-report,
 machine-readable handoff, backup planning, backup-artifact validation, recovery-rehearsal, rotation-planning, and rotation-metadata commands. Capabilities that
