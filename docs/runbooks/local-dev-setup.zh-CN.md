@@ -109,6 +109,8 @@ corepack pnpm run selfhost:ports
 corepack pnpm --silent run selfhost:ports -- --json
 corepack pnpm run selfhost:preflight
 corepack pnpm --silent run selfhost:preflight -- --json
+corepack pnpm run selfhost:up
+corepack pnpm --silent run selfhost:up -- --json
 corepack pnpm run selfhost:status
 corepack pnpm --silent run selfhost:status -- --json
 corepack pnpm run selfhost:logs
@@ -142,6 +144,8 @@ corepack pnpm run selfhost:ports -- --profile public-stack
 corepack pnpm --silent run selfhost:ports -- --profile public-stack --json
 corepack pnpm run selfhost:preflight -- --profile public-stack
 corepack pnpm --silent run selfhost:preflight -- --profile public-stack --json
+corepack pnpm run selfhost:up -- --profile public-stack
+corepack pnpm --silent run selfhost:up -- --profile public-stack --json
 corepack pnpm run selfhost:security-review -- --profile public-stack
 corepack pnpm --silent run selfhost:security-review -- --profile public-stack --json
 corepack pnpm run selfhost:status -- --profile public-stack
@@ -159,6 +163,10 @@ corepack pnpm --silent run selfhost:config -- --profile public-stack --json
 hygiene 未通过，默认不会继续启动；只有显式传入 `--force` 才会绕过该阻断。
 `selfhost:preflight -- --json` 保持同一套 gate 和 exit-code 语义，同时输出机器可读
 的 secret hygiene、compose config、routes、blockers 和 notes，供 dashboard 或部署脚本消费。
+
+`selfhost:up -- --json` 保持相同的 init、preflight 和 Docker compose 启动序列，
+同时输出机器可读的 init、preflight、compose-up、blockers 和 notes。JSON 形式会刻意
+省略 init、preflight 和 Docker compose up stdout，因为命令输出可能包含敏感值。
 
 `selfhost:status` 是 profile 启动后的 runtime 管理快照。它会调用 Docker compose
 `ps`、检查 secret hygiene 状态，并探测配置的 health endpoints，但不会打印 secret 值。

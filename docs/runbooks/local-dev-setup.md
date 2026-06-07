@@ -128,6 +128,8 @@ corepack pnpm run selfhost:ports
 corepack pnpm --silent run selfhost:ports -- --json
 corepack pnpm run selfhost:preflight
 corepack pnpm --silent run selfhost:preflight -- --json
+corepack pnpm run selfhost:up
+corepack pnpm --silent run selfhost:up -- --json
 corepack pnpm run selfhost:status
 corepack pnpm --silent run selfhost:status -- --json
 corepack pnpm run selfhost:logs
@@ -161,6 +163,8 @@ corepack pnpm run selfhost:ports -- --profile public-stack
 corepack pnpm --silent run selfhost:ports -- --profile public-stack --json
 corepack pnpm run selfhost:preflight -- --profile public-stack
 corepack pnpm --silent run selfhost:preflight -- --profile public-stack --json
+corepack pnpm run selfhost:up -- --profile public-stack
+corepack pnpm --silent run selfhost:up -- --profile public-stack --json
 corepack pnpm run selfhost:security-review -- --profile public-stack
 corepack pnpm --silent run selfhost:security-review -- --profile public-stack --json
 corepack pnpm run selfhost:status -- --profile public-stack
@@ -180,6 +184,11 @@ or secret hygiene checks fail, it will not start the profile by default; passing
 same gate and exit-code semantics while returning machine-readable secret
 hygiene, compose config, route, blocker, and note fields for dashboards or
 deployment scripts.
+
+`selfhost:up -- --json` keeps the same init, preflight, and Docker compose
+startup sequence while returning machine-readable init, preflight, compose-up,
+blocker, and note fields. The JSON form intentionally omits init, preflight, and
+Docker compose up stdout because command output may contain sensitive values.
 
 `selfhost:status` is the runtime management snapshot after a profile is started.
 It calls Docker compose `ps`, checks secret hygiene status, and probes configured

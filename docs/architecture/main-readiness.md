@@ -20,12 +20,12 @@ repositories.
 - `repos/platform`: `5961309c6b0ca4e8df22dbb5be92ac0845bf8d25`
 - `repos/brand-site`: `9a2b505afe1917f9f4e389e672853c316490b190`
 
-The current bundle is `changes/CHG-2026-077.yaml`.
+The current bundle is `changes/CHG-2026-078.yaml`.
 
 ## Readiness Verdict
 
 The pinned combination is ready for daily fourth-repo development after
-CHG-2026-077:
+CHG-2026-078:
 
 - submodule SHA integrity is verified
 - boundary governance covers the new platform billing data package
@@ -49,6 +49,9 @@ CHG-2026-077:
   startup, and supports `--json` for Docker compose service state, secret
   hygiene status, health endpoint checks, blockers, and safety notes without
   printing secret values
+- `selfhost:up` is available as the guarded selected-profile startup command,
+  and supports `--json` for init, preflight, compose-up, blocker, and note
+  metadata while omitting command stdout because it may contain sensitive values
 - `selfhost:logs` is available as the private-operator raw log view, and
   supports `--json` for command metadata, service/tail filters, exit code, and
   stderr metadata while omitting raw log stdout because application logs may
@@ -133,7 +136,7 @@ Observed results:
 - `check:submodules`: passed
 - `check:boundaries`: passed after adding `@delexec/billing-store` to
   `platform/data`
-- `check:bundles`: passed with `CHG-2026-077`
+- `check:bundles`: passed with `CHG-2026-078`
 - `test:contracts`: passed, including `@delexec/billing-store` in platform
   package validation and the `@delexec/platform-api` dependency graph
 - `test:integration`: passed with a successful request/response path
@@ -296,6 +299,10 @@ snapshot. It calls Docker compose `ps`, checks secret hygiene status, and probes
 configured health endpoints without printing secret values; `--json` emits the
 same runtime service state, health checks, blockers, and safety notes for
 dashboards and management scripts;
+`corepack pnpm run selfhost:up` is the guarded startup command. It runs init,
+preflight, then Docker compose `up -d`; `--json` emits init, preflight,
+compose-up, blocker, and note metadata while omitting command stdout because it
+may contain sensitive values;
 `corepack pnpm run selfhost:logs` is the private-operator raw log view and
 supports `--service` and `--tail`; `--json` emits command metadata, selected
 service, tail size, exit code, and stderr metadata while omitting raw log stdout
@@ -380,9 +387,9 @@ Operator Onboarding. Management Console copy now also describes the admin-only
 Billing page as an operator surface, not as client-facing billing readiness, and
 the public-stack command examples include `selfhost:security-review`,
 `selfhost:audit-export`, `selfhost:profiles`, `selfhost:quickstart`, `selfhost:readiness -- --all`, `selfhost:readiness`, `selfhost:readiness -- --json`, `selfhost:doctor`, `selfhost:summary`, `selfhost:ports`,
-`selfhost:logs -- --json`, `selfhost:down -- --json`, `selfhost:ops-report`,
+`selfhost:up -- --json`, `selfhost:logs -- --json`, `selfhost:down -- --json`, `selfhost:ops-report`,
 `selfhost:plan`, `selfhost:plan -- --json`, `selfhost:backup-plan`, `selfhost:backup-validate`, `selfhost:restore-plan`, and `selfhost:rotate-plan` as pre-exposure safety,
-evidence, quickstart sequencing, human-readable and machine-readable readiness overview, selected-profile deployment maps, port visibility, safe log and stop command metadata, handoff-report,
+evidence, quickstart sequencing, human-readable and machine-readable readiness overview, selected-profile deployment maps, port visibility, safe startup/log/stop command metadata, handoff-report,
 machine-readable handoff, backup planning, backup-artifact validation, recovery-rehearsal, and rotation-planning commands. Capabilities that
 are not ready remain outside the
 green path, and secrets, public origins, and billing readiness must not be

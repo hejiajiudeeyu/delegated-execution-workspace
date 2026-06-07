@@ -54,6 +54,8 @@ Required commands:
 - `corepack pnpm --silent run selfhost:doctor -- --json`
 - `corepack pnpm run selfhost:preflight`
 - `corepack pnpm --silent run selfhost:preflight -- --json`
+- `corepack pnpm run selfhost:up`
+- `corepack pnpm --silent run selfhost:up -- --json`
 - `corepack pnpm run selfhost:status`
 - `corepack pnpm --silent run selfhost:status -- --json`
 - `corepack pnpm run selfhost:smoke`
@@ -123,6 +125,9 @@ Acceptance:
   config, route, blocker, and safety-note fields without printing secret values
 - `selfhost:up` reuses the preflight gate by default; it does not continue
   when preflight fails unless `--force` is passed explicitly
+- `selfhost:up -- --json` returns machine-readable init, preflight, compose-up,
+  blocker, and note fields without printing init, preflight, or Docker compose
+  up stdout
 - logs can be filtered by service and tail length; `--json` returns command
   metadata, exit status, stderr lines, selected service, and tail size while
   omitting Docker compose logs stdout because application logs may contain

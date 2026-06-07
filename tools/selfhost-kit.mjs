@@ -120,7 +120,7 @@ Commands:
   quickstart
             Print the recommended command sequence for a profile
   plan      Explain services, URLs, and safety checks for the profile
-  up        Run preflight, then docker compose up -d for the selected profile
+  up        Run preflight, then docker compose up -d; --json omits stdout
   down      Run docker compose down; --json omits stdout and reports metadata
   logs      Run docker compose logs; --json omits log stdout and reports metadata
   ops-report
@@ -639,6 +639,103 @@ function downData(profileName) {
 
 function printDownJson(profileName) {
   const data = downData(profileName);
+  console.log(
+    JSON.stringify(
+      {
+        generated_at: new Date().toISOString(),
+        ...data
+      },
+      null,
+      2
+    )
+  );
+  return data.ok;
+}
+
+function withCapturedConsole(fn) {
+  const originalLog = console.log;
+  const lines = [];
+  console.log = (...values) => {
+    lines.push(values.map((value) => String(value)).join(" "));
+  };
+  try {
+    const value = fn();
+    return { ok: true, value, lines };
+  } catch (error) {
+    return {
+      ok: false,
+      error: error instanceof Error ? error.message : String(error),
+      lines
+    };
+  } finally {
+    console.log = originalLog;
+  }
+}
+
+function upData(profileName, { force = false } = {}) {
+  const blockers = [];
+  const initResult = withCapturedConsole(() => initProfile(profileName, { force: false }));
+  if (!initResult.ok) {
+    blockers.push(`init failed: ${initResult.error}`);
+  }
+
+  const preflight = preflightData(profileName);
+  if (!preflight.ok) {
+    blockers.push(...preflight.blockers);
+    if (!force) {
+      blockers.push("preflight failed; rerun with --force to override");
+    }
+  }
+
+  const shouldStart = initResult.ok && (preflight.ok || force);
+  const upArgs = ["up", "-d"];
+  let composeUp = {
+    ok: false,
+    status: "skipped",
+    exit_code: null,
+    args: upArgs,
+    stderr_lines: []
+  };
+
+  if (shouldStart) {
+    const upResult = dockerCompose(profileName, upArgs, "pipe");
+    const upOk = upResult.status === 0;
+    composeUp = {
+      ok: upOk,
+      status: upOk ? "ok" : "fail",
+      exit_code: upResult.status ?? 1,
+      args: upArgs,
+      stderr_lines: (upResult.stderr || "").trim().split(/\r?\n/).filter(Boolean)
+    };
+    if (!upOk) {
+      blockers.push("docker compose up failed");
+    }
+  }
+
+  return {
+    command: "selfhost:up",
+    profile: profileName,
+    ok: initResult.ok && composeUp.ok && (preflight.ok || force),
+    force,
+    init: {
+      ok: initResult.ok,
+      status: initResult.ok ? "ok" : "fail",
+      message: initResult.ok ? "env initialized or hardened" : initResult.error
+    },
+    preflight,
+    compose_up: composeUp,
+    blockers: Array.from(new Set(blockers)),
+    notes: [
+      "runs init, preflight, then docker compose up -d for the selected profile",
+      "does not include docker compose up stdout because command output may contain sensitive values",
+      "does not include init or preflight stdout",
+      "use text mode in a private operator terminal when raw command output is required"
+    ]
+  };
+}
+
+function printUpJson(profileName, options) {
+  const data = upData(profileName, options);
   console.log(
     JSON.stringify(
       {
@@ -2277,6 +2374,9 @@ async function main() {
   }
 
   if (args.command === "up") {
+    if (args.json) {
+      process.exit(printUpJson(args.profile, { force: args.force }) ? 0 : 1);
+    }
     initProfile(args.profile, { force: false });
     const preflightOk = preflightProfile(args.profile);
     if (!preflightOk && !args.force) {

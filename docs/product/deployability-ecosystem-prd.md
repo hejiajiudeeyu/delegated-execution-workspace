@@ -88,7 +88,7 @@ The ecosystem is "daily-deployable" when a fresh operator can:
 | Self-host backup validation | fourth repo | `corepack pnpm run selfhost:backup-validate`, plus `--json` for recovery rehearsal scripts |
 | Self-host restore rehearsal | fourth repo | `corepack pnpm run selfhost:restore-plan`, plus `--json` for recovery rehearsal scripts |
 | Self-host rotation planning | fourth repo | `corepack pnpm run selfhost:rotate-plan`, plus `--json` for operator runbooks and dashboards |
-| Compose lifecycle wrapper | fourth repo | delegate to `repos/platform/deploy/*`; `selfhost:logs -- --json` and `selfhost:down -- --json` emit command metadata without raw compose stdout |
+| Compose lifecycle wrapper | fourth repo | delegate to `repos/platform/deploy/*`; `selfhost:up -- --json`, `selfhost:logs -- --json`, and `selfhost:down -- --json` emit command metadata without raw compose stdout |
 | Published-image smoke wrapper | fourth repo | delegate to `repos/platform` public-stack smoke |
 | Operator onboarding contract | fourth repo | `operator:onboarding:check` keeps public-stack, brand-site, and runbooks aligned |
 | Public stack deploy manifests | `repos/platform` | existing `deploy/public-stack` |
@@ -113,13 +113,15 @@ Required baseline:
   logs may contain sensitive values
 - machine-readable stop-command metadata that omits compose down stdout because
   compose output may contain sensitive values
+- machine-readable startup metadata that omits init, preflight, and compose up
+  stdout because command output may contain sensitive values
 
 ## 8. Success Metrics
 
 - A fresh checkout can run `selfhost:profiles`, `selfhost:quickstart`,
   `selfhost:readiness -- --all`, `selfhost:readiness`, `selfhost:doctor`,
   `selfhost:init`, `selfhost:summary`, `selfhost:preflight`, `selfhost:status`,
-  `selfhost:status -- --json`, `selfhost:logs -- --json`,
+  `selfhost:status -- --json`, `selfhost:up -- --json`, `selfhost:logs -- --json`,
   `selfhost:down -- --json`, `dev:doctor`, `test:agent-e2e`, `published-image:plan`, `selfhost:security-review`, and
   `operator:onboarding:check`.
 - Platform billing operators have an admin-only API and Platform Console page
@@ -141,6 +143,9 @@ Required baseline:
 ### M2: One-command profile launcher
 
 - Add profile-specific `up/down/logs/status` wrappers.
+- Add `selfhost:up -- --json` so dashboards and management scripts can consume
+  startup preflight, compose-up status, blockers, and notes without embedding
+  init, preflight, or Docker compose up stdout.
 - Add `selfhost:logs -- --json` so dashboards and management scripts can check
   log command execution, service filter, tail size, and stderr metadata without
   embedding raw application log stdout.
