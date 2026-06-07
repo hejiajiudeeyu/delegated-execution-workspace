@@ -18,13 +18,13 @@ protocol/client/platform SHA 组合可用于本地跨仓开发和已认证的源
 - `repos/protocol`：`da3027100cfe9391f7f8d03be18a108ee2804cf6`
 - `repos/client`：`f1d6a2d8c9b83517cdf6ca9803b223847f880e9a`
 - `repos/platform`：`5961309c6b0ca4e8df22dbb5be92ac0845bf8d25`
-- `repos/brand-site`：`49dbe67cc21da91f6fbee796e71be04041b7f72f`
+- `repos/brand-site`：`13662569792ac238dc4d92ee74124727417fbfd7`
 
-当前 bundle 为 `changes/CHG-2026-082.yaml`。
+当前 bundle 为 `changes/CHG-2026-083.yaml`。
 
 ## 当前判断
 
-CHG-2026-082 收口后，当前固定组合已经可以用于日常第四仓开发：
+CHG-2026-083 收口后，当前固定组合已经可以用于日常第四仓开发：
 
 - submodule SHA 完整性已验证
 - 边界治理已覆盖新的 platform billing data package
@@ -124,7 +124,7 @@ corepack pnpm run test:integration
 - `check:submodules`：通过
 - `check:boundaries`：通过，已把 `@delexec/billing-store` 归入
   `platform/data`
-- `check:bundles`：通过，使用 `CHG-2026-082`
+- `check:bundles`：通过，使用 `CHG-2026-083`
 - `test:contracts`：通过，platform package validation 已识别
   `@delexec/billing-store` 和 `@delexec/platform-api` dependency graph
 - `test:integration`：通过，完整 request/response 路径成功
@@ -148,9 +148,9 @@ corepack pnpm run test:integration
   golden-four smoke，并检查不会泄漏 secret env 值
 - `test:local-stack`：通过，覆盖一键本地栈命令顺序、托管进程 status/log 行为、
   JSON plan / up / status / log / down metadata 和 secret-leak guard
-- `published-image:plan` / `published-image:smoke -- --dry-run`：通过，覆盖
-  public-stack release image registry/tag 可见性、`COMPOSE_NO_BUILD=true` 委托命令
-  和 strict smoke 默认值
+- `published-image:plan -- --json` / `published-image:smoke -- --dry-run`：通过，
+  覆盖 public-stack release image registry/tag 可见性、`COMPOSE_NO_BUILD=true`
+  委托命令、strict smoke 默认值和机器可读 release-plan metadata
 - `published-image:smoke -- --image-tag latest`：通过，`repos/platform`
   public-stack smoke 以 `mode=published_image` 启动，gateway proxy 场景成功并清理 compose
 - `test:published-image-smoke`：通过，用 fake platform repo 覆盖 compose image
@@ -311,7 +311,9 @@ CI、dashboard 和管理脚本，同时不嵌入展开后的 compose config stdo
 
 `corepack pnpm run published-image:plan` 会审阅 public-stack 的三类 release image：
 `rsp-platform`、`rsp-relay` 和 `rsp-gateway`，确认 compose image 模板仍由
-`IMAGE_REGISTRY` / `IMAGE_TAG` 参数化。`corepack pnpm run published-image:smoke`
+`IMAGE_REGISTRY` / `IMAGE_TAG` 参数化。`published-image:plan -- --json` 会输出同一组
+image refs、委托命令、smoke env metadata 和 safety notes，供 release dashboard 和
+管理脚本消费，同时不打印 secret env 值。`corepack pnpm run published-image:smoke`
 会以 strict Docker 模式委托 `repos/platform` 的 `test:public-stack-smoke`，并设置
 `COMPOSE_NO_BUILD=true`，让平台 smoke 拉取已发布镜像而不是本地 build。
 第四仓只拥有这个编排入口；实际镜像 build、publish 和 release gate 仍由

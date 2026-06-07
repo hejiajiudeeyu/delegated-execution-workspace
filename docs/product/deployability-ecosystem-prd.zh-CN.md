@@ -95,7 +95,7 @@ CALL ANYTHING 现在的仓库边界是正确的：
 | Self-host restore rehearsal | 第四仓 | `corepack pnpm run selfhost:restore-plan`，以及用于恢复演练脚本的 `--json` |
 | Self-host rotation planning | 第四仓 | `corepack pnpm run selfhost:rotate-plan`，以及用于 operator runbook 和 dashboard 的 `--json` |
 | Compose 生命周期 wrapper | 第四仓 | 委托到 `repos/platform/deploy/*`；`selfhost:up -- --json`、`selfhost:logs -- --json` 和 `selfhost:down -- --json` 输出不含 raw compose stdout 的命令 metadata |
-| Published-image smoke wrapper | 第四仓 | 委托到 `repos/platform` 的 public-stack smoke |
+| Published-image smoke wrapper | 第四仓 | 委托到 `repos/platform` 的 public-stack smoke；`published-image:plan -- --json` 供 release dashboard 和管理脚本消费 |
 | Operator onboarding contract | 第四仓 | `operator:onboarding:check` 校验 public-stack/brand-site/runbook 一致性 |
 | Public stack deploy manifest | `repos/platform` | 现有 `deploy/public-stack` |
 | Billing admin read model | `repos/platform` | admin-only tenant、balance、recharge、ledger endpoints 和 Platform Console 管理页 |
@@ -136,7 +136,7 @@ CALL ANYTHING 现在的仓库边界是正确的：
   `selfhost:init`、`selfhost:summary`、`selfhost:preflight`、`selfhost:status`、
   `selfhost:status -- --json`、`selfhost:up -- --json`、`selfhost:logs -- --json`、
   `selfhost:down -- --json`、`selfhost:smoke -- --json`、`dev:doctor`、
-  `test:agent-e2e`、`published-image:plan`、
+  `test:agent-e2e`、`published-image:plan -- --json`、
   `selfhost:security-review`、`selfhost:audit-export -- --json` 和 `operator:onboarding:check`
 - platform billing operator 已有 admin-only API 和 Platform Console 页面，可做
   tenant setup、balance inspection、人工 recharge capture 和 ledger 浏览；终端用户

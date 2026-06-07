@@ -32,7 +32,7 @@ const RELEASE_IMAGES = [
 ];
 
 function usage() {
-  console.log(`Usage: node tools/published-image-smoke.mjs <command> [--profile public-stack] [--image-registry registry] [--image-tag tag] [--dry-run] [--allow-skip]
+  console.log(`Usage: node tools/published-image-smoke.mjs <command> [--profile public-stack] [--image-registry registry] [--image-tag tag] [--dry-run] [--allow-skip] [--json]
 
 Commands:
   plan   Print the published-image smoke contract and delegated platform command
@@ -49,7 +49,8 @@ function parseArgs(argv) {
     imageRegistry: process.env.IMAGE_REGISTRY || DEFAULT_REGISTRY,
     imageTag: process.env.IMAGE_TAG || DEFAULT_TAG,
     dryRun: false,
-    allowSkip: false
+    allowSkip: false,
+    json: false
   };
 
   for (let index = 3; index < argv.length; index += 1) {
@@ -63,6 +64,10 @@ function parseArgs(argv) {
     }
     if (value === "--allow-skip") {
       args.allowSkip = true;
+      continue;
+    }
+    if (value === "--json") {
+      args.json = true;
       continue;
     }
     if (value === "--profile") {
@@ -155,6 +160,19 @@ function smokeEnv(args) {
   };
 }
 
+function printJson(data) {
+  console.log(
+    JSON.stringify(
+      {
+        generated_at: new Date().toISOString(),
+        ...data
+      },
+      null,
+      2
+    )
+  );
+}
+
 function delegatedCommand() {
   return ["corepack", "pnpm", "--dir", PLATFORM_DIR, "run", PLATFORM_SMOKE_SCRIPT];
 }
@@ -172,15 +190,41 @@ function printImageSummary(args) {
   }
 }
 
-function printPlan(args) {
+function planData(args) {
   validateComposeImages();
   validatePlatformSmokeScript();
+  return {
+    command: "published-image:plan",
+    ok: true,
+    profile: args.profile,
+    compose: COMPOSE_PATH,
+    platform_smoke: `${PLATFORM_DIR}#${PLATFORM_SMOKE_SCRIPT}`,
+    images: RELEASE_IMAGES.map((releaseImage) => ({
+      service: releaseImage.service,
+      image: releaseImage.image,
+      role: releaseImage.role,
+      template: expectedTemplate(releaseImage.image),
+      ref: resolvedRef(args, releaseImage.image)
+    })),
+    env: smokeEnv(args),
+    delegated_command: printableCommand(args),
+    notes: [
+      "validates public-stack image templates before running smoke",
+      "uses COMPOSE_NO_BUILD=true so platform smoke pulls published images",
+      "uses strict Docker smoke by default; pass --allow-skip only for local plan-style probes",
+      "does not print secret env values"
+    ]
+  };
+}
+
+function printPlan(args) {
+  const data = planData(args);
   console.log(`[published-image:plan] profile=${args.profile}`);
-  console.log(`compose=${COMPOSE_PATH}`);
-  console.log(`platform_smoke=${PLATFORM_DIR}#${PLATFORM_SMOKE_SCRIPT}`);
+  console.log(`compose=${data.compose}`);
+  console.log(`platform_smoke=${data.platform_smoke}`);
   printImageSummary(args);
   console.log("\nDelegated command:");
-  console.log(printableCommand(args));
+  console.log(data.delegated_command);
   console.log("\nSafety:");
   console.log("- validates public-stack image templates before running smoke");
   console.log("- uses COMPOSE_NO_BUILD=true so platform smoke pulls published images");
@@ -218,6 +262,10 @@ function main() {
     return 0;
   }
   if (args.command === "plan") {
+    if (args.json) {
+      printJson(planData(args));
+      return 0;
+    }
     printPlan(args);
     return 0;
   }

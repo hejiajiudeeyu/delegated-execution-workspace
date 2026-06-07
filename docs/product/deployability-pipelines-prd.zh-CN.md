@@ -238,6 +238,7 @@
 必备命令：
 
 - `corepack pnpm run published-image:plan`
+- `corepack pnpm --silent run published-image:plan -- --json`
 - `corepack pnpm run published-image:smoke`
 - `corepack pnpm run test:published-image-smoke`
 
@@ -247,6 +248,8 @@
   解析结果
 - plan 校验 `repos/platform/deploy/public-stack/docker-compose.yml` 中三类
   release image 都通过 `IMAGE_REGISTRY` 和 `IMAGE_TAG` 参数化
+- plan `--json` 输出同一组 image refs、compose 路径、platform smoke script、委托命令、
+  smoke env metadata 和 safety notes，但不打印 secret env 值
 - smoke 委托到 `repos/platform` 的 `test:public-stack-smoke`
 - smoke 默认设置 `COMPOSE_NO_BUILD=true`，让平台 smoke 拉取已发布镜像而不是本地 build
 - smoke 默认使用 strict Docker 模式；只有显式 `--allow-skip` 才允许本地探测式跳过
@@ -255,6 +258,7 @@
 验收：
 
 - operator 在实际运行 Docker 前能审阅将要验证的镜像和平台 smoke 命令
+- CI、dashboard 和 release-management 脚本可以在决定是否运行 Docker 前消费干净 JSON plan
 - `--image-registry` 和 `--image-tag` 可用于候选 release tag
 - dry-run 可在无 Docker 环境中验证编排契约
 - 真实 published-image smoke 的容器启动、health 和 gateway 场景仍由

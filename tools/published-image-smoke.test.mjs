@@ -68,6 +68,37 @@ try {
   assert.match(plan.stdout, /corepack pnpm --dir repos\/platform run test:public-stack-smoke/);
   assert.ok(!plan.stdout.includes("sk_admin_must_not_leak"));
 
+  const planJson = run(tmpRoot, [
+    "plan",
+    "--json",
+    "--image-registry",
+    "registry.example/delexec",
+    "--image-tag",
+    "2026.06.07"
+  ]);
+  assert.equal(planJson.status, 0, planJson.stderr || planJson.stdout);
+  const planBody = JSON.parse(planJson.stdout);
+  assert.equal(planBody.command, "published-image:plan");
+  assert.equal(planBody.ok, true);
+  assert.equal(planBody.profile, "public-stack");
+  assert.equal(planBody.compose, "repos/platform/deploy/public-stack/docker-compose.yml");
+  assert.equal(planBody.platform_smoke, "repos/platform#test:public-stack-smoke");
+  assert.equal(planBody.env.COMPOSE_NO_BUILD, "true");
+  assert.equal(planBody.env.IMAGE_REGISTRY, "registry.example/delexec");
+  assert.equal(planBody.env.IMAGE_TAG, "2026.06.07");
+  assert.equal(planBody.env.STRICT_COMPOSE_SMOKE, "true");
+  assert.deepEqual(
+    planBody.images.map((image) => image.ref),
+    [
+      "registry.example/delexec/rsp-platform:2026.06.07",
+      "registry.example/delexec/rsp-relay:2026.06.07",
+      "registry.example/delexec/rsp-gateway:2026.06.07"
+    ]
+  );
+  assert.match(planBody.delegated_command, /corepack pnpm --dir repos\/platform run test:public-stack-smoke/);
+  assert.match(planBody.notes.join("\n"), /does not print secret env values/);
+  assert.ok(!planJson.stdout.includes("sk_admin_must_not_leak"));
+
   const dryRun = run(tmpRoot, [
     "smoke",
     "--",

@@ -18,14 +18,14 @@ repositories.
 - `repos/protocol`: `da3027100cfe9391f7f8d03be18a108ee2804cf6`
 - `repos/client`: `f1d6a2d8c9b83517cdf6ca9803b223847f880e9a`
 - `repos/platform`: `5961309c6b0ca4e8df22dbb5be92ac0845bf8d25`
-- `repos/brand-site`: `49dbe67cc21da91f6fbee796e71be04041b7f72f`
+- `repos/brand-site`: `13662569792ac238dc4d92ee74124727417fbfd7`
 
-The current bundle is `changes/CHG-2026-082.yaml`.
+The current bundle is `changes/CHG-2026-083.yaml`.
 
 ## Readiness Verdict
 
 The pinned combination is ready for daily fourth-repo development after
-CHG-2026-082:
+CHG-2026-083:
 
 - submodule SHA integrity is verified
 - boundary governance covers the new platform billing data package
@@ -140,7 +140,7 @@ Observed results:
 - `check:submodules`: passed
 - `check:boundaries`: passed after adding `@delexec/billing-store` to
   `platform/data`
-- `check:bundles`: passed with `CHG-2026-082`
+- `check:bundles`: passed with `CHG-2026-083`
 - `test:contracts`: passed, including `@delexec/billing-store` in platform
   package validation and the `@delexec/platform-api` dependency graph
 - `test:integration`: passed with a successful request/response path
@@ -170,9 +170,10 @@ Observed results:
 - `test:local-stack`: passed for one-command local stack command sequencing,
   managed process status/log behavior, JSON plan/up/status/log/down metadata,
   and secret-leak guard
-- `published-image:plan` / `published-image:smoke -- --dry-run`: passed for
-  public-stack release image registry/tag visibility, the `COMPOSE_NO_BUILD=true`
-  delegated command, and strict smoke defaults
+- `published-image:plan -- --json` / `published-image:smoke -- --dry-run`:
+  passed for public-stack release image registry/tag visibility, the
+  `COMPOSE_NO_BUILD=true` delegated command, strict smoke defaults, and
+  machine-readable release-plan metadata
 - `published-image:smoke -- --image-tag latest`: passed with `repos/platform`
   public-stack smoke running in `mode=published_image`, completing the gateway
   proxy scenario, and cleaning up compose
@@ -363,6 +364,9 @@ explicitly.
 `corepack pnpm run published-image:plan` reviews the three public-stack release
 images, `rsp-platform`, `rsp-relay`, and `rsp-gateway`, and confirms the compose
 image templates are still parameterized by `IMAGE_REGISTRY` / `IMAGE_TAG`.
+`published-image:plan -- --json` emits the same image refs, delegated command,
+smoke env metadata, and safety notes for release dashboards and management
+scripts without printing secret env values.
 `corepack pnpm run published-image:smoke` delegates to `repos/platform`
 `test:public-stack-smoke` in strict Docker mode with `COMPOSE_NO_BUILD=true`, so
 platform smoke pulls published images instead of building locally. The fourth

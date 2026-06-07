@@ -274,6 +274,7 @@ validation without copying the release implementation owned by `repos/platform`.
 Required commands:
 
 - `corepack pnpm run published-image:plan`
+- `corepack pnpm --silent run published-image:plan -- --json`
 - `corepack pnpm run published-image:smoke`
 - `corepack pnpm run test:published-image-smoke`
 
@@ -284,6 +285,9 @@ Required behavior:
 - plan validates that the three release images in
   `repos/platform/deploy/public-stack/docker-compose.yml` are parameterized by
   `IMAGE_REGISTRY` and `IMAGE_TAG`
+- plan `--json` emits the same image refs, compose path, platform smoke script,
+  delegated command, smoke env metadata, and safety notes without printing
+  secret env values
 - smoke delegates to `repos/platform` `test:public-stack-smoke`
 - smoke sets `COMPOSE_NO_BUILD=true` by default so platform smoke pulls
   published images instead of building locally
@@ -296,6 +300,8 @@ Acceptance:
 
 - operators can review the exact images and delegated platform smoke command
   before running Docker
+- CI, dashboards, and release-management scripts can consume the plan as clean
+  JSON before deciding whether to run Docker
 - `--image-registry` and `--image-tag` support candidate release tags
 - dry-run validates the orchestration contract without Docker
 - real container startup, health, and gateway scenario checks remain owned by
