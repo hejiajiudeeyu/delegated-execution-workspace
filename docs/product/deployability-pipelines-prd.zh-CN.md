@@ -104,6 +104,8 @@
 - `corepack pnpm --silent run selfhost:restore-plan -- --backup-dir <dir> --json`
 - `corepack pnpm run selfhost:rotate-plan`
 - `corepack pnpm --silent run selfhost:rotate-plan -- --json`
+- `corepack pnpm --silent run selfhost:rotate -- --json`
+- `corepack pnpm --silent run selfhost:rotate -- --confirm --json`
 - `corepack pnpm run test:selfhost-kit`
 
 验收：
@@ -173,6 +175,10 @@
 - rotate plan 会输出手动 secret rotation checklist，但不读取或修改 `.env`；
   `--json` 返回同一组 backup-first、dry-run、confirm、restart、smoke 验证步骤和
   safety notes，供 dashboard、CI 和 operator runbook 消费
+- rotate dry-run JSON 会输出选定 `.env` 路径、将被轮换的 key、下一步命令和
+  safety notes，但不修改文件、不打印 secret 值；confirmed rotate JSON 会写出
+  `.env.rotate-backup-*` artifact，并返回 changed-file metadata、restart / smoke
+  下一步命令和 safety notes，但不打印新生成的 secret 值
 - selfhost kit 对 env 创建、secret rotation dry-run / confirm 行为有自动化覆盖
 - 命令不打印 secret 值
 

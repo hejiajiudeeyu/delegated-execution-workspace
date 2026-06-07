@@ -314,6 +314,8 @@ corepack pnpm run selfhost:restore-plan -- --profile public-stack --backup-dir b
 corepack pnpm --silent run selfhost:restore-plan -- --profile public-stack --backup-dir backups/selfhost/public-stack/<stamp> --json
 corepack pnpm run selfhost:rotate-plan -- --profile public-stack
 corepack pnpm --silent run selfhost:rotate-plan -- --profile public-stack --json
+corepack pnpm --silent run selfhost:rotate -- --profile public-stack --json
+corepack pnpm --silent run selfhost:rotate -- --profile public-stack --confirm --json
 corepack pnpm run selfhost:rotate -- --confirm
 ```
 
@@ -360,3 +362,9 @@ confirmed rotation、restart 和 smoke 验证 checklist；不会读取或修改 
 当 dashboard、CI 或 operator runbook 需要同一组 rotation 顺序和 safety notes，
 且不想解析终端文本时，使用
 `corepack pnpm --silent run selfhost:rotate-plan ... --json`。
+
+`selfhost:rotate -- --json` 是选定 profile 的机器可读 dry-run。它会输出 `.env`
+路径、将被轮换的 key、下一步命令和 safety notes，但不修改文件，也不打印 secret 值。
+`selfhost:rotate -- --confirm --json` 会执行与文本模式相同的 confirmed rotation，
+在选定 profile 的 `.env` 旁写出 `.env.rotate-backup-*`，并返回 changed-file
+metadata、restart / smoke 下一步命令和 safety notes，但不打印任何新生成的 secret 值。

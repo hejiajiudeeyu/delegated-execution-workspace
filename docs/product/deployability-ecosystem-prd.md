@@ -90,7 +90,7 @@ The ecosystem is "daily-deployable" when a fresh operator can:
 | Self-host backup planning | fourth repo | `corepack pnpm run selfhost:backup-plan`, plus `--json` for recovery rehearsal scripts |
 | Self-host backup validation | fourth repo | `corepack pnpm run selfhost:backup-validate`, plus `--json` for recovery rehearsal scripts |
 | Self-host restore rehearsal | fourth repo | `corepack pnpm run selfhost:restore-plan`, plus `--json` for recovery rehearsal scripts |
-| Self-host rotation planning | fourth repo | `corepack pnpm run selfhost:rotate-plan`, plus `--json` for operator runbooks and dashboards |
+| Self-host rotation planning and execution metadata | fourth repo | `corepack pnpm run selfhost:rotate-plan`, plus `selfhost:rotate -- --json` / `selfhost:rotate -- --confirm --json` for safe dry-run and confirmed-rotation metadata |
 | Compose lifecycle wrapper | fourth repo | delegate to `repos/platform/deploy/*`; `selfhost:up -- --json`, `selfhost:logs -- --json`, and `selfhost:down -- --json` emit command metadata without raw compose stdout |
 | Published-image smoke wrapper | fourth repo | delegate to `repos/platform` public-stack smoke; `published-image:plan -- --json` and `published-image:smoke -- --dry-run --json` for release dashboards and management scripts |
 | Operator onboarding contract | fourth repo | `operator:onboarding:check` keeps public-stack, brand-site, and runbooks aligned |
@@ -114,6 +114,9 @@ Required baseline:
   because it can contain environment values
 - machine-readable logs metadata that omits raw log stdout because application
   logs may contain sensitive values
+- machine-readable rotation metadata that reports dry-run/confirmed status,
+  changed-file paths, backup path, and next commands without printing rotated
+  secret values
 - machine-readable stop-command metadata that omits compose down stdout because
   compose output may contain sensitive values
 - machine-readable startup metadata that omits init, preflight, and compose up
@@ -254,5 +257,9 @@ Required baseline:
 - Add `selfhost:rotate-plan -- --json` so dashboards, CI, and operator runbooks
   can consume the backup-first, dry-run, confirm, restart, and smoke-validation
   secret rotation checklist without reading or mutating `.env`.
+- Add `selfhost:rotate -- --json` and `selfhost:rotate -- --confirm --json`
+  so dashboards, CI, and operator runbooks can inspect dry-run rotation intent
+  and confirmed rotation artifacts without parsing terminal prose or printing
+  rotated secret values.
 - Published-image smoke is first connected as a fourth-repo wrapper; formal
   image build, publish, and release gates remain owned by `repos/platform`.

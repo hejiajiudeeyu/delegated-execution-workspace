@@ -278,6 +278,40 @@ try {
   const backups = fs.readdirSync(path.dirname(envPath)).filter((file) => file.startsWith(".env.rotate-backup-"));
   assert.equal(backups.length, 1, "confirmed rotation should create exactly one backup");
 
+  const beforeRotateJsonDryRun = fs.readFileSync(envPath, "utf8");
+  const rotateJsonDryRun = run(tmpRoot, ["rotate", "--json"]);
+  assert.equal(rotateJsonDryRun.status, 0, rotateJsonDryRun.stderr || rotateJsonDryRun.stdout);
+  const rotateJsonDryRunBody = JSON.parse(rotateJsonDryRun.stdout);
+  assert.equal(rotateJsonDryRunBody.command, "selfhost:rotate");
+  assert.equal(rotateJsonDryRunBody.profile, "platform");
+  assert.equal(rotateJsonDryRunBody.ok, true);
+  assert.equal(rotateJsonDryRunBody.dry_run, true);
+  assert.equal(rotateJsonDryRunBody.confirmed, false);
+  assert.equal(rotateJsonDryRunBody.env_path, "repos/platform/deploy/platform/.env");
+  assert.equal(rotateJsonDryRunBody.backup_path, null);
+  assert.deepEqual(rotateJsonDryRunBody.changed_files, []);
+  assert.deepEqual(rotateJsonDryRunBody.rotated_keys.sort(), Array.from(new Set(["TOKEN_SECRET", "PLATFORM_ADMIN_API_KEY", "POSTGRES_PASSWORD"])).sort());
+  assert.match(rotateJsonDryRunBody.next_commands.join("\n"), /selfhost:rotate -- --profile platform --confirm/);
+  assert.match(rotateJsonDryRunBody.notes.join("\n"), /does not print secret values/);
+  assert.equal(fs.readFileSync(envPath, "utf8"), beforeRotateJsonDryRun, "JSON dry-run must not modify .env");
+  assert.ok(!rotateJsonDryRun.stdout.includes(env.get("PLATFORM_ADMIN_API_KEY") || ""));
+
+  const rotateJsonConfirm = run(tmpRoot, ["rotate", "--confirm", "--json"]);
+  assert.equal(rotateJsonConfirm.status, 0, rotateJsonConfirm.stderr || rotateJsonConfirm.stdout);
+  const rotateJsonConfirmBody = JSON.parse(rotateJsonConfirm.stdout);
+  assert.equal(rotateJsonConfirmBody.command, "selfhost:rotate");
+  assert.equal(rotateJsonConfirmBody.profile, "platform");
+  assert.equal(rotateJsonConfirmBody.ok, true);
+  assert.equal(rotateJsonConfirmBody.dry_run, false);
+  assert.equal(rotateJsonConfirmBody.confirmed, true);
+  assert.equal(rotateJsonConfirmBody.env_path, "repos/platform/deploy/platform/.env");
+  assert.match(rotateJsonConfirmBody.backup_path, /repos\/platform\/deploy\/platform\/\.env\.rotate-backup-/);
+  assert.match(rotateJsonConfirmBody.changed_files.join("\n"), /repos\/platform\/deploy\/platform\/\.env/);
+  assert.match(rotateJsonConfirmBody.changed_files.join("\n"), /repos\/platform\/deploy\/platform\/\.env\.rotate-backup-/);
+  assert.match(rotateJsonConfirmBody.next_commands.join("\n"), /selfhost:smoke/);
+  assert.match(rotateJsonConfirmBody.notes.join("\n"), /restart the profile/);
+  assert.ok(!rotateJsonConfirm.stdout.includes(env.get("PLATFORM_ADMIN_API_KEY") || ""));
+
   const rotatePlanJson = run(tmpRoot, ["rotate-plan", "--json"]);
   assert.equal(rotatePlanJson.status, 0, rotatePlanJson.stderr || rotatePlanJson.stdout);
   const rotatePlanBody = JSON.parse(rotatePlanJson.stdout);

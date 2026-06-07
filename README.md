@@ -186,6 +186,8 @@ corepack pnpm run selfhost:restore-plan -- --backup-dir backups/selfhost/platfor
 corepack pnpm --silent run selfhost:restore-plan -- --backup-dir backups/selfhost/platform/<stamp> --json
 corepack pnpm run selfhost:rotate-plan
 corepack pnpm --silent run selfhost:rotate-plan -- --json
+corepack pnpm --silent run selfhost:rotate -- --json
+corepack pnpm --silent run selfhost:rotate -- --confirm --json
 
 # Public operator stack:
 corepack pnpm run selfhost:quickstart -- --profile public-stack
@@ -223,6 +225,8 @@ corepack pnpm run selfhost:restore-plan -- --profile public-stack --backup-dir b
 corepack pnpm --silent run selfhost:restore-plan -- --profile public-stack --backup-dir backups/selfhost/public-stack/<stamp> --json
 corepack pnpm run selfhost:rotate-plan -- --profile public-stack
 corepack pnpm --silent run selfhost:rotate-plan -- --profile public-stack --json
+corepack pnpm --silent run selfhost:rotate -- --profile public-stack --json
+corepack pnpm --silent run selfhost:rotate -- --profile public-stack --confirm --json
 corepack pnpm run selfhost:status -- --profile public-stack
 corepack pnpm --silent run selfhost:status -- --profile public-stack --json
 corepack pnpm run selfhost:logs -- --profile public-stack

@@ -93,7 +93,7 @@ CALL ANYTHING 现在的仓库边界是正确的：
 | Self-host backup planning | 第四仓 | `corepack pnpm run selfhost:backup-plan`，以及用于恢复演练脚本的 `--json` |
 | Self-host backup validation | 第四仓 | `corepack pnpm run selfhost:backup-validate`，以及用于恢复演练脚本的 `--json` |
 | Self-host restore rehearsal | 第四仓 | `corepack pnpm run selfhost:restore-plan`，以及用于恢复演练脚本的 `--json` |
-| Self-host rotation planning | 第四仓 | `corepack pnpm run selfhost:rotate-plan`，以及用于 operator runbook 和 dashboard 的 `--json` |
+| Self-host 轮换计划与执行 metadata | 第四仓 | `corepack pnpm run selfhost:rotate-plan`，以及 `selfhost:rotate -- --json` / `selfhost:rotate -- --confirm --json`，用于安全 dry-run 和 confirmed rotation metadata |
 | Compose 生命周期 wrapper | 第四仓 | 委托到 `repos/platform/deploy/*`；`selfhost:up -- --json`、`selfhost:logs -- --json` 和 `selfhost:down -- --json` 输出不含 raw compose stdout 的命令 metadata |
 | Published-image smoke wrapper | 第四仓 | 委托到 `repos/platform` 的 public-stack smoke；`published-image:plan -- --json` 和 `published-image:smoke -- --dry-run --json` 供 release dashboard 和管理脚本消费 |
 | Operator onboarding contract | 第四仓 | `operator:onboarding:check` 校验 public-stack/brand-site/runbook 一致性 |
@@ -125,6 +125,8 @@ CALL ANYTHING 现在的仓库边界是正确的：
   raw log lines
 - local agent loop startup / stop metadata 可以机器读取，但省略 child command stdout，
   因为本地 bootstrap 和停止输出可能包含环境相关 runtime 细节
+- secret rotation metadata 可以机器读取，输出 dry-run / confirmed 状态、changed
+  files、backup path 和下一步命令，但不打印轮换后的 secret 值
 
 ## 8. 成功指标
 
@@ -235,4 +237,7 @@ CALL ANYTHING 现在的仓库边界是正确的：
 - 增加 `selfhost:rotate-plan -- --json`，让 dashboard、CI 和 operator runbook
   能消费 backup-first、dry-run、confirm、restart、smoke 验证这些 secret rotation
   checklist，同时不读取或修改 `.env`。
+- 增加 `selfhost:rotate -- --json` 和 `selfhost:rotate -- --confirm --json`，
+  让 dashboard、CI 和 operator runbook 能消费 dry-run rotation intent 和
+  confirmed rotation artifact metadata，同时不解析终端文本、不打印轮换后的 secret 值。
 - 已发布镜像 smoke 先以第四仓 wrapper 形式接入，正式 image build/publish/release gate 仍归 `repos/platform`。

@@ -2337,6 +2337,86 @@ function rotateProfile(profileName, { confirm = false } = {}) {
   console.log("[selfhost:rotate] restart the profile and run selfhost:smoke before deleting the backup.");
 }
 
+function rotateData(profileName, { confirm = false } = {}) {
+  const { envPath } = profilePaths(profileName);
+  if (!fs.existsSync(envPath)) {
+    throw new Error(`${path.relative(ROOT, envPath)} missing; run selfhost:init first`);
+  }
+
+  const current = fs.readFileSync(envPath, "utf8");
+  const entries = parseEnv(current);
+  const rotatedKeys = Array.from(SECRET_KEYS).filter((key) => entries.has(key));
+  const relativeEnvPath = path.relative(ROOT, envPath);
+  const explicitSuffix = ` -- --profile ${profileName}`;
+  const nextCommands = confirm
+    ? [
+        `corepack pnpm run selfhost:down${explicitSuffix}`,
+        `corepack pnpm run selfhost:up${explicitSuffix}`,
+        `corepack pnpm run selfhost:smoke${explicitSuffix}`
+      ]
+    : [`corepack pnpm run selfhost:rotate${explicitSuffix} --confirm`];
+
+  if (!confirm) {
+    return {
+      command: "selfhost:rotate",
+      profile: profileName,
+      ok: true,
+      dry_run: true,
+      confirmed: false,
+      env_path: relativeEnvPath,
+      backup_path: null,
+      changed_files: [],
+      rotated_keys: rotatedKeys,
+      next_commands: nextCommands,
+      notes: [
+        "dry-run only",
+        "does not modify .env",
+        "does not print secret values",
+        "run backup-plan before confirmed rotation"
+      ]
+    };
+  }
+
+  const backupPath = `${envPath}.rotate-backup-${new Date().toISOString().replace(/[:.]/g, "-")}`;
+  const relativeBackupPath = path.relative(ROOT, backupPath);
+  fs.writeFileSync(backupPath, current, "utf8");
+  fs.writeFileSync(envPath, rotateEnv(current), "utf8");
+
+  return {
+    command: "selfhost:rotate",
+    profile: profileName,
+    ok: true,
+    dry_run: false,
+    confirmed: true,
+    env_path: relativeEnvPath,
+    backup_path: relativeBackupPath,
+    changed_files: [relativeEnvPath, relativeBackupPath],
+    rotated_keys: rotatedKeys,
+    next_commands: nextCommands,
+    notes: [
+      "confirmed rotation writes a .env backup next to the selected profile env file",
+      "does not print secret values",
+      "restart the profile after rotation",
+      "run selfhost:smoke before deleting the backup"
+    ]
+  };
+}
+
+function printRotateJson(profileName, options = {}) {
+  const data = rotateData(profileName, options);
+  console.log(
+    JSON.stringify(
+      {
+        generated_at: new Date().toISOString(),
+        ...data
+      },
+      null,
+      2
+    )
+  );
+  return data.ok;
+}
+
 async function main() {
   const args = parseArgs(process.argv);
   if (args.command === "help" || args.command === "--help" || args.command === "-h") {
@@ -2576,6 +2656,9 @@ async function main() {
   }
 
   if (args.command === "rotate") {
+    if (args.json) {
+      process.exit(printRotateJson(args.profile, { confirm: args.confirm }) ? 0 : 1);
+    }
     rotateProfile(args.profile, { confirm: args.confirm });
     return;
   }

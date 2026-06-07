@@ -108,6 +108,8 @@ Required commands:
 - `corepack pnpm --silent run selfhost:restore-plan -- --backup-dir <dir> --json`
 - `corepack pnpm run selfhost:rotate-plan`
 - `corepack pnpm --silent run selfhost:rotate-plan -- --json`
+- `corepack pnpm --silent run selfhost:rotate -- --json`
+- `corepack pnpm --silent run selfhost:rotate -- --confirm --json`
 - `corepack pnpm run test:selfhost-kit`
 
 Acceptance:
@@ -202,6 +204,11 @@ Acceptance:
   changing `.env`; `--json` returns the same backup-first, dry-run, confirm,
   restart, smoke-validation steps and safety notes for dashboards, CI, and
   operator runbooks
+- rotate dry-run JSON reports the selected `.env` path, keys that would rotate,
+  next commands, and safety notes without changing files or printing secret
+  values; confirmed rotate JSON writes the `.env.rotate-backup-*` artifact and
+  reports changed-file metadata plus restart/smoke next commands without
+  printing generated secret values
 - selfhost kit has automated coverage for env creation and secret rotation dry-run/confirm behavior
 - no command prints secret values
 

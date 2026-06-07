@@ -361,6 +361,8 @@ corepack pnpm run selfhost:restore-plan -- --profile public-stack --backup-dir b
 corepack pnpm --silent run selfhost:restore-plan -- --profile public-stack --backup-dir backups/selfhost/public-stack/<stamp> --json
 corepack pnpm run selfhost:rotate-plan -- --profile public-stack
 corepack pnpm --silent run selfhost:rotate-plan -- --profile public-stack --json
+corepack pnpm --silent run selfhost:rotate -- --profile public-stack --json
+corepack pnpm --silent run selfhost:rotate -- --profile public-stack --confirm --json
 corepack pnpm run selfhost:rotate -- --confirm
 ```
 
@@ -416,6 +418,14 @@ without reading or modifying `.env`. Use
 `corepack pnpm --silent run selfhost:rotate-plan ... --json` when dashboards,
 CI, or operator runbooks need the same rotation sequence and safety notes
 without parsing terminal prose.
+
+`selfhost:rotate -- --json` is the machine-readable dry-run for the selected
+profile. It reports the `.env` path, keys that would rotate, next commands, and
+safety notes without changing files or printing secret values.
+`selfhost:rotate -- --confirm --json` performs the same confirmed rotation as
+text mode, writes a `.env.rotate-backup-*` file next to the selected profile
+`.env`, and returns changed-file metadata plus restart/smoke next commands
+without printing any generated secret values.
 
 Default endpoints:
 

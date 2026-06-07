@@ -18,14 +18,14 @@ repositories.
 - `repos/protocol`: `da3027100cfe9391f7f8d03be18a108ee2804cf6`
 - `repos/client`: `f1d6a2d8c9b83517cdf6ca9803b223847f880e9a`
 - `repos/platform`: `5961309c6b0ca4e8df22dbb5be92ac0845bf8d25`
-- `repos/brand-site`: `1d813c3388a592896f91191adaece0e457ed3302`
+- `repos/brand-site`: `690692a0aecc05b20900952f45b643d330dcbf6a`
 
-The current bundle is `changes/CHG-2026-084.yaml`.
+The current bundle is `changes/CHG-2026-085.yaml`.
 
 ## Readiness Verdict
 
 The pinned combination is ready for daily fourth-repo development after
-CHG-2026-084:
+CHG-2026-085:
 
 - submodule SHA integrity is verified
 - boundary governance covers the new platform billing data package
@@ -95,12 +95,16 @@ CHG-2026-084:
 - `selfhost:rotate-plan` is available as a non-destructive secret rotation
   checklist, and supports `--json` for machine-readable backup-first, dry-run,
   confirm, restart, smoke-validation steps, and safety notes
+- `selfhost:rotate` supports machine-readable dry-run and confirmed rotation
+  metadata through `--json`, reporting rotated-key names, changed files, backup
+  path, restart/smoke next commands, and safety notes without printing secret
+  values
 - MCP host golden-four validation is available as an executable fourth-repo
   smoke and a deterministic unit-style harness
 - brand-site now has bilingual Deployability Profiles docs that explain the
   deployment profiles, ready/planned boundaries, secret-safety defaults, and
   the operator-only Billing console slice, plus the new profiles/doctor/summary/security-review
-  and quickstart/readiness/audit-export/ports/ops-report/backup-validate/restore-plan/rotate-plan gates
+  and quickstart/readiness/audit-export/ports/ops-report/backup-validate/restore-plan/rotate-plan/rotate-json gates
 - one-command local stack bootstrap is available through managed
   `dev:local:*` commands, with `--json` metadata for plan/up/status/logs/down
   so dashboards and scripts can inspect and control the local loop without
@@ -140,7 +144,7 @@ Observed results:
 - `check:submodules`: passed
 - `check:boundaries`: passed after adding `@delexec/billing-store` to
   `platform/data`
-- `check:bundles`: passed with `CHG-2026-084`
+- `check:bundles`: passed with `CHG-2026-085`
 - `test:contracts`: passed, including `@delexec/billing-store` in platform
   package validation and the `@delexec/platform-api` dependency graph
 - `test:integration`: passed with a successful request/response path
@@ -162,7 +166,7 @@ Observed results:
 - `test:selfhost-kit`: passed with temp-profile coverage for env generation,
   read-only profile map output, read-only doctor output, one-screen summary
   output, read-only quickstart sequences, read-only readiness matrix and overviews,
-  secret rotation dry-run/confirm behavior, public-stack preflight safety,
+  secret rotation dry-run/confirm behavior, rotate JSON metadata, public-stack preflight safety,
   non-destructive security review, admin audit export without secret leakage,
   restore planning, and public route-contract smoke output
 - `test:mcp-golden-four`: passed with a fake MCP streamable HTTP host and
@@ -192,7 +196,7 @@ Observed results:
   bilingual Deployability Profiles route/content contract, including the
   admin-only Billing console narrative plus `selfhost:security-review` and
   `selfhost:audit-export` / `selfhost:profiles` / `selfhost:quickstart` / `selfhost:readiness -- --all` / `selfhost:readiness` / `selfhost:doctor` / `selfhost:summary` / `selfhost:ports` /
-  `selfhost:ops-report` / `selfhost:status -- --json` / `selfhost:config -- --json` / `selfhost:backup-validate` / `selfhost:restore-plan` / `published-image:smoke -- --dry-run --json`
+  `selfhost:ops-report` / `selfhost:status -- --json` / `selfhost:config -- --json` / `selfhost:backup-validate` / `selfhost:restore-plan` / `selfhost:rotate -- --profile public-stack --json` / `selfhost:rotate -- --profile public-stack --confirm --json` / `published-image:smoke -- --dry-run --json`
   commands
 - `repos/brand-site` `npm run build`: passed, including client build, SSR
   build, and prerender output for the new deployability docs routes
@@ -350,6 +354,12 @@ backup directory without stopping services or importing SQL;
 `corepack pnpm run selfhost:rotate-plan` prints the backup-first, downtime
 window, dry-run, confirmed rotation, restart, and smoke-validation checklist
 without reading or modifying `.env`;
+`corepack pnpm --silent run selfhost:rotate -- --json` prints machine-readable
+dry-run rotation metadata without modifying `.env`, and
+`corepack pnpm --silent run selfhost:rotate -- --confirm --json` writes the
+same backup/rotated `.env` artifacts as text mode while returning changed-file,
+backup-path, restart/smoke next-command, and safety metadata without printing
+secret values;
 `corepack pnpm run selfhost:smoke` remains the post-start health endpoint check
 and, for `public-stack`, also validates the edge route contract for `/healthz`,
 `/platform/healthz`, `/relay/healthz`, `/gateway/healthz`, and `/console/`;
@@ -413,9 +423,9 @@ Billing page as an operator surface, not as client-facing billing readiness, and
 the public-stack command examples include `selfhost:security-review`,
 `selfhost:audit-export`, `selfhost:audit-export -- --json`, `selfhost:profiles`, `selfhost:quickstart`, `selfhost:readiness -- --all`, `selfhost:readiness`, `selfhost:readiness -- --json`, `selfhost:doctor`, `selfhost:summary`, `selfhost:ports`,
 `selfhost:up -- --json`, `selfhost:smoke -- --json`, `selfhost:logs -- --json`, `selfhost:down -- --json`, `selfhost:ops-report`,
-`selfhost:plan`, `selfhost:plan -- --json`, `selfhost:backup-plan`, `selfhost:backup-validate`, `selfhost:restore-plan`, and `selfhost:rotate-plan` as pre-exposure safety,
+`selfhost:plan`, `selfhost:plan -- --json`, `selfhost:backup-plan`, `selfhost:backup-validate`, `selfhost:restore-plan`, `selfhost:rotate-plan`, `selfhost:rotate -- --profile public-stack --json`, and `selfhost:rotate -- --profile public-stack --confirm --json` as pre-exposure safety,
 evidence, quickstart sequencing, human-readable and machine-readable readiness overview, selected-profile deployment maps, port visibility, safe startup/log/stop command metadata, handoff-report,
-machine-readable handoff, backup planning, backup-artifact validation, recovery-rehearsal, and rotation-planning commands. Capabilities that
+machine-readable handoff, backup planning, backup-artifact validation, recovery-rehearsal, rotation-planning, and rotation-metadata commands. Capabilities that
 are not ready remain outside the
 green path, and secrets, public origins, and billing readiness must not be
 hidden behind green status.
