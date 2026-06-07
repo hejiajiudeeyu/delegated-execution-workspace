@@ -92,6 +92,8 @@ agent 和 supervisor 日志可能包含敏感 runtime 输出。`dev:local:down -
 ```bash
 corepack pnpm run deployability:overview
 corepack pnpm --silent run deployability:overview -- --json
+corepack pnpm run deployability:quickstart
+corepack pnpm --silent run deployability:quickstart -- --json
 corepack pnpm run compat:status
 corepack pnpm --silent run compat:status -- --json
 corepack pnpm run deployability:handoff
@@ -107,6 +109,11 @@ corepack pnpm run test:selfhost-kit
 `deployability:overview` 是 local、self-host、public-stack、onboarding 和
 published-image 路径的只读命令地图。JSON 形式会列出管线命令和安全说明，但不读取
 `.env`、不调用 Docker、不探测网络，也不打印 secret 值。
+
+`deployability:quickstart` 是 fresh checkout 的只读首次使用指南。它按顺序列出
+daily development、self-host platform、public-stack 公开暴露复核和 release-image
+复核路径，但不执行这些命令。JSON 形式输出同一组 track 和 step metadata，不读取
+`.env`、不调用 Docker、不探测网络、不打印 secret 值。
 
 `compat:status` 是只读兼容台账快照。它会把当前 submodule gitlinks 和最新
 `changes/CHG-*.yaml` 对齐检查，把 dirty submodule worktree 报成 warnings，并把

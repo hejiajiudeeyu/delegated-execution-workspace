@@ -39,6 +39,7 @@ assert.ok(
     .json_commands.includes("corepack pnpm --silent run operator:onboarding:check -- --json")
 );
 assert.ok(body.next_commands.includes("corepack pnpm run selfhost:profiles"));
+assert.ok(body.next_commands.includes("corepack pnpm run deployability:quickstart"));
 assert.ok(body.next_commands.includes("corepack pnpm run operator:onboarding:plan"));
 assert.ok(body.safety_defaults.some((item) => /does not read \.env/i.test(item)));
 assert.ok(!json.stdout.includes("sk_overview_must_not_leak"));

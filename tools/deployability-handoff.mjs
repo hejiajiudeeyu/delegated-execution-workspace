@@ -25,6 +25,11 @@ const COMMAND_MAP = [
     purpose: "compare the latest bundle ledger to current submodule SHAs"
   },
   {
+    command: "corepack pnpm run deployability:quickstart",
+    json_command: "corepack pnpm --silent run deployability:quickstart -- --json",
+    purpose: "read the fresh-checkout first-use guide across daily development, self-host, public-stack, and release review"
+  },
+  {
     command: "corepack pnpm run dev:doctor",
     json_command: "corepack pnpm --silent run dev:doctor -- --json",
     purpose: "diagnose the local caller-skill and MCP development loop"

@@ -15,11 +15,14 @@ Required commands:
 
 - `corepack pnpm run deployability:overview`
 - `corepack pnpm --silent run deployability:overview -- --json`
+- `corepack pnpm run deployability:quickstart`
+- `corepack pnpm --silent run deployability:quickstart -- --json`
 - `corepack pnpm run compat:status`
 - `corepack pnpm --silent run compat:status -- --json`
 - `corepack pnpm run deployability:handoff`
 - `corepack pnpm --silent run deployability:handoff -- --json`
 - `corepack pnpm run test:deployability-overview`
+- `corepack pnpm run test:deployability-quickstart`
 - `corepack pnpm run test:compat-status`
 - `corepack pnpm run test:deployability-handoff`
 
@@ -31,6 +34,10 @@ Acceptance:
   each path
 - overview is read-only: it does not read `.env`, call Docker, bind ports, or
   probe network endpoints
+- quickstart lists Daily Development, Selfhost Platform, Public Stack, and
+  Release Review as ordered first-use tracks without executing commands
+- `deployability:quickstart -- --json` emits clean track, step, safety-default,
+  and next-command metadata without terminal prose or secret values
 - `deployability:overview -- --json` emits clean pipeline, safety-default, and
   next-command metadata without terminal `[ok]` / `[fail]` prose or secret
   values
