@@ -41,6 +41,7 @@
     "operator:onboarding:plan": "node tools/operator-onboarding.mjs plan",
     "operator:onboarding:check": "node tools/operator-onboarding.mjs check",
     "deployability:overview": "node tools/deployability-overview.mjs",
+    "compat:status": "node tools/compat-status.mjs",
     "dev:doctor": "node tools/dev-doctor.mjs",
     "mcp:golden-four": "node tools/mcp-golden-four.mjs",
     "selfhost:init": "node tools/selfhost-kit.mjs init",
@@ -74,6 +75,7 @@
     "test:operator-onboarding": "node tools/operator-onboarding.test.mjs",
     "test:dev-doctor": "node tools/dev-doctor.test.mjs",
     "test:deployability-overview": "node tools/deployability-overview.test.mjs",
+    "test:compat-status": "node tools/compat-status.test.mjs",
     "test:mcp-golden-four": "node tools/mcp-golden-four.test.mjs",
     "test:agent-e2e": "AUTO_APPROVE=true python3 tools/agent-e2e/agent-e2e-test.py",
     "ci": "node tools/validate-submodules.mjs && node tools/validate-change-bundle.mjs && node tools/check-boundaries.mjs && node tools/contracts-check.mjs && node tools/source-integration-check.mjs"

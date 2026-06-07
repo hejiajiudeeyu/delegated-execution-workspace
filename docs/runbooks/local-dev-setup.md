@@ -113,6 +113,8 @@ Check the daily local stack health:
 ```bash
 corepack pnpm run deployability:overview
 corepack pnpm --silent run deployability:overview -- --json
+corepack pnpm run compat:status
+corepack pnpm --silent run compat:status -- --json
 corepack pnpm run dev:doctor
 corepack pnpm --silent run dev:doctor -- --json
 corepack pnpm run test:agent-e2e
@@ -125,6 +127,11 @@ corepack pnpm run test:selfhost-kit
 self-host, public-stack, onboarding, and published-image paths. Its JSON form
 lists pipeline commands and safety notes without reading `.env`, calling Docker,
 probing networks, or printing secret values.
+
+`compat:status` is the read-only compatibility-ledger snapshot. It compares the
+current submodule gitlinks to the latest `changes/CHG-*.yaml`, reports dirty
+submodule worktrees as warnings, and keeps ledger mismatches as blockers. Its
+JSON form does not read `.env`, call Docker, probe networks, or print secrets.
 
 `dev:doctor -- --json` reports local prerequisites, runtime health,
 caller-skill manifest/search checks, blockers, and next commands as clean JSON.

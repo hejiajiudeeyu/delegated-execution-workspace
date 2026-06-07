@@ -18,14 +18,14 @@ repositories.
 - `repos/protocol`: `da3027100cfe9391f7f8d03be18a108ee2804cf6`
 - `repos/client`: `f1d6a2d8c9b83517cdf6ca9803b223847f880e9a`
 - `repos/platform`: `5961309c6b0ca4e8df22dbb5be92ac0845bf8d25`
-- `repos/brand-site`: `5701ced654fa5f4ebb9f17ef71c33f42d9e41fc4`
+- `repos/brand-site`: `9b0e58d667a3eba8550062933a9c0eee8c981731`
 
-The current bundle is `changes/CHG-2026-089.yaml`.
+The current bundle is `changes/CHG-2026-090.yaml`.
 
 ## Readiness Verdict
 
 The pinned combination is ready for daily fourth-repo development after
-CHG-2026-089:
+CHG-2026-090:
 
 - submodule SHA integrity is verified
 - boundary governance covers the new platform billing data package
@@ -118,6 +118,11 @@ CHG-2026-089:
   Local Agent Loop, Selfhost Platform, Public Stack, Operator Onboarding, and
   Published Image paths, and supports `--json` without reading `.env`, calling
   Docker, binding ports, probing networks, or printing secrets
+- `compat:status` is available as a read-only compatibility-ledger snapshot
+  that compares latest-bundle SHAs to current submodule gitlinks, reports dirty
+  submodule worktrees as warnings, and keeps ledger mismatches or dirty gitlink
+  markers as blockers without reading `.env`, calling Docker, probing networks,
+  or printing secrets
 - published-image smoke now has a fourth-repo entry point that reviews
   public-stack release images and delegates to platform smoke with
   `COMPOSE_NO_BUILD=true`
@@ -152,7 +157,7 @@ Observed results:
 - `check:submodules`: passed
 - `check:boundaries`: passed after adding `@delexec/billing-store` to
   `platform/data`
-- `check:bundles`: passed with `CHG-2026-089`
+- `check:bundles`: passed with `CHG-2026-090`
 - `test:contracts`: passed, including `@delexec/billing-store` in platform
   package validation and the `@delexec/platform-api` dependency graph
 - `test:integration`: passed with a successful request/response path
@@ -164,6 +169,10 @@ Observed results:
 - `deployability:overview -- --json`: passed, reporting five deployability
   paths, human commands, JSON entry points, safety defaults, and next commands
   without terminal `[ok]` / `[fail]` prose or secret values
+- `compat:status -- --json`: passed, reporting `CHG-2026-089` before this
+  bundle update as matching the current protocol/client/platform/brand-site
+  gitlinks; it also surfaced existing dirty submodule worktrees as warnings
+  without treating them as ledger blockers
 - `selfhost:profiles` / `selfhost:quickstart` / `selfhost:readiness -- --all` /
   `selfhost:readiness` / `selfhost:doctor` / `selfhost:init` / `selfhost:init -- --json` /
   `selfhost:plan` / `selfhost:summary` / `selfhost:urls` / `selfhost:preflight`: added as the

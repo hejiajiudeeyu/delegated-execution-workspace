@@ -92,6 +92,8 @@ agent 和 supervisor 日志可能包含敏感 runtime 输出。`dev:local:down -
 ```bash
 corepack pnpm run deployability:overview
 corepack pnpm --silent run deployability:overview -- --json
+corepack pnpm run compat:status
+corepack pnpm --silent run compat:status -- --json
 corepack pnpm run dev:doctor
 corepack pnpm --silent run dev:doctor -- --json
 corepack pnpm run test:agent-e2e
@@ -103,6 +105,11 @@ corepack pnpm run test:selfhost-kit
 `deployability:overview` 是 local、self-host、public-stack、onboarding 和
 published-image 路径的只读命令地图。JSON 形式会列出管线命令和安全说明，但不读取
 `.env`、不调用 Docker、不探测网络，也不打印 secret 值。
+
+`compat:status` 是只读兼容台账快照。它会把当前 submodule gitlinks 和最新
+`changes/CHG-*.yaml` 对齐检查，把 dirty submodule worktree 报成 warnings，并把
+ledger mismatch 保持为 blockers。JSON 形式不读取 `.env`、不调用 Docker、不探测网络、
+不打印 secret 值。
 
 `dev:doctor -- --json` 会用干净 JSON 输出本地前置条件、runtime health、
 caller-skill manifest / search 检查、blockers 和下一步命令。它不会打印 raw

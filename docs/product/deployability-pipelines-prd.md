@@ -7,14 +7,18 @@ Updated: 2026-06-07
 
 ## Pipeline 0: Deployability Overview
 
-Goal: give operators and dashboards one read-only map before they choose a
-specific local, self-host, public-stack, onboarding, or release-image path.
+Goal: give operators and dashboards one read-only map and one compatibility
+status snapshot before they choose a specific local, self-host, public-stack,
+onboarding, or release-image path.
 
 Required commands:
 
 - `corepack pnpm run deployability:overview`
 - `corepack pnpm --silent run deployability:overview -- --json`
+- `corepack pnpm run compat:status`
+- `corepack pnpm --silent run compat:status -- --json`
 - `corepack pnpm run test:deployability-overview`
+- `corepack pnpm run test:compat-status`
 
 Acceptance:
 
@@ -29,6 +33,12 @@ Acceptance:
   values
 - docs and brand-site present it as the first command map, not as a replacement
   for pipeline-specific doctor/readiness/smoke gates
+- `compat:status -- --json` reports current bundle, submodule SHA matches,
+  dirty submodule warnings, blockers, and next validation commands as clean
+  JSON without reading `.env`, calling Docker, probing networks, or printing
+  secret values
+- dirty submodules are visible warnings, while latest-bundle SHA mismatches and
+  dirty gitlink markers remain blockers
 
 ## Pipeline A: Local Agent Loop
 

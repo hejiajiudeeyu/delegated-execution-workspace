@@ -8,13 +8,16 @@
 ## 管线 0：Deployability Overview
 
 目标：在 operator 或 dashboard 选择具体 local、self-host、public-stack、
-onboarding 或 release-image 路径前，先给出一个只读命令地图。
+onboarding 或 release-image 路径前，先给出一个只读命令地图和一个兼容状态快照。
 
 必备命令：
 
 - `corepack pnpm run deployability:overview`
 - `corepack pnpm --silent run deployability:overview -- --json`
+- `corepack pnpm run compat:status`
+- `corepack pnpm --silent run compat:status -- --json`
 - `corepack pnpm run test:deployability-overview`
+- `corepack pnpm run test:compat-status`
 
 验收：
 
@@ -26,6 +29,11 @@ onboarding 或 release-image 路径前，先给出一个只读命令地图。
   metadata，不混入终端 `[ok]` / `[fail]` 文本或 secret 值
 - docs 和 brand-site 把它描述成第一张命令地图，而不是替代各管线自己的
   doctor / readiness / smoke gate
+- `compat:status -- --json` 用干净 JSON 输出当前 bundle、submodule SHA matches、
+  dirty submodule warnings、blockers 和下一步验证命令，且不读取 `.env`、不调用
+  Docker、不探测网络、不打印 secret 值
+- dirty submodules 是可见 warnings；最新 bundle SHA mismatch 和 dirty gitlink
+  marker 仍然是 blockers
 
 ## 管线 A：Local Agent Loop
 
