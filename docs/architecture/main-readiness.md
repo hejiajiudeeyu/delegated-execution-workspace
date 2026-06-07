@@ -18,14 +18,14 @@ repositories.
 - `repos/protocol`: `da3027100cfe9391f7f8d03be18a108ee2804cf6`
 - `repos/client`: `f1d6a2d8c9b83517cdf6ca9803b223847f880e9a`
 - `repos/platform`: `5961309c6b0ca4e8df22dbb5be92ac0845bf8d25`
-- `repos/brand-site`: `c60bdc65dd25ba243e39fcb7172aedfc95bcbdef`
+- `repos/brand-site`: `5701ced654fa5f4ebb9f17ef71c33f42d9e41fc4`
 
-The current bundle is `changes/CHG-2026-088.yaml`.
+The current bundle is `changes/CHG-2026-089.yaml`.
 
 ## Readiness Verdict
 
 The pinned combination is ready for daily fourth-repo development after
-CHG-2026-088:
+CHG-2026-089:
 
 - submodule SHA integrity is verified
 - boundary governance covers the new platform billing data package
@@ -114,6 +114,10 @@ CHG-2026-088:
   agent/caller-skill diagnostics for prerequisites, runtime health,
   caller-skill manifest/search checks, blockers, and next commands without raw
   logs or secret values
+- `deployability:overview` is available as the read-only first command map for
+  Local Agent Loop, Selfhost Platform, Public Stack, Operator Onboarding, and
+  Published Image paths, and supports `--json` without reading `.env`, calling
+  Docker, binding ports, probing networks, or printing secrets
 - published-image smoke now has a fourth-repo entry point that reviews
   public-stack release images and delegates to platform smoke with
   `COMPOSE_NO_BUILD=true`
@@ -148,7 +152,7 @@ Observed results:
 - `check:submodules`: passed
 - `check:boundaries`: passed after adding `@delexec/billing-store` to
   `platform/data`
-- `check:bundles`: passed with `CHG-2026-088`
+- `check:bundles`: passed with `CHG-2026-089`
 - `test:contracts`: passed, including `@delexec/billing-store` in platform
   package validation and the `@delexec/platform-api` dependency graph
 - `test:integration`: passed with a successful request/response path
@@ -157,6 +161,9 @@ Observed results:
 - `dev:doctor`: passed for the local daily agent/caller-skill stack, and
   `dev:doctor -- --json` now emits clean machine-readable diagnostics without
   `[ok]` / `[fail]` terminal prose or secret values
+- `deployability:overview -- --json`: passed, reporting five deployability
+  paths, human commands, JSON entry points, safety defaults, and next commands
+  without terminal `[ok]` / `[fail]` prose or secret values
 - `selfhost:profiles` / `selfhost:quickstart` / `selfhost:readiness -- --all` /
   `selfhost:readiness` / `selfhost:doctor` / `selfhost:init` / `selfhost:init -- --json` /
   `selfhost:plan` / `selfhost:summary` / `selfhost:urls` / `selfhost:preflight`: added as the

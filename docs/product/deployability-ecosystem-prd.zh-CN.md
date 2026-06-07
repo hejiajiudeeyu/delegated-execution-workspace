@@ -71,6 +71,7 @@ CALL ANYTHING 现在的仓库边界是正确的：
 | 能力 | Owner | 初始工作 |
 | --- | --- | --- |
 | 兼容性台账 | 第四仓 | change bundles 和必跑 gates |
+| 可部署性总览 | 第四仓 | `corepack pnpm run deployability:overview`，以及作为全部部署/管理路径只读命令地图的 `corepack pnpm --silent run deployability:overview -- --json` |
 | 日常本地 doctor | 第四仓 | `corepack pnpm run dev:doctor`，以及给 dashboard 和脚本使用的 `corepack pnpm --silent run dev:doctor -- --json` |
 | Local agent loop 管理 metadata | 第四仓 | `corepack pnpm run dev:local:plan`、`dev:local:up`、`dev:local:status`、`dev:local:logs` 和 `dev:local:down`，并提供 `--json` 供 dashboard 和脚本消费 |
 | Agent-facing smoke | 第四仓 | `corepack pnpm run test:agent-e2e` |
@@ -131,10 +132,13 @@ CALL ANYTHING 现在的仓库边界是正确的：
   files、backup path 和下一步命令，但不打印轮换后的 secret 值
 - 日常本地 doctor metadata 可以机器读取，输出 prerequisites、runtime health、
   caller-skill 检查、blockers 和下一步命令，但不打印 raw logs 或 secret 值
+- 可部署性总览 metadata 可以机器读取，列出 pipelines、命令、JSON 入口、安全说明和
+  下一步命令，但不读取 `.env`、不调用 Docker、不绑定端口、不探测网络、不打印 secret 值
 
 ## 8. 成功指标
 
-- fresh checkout 可以运行 `dev:local:plan -- --json`、
+- fresh checkout 可以运行 `deployability:overview`、
+  `deployability:overview -- --json`、`dev:local:plan -- --json`、
   `dev:local:up -- --json`、`dev:local:status -- --json`、
   `dev:local:logs -- --json`、`dev:local:down -- --json`、
   `selfhost:profiles`、`selfhost:quickstart`、

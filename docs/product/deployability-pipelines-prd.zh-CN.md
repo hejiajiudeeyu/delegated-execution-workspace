@@ -5,6 +5,28 @@
 
 更新日期：2026-06-07
 
+## 管线 0：Deployability Overview
+
+目标：在 operator 或 dashboard 选择具体 local、self-host、public-stack、
+onboarding 或 release-image 路径前，先给出一个只读命令地图。
+
+必备命令：
+
+- `corepack pnpm run deployability:overview`
+- `corepack pnpm --silent run deployability:overview -- --json`
+- `corepack pnpm run test:deployability-overview`
+
+验收：
+
+- overview 列出 Local Agent Loop、Selfhost Platform、Public Stack、
+  Operator Onboarding 和 Published Image 路径
+- overview 为每条路径列出人工命令和机器可读 JSON 命令
+- overview 是只读的：不读取 `.env`、不调用 Docker、不绑定端口、不探测网络 endpoint
+- `deployability:overview -- --json` 输出干净的 pipeline、安全默认值和下一步命令
+  metadata，不混入终端 `[ok]` / `[fail]` 文本或 secret 值
+- docs 和 brand-site 把它描述成第一张命令地图，而不是替代各管线自己的
+  doctor / readiness / smoke gate
+
 ## 管线 A：Local Agent Loop
 
 目标：让本地 caller-skill / MCP loop 成为最快开发路径。

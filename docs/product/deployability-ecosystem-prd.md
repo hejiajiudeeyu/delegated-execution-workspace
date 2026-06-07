@@ -68,6 +68,7 @@ The ecosystem is "daily-deployable" when a fresh operator can:
 | Capability | Owner | Initial Work |
 | --- | --- | --- |
 | Compatibility ledger | fourth repo | change bundles and required gates |
+| Deployability overview | fourth repo | `corepack pnpm run deployability:overview`, plus `corepack pnpm --silent run deployability:overview -- --json` as the read-only command map for all deployment and management paths |
 | Daily local doctor | fourth repo | `corepack pnpm run dev:doctor`, plus `corepack pnpm --silent run dev:doctor -- --json` for dashboards and scripts |
 | Local agent loop management metadata | fourth repo | `corepack pnpm run dev:local:plan`, `dev:local:up`, `dev:local:status`, `dev:local:logs`, and `dev:local:down`, plus `--json` for dashboards and scripts |
 | Agent-facing smoke | fourth repo | `corepack pnpm run test:agent-e2e` |
@@ -136,10 +137,14 @@ Required baseline:
 - machine-readable daily local doctor metadata that reports prerequisites,
   runtime health, caller-skill checks, blockers, and next commands without raw
   logs or secret values
+- machine-readable deployability overview metadata that lists pipelines,
+  commands, JSON entry points, safety notes, and next commands without reading
+  `.env`, calling Docker, binding ports, probing networks, or printing secrets
 
 ## 8. Success Metrics
 
-- A fresh checkout can run `dev:local:plan -- --json`,
+- A fresh checkout can run `deployability:overview`,
+  `deployability:overview -- --json`, `dev:local:plan -- --json`,
   `dev:local:up -- --json`, `dev:local:status -- --json`,
   `dev:local:logs -- --json`, `dev:local:down -- --json`,
   `selfhost:profiles`, `selfhost:quickstart`,

@@ -113,6 +113,8 @@ corepack pnpm run test:integration
 Check whether the local daily agent/caller-skill development stack is ready:
 
 ```bash
+corepack pnpm run deployability:overview
+corepack pnpm --silent run deployability:overview -- --json
 corepack pnpm run dev:local:plan
 corepack pnpm --silent run dev:local:plan -- --json
 corepack pnpm run dev:local:up

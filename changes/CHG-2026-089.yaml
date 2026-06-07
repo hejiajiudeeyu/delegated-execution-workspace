@@ -1,0 +1,15 @@
+change_id: CHG-2026-089
+goal: add deployability overview command map
+protocol_sha: da3027100cfe9391f7f8d03be18a108ee2804cf6
+client_sha: f1d6a2d8c9b83517cdf6ca9803b223847f880e9a
+platform_sha: 5961309c6b0ca4e8df22dbb5be92ac0845bf8d25
+brand_site_sha: 5701ced654fa5f4ebb9f17ef71c33f42d9e41fc4
+owner: hejiajiudeeyu
+risk_level: low
+affected_scope:
+  - orchestration
+  - brand-site
+  - documentation
+contracts_check: passed
+integration_check: passed
+notes: "Adds deployability:overview and deployability:overview -- --json as a read-only command map for Local Agent Loop, Selfhost Platform, Public Stack, Operator Onboarding, and Published Image paths. The overview reports commands, JSON entry points, safety notes, and next commands without reading .env, calling Docker, binding ports, probing networks, or printing secrets. Updates README, local-dev runbooks, deployability PRDs, main readiness docs, and brand-site Deployability Profiles while keeping protocol/client/platform SHAs unchanged."

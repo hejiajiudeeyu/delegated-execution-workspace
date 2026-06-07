@@ -111,6 +111,8 @@ corepack pnpm run dev:console   # gateway on :8079 + ops-console UI on :4174
 Check the daily local stack health:
 
 ```bash
+corepack pnpm run deployability:overview
+corepack pnpm --silent run deployability:overview -- --json
 corepack pnpm run dev:doctor
 corepack pnpm --silent run dev:doctor -- --json
 corepack pnpm run test:agent-e2e
@@ -118,6 +120,11 @@ corepack pnpm run mcp:golden-four
 corepack pnpm run test:local-stack
 corepack pnpm run test:selfhost-kit
 ```
+
+`deployability:overview` is the read-only command map for the local,
+self-host, public-stack, onboarding, and published-image paths. Its JSON form
+lists pipeline commands and safety notes without reading `.env`, calling Docker,
+probing networks, or printing secret values.
 
 `dev:doctor -- --json` reports local prerequisites, runtime health,
 caller-skill manifest/search checks, blockers, and next commands as clean JSON.

@@ -5,6 +5,31 @@
 
 Updated: 2026-06-07
 
+## Pipeline 0: Deployability Overview
+
+Goal: give operators and dashboards one read-only map before they choose a
+specific local, self-host, public-stack, onboarding, or release-image path.
+
+Required commands:
+
+- `corepack pnpm run deployability:overview`
+- `corepack pnpm --silent run deployability:overview -- --json`
+- `corepack pnpm run test:deployability-overview`
+
+Acceptance:
+
+- overview lists Local Agent Loop, Selfhost Platform, Public Stack, Operator
+  Onboarding, and Published Image paths
+- overview includes the human commands and machine-readable JSON commands for
+  each path
+- overview is read-only: it does not read `.env`, call Docker, bind ports, or
+  probe network endpoints
+- `deployability:overview -- --json` emits clean pipeline, safety-default, and
+  next-command metadata without terminal `[ok]` / `[fail]` prose or secret
+  values
+- docs and brand-site present it as the first command map, not as a replacement
+  for pipeline-specific doctor/readiness/smoke gates
+
 ## Pipeline A: Local Agent Loop
 
 Goal: make the local caller-skill/MCP loop the fastest development path.
