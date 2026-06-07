@@ -72,7 +72,7 @@ CALL ANYTHING 现在的仓库边界是正确的：
 | --- | --- | --- |
 | 兼容性台账 | 第四仓 | change bundles 和必跑 gates |
 | 日常本地 doctor | 第四仓 | `corepack pnpm run dev:doctor` |
-| Local agent loop 管理 metadata | 第四仓 | `corepack pnpm run dev:local:plan`、`dev:local:status` 和 `dev:local:logs`，并提供 `--json` 供 dashboard 和脚本消费 |
+| Local agent loop 管理 metadata | 第四仓 | `corepack pnpm run dev:local:plan`、`dev:local:up`、`dev:local:status`、`dev:local:logs` 和 `dev:local:down`，并提供 `--json` 供 dashboard 和脚本消费 |
 | Agent-facing smoke | 第四仓 | `corepack pnpm run test:agent-e2e` |
 | Self-host 部署地图 | 第四仓 | `corepack pnpm run selfhost:profiles` |
 | Self-host quickstart 序列 | 第四仓 | `corepack pnpm run selfhost:quickstart` |
@@ -123,11 +123,14 @@ CALL ANYTHING 现在的仓库边界是正确的：
 - audit export metadata 可以机器读取，但不打印 admin key 或导出的 audit body
 - local agent loop log metadata 可以机器读取，但不打印本地 relay 或 supervisor
   raw log lines
+- local agent loop startup / stop metadata 可以机器读取，但省略 child command stdout，
+  因为本地 bootstrap 和停止输出可能包含环境相关 runtime 细节
 
 ## 8. 成功指标
 
 - fresh checkout 可以运行 `dev:local:plan -- --json`、
-  `dev:local:status -- --json`、`dev:local:logs -- --json`、
+  `dev:local:up -- --json`、`dev:local:status -- --json`、
+  `dev:local:logs -- --json`、`dev:local:down -- --json`、
   `selfhost:profiles`、`selfhost:quickstart`、
   `selfhost:readiness -- --all`、`selfhost:readiness`、`selfhost:doctor`、
   `selfhost:init`、`selfhost:summary`、`selfhost:preflight`、`selfhost:status`、

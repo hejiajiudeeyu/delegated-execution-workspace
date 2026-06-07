@@ -51,6 +51,7 @@ corepack pnpm run test:integration
 corepack pnpm run dev:local:plan
 corepack pnpm --silent run dev:local:plan -- --json
 corepack pnpm run dev:local:up
+corepack pnpm --silent run dev:local:up -- --json
 corepack pnpm run dev:local:status
 corepack pnpm --silent run dev:local:status -- --json
 
@@ -68,6 +69,7 @@ corepack pnpm run dev:client:bootstrap
 
 ```bash
 corepack pnpm run dev:local:down
+corepack pnpm --silent run dev:local:down -- --json
 ```
 
 查看托管进程日志：
@@ -79,9 +81,11 @@ corepack pnpm --silent run dev:local:logs -- --service supervisor --tail 80 --js
 ```
 
 `dev:local:plan -- --json` 会输出启动顺序和托管 service 文件，但不启动服务、
-不读取 secrets。`dev:local:status -- --json` 会输出 relay / supervisor 的托管状态和
-后续验证命令。`dev:local:logs -- --json` 只输出日志文件 metadata，不打印 raw log
-lines，因为本地 agent 和 supervisor 日志可能包含敏感 runtime 输出。
+不读取 secrets。`dev:local:up -- --json` 会输出启动步骤状态，但不打印 child command
+stdout。`dev:local:status -- --json` 会输出 relay / supervisor 的托管状态和后续验证命令。
+`dev:local:logs -- --json` 只输出日志文件 metadata，不打印 raw log lines，因为本地
+agent 和 supervisor 日志可能包含敏感 runtime 输出。`dev:local:down -- --json` 会输出
+停止步骤状态，但不打印 child command stdout。
 
 检查日常本地栈健康状态：
 

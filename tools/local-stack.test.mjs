@@ -33,6 +33,23 @@ try {
   assert.match(up.stdout, /corepack pnpm run mcp:golden-four/);
   assert.ok(!up.stdout.includes("sk_admin_must_not_leak"));
 
+  const upJson = run(tmpRoot, ["up", "--dry-run", "--json"]);
+  assert.equal(upJson.status, 0, upJson.stderr || upJson.stdout);
+  const upBody = JSON.parse(upJson.stdout);
+  assert.equal(upBody.command, "dev:local:up");
+  assert.equal(upBody.ok, true);
+  assert.equal(upBody.dry_run, true);
+  assert.equal(upBody.state_dir, ".run/local-stack");
+  assert.deepEqual(
+    upBody.steps.map((step) => step.label),
+    ["platform", "relay", "client bootstrap", "supervisor"]
+  );
+  assert.match(upBody.steps.map((step) => step.command).join("\n"), /selfhost-kit\.mjs up --profile platform/);
+  assert.match(upBody.verification.join("\n"), /corepack pnpm run dev:doctor/);
+  assert.match(upBody.notes.join("\n"), /does not print child command stdout/);
+  assert.ok(!upJson.stdout.includes("[dry-run]"));
+  assert.ok(!upJson.stdout.includes("sk_admin_must_not_leak"));
+
   const planJson = run(tmpRoot, ["plan", "--json"]);
   assert.equal(planJson.status, 0, planJson.stderr || planJson.stdout);
   const planBody = JSON.parse(planJson.stdout);
@@ -100,6 +117,33 @@ try {
   assert.match(down.stdout, /\[dry-run\] stop supervisor/);
   assert.match(down.stdout, /\[dry-run\] stop relay/);
   assert.match(down.stdout, /node tools\/selfhost-kit\.mjs down --profile platform/);
+
+  const downJson = run(tmpRoot, ["down", "--dry-run", "--json"]);
+  assert.equal(downJson.status, 0, downJson.stderr || downJson.stdout);
+  const downBody = JSON.parse(downJson.stdout);
+  assert.equal(downBody.command, "dev:local:down");
+  assert.equal(downBody.ok, true);
+  assert.equal(downBody.dry_run, true);
+  assert.equal(downBody.keep_platform, false);
+  assert.deepEqual(
+    downBody.steps.map((step) => step.label),
+    ["supervisor", "relay", "platform down"]
+  );
+  assert.match(downBody.steps[2].command, /selfhost-kit\.mjs down --profile platform/);
+  assert.match(downBody.notes.join("\n"), /does not print child command stdout/);
+  assert.ok(!downJson.stdout.includes("[dry-run]"));
+  assert.ok(!downJson.stdout.includes("sk_admin_must_not_leak"));
+
+  const downKeepPlatformJson = run(tmpRoot, ["down", "--dry-run", "--keep-platform", "--json"]);
+  assert.equal(downKeepPlatformJson.status, 0, downKeepPlatformJson.stderr || downKeepPlatformJson.stdout);
+  const downKeepPlatformBody = JSON.parse(downKeepPlatformJson.stdout);
+  assert.equal(downKeepPlatformBody.command, "dev:local:down");
+  assert.equal(downKeepPlatformBody.ok, true);
+  assert.equal(downKeepPlatformBody.keep_platform, true);
+  assert.deepEqual(
+    downKeepPlatformBody.steps.map((step) => step.label),
+    ["supervisor", "relay"]
+  );
 
   console.log("[local-stack.test] ok");
 } finally {

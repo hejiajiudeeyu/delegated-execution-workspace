@@ -63,6 +63,7 @@ corepack pnpm run test:integration
 corepack pnpm run dev:local:plan
 corepack pnpm --silent run dev:local:plan -- --json
 corepack pnpm run dev:local:up
+corepack pnpm --silent run dev:local:up -- --json
 corepack pnpm run dev:local:status
 corepack pnpm --silent run dev:local:status -- --json
 
@@ -81,6 +82,7 @@ Stop the managed local loop with:
 
 ```bash
 corepack pnpm run dev:local:down
+corepack pnpm --silent run dev:local:down -- --json
 ```
 
 Inspect managed process logs with:
@@ -92,10 +94,13 @@ corepack pnpm --silent run dev:local:logs -- --service supervisor --tail 80 --js
 ```
 
 `dev:local:plan -- --json` emits the boot sequence and managed service files
-without starting services or reading secrets. `dev:local:status -- --json`
-emits managed relay/supervisor state and verification commands. `dev:local:logs
--- --json` emits log file metadata only and does not print raw log lines,
-because local agent and supervisor logs can contain sensitive runtime output.
+without starting services or reading secrets. `dev:local:up -- --json` emits
+startup step status without printing child command stdout. `dev:local:status
+-- --json` emits managed relay/supervisor state and verification commands.
+`dev:local:logs -- --json` emits log file metadata only and does not print raw
+log lines, because local agent and supervisor logs can contain sensitive runtime
+output. `dev:local:down -- --json` emits stop step status without printing child
+command stdout.
 
 Optional console UI for browser-side inspection still runs separately:
 

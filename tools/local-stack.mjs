@@ -182,6 +182,149 @@ function stopManaged(service, { dryRun = false } = {}) {
   return 0;
 }
 
+function stderrLines(stderr) {
+  return String(stderr || "")
+    .split(/\r?\n/)
+    .filter(Boolean)
+    .slice(-20);
+}
+
+function runBlockingStep(label, command, args, { dryRun = false } = {}) {
+  const line = commandLine(command, args);
+  if (dryRun) {
+    return {
+      label,
+      kind: "command",
+      command: line,
+      status: 0,
+      dry_run: true,
+      stdout_omitted: true,
+      stderr_lines: []
+    };
+  }
+
+  const result = spawnSync(command, args, {
+    cwd: ROOT,
+    encoding: "utf8",
+    env: process.env
+  });
+  return {
+    label,
+    kind: "command",
+    command: line,
+    status: typeof result.status === "number" ? result.status : 1,
+    dry_run: false,
+    stdout_omitted: true,
+    stderr_lines: stderrLines(result.stderr)
+  };
+}
+
+function startManagedStep(service, command, args, { dryRun = false } = {}) {
+  const currentPid = readPid(service);
+  if (isAlive(currentPid)) {
+    return {
+      label: service,
+      kind: "managed-process",
+      command: commandLine(command, args),
+      status: 0,
+      dry_run: false,
+      already_running: true,
+      pid: currentPid,
+      log: rel(logPath(service)),
+      stdout_omitted: true
+    };
+  }
+
+  const line = commandLine(command, args);
+  if (dryRun) {
+    return {
+      label: service,
+      kind: "managed-process",
+      command: line,
+      status: 0,
+      dry_run: true,
+      already_running: false,
+      pid: null,
+      log: rel(logPath(service)),
+      stdout_omitted: true
+    };
+  }
+
+  fs.mkdirSync(STATE_DIR, { recursive: true });
+  const out = fs.openSync(logPath(service), "a");
+  const child = spawn(command, args, {
+    cwd: ROOT,
+    detached: true,
+    stdio: ["ignore", out, out],
+    env: process.env
+  });
+  child.unref();
+  fs.writeFileSync(pidPath(service), `${child.pid}\n`, "utf8");
+  fs.closeSync(out);
+  return {
+    label: service,
+    kind: "managed-process",
+    command: line,
+    status: 0,
+    dry_run: false,
+    already_running: false,
+    pid: child.pid,
+    log: rel(logPath(service)),
+    stdout_omitted: true
+  };
+}
+
+function stopManagedStep(service, { dryRun = false } = {}) {
+  const pid = readPid(service);
+  if (dryRun) {
+    return {
+      label: service,
+      kind: "managed-process-stop",
+      command: `stop ${service}`,
+      status: 0,
+      dry_run: true,
+      pid: pid || null,
+      action: pid ? "would_stop" : "no_pid_file",
+      stdout_omitted: true
+    };
+  }
+  if (!pid) {
+    return {
+      label: service,
+      kind: "managed-process-stop",
+      command: `stop ${service}`,
+      status: 0,
+      dry_run: false,
+      pid: null,
+      action: "no_pid_file",
+      stdout_omitted: true
+    };
+  }
+  if (!isAlive(pid)) {
+    return {
+      label: service,
+      kind: "managed-process-stop",
+      command: `stop ${service}`,
+      status: 0,
+      dry_run: false,
+      pid,
+      action: "already_stopped",
+      stdout_omitted: true
+    };
+  }
+  process.kill(pid, "SIGTERM");
+  return {
+    label: service,
+    kind: "managed-process-stop",
+    command: `stop ${service}`,
+    status: 0,
+    dry_run: false,
+    pid,
+    action: "sent_sigterm",
+    stdout_omitted: true
+  };
+}
+
 function planData() {
   return {
     command: "dev:local:plan",
@@ -355,6 +498,71 @@ function up({ dryRun }) {
   return 0;
 }
 
+function upData({ dryRun }) {
+  const steps = [];
+  steps.push(runBlockingStep("platform", "node", ["tools/selfhost-kit.mjs", "up", "--profile", "platform"], { dryRun }));
+  if (steps.at(-1).status === 0) {
+    steps.push(
+      startManagedStep(
+        "relay",
+        "corepack",
+        ["pnpm", "--dir", "repos/platform", "--filter", "@delexec/transport-relay", "run", "start"],
+        { dryRun }
+      )
+    );
+  }
+  if (steps.at(-1).status === 0) {
+    steps.push(
+      runBlockingStep(
+        "client bootstrap",
+        "corepack",
+        [
+          "pnpm",
+          "--dir",
+          "repos/client",
+          "--filter",
+          "@delexec/ops",
+          "exec",
+          "node",
+          "src/cli.js",
+          "bootstrap",
+          "--platform",
+          "http://127.0.0.1:8080"
+        ],
+        { dryRun }
+      )
+    );
+  }
+  if (steps.at(-1).status === 0) {
+    steps.push(
+      startManagedStep(
+        "supervisor",
+        "corepack",
+        ["pnpm", "--dir", "repos/client", "--filter", "@delexec/ops", "exec", "node", "src/cli.js", "start"],
+        { dryRun }
+      )
+    );
+  }
+  const ok = steps.every((step) => step.status === 0);
+  return {
+    command: "dev:local:up",
+    ok,
+    dry_run: dryRun,
+    state_dir: rel(STATE_DIR),
+    steps,
+    verification: [
+      "corepack pnpm run dev:doctor",
+      "corepack pnpm run test:agent-e2e",
+      "corepack pnpm run mcp:golden-four"
+    ],
+    notes: [
+      "does not print child command stdout because local bootstrap output may contain sensitive runtime details",
+      "managed relay and supervisor stdout/stderr are written to .run/local-stack log files",
+      "use dev:local:status -- --json after startup for runtime state"
+    ]
+  };
+}
+
 function down({ dryRun, keepPlatform }) {
   console.log("[local-stack:down]");
   stopManaged("supervisor", { dryRun });
@@ -364,6 +572,27 @@ function down({ dryRun, keepPlatform }) {
     return 0;
   }
   return runBlocking("platform down", "node", ["tools/selfhost-kit.mjs", "down", "--profile", "platform"], { dryRun });
+}
+
+function downData({ dryRun, keepPlatform }) {
+  const steps = [stopManagedStep("supervisor", { dryRun }), stopManagedStep("relay", { dryRun })];
+  if (!keepPlatform) {
+    steps.push(runBlockingStep("platform down", "node", ["tools/selfhost-kit.mjs", "down", "--profile", "platform"], { dryRun }));
+  }
+  const ok = steps.every((step) => step.status === 0);
+  return {
+    command: "dev:local:down",
+    ok,
+    dry_run: dryRun,
+    keep_platform: keepPlatform,
+    state_dir: rel(STATE_DIR),
+    steps,
+    notes: [
+      "does not print child command stdout because stop output may contain environment-specific runtime details",
+      "use --keep-platform when only relay and supervisor should stop",
+      "use dev:local:status -- --json after stop to inspect remaining managed state"
+    ]
+  };
 }
 
 async function main() {
@@ -381,6 +610,11 @@ async function main() {
     return;
   }
   if (args.command === "up") {
+    if (args.json) {
+      const data = upData(args);
+      printJson(data);
+      process.exit(data.ok ? 0 : 1);
+    }
     process.exit(up(args));
   }
   if (args.command === "status") {
@@ -392,6 +626,11 @@ async function main() {
     return;
   }
   if (args.command === "down") {
+    if (args.json) {
+      const data = downData(args);
+      printJson(data);
+      process.exit(data.ok ? 0 : 1);
+    }
     process.exit(down(args));
   }
   if (args.command === "logs") {

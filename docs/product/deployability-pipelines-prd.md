@@ -15,10 +15,13 @@ Required commands:
 - `corepack pnpm run dev:local:plan`
 - `corepack pnpm --silent run dev:local:plan -- --json`
 - `corepack pnpm run dev:local:up`
+- `corepack pnpm --silent run dev:local:up -- --json`
 - `corepack pnpm run dev:local:status`
 - `corepack pnpm --silent run dev:local:status -- --json`
 - `corepack pnpm run dev:local:logs`
 - `corepack pnpm --silent run dev:local:logs -- --json`
+- `corepack pnpm run dev:local:down`
+- `corepack pnpm --silent run dev:local:down -- --json`
 - `corepack pnpm run test:agent-e2e`
 - `corepack pnpm run test:local-stack`
 - `corepack pnpm run test:mcp-golden-four`
@@ -35,11 +38,17 @@ Acceptance:
 - `dev:local:plan -- --json` returns the same boot sequence, state directory,
   managed service pid/log files, and safety notes without starting services or
   reading secrets
+- `dev:local:up -- --json` returns startup step status, managed relay/supervisor
+  log files, next verification commands, and safety notes without printing child
+  command stdout
 - `dev:local:status -- --json` returns relay/supervisor running state, pid/log
   metadata, and next verification commands without printing secret values
 - `dev:local:logs -- --json` returns log file presence and line-count metadata
   without printing raw log lines because local relay/supervisor logs may contain
   sensitive runtime output
+- `dev:local:down -- --json` returns stop step status and safety notes without
+  printing child command stdout; `--keep-platform` keeps the platform profile
+  out of the stop sequence
 - six caller-skill actions are visible
 - bundled workspace-summary Hotline can run end to end
 - executable MCP golden-four smoke validates tool discovery, hotline search,
