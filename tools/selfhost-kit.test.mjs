@@ -225,6 +225,10 @@ function writeFakeDocker(root) {
       "  console.log('      PLATFORM_ADMIN_API_KEY: sk_admin_fake_secret_from_compose');",
       "  process.exit(0);",
       "}",
+      "if (args.includes('logs')) {",
+      "  console.log('platform-api booted with PLATFORM_ADMIN_API_KEY=sk_admin_fake_secret_from_logs');",
+      "  process.exit(0);",
+      "}",
       "process.exit(0);",
       ""
     ].join("\n"),
@@ -557,6 +561,28 @@ try {
   assert.match(configBody.notes.join("\n"), /does not include docker compose config stdout/);
   assert.ok(!configJson.stdout.includes("sk_admin_fake_secret_from_compose"));
   assert.ok(!configJson.stdout.includes(env.get("PLATFORM_ADMIN_API_KEY") || ""));
+
+  const logsJson = run(tmpRoot, ["logs", "--service", "platform-api", "--tail", "25", "--json"], {
+    env: {
+      ...process.env,
+      PATH: `${fakeDockerBin}${path.delimiter}${process.env.PATH || ""}`
+    }
+  });
+  assert.equal(logsJson.status, 0, logsJson.stderr || logsJson.stdout);
+  const logsBody = JSON.parse(logsJson.stdout);
+  assert.equal(logsBody.command, "selfhost:logs");
+  assert.equal(logsBody.profile, "platform");
+  assert.equal(logsBody.ok, true);
+  assert.equal(logsBody.compose_logs.status, "ok");
+  assert.equal(logsBody.compose_logs.exit_code, 0);
+  assert.equal(logsBody.service, "platform-api");
+  assert.equal(logsBody.tail, "25");
+  assert.match(logsBody.compose_logs.args.join(" "), /--tail=25/);
+  assert.match(logsBody.compose_logs.args.join(" "), /platform-api/);
+  assert.ok(Array.isArray(logsBody.notes));
+  assert.match(logsBody.notes.join("\n"), /does not include docker compose logs stdout/);
+  assert.ok(!logsJson.stdout.includes("sk_admin_fake_secret_from_logs"));
+  assert.ok(!logsJson.stdout.includes(env.get("PLATFORM_ADMIN_API_KEY") || ""));
 
   const profiles = run(tmpRoot, ["profiles"]);
   assert.equal(profiles.status, 0, profiles.stderr || profiles.stdout);

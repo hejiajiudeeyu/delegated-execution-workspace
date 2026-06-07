@@ -71,6 +71,7 @@
 - `corepack pnpm run selfhost:ports`
 - `corepack pnpm --silent run selfhost:ports -- --json`
 - `corepack pnpm run selfhost:logs`
+- `corepack pnpm --silent run selfhost:logs -- --json`
 - `corepack pnpm run selfhost:ops-report`
 - `corepack pnpm --silent run selfhost:ops-report -- --json`
 - `corepack pnpm run selfhost:backup-plan`
@@ -111,7 +112,9 @@
   `--json` 保持同一 exit-code 语义，并输出机器可读的 secret hygiene、compose
   config、routes、blockers 和 safety notes，不打印 secret 值
 - `selfhost:up` 默认复用 preflight gate；未通过时不继续启动，除非显式 `--force`
-- logs 支持按 service 和 tail 行数过滤
+- logs 支持按 service 和 tail 行数过滤；`--json` 返回 command metadata、
+  exit status、stderr lines、选定 service 和 tail size，并省略 Docker compose
+  logs stdout，因为应用日志可能包含敏感值
 - summary 会输出一屏只读 profile 概要，包括 deploy 路径、URLs、声明的 host
   ports、secret hygiene 状态和下一步命令，但不调用 Docker、不绑定 socket、不探测网络、
   不打印 secret 值；`--json` 返回同一组概要卡片数据，供 dashboard 和脚本消费

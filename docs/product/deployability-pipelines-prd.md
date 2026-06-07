@@ -71,6 +71,7 @@ Required commands:
 - `corepack pnpm run selfhost:ports`
 - `corepack pnpm --silent run selfhost:ports -- --json`
 - `corepack pnpm run selfhost:logs`
+- `corepack pnpm --silent run selfhost:logs -- --json`
 - `corepack pnpm run selfhost:ops-report`
 - `corepack pnpm --silent run selfhost:ops-report -- --json`
 - `corepack pnpm run selfhost:backup-plan`
@@ -120,7 +121,10 @@ Acceptance:
   config, route, blocker, and safety-note fields without printing secret values
 - `selfhost:up` reuses the preflight gate by default; it does not continue
   when preflight fails unless `--force` is passed explicitly
-- logs can be filtered by service and tail length
+- logs can be filtered by service and tail length; `--json` returns command
+  metadata, exit status, stderr lines, selected service, and tail size while
+  omitting Docker compose logs stdout because application logs may contain
+  sensitive values
 - summary prints a one-screen, read-only profile overview with deploy paths,
   URLs, declared host ports, secret hygiene status, and next commands without
   calling Docker, binding sockets, probing the network, or printing secrets;

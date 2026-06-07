@@ -130,6 +130,8 @@ corepack pnpm run selfhost:preflight
 corepack pnpm --silent run selfhost:preflight -- --json
 corepack pnpm run selfhost:status
 corepack pnpm --silent run selfhost:status -- --json
+corepack pnpm run selfhost:logs
+corepack pnpm --silent run selfhost:logs -- --json
 corepack pnpm run selfhost:smoke
 corepack pnpm run selfhost:security-review
 corepack pnpm --silent run selfhost:security-review -- --json
@@ -161,6 +163,8 @@ corepack pnpm run selfhost:security-review -- --profile public-stack
 corepack pnpm --silent run selfhost:security-review -- --profile public-stack --json
 corepack pnpm run selfhost:status -- --profile public-stack
 corepack pnpm --silent run selfhost:status -- --profile public-stack --json
+corepack pnpm run selfhost:logs -- --profile public-stack
+corepack pnpm --silent run selfhost:logs -- --profile public-stack --json
 corepack pnpm run selfhost:smoke -- --profile public-stack
 corepack pnpm run selfhost:config -- --profile public-stack
 corepack pnpm --silent run selfhost:config -- --profile public-stack --json
@@ -179,6 +183,13 @@ health endpoints without printing secret values. Use
 `corepack pnpm --silent run selfhost:status ... --json` when dashboards or
 management scripts need compose service state, health checks, blockers, and
 safety notes without parsing terminal prose.
+
+`selfhost:logs` remains the private-operator raw log view and can be filtered by
+`--service` and `--tail`. Use
+`corepack pnpm --silent run selfhost:logs ... --json` when dashboards or
+management scripts only need command metadata, exit code, stderr lines, service
+filter, and tail size; the JSON form intentionally omits Docker compose logs
+stdout because application logs may contain sensitive values.
 
 `selfhost:config` validates the selected profile's Docker compose config. The
 text form prints the compose output for a private operator terminal; the JSON
@@ -285,6 +296,7 @@ Operational helpers:
 
 ```bash
 corepack pnpm run selfhost:logs -- --service platform-api --tail 80
+corepack pnpm --silent run selfhost:logs -- --service platform-api --tail 80 --json
 corepack pnpm run selfhost:urls -- --profile public-stack
 corepack pnpm --silent run selfhost:urls -- --profile public-stack --json
 corepack pnpm run selfhost:ports -- --profile public-stack

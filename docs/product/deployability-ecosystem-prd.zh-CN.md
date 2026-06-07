@@ -91,7 +91,7 @@ CALL ANYTHING 现在的仓库边界是正确的：
 | Self-host backup validation | 第四仓 | `corepack pnpm run selfhost:backup-validate`，以及用于恢复演练脚本的 `--json` |
 | Self-host restore rehearsal | 第四仓 | `corepack pnpm run selfhost:restore-plan`，以及用于恢复演练脚本的 `--json` |
 | Self-host rotation planning | 第四仓 | `corepack pnpm run selfhost:rotate-plan`，以及用于 operator runbook 和 dashboard 的 `--json` |
-| Compose 生命周期 wrapper | 第四仓 | 委托到 `repos/platform/deploy/*` |
+| Compose 生命周期 wrapper | 第四仓 | 委托到 `repos/platform/deploy/*`；`selfhost:logs -- --json` 输出不含 raw log stdout 的命令 metadata |
 | Published-image smoke wrapper | 第四仓 | 委托到 `repos/platform` 的 public-stack smoke |
 | Operator onboarding contract | 第四仓 | `operator:onboarding:check` 校验 public-stack/brand-site/runbook 一致性 |
 | Public stack deploy manifest | `repos/platform` | 现有 `deploy/public-stack` |
@@ -111,13 +111,14 @@ CALL ANYTHING 现在的仓库边界是正确的：
 - logs/status 命令帮助定位问题，但不 dump `.env`
 - runtime status 可以机器读取，供 dashboard 消费，但不泄漏 secret 值
 - compose config validation 可以机器读取，但省略可能包含环境值的 compose stdout
+- logs metadata 可以机器读取，但省略 raw log stdout，因为应用日志可能包含敏感值
 
 ## 8. 成功指标
 
 - fresh checkout 可以运行 `selfhost:profiles`、`selfhost:quickstart`、
   `selfhost:readiness -- --all`、`selfhost:readiness`、`selfhost:doctor`、
   `selfhost:init`、`selfhost:summary`、`selfhost:preflight`、`selfhost:status`、
-  `selfhost:status -- --json`、`dev:doctor`、
+  `selfhost:status -- --json`、`selfhost:logs -- --json`、`dev:doctor`、
   `test:agent-e2e`、`published-image:plan`、
   `selfhost:security-review` 和 `operator:onboarding:check`
 - platform billing operator 已有 admin-only API 和 Platform Console 页面，可做
@@ -139,6 +140,8 @@ CALL ANYTHING 现在的仓库边界是正确的：
 ### M2：一命令 profile launcher
 
 - 增加 profile-specific `up/down/logs/status` wrapper。
+- 增加 `selfhost:logs -- --json`，让 dashboard 和管理脚本读取 log command
+  execution、service filter、tail size 与 stderr metadata，而不是嵌入 raw application log stdout。
 - 每个 profile 增加 smoke check。
 - 对不安全 secrets 给出明确失败信息。
 

@@ -111,6 +111,8 @@ corepack pnpm run selfhost:preflight
 corepack pnpm --silent run selfhost:preflight -- --json
 corepack pnpm run selfhost:status
 corepack pnpm --silent run selfhost:status -- --json
+corepack pnpm run selfhost:logs
+corepack pnpm --silent run selfhost:logs -- --json
 corepack pnpm run selfhost:smoke
 corepack pnpm run selfhost:security-review
 corepack pnpm --silent run selfhost:security-review -- --json
@@ -142,6 +144,8 @@ corepack pnpm run selfhost:security-review -- --profile public-stack
 corepack pnpm --silent run selfhost:security-review -- --profile public-stack --json
 corepack pnpm run selfhost:status -- --profile public-stack
 corepack pnpm --silent run selfhost:status -- --profile public-stack --json
+corepack pnpm run selfhost:logs -- --profile public-stack
+corepack pnpm --silent run selfhost:logs -- --profile public-stack --json
 corepack pnpm run selfhost:smoke -- --profile public-stack
 corepack pnpm run selfhost:config -- --profile public-stack
 corepack pnpm --silent run selfhost:config -- --profile public-stack --json
@@ -157,6 +161,12 @@ hygiene 未通过，默认不会继续启动；只有显式传入 `--force` 才�
 当 dashboard 或管理脚本需要 compose service state、health checks、blockers 和
 safety notes 且不想解析终端文本时，使用
 `corepack pnpm --silent run selfhost:status ... --json`。
+
+`selfhost:logs` 保留为私有 operator 终端里的 raw logs 视图，并支持 `--service`
+和 `--tail` 过滤。当 dashboard 或管理脚本只需要 command metadata、exit code、
+stderr lines、service filter 和 tail size 时，使用
+`corepack pnpm --silent run selfhost:logs ... --json`；JSON 形式会刻意省略 Docker
+compose logs stdout，因为应用日志可能包含敏感值。
 
 `selfhost:config` 会校验选定 profile 的 Docker compose config。文本形式会给私有
 operator 终端打印 compose 输出；JSON 形式会刻意省略 compose stdout，因为展开后的
@@ -244,6 +254,7 @@ corepack pnpm run test:operator-onboarding
 
 ```bash
 corepack pnpm run selfhost:logs -- --service platform-api --tail 80
+corepack pnpm --silent run selfhost:logs -- --service platform-api --tail 80 --json
 corepack pnpm run selfhost:urls -- --profile public-stack
 corepack pnpm --silent run selfhost:urls -- --profile public-stack --json
 corepack pnpm run selfhost:ports -- --profile public-stack

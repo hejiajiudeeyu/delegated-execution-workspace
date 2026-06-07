@@ -122,7 +122,7 @@ Commands:
   plan      Explain services, URLs, and safety checks for the profile
   up        Run preflight, then docker compose up -d for the selected profile
   down      Run docker compose down for the selected profile
-  logs      Run docker compose logs for the selected profile; supports --service and --tail
+  logs      Run docker compose logs; --json omits log stdout and reports metadata
   ops-report
             Write a non-secret Markdown operations handoff report
   security-review
@@ -556,6 +556,50 @@ async function statusData(profileName) {
 
 async function printStatusJson(profileName) {
   const data = await statusData(profileName);
+  console.log(
+    JSON.stringify(
+      {
+        generated_at: new Date().toISOString(),
+        ...data
+      },
+      null,
+      2
+    )
+  );
+  return data.ok;
+}
+
+function logsData(profileName, { service = null, tail = "120" } = {}) {
+  const logArgs = ["logs", `--tail=${tail || "120"}`];
+  if (service) {
+    logArgs.push(service);
+  }
+  const logsResult = dockerCompose(profileName, logArgs, "pipe");
+  const logsOk = logsResult.status === 0;
+  return {
+    command: "selfhost:logs",
+    profile: profileName,
+    ok: logsOk,
+    service,
+    tail: tail || "120",
+    compose_logs: {
+      ok: logsOk,
+      status: logsOk ? "ok" : "fail",
+      exit_code: logsResult.status ?? 1,
+      args: logArgs,
+      stderr_lines: (logsResult.stderr || "").trim().split(/\r?\n/).filter(Boolean)
+    },
+    blockers: logsOk ? [] : ["docker compose logs failed"],
+    notes: [
+      "runs docker compose logs for the selected profile",
+      "does not include docker compose logs stdout because application logs may contain sensitive values",
+      "use text mode in a private operator terminal when raw logs are required"
+    ]
+  };
+}
+
+function printLogsJson(profileName, options) {
+  const data = logsData(profileName, options);
   console.log(
     JSON.stringify(
       {
@@ -2213,6 +2257,9 @@ async function main() {
   }
 
   if (args.command === "logs") {
+    if (args.json) {
+      process.exit(printLogsJson(args.profile, { service: args.service, tail: args.tail }) ? 0 : 1);
+    }
     const logArgs = ["logs", `--tail=${args.tail || "120"}`];
     if (args.service) {
       logArgs.push(args.service);
