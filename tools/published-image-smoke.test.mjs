@@ -116,6 +116,40 @@ try {
   assert.match(dryRun.stdout, /corepack pnpm --dir repos\/platform run test:public-stack-smoke/);
   assert.ok(!dryRun.stdout.includes("sk_admin_must_not_leak"));
 
+  const dryRunJson = run(tmpRoot, [
+    "smoke",
+    "--",
+    "--dry-run",
+    "--json",
+    "--image-registry",
+    "registry.example/delexec",
+    "--image-tag",
+    "2026.06.08"
+  ]);
+  assert.equal(dryRunJson.status, 0, dryRunJson.stderr || dryRunJson.stdout);
+  const dryRunBody = JSON.parse(dryRunJson.stdout);
+  assert.equal(dryRunBody.command, "published-image:smoke");
+  assert.equal(dryRunBody.ok, true);
+  assert.equal(dryRunBody.dry_run, true);
+  assert.equal(dryRunBody.profile, "public-stack");
+  assert.equal(dryRunBody.env.COMPOSE_NO_BUILD, "true");
+  assert.equal(dryRunBody.env.IMAGE_REGISTRY, "registry.example/delexec");
+  assert.equal(dryRunBody.env.IMAGE_TAG, "2026.06.08");
+  assert.equal(dryRunBody.env.STRICT_COMPOSE_SMOKE, "true");
+  assert.deepEqual(
+    dryRunBody.images.map((image) => image.ref),
+    [
+      "registry.example/delexec/rsp-platform:2026.06.08",
+      "registry.example/delexec/rsp-relay:2026.06.08",
+      "registry.example/delexec/rsp-gateway:2026.06.08"
+    ]
+  );
+  assert.equal(dryRunBody.result.status, 0);
+  assert.match(dryRunBody.delegated_command, /corepack pnpm --dir repos\/platform run test:public-stack-smoke/);
+  assert.match(dryRunBody.notes.join("\n"), /does not print platform smoke stdout/);
+  assert.ok(!dryRunJson.stdout.includes("[dry-run]"));
+  assert.ok(!dryRunJson.stdout.includes("sk_admin_must_not_leak"));
+
   const brokenRoot = fs.mkdtempSync(path.join(os.tmpdir(), "delexec-published-image-smoke-broken-"));
   try {
     writeFakePlatform(brokenRoot, { gatewayImage: "registry.example/rsp-gateway:fixed" });

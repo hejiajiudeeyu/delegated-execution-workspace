@@ -18,14 +18,14 @@ repositories.
 - `repos/protocol`: `da3027100cfe9391f7f8d03be18a108ee2804cf6`
 - `repos/client`: `f1d6a2d8c9b83517cdf6ca9803b223847f880e9a`
 - `repos/platform`: `5961309c6b0ca4e8df22dbb5be92ac0845bf8d25`
-- `repos/brand-site`: `13662569792ac238dc4d92ee74124727417fbfd7`
+- `repos/brand-site`: `1d813c3388a592896f91191adaece0e457ed3302`
 
-The current bundle is `changes/CHG-2026-083.yaml`.
+The current bundle is `changes/CHG-2026-084.yaml`.
 
 ## Readiness Verdict
 
 The pinned combination is ready for daily fourth-repo development after
-CHG-2026-083:
+CHG-2026-084:
 
 - submodule SHA integrity is verified
 - boundary governance covers the new platform billing data package
@@ -140,7 +140,7 @@ Observed results:
 - `check:submodules`: passed
 - `check:boundaries`: passed after adding `@delexec/billing-store` to
   `platform/data`
-- `check:bundles`: passed with `CHG-2026-083`
+- `check:bundles`: passed with `CHG-2026-084`
 - `test:contracts`: passed, including `@delexec/billing-store` in platform
   package validation and the `@delexec/platform-api` dependency graph
 - `test:integration`: passed with a successful request/response path
@@ -170,10 +170,10 @@ Observed results:
 - `test:local-stack`: passed for one-command local stack command sequencing,
   managed process status/log behavior, JSON plan/up/status/log/down metadata,
   and secret-leak guard
-- `published-image:plan -- --json` / `published-image:smoke -- --dry-run`:
+- `published-image:plan -- --json` / `published-image:smoke -- --dry-run --json`:
   passed for public-stack release image registry/tag visibility, the
   `COMPOSE_NO_BUILD=true` delegated command, strict smoke defaults, and
-  machine-readable release-plan metadata
+  machine-readable release-plan and dry-run smoke metadata
 - `published-image:smoke -- --image-tag latest`: passed with `repos/platform`
   public-stack smoke running in `mode=published_image`, completing the gateway
   proxy scenario, and cleaning up compose
@@ -192,7 +192,7 @@ Observed results:
   bilingual Deployability Profiles route/content contract, including the
   admin-only Billing console narrative plus `selfhost:security-review` and
   `selfhost:audit-export` / `selfhost:profiles` / `selfhost:quickstart` / `selfhost:readiness -- --all` / `selfhost:readiness` / `selfhost:doctor` / `selfhost:summary` / `selfhost:ports` /
-  `selfhost:ops-report` / `selfhost:status -- --json` / `selfhost:config -- --json` / `selfhost:backup-validate` / `selfhost:restore-plan`
+  `selfhost:ops-report` / `selfhost:status -- --json` / `selfhost:config -- --json` / `selfhost:backup-validate` / `selfhost:restore-plan` / `published-image:smoke -- --dry-run --json`
   commands
 - `repos/brand-site` `npm run build`: passed, including client build, SSR
   build, and prerender output for the new deployability docs routes
@@ -366,7 +366,9 @@ images, `rsp-platform`, `rsp-relay`, and `rsp-gateway`, and confirms the compose
 image templates are still parameterized by `IMAGE_REGISTRY` / `IMAGE_TAG`.
 `published-image:plan -- --json` emits the same image refs, delegated command,
 smoke env metadata, and safety notes for release dashboards and management
-scripts without printing secret env values.
+scripts without printing secret env values. `published-image:smoke -- --dry-run
+--json` emits dry-run smoke status without starting Docker or printing delegated
+smoke stdout.
 `corepack pnpm run published-image:smoke` delegates to `repos/platform`
 `test:public-stack-smoke` in strict Docker mode with `COMPOSE_NO_BUILD=true`, so
 platform smoke pulls published images instead of building locally. The fourth

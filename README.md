@@ -133,6 +133,7 @@ corepack pnpm run operator:onboarding:check
 corepack pnpm run published-image:plan
 corepack pnpm --silent run published-image:plan -- --json
 corepack pnpm run published-image:smoke -- --dry-run --image-tag <candidate-tag>
+corepack pnpm --silent run published-image:smoke -- --dry-run --image-tag <candidate-tag> --json
 ```
 
 Initialize and inspect a self-host profile:

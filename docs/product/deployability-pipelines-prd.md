@@ -276,6 +276,7 @@ Required commands:
 - `corepack pnpm run published-image:plan`
 - `corepack pnpm --silent run published-image:plan -- --json`
 - `corepack pnpm run published-image:smoke`
+- `corepack pnpm --silent run published-image:smoke -- --dry-run --json`
 - `corepack pnpm run test:published-image-smoke`
 
 Required behavior:
@@ -289,6 +290,9 @@ Required behavior:
   delegated command, smoke env metadata, and safety notes without printing
   secret env values
 - smoke delegates to `repos/platform` `test:public-stack-smoke`
+- smoke `--dry-run --json` emits the same image refs, delegated command, smoke
+  env metadata, dry-run result status, and safety notes without running Docker
+  or printing delegated smoke stdout
 - smoke sets `COMPOSE_NO_BUILD=true` by default so platform smoke pulls
   published images instead of building locally
 - smoke uses strict Docker mode by default; only explicit `--allow-skip`
@@ -304,6 +308,8 @@ Acceptance:
   JSON before deciding whether to run Docker
 - `--image-registry` and `--image-tag` support candidate release tags
 - dry-run validates the orchestration contract without Docker
+- release-management scripts can consume dry-run smoke status as clean JSON
+  before starting a strict Docker smoke
 - real container startup, health, and gateway scenario checks remain owned by
   `repos/platform`
 

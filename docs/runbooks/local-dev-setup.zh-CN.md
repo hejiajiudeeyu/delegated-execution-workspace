@@ -267,11 +267,14 @@ corepack pnpm run published-image:plan
 corepack pnpm --silent run published-image:plan -- --json
 corepack pnpm run published-image:smoke -- --image-registry ghcr.io/hejiajiudeeyu --image-tag latest
 corepack pnpm run published-image:smoke -- --dry-run --image-tag <candidate-tag>
+corepack pnpm --silent run published-image:smoke -- --dry-run --image-tag <candidate-tag> --json
 corepack pnpm run test:published-image-smoke
 ```
 
 `published-image:plan -- --json` 会输出解析后的 release image refs、委托给平台仓的
 smoke 命令、smoke env metadata 和 safety notes，但不打印 secret env 值。
+`published-image:smoke -- --dry-run --json` 会输出同一组 smoke command metadata 和
+dry-run result status，但不运行 Docker，也不打印 delegated smoke stdout。
 `published-image:smoke` 默认会设置 `COMPOSE_NO_BUILD=true` 和
 `STRICT_COMPOSE_SMOKE=true`，并委托 `repos/platform` 的 public-stack smoke。如果只是
 本地查看命令形状，可以使用 `--dry-run`；如果显式允许无 Docker 环境跳过，才传

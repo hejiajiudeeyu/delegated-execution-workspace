@@ -217,6 +217,63 @@ function planData(args) {
   };
 }
 
+function stderrLines(stderr) {
+  return String(stderr || "")
+    .split(/\r?\n/)
+    .filter(Boolean)
+    .slice(-20);
+}
+
+function smokeData(args) {
+  const plan = planData(args);
+  const result = args.dryRun
+    ? {
+        status: 0,
+        signal: null,
+        dry_run: true,
+        stdout_omitted: true,
+        stderr_lines: []
+      }
+    : (() => {
+        const [command, ...commandArgs] = delegatedCommand();
+        const smokeResult = spawnSync(command, commandArgs, {
+          cwd: ROOT,
+          encoding: "utf8",
+          env: {
+            ...process.env,
+            ...smokeEnv(args)
+          }
+        });
+        return {
+          status: smokeResult.status || (smokeResult.signal ? 1 : 0),
+          signal: smokeResult.signal || null,
+          dry_run: false,
+          stdout_omitted: true,
+          stderr_lines: stderrLines(smokeResult.stderr)
+        };
+      })();
+
+  return {
+    command: "published-image:smoke",
+    ok: result.status === 0,
+    dry_run: args.dryRun,
+    profile: args.profile,
+    compose: plan.compose,
+    platform_smoke: plan.platform_smoke,
+    images: plan.images,
+    env: plan.env,
+    delegated_command: plan.delegated_command,
+    result,
+    notes: [
+      "validates public-stack image templates before smoke",
+      "uses COMPOSE_NO_BUILD=true so platform smoke pulls published images",
+      "uses strict Docker smoke by default; pass --allow-skip only for local probe-style skipping",
+      "does not print platform smoke stdout because delegated smoke output can contain environment-specific runtime details",
+      "does not print secret env values"
+    ]
+  };
+}
+
 function printPlan(args) {
   const data = planData(args);
   console.log(`[published-image:plan] profile=${args.profile}`);
@@ -270,6 +327,11 @@ function main() {
     return 0;
   }
   if (args.command === "smoke") {
+    if (args.json) {
+      const data = smokeData(args);
+      printJson(data);
+      return data.ok ? 0 : 1;
+    }
     return runSmoke(args);
   }
   throw new Error(`unknown command ${args.command}`);

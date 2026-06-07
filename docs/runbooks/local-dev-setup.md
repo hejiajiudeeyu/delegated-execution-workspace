@@ -312,16 +312,19 @@ corepack pnpm run published-image:plan
 corepack pnpm --silent run published-image:plan -- --json
 corepack pnpm run published-image:smoke -- --image-registry ghcr.io/hejiajiudeeyu --image-tag latest
 corepack pnpm run published-image:smoke -- --dry-run --image-tag <candidate-tag>
+corepack pnpm --silent run published-image:smoke -- --dry-run --image-tag <candidate-tag> --json
 corepack pnpm run test:published-image-smoke
 ```
 
 `published-image:plan -- --json` emits the resolved release image refs,
 delegated platform smoke command, smoke env metadata, and safety notes without
-printing secret env values. `published-image:smoke` sets `COMPOSE_NO_BUILD=true`
-and `STRICT_COMPOSE_SMOKE=true` by default, then delegates to the
-`repos/platform` public-stack smoke. Use `--dry-run` when you only want to
-inspect the command shape; pass `--allow-skip` only when you explicitly allow a
-no-Docker local probe to skip.
+printing secret env values. `published-image:smoke -- --dry-run --json` emits
+the same smoke command metadata plus dry-run result status without running
+Docker or printing delegated smoke stdout. `published-image:smoke` sets
+`COMPOSE_NO_BUILD=true` and `STRICT_COMPOSE_SMOKE=true` by default, then
+delegates to the `repos/platform` public-stack smoke. Use `--dry-run` when you
+only want to inspect the command shape; pass `--allow-skip` only when you
+explicitly allow a no-Docker local probe to skip.
 
 Check the operator first-use contract:
 

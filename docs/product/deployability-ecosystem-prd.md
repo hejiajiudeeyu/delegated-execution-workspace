@@ -92,7 +92,7 @@ The ecosystem is "daily-deployable" when a fresh operator can:
 | Self-host restore rehearsal | fourth repo | `corepack pnpm run selfhost:restore-plan`, plus `--json` for recovery rehearsal scripts |
 | Self-host rotation planning | fourth repo | `corepack pnpm run selfhost:rotate-plan`, plus `--json` for operator runbooks and dashboards |
 | Compose lifecycle wrapper | fourth repo | delegate to `repos/platform/deploy/*`; `selfhost:up -- --json`, `selfhost:logs -- --json`, and `selfhost:down -- --json` emit command metadata without raw compose stdout |
-| Published-image smoke wrapper | fourth repo | delegate to `repos/platform` public-stack smoke; `published-image:plan -- --json` for release dashboards and management scripts |
+| Published-image smoke wrapper | fourth repo | delegate to `repos/platform` public-stack smoke; `published-image:plan -- --json` and `published-image:smoke -- --dry-run --json` for release dashboards and management scripts |
 | Operator onboarding contract | fourth repo | `operator:onboarding:check` keeps public-stack, brand-site, and runbooks aligned |
 | Public stack deploy manifests | `repos/platform` | existing `deploy/public-stack` |
 | Billing admin read model | `repos/platform` | admin-only tenant, balance, recharge, and ledger endpoints plus Platform Console management page |
@@ -138,7 +138,8 @@ Required baseline:
   `selfhost:init`, `selfhost:summary`, `selfhost:preflight`, `selfhost:status`,
   `selfhost:status -- --json`, `selfhost:up -- --json`, `selfhost:logs -- --json`,
   `selfhost:down -- --json`, `selfhost:smoke -- --json`, `dev:doctor`,
-  `test:agent-e2e`, `published-image:plan -- --json`, `selfhost:security-review`,
+  `test:agent-e2e`, `published-image:plan -- --json`,
+  `published-image:smoke -- --dry-run --json`, `selfhost:security-review`,
   `selfhost:audit-export -- --json`, and `operator:onboarding:check`.
 - Platform billing operators have an admin-only API and Platform Console page
   for tenant setup, balance inspection, manual recharge capture, and ledger
