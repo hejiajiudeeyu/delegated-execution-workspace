@@ -82,6 +82,7 @@ The ecosystem is "daily-deployable" when a fresh operator can:
 | Self-host ops handoff | fourth repo | `corepack pnpm run selfhost:ops-report`, plus `--json` for dashboards and management scripts |
 | Self-host preflight gate | fourth repo | `corepack pnpm run selfhost:preflight`, plus `--json` for deployment controllers |
 | Self-host runtime status | fourth repo | `corepack pnpm run selfhost:status`, plus `--json` for dashboards and management scripts |
+| Self-host smoke acceptance | fourth repo | `corepack pnpm run selfhost:smoke`, plus `--json` for CI, dashboards, and management scripts |
 | Self-host compose config validation | fourth repo | `corepack pnpm run selfhost:config`, plus `--json` for CI and dashboards |
 | Self-host security review | fourth repo | `corepack pnpm run selfhost:security-review`, plus `--json` for public exposure dashboards |
 | Self-host backup planning | fourth repo | `corepack pnpm run selfhost:backup-plan`, plus `--json` for recovery rehearsal scripts |
@@ -115,6 +116,8 @@ Required baseline:
   compose output may contain sensitive values
 - machine-readable startup metadata that omits init, preflight, and compose up
   stdout because command output may contain sensitive values
+- machine-readable smoke metadata that omits expanded compose config stdout
+  because it can contain environment values
 
 ## 8. Success Metrics
 
@@ -122,7 +125,8 @@ Required baseline:
   `selfhost:readiness -- --all`, `selfhost:readiness`, `selfhost:doctor`,
   `selfhost:init`, `selfhost:summary`, `selfhost:preflight`, `selfhost:status`,
   `selfhost:status -- --json`, `selfhost:up -- --json`, `selfhost:logs -- --json`,
-  `selfhost:down -- --json`, `dev:doctor`, `test:agent-e2e`, `published-image:plan`, `selfhost:security-review`, and
+  `selfhost:down -- --json`, `selfhost:smoke -- --json`, `dev:doctor`,
+  `test:agent-e2e`, `published-image:plan`, `selfhost:security-review`, and
   `operator:onboarding:check`.
 - Platform billing operators have an admin-only API and Platform Console page
   for tenant setup, balance inspection, manual recharge capture, and ledger
@@ -152,7 +156,10 @@ Required baseline:
 - Add `selfhost:down -- --json` so dashboards and management scripts can check
   stop command execution, exit status, blockers, and stderr metadata without
   embedding raw Docker compose down stdout.
-- Add smoke checks per profile.
+- Add smoke checks per profile, plus `selfhost:smoke -- --json` so CI,
+  dashboards, and management scripts can consume post-start secret hygiene,
+  compose config, public route contract, health endpoint, blocker, and note
+  metadata without embedding expanded compose config stdout.
 - Add explicit failure messages for unsafe secrets.
 
 ### M3: Console management parity

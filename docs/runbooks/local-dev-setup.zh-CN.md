@@ -118,6 +118,7 @@ corepack pnpm --silent run selfhost:logs -- --json
 corepack pnpm run selfhost:down
 corepack pnpm --silent run selfhost:down -- --json
 corepack pnpm run selfhost:smoke
+corepack pnpm --silent run selfhost:smoke -- --json
 corepack pnpm run selfhost:security-review
 corepack pnpm --silent run selfhost:security-review -- --json
 corepack pnpm run selfhost:config
@@ -155,6 +156,7 @@ corepack pnpm --silent run selfhost:logs -- --profile public-stack --json
 corepack pnpm run selfhost:down -- --profile public-stack
 corepack pnpm --silent run selfhost:down -- --profile public-stack --json
 corepack pnpm run selfhost:smoke -- --profile public-stack
+corepack pnpm --silent run selfhost:smoke -- --profile public-stack --json
 corepack pnpm run selfhost:config -- --profile public-stack
 corepack pnpm --silent run selfhost:config -- --profile public-stack --json
 ```
@@ -173,6 +175,11 @@ hygiene 未通过，默认不会继续启动；只有显式传入 `--force` 才�
 当 dashboard 或管理脚本需要 compose service state、health checks、blockers 和
 safety notes 且不想解析终端文本时，使用
 `corepack pnpm --silent run selfhost:status ... --json`。
+
+`selfhost:smoke` 是启动后的验收检查，会覆盖 secret hygiene、Docker compose
+config、public route contract 和配置的 health endpoints。当 CI、dashboard 或管理脚本需要
+smoke pass/fail、blockers、route contract 和 health metadata，且不想嵌入展开后的
+compose stdout 时，使用 `corepack pnpm --silent run selfhost:smoke ... --json`。
 
 `selfhost:logs` 保留为私有 operator 终端里的 raw logs 视图，并支持 `--service`
 和 `--tail` 过滤。当 dashboard 或管理脚本只需要 command metadata、exit code、

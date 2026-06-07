@@ -20,12 +20,12 @@ repositories.
 - `repos/platform`: `5961309c6b0ca4e8df22dbb5be92ac0845bf8d25`
 - `repos/brand-site`: `9a2b505afe1917f9f4e389e672853c316490b190`
 
-The current bundle is `changes/CHG-2026-078.yaml`.
+The current bundle is `changes/CHG-2026-079.yaml`.
 
 ## Readiness Verdict
 
 The pinned combination is ready for daily fourth-repo development after
-CHG-2026-078:
+CHG-2026-079:
 
 - submodule SHA integrity is verified
 - boundary governance covers the new platform billing data package
@@ -136,7 +136,7 @@ Observed results:
 - `check:submodules`: passed
 - `check:boundaries`: passed after adding `@delexec/billing-store` to
   `platform/data`
-- `check:bundles`: passed with `CHG-2026-078`
+- `check:bundles`: passed with `CHG-2026-079`
 - `test:contracts`: passed, including `@delexec/billing-store` in platform
   package validation and the `@delexec/platform-api` dependency graph
 - `test:integration`: passed with a successful request/response path
@@ -299,6 +299,11 @@ snapshot. It calls Docker compose `ps`, checks secret hygiene status, and probes
 configured health endpoints without printing secret values; `--json` emits the
 same runtime service state, health checks, blockers, and safety notes for
 dashboards and management scripts;
+`corepack pnpm run selfhost:smoke` is the post-start acceptance gate. It checks
+secret hygiene, Docker compose config, public route contract, and configured
+health endpoints without printing secret values; `--json` emits smoke pass/fail,
+blockers, route contract, health metadata, and safety notes while omitting
+expanded compose config stdout because it may contain environment values;
 `corepack pnpm run selfhost:up` is the guarded startup command. It runs init,
 preflight, then Docker compose `up -d`; `--json` emits init, preflight,
 compose-up, blocker, and note metadata while omitting command stdout because it
@@ -335,7 +340,10 @@ window, dry-run, confirmed rotation, restart, and smoke-validation checklist
 without reading or modifying `.env`;
 `corepack pnpm run selfhost:smoke` remains the post-start health endpoint check
 and, for `public-stack`, also validates the edge route contract for `/healthz`,
-`/platform/healthz`, `/relay/healthz`, `/gateway/healthz`, and `/console/`.
+`/platform/healthz`, `/relay/healthz`, `/gateway/healthz`, and `/console/`;
+`corepack pnpm --silent run selfhost:smoke ... --json` exposes the same
+post-start acceptance evidence to CI, dashboards, and management scripts without
+embedding expanded compose config stdout.
 For public profiles, unsafe public origin settings are warnings/failures instead
 of being hidden behind a green status. `selfhost:up` reuses the preflight gate by
 default and will not continue when it fails unless `--force` is passed
@@ -387,7 +395,7 @@ Operator Onboarding. Management Console copy now also describes the admin-only
 Billing page as an operator surface, not as client-facing billing readiness, and
 the public-stack command examples include `selfhost:security-review`,
 `selfhost:audit-export`, `selfhost:profiles`, `selfhost:quickstart`, `selfhost:readiness -- --all`, `selfhost:readiness`, `selfhost:readiness -- --json`, `selfhost:doctor`, `selfhost:summary`, `selfhost:ports`,
-`selfhost:up -- --json`, `selfhost:logs -- --json`, `selfhost:down -- --json`, `selfhost:ops-report`,
+`selfhost:up -- --json`, `selfhost:smoke -- --json`, `selfhost:logs -- --json`, `selfhost:down -- --json`, `selfhost:ops-report`,
 `selfhost:plan`, `selfhost:plan -- --json`, `selfhost:backup-plan`, `selfhost:backup-validate`, `selfhost:restore-plan`, and `selfhost:rotate-plan` as pre-exposure safety,
 evidence, quickstart sequencing, human-readable and machine-readable readiness overview, selected-profile deployment maps, port visibility, safe startup/log/stop command metadata, handoff-report,
 machine-readable handoff, backup planning, backup-artifact validation, recovery-rehearsal, and rotation-planning commands. Capabilities that

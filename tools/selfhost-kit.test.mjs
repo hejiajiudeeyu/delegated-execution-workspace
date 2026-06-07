@@ -635,6 +635,37 @@ try {
   assert.ok(!upJson.stdout.includes("sk_admin_fake_secret_from_compose"));
   assert.ok(!upJson.stdout.includes(env.get("PLATFORM_ADMIN_API_KEY") || ""));
 
+  const smokeJson = run(tmpRoot, ["smoke", "--json"], {
+    env: {
+      ...process.env,
+      PATH: `${fakeDockerBin}${path.delimiter}${process.env.PATH || ""}`
+    }
+  });
+  assert.ok([0, 1].includes(smokeJson.status), smokeJson.stderr || smokeJson.stdout);
+  const smokeBody = JSON.parse(smokeJson.stdout);
+  assert.equal(smokeBody.command, "selfhost:smoke");
+  assert.equal(smokeBody.profile, "platform");
+  assert.equal(smokeBody.secret_hygiene.every((item) => item.ok), true);
+  assert.equal(smokeBody.compose_config.status, "ok");
+  assert.equal(smokeBody.compose_config.exit_code, 0);
+  assert.equal(smokeBody.public_route_contract.status, "not_applicable");
+  assert.ok(Array.isArray(smokeBody.health));
+  assert.equal(typeof smokeBody.health.find((item) => item.name === "platform-api").ok, "boolean");
+  assert.equal(
+    smokeBody.ok,
+    smokeBody.secret_hygiene.every((item) => item.ok) &&
+      smokeBody.compose_config.ok &&
+      smokeBody.public_route_contract.ok &&
+      smokeBody.health.every((item) => item.ok)
+  );
+  if (!smokeBody.ok) {
+    assert.ok(smokeBody.blockers.length > 0);
+  }
+  assert.ok(Array.isArray(smokeBody.notes));
+  assert.match(smokeBody.notes.join("\n"), /does not include docker compose config stdout/);
+  assert.ok(!smokeJson.stdout.includes("sk_admin_fake_secret_from_compose"));
+  assert.ok(!smokeJson.stdout.includes(env.get("PLATFORM_ADMIN_API_KEY") || ""));
+
   const profiles = run(tmpRoot, ["profiles"]);
   assert.equal(profiles.status, 0, profiles.stderr || profiles.stdout);
   assert.match(profiles.stdout, /selfhost:profiles/);

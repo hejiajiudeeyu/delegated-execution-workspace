@@ -59,6 +59,7 @@
 - `corepack pnpm run selfhost:status`
 - `corepack pnpm --silent run selfhost:status -- --json`
 - `corepack pnpm run selfhost:smoke`
+- `corepack pnpm --silent run selfhost:smoke -- --json`
 - `corepack pnpm run selfhost:security-review`
 - `corepack pnpm --silent run selfhost:security-review -- --json`
 - `corepack pnpm run selfhost:audit-export`
@@ -111,7 +112,10 @@
   notes，供 dashboard 和管理脚本消费，且不打印 secret 值
 - config 会校验 Docker compose config；`--json` 返回 pass/fail、blocker 和 stderr
   metadata，供 CI、dashboard 和管理脚本消费，并省略可能包含环境值的展开后 compose stdout
-- smoke 同时检查 secret hygiene、compose config 和 health endpoints
+- smoke 同时检查 secret hygiene、compose config、public route contract 和
+  health endpoints；`--json` 返回同一组启动后验收结果、blockers、route contract、
+  health metadata 和 safety notes，供 CI、dashboard 和管理脚本消费，并省略可能包含环境值的展开后
+  compose config stdout
 - preflight 在 `up` 前检查 secret hygiene、compose config 和 routes，不要求服务已运行；
   `--json` 保持同一 exit-code 语义，并输出机器可读的 secret hygiene、compose
   config、routes、blockers 和 safety notes，不打印 secret 值

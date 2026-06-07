@@ -85,6 +85,7 @@ CALL ANYTHING 现在的仓库边界是正确的：
 | Self-host ops handoff | 第四仓 | `corepack pnpm run selfhost:ops-report`，以及用于 dashboard 和管理脚本的 `--json` |
 | Self-host preflight gate | 第四仓 | `corepack pnpm run selfhost:preflight`，以及用于部署控制器的 `--json` |
 | Self-host runtime status | 第四仓 | `corepack pnpm run selfhost:status`，以及用于 dashboard 和管理脚本的 `--json` |
+| Self-host smoke acceptance | 第四仓 | `corepack pnpm run selfhost:smoke`，以及用于 CI、dashboard 和管理脚本的 `--json` |
 | Self-host compose config validation | 第四仓 | `corepack pnpm run selfhost:config`，以及用于 CI 和 dashboard 的 `--json` |
 | Self-host security review | 第四仓 | `corepack pnpm run selfhost:security-review`，以及用于公开暴露 dashboard 的 `--json` |
 | Self-host backup planning | 第四仓 | `corepack pnpm run selfhost:backup-plan`，以及用于恢复演练脚本的 `--json` |
@@ -116,6 +117,7 @@ CALL ANYTHING 现在的仓库边界是正确的：
   输出可能包含敏感值
 - startup metadata 可以机器读取，但省略 init、preflight 和 compose up stdout，因为
   命令输出可能包含敏感值
+- smoke metadata 可以机器读取，但省略展开后的 compose config stdout，因为它可能包含环境值
 
 ## 8. 成功指标
 
@@ -123,7 +125,7 @@ CALL ANYTHING 现在的仓库边界是正确的：
   `selfhost:readiness -- --all`、`selfhost:readiness`、`selfhost:doctor`、
   `selfhost:init`、`selfhost:summary`、`selfhost:preflight`、`selfhost:status`、
   `selfhost:status -- --json`、`selfhost:up -- --json`、`selfhost:logs -- --json`、
-  `selfhost:down -- --json`、`dev:doctor`、
+  `selfhost:down -- --json`、`selfhost:smoke -- --json`、`dev:doctor`、
   `test:agent-e2e`、`published-image:plan`、
   `selfhost:security-review` 和 `operator:onboarding:check`
 - platform billing operator 已有 admin-only API 和 Platform Console 页面，可做
@@ -151,7 +153,10 @@ CALL ANYTHING 现在的仓库边界是正确的：
   execution、service filter、tail size 与 stderr metadata，而不是嵌入 raw application log stdout。
 - 增加 `selfhost:down -- --json`，让 dashboard 和管理脚本读取 stop command
   execution、exit status、blockers 与 stderr metadata，而不是嵌入 raw Docker compose down stdout。
-- 每个 profile 增加 smoke check。
+- 每个 profile 增加 smoke check，并增加 `selfhost:smoke -- --json`，让 CI、
+  dashboard 和管理脚本消费启动后的 secret hygiene、compose config、public route
+  contract、health endpoint、blockers 和 notes metadata，而不是嵌入展开后的
+  compose config stdout。
 - 对不安全 secrets 给出明确失败信息。
 
 ### M3：Console 管理能力对齐

@@ -59,6 +59,7 @@ Required commands:
 - `corepack pnpm run selfhost:status`
 - `corepack pnpm --silent run selfhost:status -- --json`
 - `corepack pnpm run selfhost:smoke`
+- `corepack pnpm --silent run selfhost:smoke -- --json`
 - `corepack pnpm run selfhost:security-review`
 - `corepack pnpm --silent run selfhost:security-review -- --json`
 - `corepack pnpm run selfhost:audit-export`
@@ -118,7 +119,11 @@ Acceptance:
 - config validates Docker compose config; `--json` returns pass/fail, blocker,
   and stderr metadata for CI, dashboards, and management scripts while omitting
   expanded compose stdout because it can contain environment values
-- smoke checks secret hygiene, compose config, and health endpoints
+- smoke checks secret hygiene, compose config, public route contract, and health
+  endpoints; `--json` returns the same post-start acceptance result, blockers,
+  route contract, health metadata, and safety notes for CI, dashboards, and
+  management scripts while omitting expanded compose config stdout because it
+  can contain environment values
 - preflight checks secret hygiene, compose config, and routes before `up`,
   without requiring services to be running; `--json` preserves the same
   exit-code semantics and returns machine-readable secret hygiene, compose

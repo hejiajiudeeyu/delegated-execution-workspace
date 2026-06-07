@@ -108,7 +108,7 @@ Commands:
   init      Create or harden the selected profile .env file
   preflight Run pre-up secret, compose, and public-route checks
   status    Show compose ps plus configured health endpoint status
-  smoke     Run secret hygiene, compose config, and health checks
+  smoke     Run secret hygiene, compose config, and health checks; --json omits compose stdout
   config    Validate docker compose config for the selected profile
   urls      Print useful URLs for the selected profile
   ports     Show declared host ports for the selected profile
@@ -556,6 +556,68 @@ async function statusData(profileName) {
 
 async function printStatusJson(profileName) {
   const data = await statusData(profileName);
+  console.log(
+    JSON.stringify(
+      {
+        generated_at: new Date().toISOString(),
+        ...data
+      },
+      null,
+      2
+    )
+  );
+  return data.ok;
+}
+
+async function smokeData(profileName) {
+  const secretHygiene = secretHygieneData(profileName);
+  const composeResult = composeConfig(profileName, "quiet", "pipe");
+  const composeOk = composeResult.status === 0;
+  const publicRouteContract = publicRouteContractData(profileName);
+  const health = await healthData(profileName);
+  const blockers = [];
+  for (const finding of secretHygiene) {
+    if (!finding.ok) {
+      blockers.push(`${finding.key}: ${finding.status}`);
+    }
+  }
+  if (!composeOk) {
+    blockers.push("docker compose config failed");
+  }
+  if (!publicRouteContract.ok) {
+    blockers.push("public route contract mismatch");
+  }
+  for (const check of health) {
+    if (!check.ok) {
+      blockers.push(`health ${check.name}: ${check.error || check.status}`);
+    }
+  }
+
+  return {
+    command: "selfhost:smoke",
+    profile: profileName,
+    ok: secretHygiene.every((finding) => finding.ok) && composeOk && publicRouteContract.ok && health.every((check) => check.ok),
+    secret_hygiene: secretHygiene,
+    compose_config: {
+      ok: composeOk,
+      status: composeOk ? "ok" : "fail",
+      exit_code: composeResult.status ?? 1,
+      stderr_lines: (composeResult.stderr || "").trim().split(/\r?\n/).filter(Boolean)
+    },
+    public_route_contract: publicRouteContract,
+    health,
+    blockers: Array.from(new Set(blockers)),
+    notes: [
+      "runs secret hygiene, docker compose config, public route contract, and configured health endpoint checks",
+      "does not include docker compose config stdout because expanded compose output may contain sensitive values",
+      "does not print secret values",
+      "use selfhost:preflight for pre-start checks that do not probe health endpoints"
+    ]
+  };
+}
+
+async function printSmokeJson(profileName) {
+  const data = await smokeData(profileName);
   console.log(
     JSON.stringify(
       {
@@ -2360,6 +2422,9 @@ async function main() {
   }
 
   if (args.command === "smoke") {
+    if (args.json) {
+      process.exit((await printSmokeJson(args.profile)) ? 0 : 1);
+    }
     console.log(`[selfhost:smoke] profile=${args.profile}`);
     console.log("\nSecret hygiene");
     const secretsOk = checkSecrets(args.profile);

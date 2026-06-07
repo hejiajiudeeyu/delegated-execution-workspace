@@ -137,6 +137,7 @@ corepack pnpm --silent run selfhost:logs -- --json
 corepack pnpm run selfhost:down
 corepack pnpm --silent run selfhost:down -- --json
 corepack pnpm run selfhost:smoke
+corepack pnpm --silent run selfhost:smoke -- --json
 corepack pnpm run selfhost:security-review
 corepack pnpm --silent run selfhost:security-review -- --json
 corepack pnpm run selfhost:config
@@ -174,6 +175,7 @@ corepack pnpm --silent run selfhost:logs -- --profile public-stack --json
 corepack pnpm run selfhost:down -- --profile public-stack
 corepack pnpm --silent run selfhost:down -- --profile public-stack --json
 corepack pnpm run selfhost:smoke -- --profile public-stack
+corepack pnpm --silent run selfhost:smoke -- --profile public-stack --json
 corepack pnpm run selfhost:config -- --profile public-stack
 corepack pnpm --silent run selfhost:config -- --profile public-stack --json
 ```
@@ -196,6 +198,12 @@ health endpoints without printing secret values. Use
 `corepack pnpm --silent run selfhost:status ... --json` when dashboards or
 management scripts need compose service state, health checks, blockers, and
 safety notes without parsing terminal prose.
+
+`selfhost:smoke` is the post-start acceptance check for secret hygiene, Docker
+compose config, public route contract, and configured health endpoints. Use
+`corepack pnpm --silent run selfhost:smoke ... --json` when CI, dashboards, or
+management scripts need smoke pass/fail, blockers, route contract, and health
+metadata without embedding expanded compose stdout.
 
 `selfhost:logs` remains the private-operator raw log view and can be filtered by
 `--service` and `--tail`. Use
