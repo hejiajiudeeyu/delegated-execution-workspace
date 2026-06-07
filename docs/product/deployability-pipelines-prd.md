@@ -3,7 +3,7 @@
 > Chinese source: [./deployability-pipelines-prd.zh-CN.md](./deployability-pipelines-prd.zh-CN.md)
 > Note: the Chinese document is authoritative.
 
-Updated: 2026-06-06
+Updated: 2026-06-07
 
 ## Pipeline A: Local Agent Loop
 
@@ -12,6 +12,7 @@ Goal: make the local caller-skill/MCP loop the fastest development path.
 Required commands:
 
 - `corepack pnpm run dev:doctor`
+- `corepack pnpm --silent run dev:doctor -- --json`
 - `corepack pnpm run dev:local:plan`
 - `corepack pnpm --silent run dev:local:plan -- --json`
 - `corepack pnpm run dev:local:up`
@@ -32,6 +33,9 @@ Required commands:
 Acceptance:
 
 - doctor passes
+- `dev:doctor -- --json` returns clean machine-readable prerequisites,
+  runtime-health, caller-skill check, blocker, and next-command metadata without
+  raw logs or secret values
 - one-command local bootstrap starts platform, relay, client bootstrap, and
   supervisor in the documented order
 - managed relay/supervisor status, logs, and down commands are available

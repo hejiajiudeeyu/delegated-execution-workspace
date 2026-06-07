@@ -3,7 +3,7 @@
 > 英文版：[./deployability-ecosystem-prd.md](./deployability-ecosystem-prd.md)
 > 说明：中文文档为准。
 
-更新日期：2026-06-06
+更新日期：2026-06-07
 
 ## 1. 背景
 
@@ -71,7 +71,7 @@ CALL ANYTHING 现在的仓库边界是正确的：
 | 能力 | Owner | 初始工作 |
 | --- | --- | --- |
 | 兼容性台账 | 第四仓 | change bundles 和必跑 gates |
-| 日常本地 doctor | 第四仓 | `corepack pnpm run dev:doctor` |
+| 日常本地 doctor | 第四仓 | `corepack pnpm run dev:doctor`，以及给 dashboard 和脚本使用的 `corepack pnpm --silent run dev:doctor -- --json` |
 | Local agent loop 管理 metadata | 第四仓 | `corepack pnpm run dev:local:plan`、`dev:local:up`、`dev:local:status`、`dev:local:logs` 和 `dev:local:down`，并提供 `--json` 供 dashboard 和脚本消费 |
 | Agent-facing smoke | 第四仓 | `corepack pnpm run test:agent-e2e` |
 | Self-host 部署地图 | 第四仓 | `corepack pnpm run selfhost:profiles` |
@@ -129,6 +129,8 @@ CALL ANYTHING 现在的仓库边界是正确的：
   因为本地 bootstrap 和停止输出可能包含环境相关 runtime 细节
 - secret rotation metadata 可以机器读取，输出 dry-run / confirmed 状态、changed
   files、backup path 和下一步命令，但不打印轮换后的 secret 值
+- 日常本地 doctor metadata 可以机器读取，输出 prerequisites、runtime health、
+  caller-skill 检查、blockers 和下一步命令，但不打印 raw logs 或 secret 值
 
 ## 8. 成功指标
 
@@ -141,6 +143,7 @@ CALL ANYTHING 现在的仓库边界是正确的：
   `selfhost:preflight`、`selfhost:status`、
   `selfhost:status -- --json`、`selfhost:up -- --json`、`selfhost:logs -- --json`、
   `selfhost:down -- --json`、`selfhost:smoke -- --json`、`dev:doctor`、
+  `dev:doctor -- --json`、
   `test:agent-e2e`、`published-image:plan -- --json`、
   `published-image:smoke -- --dry-run --json`、
   `selfhost:security-review`、`selfhost:audit-export -- --json`、`operator:onboarding:check`

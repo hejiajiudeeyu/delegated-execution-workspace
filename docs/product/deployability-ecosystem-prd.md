@@ -3,7 +3,7 @@
 > Chinese source: [./deployability-ecosystem-prd.zh-CN.md](./deployability-ecosystem-prd.zh-CN.md)
 > Note: the Chinese document is authoritative.
 
-Updated: 2026-06-06
+Updated: 2026-06-07
 
 ## 1. Background
 
@@ -68,7 +68,7 @@ The ecosystem is "daily-deployable" when a fresh operator can:
 | Capability | Owner | Initial Work |
 | --- | --- | --- |
 | Compatibility ledger | fourth repo | change bundles and required gates |
-| Daily local doctor | fourth repo | `corepack pnpm run dev:doctor` |
+| Daily local doctor | fourth repo | `corepack pnpm run dev:doctor`, plus `corepack pnpm --silent run dev:doctor -- --json` for dashboards and scripts |
 | Local agent loop management metadata | fourth repo | `corepack pnpm run dev:local:plan`, `dev:local:up`, `dev:local:status`, `dev:local:logs`, and `dev:local:down`, plus `--json` for dashboards and scripts |
 | Agent-facing smoke | fourth repo | `corepack pnpm run test:agent-e2e` |
 | Self-host deployment map | fourth repo | `corepack pnpm run selfhost:profiles` |
@@ -133,6 +133,9 @@ Required baseline:
 - machine-readable local agent loop startup/stop metadata that omits child
   command stdout because local bootstrap and stop output can contain
   environment-specific runtime details
+- machine-readable daily local doctor metadata that reports prerequisites,
+  runtime health, caller-skill checks, blockers, and next commands without raw
+  logs or secret values
 
 ## 8. Success Metrics
 
@@ -145,6 +148,7 @@ Required baseline:
   `selfhost:preflight`, `selfhost:status`,
   `selfhost:status -- --json`, `selfhost:up -- --json`, `selfhost:logs -- --json`,
   `selfhost:down -- --json`, `selfhost:smoke -- --json`, `dev:doctor`,
+  `dev:doctor -- --json`,
   `test:agent-e2e`, `published-image:plan -- --json`,
   `published-image:smoke -- --dry-run --json`, `selfhost:security-review`,
   `selfhost:audit-export -- --json`, `operator:onboarding:check`, and

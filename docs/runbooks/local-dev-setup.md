@@ -112,11 +112,16 @@ Check the daily local stack health:
 
 ```bash
 corepack pnpm run dev:doctor
+corepack pnpm --silent run dev:doctor -- --json
 corepack pnpm run test:agent-e2e
 corepack pnpm run mcp:golden-four
 corepack pnpm run test:local-stack
 corepack pnpm run test:selfhost-kit
 ```
+
+`dev:doctor -- --json` reports local prerequisites, runtime health,
+caller-skill manifest/search checks, blockers, and next commands as clean JSON.
+It does not print raw service logs or secret values.
 
 Initialize and inspect a self-host profile:
 

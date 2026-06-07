@@ -124,6 +124,7 @@ corepack pnpm --silent run dev:local:logs -- --json
 corepack pnpm run dev:local:down
 corepack pnpm --silent run dev:local:down -- --json
 corepack pnpm run dev:doctor
+corepack pnpm --silent run dev:doctor -- --json
 corepack pnpm run test:agent-e2e
 corepack pnpm run mcp:golden-four
 corepack pnpm run test:selfhost-kit

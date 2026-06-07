@@ -18,14 +18,14 @@ repositories.
 - `repos/protocol`: `da3027100cfe9391f7f8d03be18a108ee2804cf6`
 - `repos/client`: `f1d6a2d8c9b83517cdf6ca9803b223847f880e9a`
 - `repos/platform`: `5961309c6b0ca4e8df22dbb5be92ac0845bf8d25`
-- `repos/brand-site`: `e8394109cee9d9550a41d29395dd2da9bae04351`
+- `repos/brand-site`: `c60bdc65dd25ba243e39fcb7172aedfc95bcbdef`
 
-The current bundle is `changes/CHG-2026-087.yaml`.
+The current bundle is `changes/CHG-2026-088.yaml`.
 
 ## Readiness Verdict
 
 The pinned combination is ready for daily fourth-repo development after
-CHG-2026-087:
+CHG-2026-088:
 
 - submodule SHA integrity is verified
 - boundary governance covers the new platform billing data package
@@ -110,6 +110,10 @@ CHG-2026-087:
   so dashboards and scripts can inspect and control the local loop without
   parsing terminal prose, printing raw log lines, or embedding child command
   stdout
+- `dev:doctor -- --json` is available as machine-readable daily local
+  agent/caller-skill diagnostics for prerequisites, runtime health,
+  caller-skill manifest/search checks, blockers, and next commands without raw
+  logs or secret values
 - published-image smoke now has a fourth-repo entry point that reviews
   public-stack release images and delegates to platform smoke with
   `COMPOSE_NO_BUILD=true`
@@ -144,13 +148,15 @@ Observed results:
 - `check:submodules`: passed
 - `check:boundaries`: passed after adding `@delexec/billing-store` to
   `platform/data`
-- `check:bundles`: passed with `CHG-2026-087`
+- `check:bundles`: passed with `CHG-2026-088`
 - `test:contracts`: passed, including `@delexec/billing-store` in platform
   package validation and the `@delexec/platform-api` dependency graph
 - `test:integration`: passed with a successful request/response path
 - `test:agent-e2e`: passed after retargeting the script to the current
   `/skills/caller/*` surface
-- `dev:doctor`: passed for the local daily agent/caller-skill stack
+- `dev:doctor`: passed for the local daily agent/caller-skill stack, and
+  `dev:doctor -- --json` now emits clean machine-readable diagnostics without
+  `[ok]` / `[fail]` terminal prose or secret values
 - `selfhost:profiles` / `selfhost:quickstart` / `selfhost:readiness -- --all` /
   `selfhost:readiness` / `selfhost:doctor` / `selfhost:init` / `selfhost:init -- --json` /
   `selfhost:plan` / `selfhost:summary` / `selfhost:urls` / `selfhost:preflight`: added as the

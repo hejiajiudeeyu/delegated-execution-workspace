@@ -3,7 +3,7 @@
 > 英文版：[./deployability-pipelines-prd.md](./deployability-pipelines-prd.md)
 > 说明：中文文档为准。
 
-更新日期：2026-06-06
+更新日期：2026-06-07
 
 ## 管线 A：Local Agent Loop
 
@@ -12,6 +12,7 @@
 必备命令：
 
 - `corepack pnpm run dev:doctor`
+- `corepack pnpm --silent run dev:doctor -- --json`
 - `corepack pnpm run dev:local:plan`
 - `corepack pnpm --silent run dev:local:plan -- --json`
 - `corepack pnpm run dev:local:up`
@@ -32,6 +33,8 @@
 验收：
 
 - doctor 通过
+- `dev:doctor -- --json` 输出干净的机器可读 prerequisites、runtime health、
+  caller-skill 检查、blockers 和下一步命令 metadata，且不打印 raw logs 或 secret 值
 - 一键本地 bootstrap 能按文档顺序启动 platform、relay、client bootstrap 和
   supervisor
 - 托管 relay / supervisor 的 status、logs、down 命令可用

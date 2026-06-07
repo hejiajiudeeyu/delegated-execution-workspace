@@ -91,11 +91,16 @@ agent 和 supervisor 日志可能包含敏感 runtime 输出。`dev:local:down -
 
 ```bash
 corepack pnpm run dev:doctor
+corepack pnpm --silent run dev:doctor -- --json
 corepack pnpm run test:agent-e2e
 corepack pnpm run mcp:golden-four
 corepack pnpm run test:local-stack
 corepack pnpm run test:selfhost-kit
 ```
+
+`dev:doctor -- --json` 会用干净 JSON 输出本地前置条件、runtime health、
+caller-skill manifest / search 检查、blockers 和下一步命令。它不会打印 raw
+service logs 或 secret 值。
 
 初始化并检查 self-host profile：
 
