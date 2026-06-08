@@ -25,6 +25,8 @@ Required commands:
 - `corepack pnpm --silent run deployability:doctor -- --json`
 - `corepack pnpm run deployability:dashboard`
 - `corepack pnpm --silent run deployability:dashboard -- --json`
+- `corepack pnpm run deployability:recipe -- --profile public-stack`
+- `corepack pnpm --silent run deployability:recipe -- --profile public-stack --json`
 - `corepack pnpm run deployability:profiles`
 - `corepack pnpm --silent run deployability:profiles -- --json`
 - `corepack pnpm run deployability:profiles -- --profile public-stack`
@@ -104,6 +106,10 @@ Acceptance:
   status, ecosystem_readiness scorecard, per-pipeline summaries, blockers,
   warnings, safety defaults, and next commands without reading `.env`, calling
   Docker, binding ports, probing networks, or printing secret values
+- `deployability:recipe -- --profile public-stack --json` emits one clean
+  linear first-run recipe with inspect, gate, start, verify, operate, and
+  evidence phases, plus readiness summary and selected onboarding metadata,
+  without executing commands or requiring consumers to parse dashboard sections
 - `deployability:action-plan -- --json` emits a clean profile-level operator
   action plan with current bundle, ecosystem readiness, recommended commands,
   dashboard-safe commands, public-exposure gate commands, service-touching

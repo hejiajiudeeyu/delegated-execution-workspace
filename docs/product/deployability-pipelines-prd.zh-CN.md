@@ -24,6 +24,8 @@ onboarding 或 release-image 路径前，先给出一个只读命令地图和一
 - `corepack pnpm --silent run deployability:doctor -- --json`
 - `corepack pnpm run deployability:dashboard`
 - `corepack pnpm --silent run deployability:dashboard -- --json`
+- `corepack pnpm run deployability:recipe -- --profile public-stack`
+- `corepack pnpm --silent run deployability:recipe -- --profile public-stack --json`
 - `corepack pnpm run deployability:profiles`
 - `corepack pnpm --silent run deployability:profiles -- --json`
 - `corepack pnpm run deployability:profiles -- --profile public-stack`
@@ -96,6 +98,9 @@ onboarding 或 release-image 路径前，先给出一个只读命令地图和一
   ecosystem_readiness scorecard、per-pipeline summaries、blockers、warnings、
   安全默认值和下一步命令，不读取 `.env`、不调用 Docker、不绑定端口、不探测网络、
   不打印 secret 值
+- `deployability:recipe -- --profile public-stack --json` 输出干净的线性首次运行配方，
+  包含 inspect、gate、start、verify、operate、evidence 阶段、readiness summary
+  和 selected onboarding metadata，不执行命令，也不要求调用方解析 dashboard sections
 - `deployability:action-plan -- --json` 输出干净的 profile 级 operator action
   plan，包含当前 bundle、ecosystem readiness、recommended commands、
   dashboard-safe commands、public-exposure gate commands、service-touching

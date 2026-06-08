@@ -25,6 +25,7 @@ const REQUIRED_SCRIPTS = [
   "deployability:commands",
   "deployability:runbook",
   "deployability:menu",
+  "deployability:recipe",
   "deployability:handoff",
   "compat:status",
   "test:deployability-overview",
@@ -39,6 +40,7 @@ const REQUIRED_SCRIPTS = [
   "test:deployability-commands",
   "test:deployability-runbook",
   "test:deployability-menu",
+  "test:deployability-recipe",
   "test:deployability-handoff",
   "test:deployability",
   "test:deployability-operations",
@@ -64,6 +66,8 @@ const DOCTOR_COMMANDS = [
   "corepack pnpm --silent run deployability:menu -- --json",
   "corepack pnpm run deployability:menu -- --profile public-stack",
   "corepack pnpm --silent run deployability:menu -- --profile public-stack --json",
+  "corepack pnpm run deployability:recipe -- --profile public-stack",
+  "corepack pnpm --silent run deployability:recipe -- --profile public-stack --json",
   "selected_onboarding_plan",
   "operator:onboarding:plan"
 ];
@@ -117,6 +121,7 @@ const NEXT_COMMANDS = [
   "corepack pnpm run deployability:commands",
   "corepack pnpm run deployability:runbook",
   "corepack pnpm run deployability:menu",
+  "corepack pnpm run deployability:recipe -- --profile public-stack",
   "corepack pnpm run compat:status",
   "corepack pnpm run deployability:handoff",
   "corepack pnpm run test:deployability",

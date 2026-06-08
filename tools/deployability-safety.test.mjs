@@ -49,6 +49,11 @@ assert.equal(byCommand.get("corepack pnpm run deployability:readiness").reads_en
 assert.equal(byCommand.get("corepack pnpm run deployability:readiness").calls_docker, false);
 assert.equal(byCommand.get("corepack pnpm run deployability:readiness").probes_network, false);
 assert.equal(byCommand.get("corepack pnpm run deployability:readiness").dashboard_safe, true);
+assert.equal(byCommand.get("corepack pnpm run deployability:recipe").posture, "read_only");
+assert.equal(byCommand.get("corepack pnpm run deployability:recipe").reads_env, false);
+assert.equal(byCommand.get("corepack pnpm run deployability:recipe").calls_docker, false);
+assert.equal(byCommand.get("corepack pnpm run deployability:recipe").probes_network, false);
+assert.equal(byCommand.get("corepack pnpm run deployability:recipe").dashboard_safe, true);
 assert.equal(byCommand.get("corepack pnpm run deployability:doctor").posture, "read_only");
 assert.equal(byCommand.get("corepack pnpm run deployability:doctor").calls_docker, false);
 assert.equal(byCommand.get("corepack pnpm run deployability:doctor").probes_network, false);
@@ -136,6 +141,7 @@ assert.equal(byCommand.get("corepack pnpm run published-image:smoke -- --image-t
 assert.ok(body.safety_defaults.some((item) => /does not read \.env/i.test(item)));
 assert.ok(body.next_commands.includes("corepack pnpm run deployability:quickstart"));
 assert.ok(body.next_commands.includes("corepack pnpm run deployability:readiness"));
+assert.ok(body.next_commands.includes("corepack pnpm run deployability:recipe -- --profile public-stack"));
 assert.ok(body.notes.some((item) => /matrix is descriptive/i.test(item)));
 assert.ok(!json.stdout.includes("sk_safety_must_not_leak"));
 assert.ok(!json.stdout.includes("[ok]"));
@@ -144,6 +150,7 @@ const text = run([]);
 assert.equal(text.status, 0, text.stderr || text.stdout);
 assert.match(text.stdout, /Deployability safety matrix/);
 assert.match(text.stdout, /deployability:readiness/);
+assert.match(text.stdout, /deployability:recipe/);
 assert.match(text.stdout, /selfhost:up/);
 assert.match(text.stdout, /starts-services/);
 assert.match(text.stdout, /private-terminal-text/);

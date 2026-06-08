@@ -150,6 +150,12 @@ CHG-2026-105:
   `corepack pnpm --silent run deployability:dashboard -- --json` without
   reading `.env`, calling Docker, binding ports, probing networks, or printing
   secrets
+- `deployability:recipe` is available as a read-only linear first-run recipe for
+  one selected profile, and supports
+  `corepack pnpm run deployability:recipe -- --profile public-stack` and
+  `corepack pnpm --silent run deployability:recipe -- --profile public-stack --json`
+  without executing commands, reading `.env`, calling Docker, binding ports,
+  probing networks, or printing secrets
 - `deployability:action-plan` is available as a read-only operator next-action
   selector between the dashboard and the full command catalog. It combines
   dashboard and command-catalog metadata into profile-level recommended

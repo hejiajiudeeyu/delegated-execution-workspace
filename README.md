@@ -145,6 +145,8 @@ corepack pnpm run deployability:menu
 corepack pnpm --silent run deployability:menu -- --json
 corepack pnpm run deployability:menu -- --profile public-stack
 corepack pnpm --silent run deployability:menu -- --profile public-stack --json
+corepack pnpm run deployability:recipe -- --profile public-stack
+corepack pnpm --silent run deployability:recipe -- --profile public-stack --json
 corepack pnpm run deployability:commands -- --profile public-stack
 corepack pnpm --silent run deployability:commands -- --profile public-stack --json
 corepack pnpm run compat:status
@@ -302,6 +304,10 @@ Notes:
   includes `selected_onboarding_plan` from the read-only
   `operator:onboarding:plan` projection, alongside the selected runbook, without
   reading `.env`, calling Docker, probing networks, or printing secret values.
+- Use `corepack pnpm --silent run deployability:recipe -- --profile public-stack --json`
+  when a fresh operator or management UI needs one linear first-run recipe. It
+  combines readiness, menu, runbook, and onboarding metadata into inspect, gate,
+  start, verify, operate, and evidence steps without executing those commands.
 
 Inspect the Nx workspace:
 

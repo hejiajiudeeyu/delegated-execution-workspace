@@ -15,6 +15,7 @@ const NEXT_COMMANDS = [
   "corepack pnpm run deployability:readiness",
   "corepack pnpm run deployability:doctor",
   "corepack pnpm run deployability:menu",
+  "corepack pnpm run deployability:recipe -- --profile public-stack",
   "corepack pnpm run deployability:profiles",
   "corepack pnpm run deployability:action-plan",
   "corepack pnpm run deployability:runbook",

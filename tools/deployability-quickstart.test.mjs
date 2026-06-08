@@ -34,6 +34,11 @@ assert.ok(body.tracks.find((item) => item.key === "daily_dev").steps.some((step)
 assert.ok(
   body.tracks
     .find((item) => item.key === "daily_dev")
+    .steps.some((step) => step.command === "corepack pnpm run deployability:recipe -- --profile public-stack")
+);
+assert.ok(
+  body.tracks
+    .find((item) => item.key === "daily_dev")
     .steps.some((step) => step.command === "corepack pnpm run deployability:dashboard -- --profile public-stack")
 );
 assert.ok(body.tracks.find((item) => item.key === "daily_dev").steps.some((step) => step.command === "corepack pnpm run deployability:action-plan"));
@@ -71,6 +76,7 @@ assert.ok(body.next_commands.includes("corepack pnpm run deployability:handoff")
 assert.ok(body.next_commands.includes("corepack pnpm run deployability:safety"));
 assert.ok(body.next_commands.includes("corepack pnpm run deployability:doctor"));
 assert.ok(body.next_commands.includes("corepack pnpm run deployability:dashboard"));
+assert.ok(body.next_commands.includes("corepack pnpm run deployability:recipe -- --profile public-stack"));
 assert.ok(body.next_commands.includes("corepack pnpm run deployability:action-plan"));
 assert.ok(body.next_commands.includes("corepack pnpm run deployability:commands"));
 assert.ok(body.safety_defaults.some((item) => /does not read \.env/i.test(item)));
@@ -89,6 +95,7 @@ assert.match(text.stdout, /corepack pnpm run deployability:safety/);
 assert.match(text.stdout, /corepack pnpm run deployability:doctor/);
 assert.match(text.stdout, /corepack pnpm run deployability:dashboard/);
 assert.match(text.stdout, /corepack pnpm run deployability:dashboard -- --profile public-stack/);
+assert.match(text.stdout, /corepack pnpm run deployability:recipe -- --profile public-stack/);
 assert.match(text.stdout, /corepack pnpm run deployability:action-plan/);
 assert.match(text.stdout, /corepack pnpm run deployability:action-plan -- --list-profiles/);
 assert.match(text.stdout, /corepack pnpm run deployability:commands/);

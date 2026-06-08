@@ -47,6 +47,11 @@ const TRACKS = [
         json_command: "corepack pnpm --silent run deployability:menu -- --json"
       },
       {
+        label: "Read the focused public-stack recipe",
+        command: "corepack pnpm run deployability:recipe -- --profile public-stack",
+        json_command: "corepack pnpm --silent run deployability:recipe -- --profile public-stack --json"
+      },
+      {
         label: "Emit a focused public-stack dashboard payload",
         command: "corepack pnpm run deployability:dashboard -- --profile public-stack",
         json_command: "corepack pnpm --silent run deployability:dashboard -- --profile public-stack --json"
@@ -218,6 +223,7 @@ const NEXT_COMMANDS = [
   "corepack pnpm run deployability:dashboard",
   "corepack pnpm run deployability:profiles",
   "corepack pnpm run deployability:menu",
+  "corepack pnpm run deployability:recipe -- --profile public-stack",
   "corepack pnpm run deployability:action-plan -- --list-profiles",
   "corepack pnpm run deployability:action-plan",
   "corepack pnpm run deployability:commands",
