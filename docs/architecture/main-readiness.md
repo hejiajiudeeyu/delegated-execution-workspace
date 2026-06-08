@@ -142,6 +142,10 @@ CHG-2026-096:
   `corepack pnpm --silent run deployability:dashboard -- --json` without
   reading `.env`, calling Docker, binding ports, probing networks, or printing
   secrets
+- `deployability:overview`, `deployability:dashboard`, and
+  `deployability:handoff` now share one fourth-repo pipeline summary metadata
+  builder, with a consistency test keeping command counts, JSON counts,
+  dashboard-safe counts, CI-safe counts, and public exposure gate counts aligned
 - `deployability:commands` is available as a read-only command catalog for
   humans, dashboards, and CI, merging overview, quickstart, and safety metadata
   into a list filterable by category, posture, first-use track, and pipeline,
@@ -156,7 +160,7 @@ CHG-2026-096:
   or printing secrets
 - `deployability:handoff` is available as a non-secret ecosystem handoff report
   under `exports/deployability/`, combining current bundle metadata,
-  compatibility warnings, command map, per-pipeline summaries, safety notes,
+  compatibility warnings, command map, shared per-pipeline summaries, safety notes,
   and next validation commands, and supports `--json` without reading `.env`,
   calling Docker, binding ports, probing networks, or printing secrets
 - published-image smoke now has a fourth-repo entry point that reviews
@@ -220,6 +224,8 @@ Observed results:
   safety, doctor, and compatibility sections, section status, blockers,
   warnings, per-pipeline summaries, safety defaults, and next commands without
   terminal prose or secret values
+- `test:deployability-pipeline-summaries`: passed, proving dashboard and
+  handoff expose the same shared `pipeline_summaries` payload
 - `deployability:commands -- --json`: passed, reporting a command catalog with
   category, posture, track, and pipeline filters, sourced from overview,
   quickstart, and safety metadata, including inherited safety posture for
@@ -230,7 +236,7 @@ Observed results:
   blockers
 - `deployability:handoff -- --json`: passed, writing a Markdown handoff report
   under `exports/deployability/` while returning current bundle, compatibility,
-  command-map, per-pipeline summary, safety-note, and next-validation metadata
+  command-map, shared per-pipeline summary, safety-note, and next-validation metadata
   without terminal prose or secret values
 - `selfhost:profiles` / `selfhost:quickstart` / `selfhost:readiness -- --all` /
   `selfhost:readiness` / `selfhost:doctor` / `selfhost:init` / `selfhost:init -- --json` /

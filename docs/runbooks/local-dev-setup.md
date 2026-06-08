@@ -164,6 +164,10 @@ CI. It combines overview, quickstart, safety, doctor, and compatibility JSON
 sections plus per-pipeline summaries without reading `.env`, calling Docker,
 binding ports, probing networks, or printing secret values. Profile-specific
 readiness, preflight, status, smoke, and audit commands remain authoritative.
+The per-pipeline summaries use the same fourth-repo metadata builder as
+`deployability:overview` and `deployability:handoff`, so command counts and
+safety gate counts stay aligned across docs, dashboard JSON, and handoff
+reports.
 
 `deployability:commands` is the read-only command catalog for humans,
 dashboards, and CI. It merges overview, quickstart, and safety metadata into
@@ -179,7 +183,7 @@ JSON form does not read `.env`, call Docker, probe networks, or print secrets.
 
 `deployability:handoff` writes a non-secret Markdown handoff report under
 `exports/deployability/` unless `--output` is provided. It combines the current
-bundle, compatibility warnings, command map, per-pipeline summaries, safety
+bundle, compatibility warnings, command map, shared per-pipeline summaries, safety
 notes, and next validation commands. Its JSON form writes the same report and
 returns metadata without reading `.env`, calling Docker, probing networks, or
 printing secret values.

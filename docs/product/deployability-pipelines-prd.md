@@ -67,6 +67,11 @@ Acceptance:
   status, per-pipeline summaries, blockers, warnings, safety defaults, and next
   commands without reading `.env`, calling Docker, binding ports, probing
   networks, or printing secret values
+- `deployability:overview`, `deployability:dashboard`, and
+  `deployability:handoff` use one shared fourth-repo pipeline summary metadata
+  source and consistency test for command counts, JSON counts, dashboard-safe
+  counts, CI-safe counts, public exposure gate counts, next commands, and safety
+  notes
 - `deployability:commands -- --json` emits a clean command catalog with
   category, posture, track, and pipeline filters, merging overview,
   quickstart, and safety metadata, and inheriting base safety posture for
@@ -85,9 +90,9 @@ Acceptance:
   dirty gitlink markers remain blockers
 - `deployability:handoff` writes a non-secret Markdown report under
   `exports/deployability/` unless `--output` is provided, and its JSON form
-  returns the same bundle, compatibility, command-map, per-pipeline summary,
-  safety-note, and next-command metadata without terminal prose or secret
-  values
+  returns the same bundle, compatibility, command-map, shared per-pipeline
+  summary, safety-note, and next-command metadata without terminal prose or
+  secret values
 
 ## Pipeline A: Local Agent Loop
 

@@ -85,6 +85,7 @@
     "test:deployability-safety": "node tools/deployability-safety.test.mjs",
     "test:deployability-doctor": "node tools/deployability-doctor.test.mjs",
     "test:deployability-dashboard": "node tools/deployability-dashboard.test.mjs",
+    "test:deployability-pipeline-summaries": "node tools/deployability-pipeline-summaries.test.mjs",
     "test:deployability-commands": "node tools/deployability-commands.test.mjs",
     "test:deployability-handoff": "node tools/deployability-handoff.test.mjs",
     "test:compat-status": "node tools/compat-status.test.mjs",

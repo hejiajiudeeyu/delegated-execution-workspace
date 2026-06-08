@@ -3,9 +3,13 @@
 import fs from "node:fs";
 import path from "node:path";
 import { spawnSync } from "node:child_process";
+import { fileURLToPath } from "node:url";
 import YAML from "yaml";
+import { PIPELINES, buildPipelineSummaries } from "./lib/deployability-pipeline-summaries.mjs";
 
 const ROOT = process.cwd();
+const TOOL_ROOT = path.dirname(fileURLToPath(import.meta.url));
+const SOURCE_ROOT = path.dirname(TOOL_ROOT);
 const SUBMODULES = [
   { path: "repos/protocol", bundleField: "protocol_sha", label: "protocol" },
   { path: "repos/client", bundleField: "client_sha", label: "client" },
@@ -66,113 +70,6 @@ const COMMAND_MAP = [
   }
 ];
 
-const PIPELINE_SUMMARIES = [
-  {
-    key: "local_agent_loop",
-    label: "Local Agent Loop",
-    status: "ready_now",
-    command_count: 5,
-    json_command_count: 6,
-    dashboard_safe_command_count: 2,
-    ci_safe_command_count: 1,
-    public_exposure_gate_count: 0,
-    next_commands: [
-      "corepack pnpm run dev:local:plan",
-      "corepack pnpm run dev:local:up",
-      "corepack pnpm run dev:doctor",
-      "corepack pnpm run test:agent-e2e",
-      "corepack pnpm run mcp:golden-four"
-    ],
-    safety_notes: [
-      "local lifecycle JSON omits child command stdout",
-      "local log JSON reports metadata only, not raw relay or supervisor logs"
-    ]
-  },
-  {
-    key: "selfhost_platform",
-    label: "Selfhost Platform",
-    status: "ready_now",
-    command_count: 8,
-    json_command_count: 11,
-    dashboard_safe_command_count: 6,
-    ci_safe_command_count: 4,
-    public_exposure_gate_count: 1,
-    next_commands: [
-      "corepack pnpm run selfhost:profiles",
-      "corepack pnpm run selfhost:quickstart",
-      "corepack pnpm run selfhost:readiness",
-      "corepack pnpm run selfhost:init",
-      "corepack pnpm run selfhost:preflight",
-      "corepack pnpm run selfhost:up",
-      "corepack pnpm run selfhost:smoke",
-      "corepack pnpm run selfhost:ops-report"
-    ],
-    safety_notes: [
-      "init and rotation JSON never print generated secret values",
-      "compose lifecycle JSON omits compose stdout where environment values may appear"
-    ]
-  },
-  {
-    key: "public_stack",
-    label: "Public Stack",
-    status: "ready_now_with_safety_gates",
-    command_count: 5,
-    json_command_count: 5,
-    dashboard_safe_command_count: 5,
-    ci_safe_command_count: 4,
-    public_exposure_gate_count: 2,
-    next_commands: [
-      "corepack pnpm run selfhost:readiness -- --profile public-stack",
-      "corepack pnpm run selfhost:ports -- --profile public-stack",
-      "corepack pnpm run selfhost:security-review -- --profile public-stack",
-      "corepack pnpm run selfhost:up -- --profile public-stack",
-      "corepack pnpm run selfhost:smoke -- --profile public-stack"
-    ],
-    safety_notes: [
-      "unsafe public origins and placeholder secrets remain blockers",
-      "public exposure readiness is checked before services are treated as ready"
-    ]
-  },
-  {
-    key: "operator_onboarding",
-    label: "Operator Onboarding",
-    status: "ready_now",
-    command_count: 3,
-    json_command_count: 2,
-    dashboard_safe_command_count: 2,
-    ci_safe_command_count: 3,
-    public_exposure_gate_count: 0,
-    next_commands: [
-      "corepack pnpm run operator:onboarding:plan",
-      "corepack pnpm run operator:onboarding:check",
-      "corepack pnpm run test:operator-onboarding"
-    ],
-    safety_notes: [
-      "onboarding checks do not read .env files",
-      "contract drift is reported as blockers instead of silently passing"
-    ]
-  },
-  {
-    key: "published_image",
-    label: "Published Image",
-    status: "ready_now",
-    command_count: 3,
-    json_command_count: 2,
-    dashboard_safe_command_count: 2,
-    ci_safe_command_count: 2,
-    public_exposure_gate_count: 0,
-    next_commands: [
-      "corepack pnpm run published-image:plan",
-      "corepack pnpm run published-image:smoke -- --dry-run --image-tag <candidate-tag>",
-      "corepack pnpm run published-image:smoke -- --image-tag <candidate-tag>"
-    ],
-    safety_notes: [
-      "dry-run JSON reports delegated smoke metadata without starting Docker",
-      "published image smoke delegates to platform-owned public-stack smoke"
-    ]
-  }
-];
-
 const SAFETY_NOTES = [
   "handoff is read-only and does not read .env files",
   "handoff does not call Docker, bind ports, or probe network endpoints",
@@ -206,6 +103,28 @@ function runGit(args, cwd = ROOT) {
     cwd,
     encoding: "utf8"
   });
+}
+
+function runJsonScript(relativeScript) {
+  const result = spawnSync(process.execPath, [path.join(TOOL_ROOT, relativeScript), "--json"], {
+    cwd: SOURCE_ROOT,
+    encoding: "utf8",
+    maxBuffer: 1024 * 1024 * 10,
+    env: process.env
+  });
+  let body = null;
+  try {
+    body = result.stdout.trim() ? JSON.parse(result.stdout) : null;
+  } catch (error) {
+    body = null;
+  }
+  return {
+    ok: result.status === 0 && body != null && body.ok !== false,
+    exit_code: result.status,
+    stderr: result.stderr.trim().split("\n").filter(Boolean),
+    body,
+    parse_error: body == null ? "script did not emit valid JSON" : null
+  };
 }
 
 function latestBundleFile() {
@@ -337,9 +256,17 @@ function resolveOutput(output) {
 function reportData(output) {
   const bundle = readLatestBundle();
   const compatibility = compatibilityData(bundle);
+  const commandCatalog = runJsonScript("deployability-commands.mjs");
+  const commandCatalogBlockers = commandCatalog.ok
+    ? []
+    : [
+        `deployability:commands: ${
+          commandCatalog.parse_error || commandCatalog.stderr.join("; ") || `exit=${commandCatalog.exit_code}`
+        }`
+      ];
   return {
     command: "deployability:handoff",
-    ok: compatibility.blockers.length === 0,
+    ok: compatibility.blockers.length === 0 && commandCatalogBlockers.length === 0,
     output,
     current_bundle: {
       file: bundle.file,
@@ -353,8 +280,18 @@ function reportData(output) {
       integration_check: bundle.integration_check
     },
     compatibility,
+    command_catalog_status: {
+      ok: commandCatalog.ok,
+      exit_code: commandCatalog.exit_code,
+      stderr: commandCatalog.stderr,
+      parse_error: commandCatalog.parse_error
+    },
     command_map: COMMAND_MAP,
-    pipeline_summaries: PIPELINE_SUMMARIES,
+    pipeline_summaries: buildPipelineSummaries({
+      pipelines: PIPELINES,
+      catalogCommands: commandCatalog.body?.commands || []
+    }),
+    blockers: commandCatalogBlockers,
     safety_notes: SAFETY_NOTES,
     next_commands: NEXT_COMMANDS,
     notes: [
@@ -405,6 +342,11 @@ function markdownReport(data) {
   if (data.compatibility.warnings.length) {
     lines.push("", "### Warnings", "");
     for (const warning of data.compatibility.warnings) lines.push(`- ${warning}`);
+  }
+
+  if (data.blockers.length) {
+    lines.push("", "## Handoff Blockers", "");
+    for (const blocker of data.blockers) lines.push(`- ${blocker}`);
   }
 
   lines.push("", "## Command Map", "");
@@ -464,6 +406,10 @@ function printText(data) {
   if (data.compatibility.warnings.length) {
     console.log("\nWarnings:");
     for (const warning of data.compatibility.warnings) console.log(`- ${warning}`);
+  }
+  if (data.blockers.length) {
+    console.log("\nHandoff blockers:");
+    for (const blocker of data.blockers) console.log(`- ${blocker}`);
   }
 }
 

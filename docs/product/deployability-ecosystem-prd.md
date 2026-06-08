@@ -163,6 +163,10 @@ Required baseline:
   quickstart, safety, doctor, compatibility, and per-pipeline summary JSON
   sections as one top-level payload without reading `.env`, calling Docker,
   binding ports, probing networks, or printing secrets
+- shared fourth-repo pipeline summary metadata for `deployability:overview`,
+  `deployability:dashboard`, and `deployability:handoff`, so command counts,
+  JSON entry counts, dashboard-safe counts, CI-safe counts, public exposure
+  gate counts, next commands, and safety notes stay aligned across surfaces
 - machine-readable deployability command catalog metadata that merges overview,
   quickstart, and safety metadata into a filterable command list, including
   inherited posture for profile-specific command variants, without reading
@@ -173,7 +177,7 @@ Required baseline:
   printing secrets
 - machine-readable deployability handoff metadata, paired with a non-secret
   Markdown report, that combines current bundle, compatibility warnings,
-  command map, per-pipeline summaries, safety notes, and next validation
+  command map, shared per-pipeline summaries, safety notes, and next validation
   commands without reading `.env`, calling Docker, probing networks, or
   printing secrets
 

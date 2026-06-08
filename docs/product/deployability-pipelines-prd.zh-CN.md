@@ -61,6 +61,9 @@ onboarding 或 release-image 路径前，先给出一个只读命令地图和一
   overview、quickstart、safety、doctor 和 compatibility sections、section status、
   per-pipeline summaries、blockers、warnings、安全默认值和下一步命令，不读取 `.env`、
   不调用 Docker、不绑定端口、不探测网络、不打印 secret 值
+- `deployability:overview`、`deployability:dashboard` 和 `deployability:handoff`
+  共用第四仓 pipeline summary metadata 和一致性测试，覆盖命令数、JSON 入口数、
+  dashboard-safe 数、CI-safe 数、public exposure gate 数、下一步命令和安全说明
 - `deployability:commands -- --json` 输出干净的命令目录，包含 category、posture、
   track 和 pipeline filters，并合并 overview、quickstart 和 safety metadata，
   同时让带 profile 参数的命令变体继承基础安全姿态，不读取 `.env`、不调用 Docker、
@@ -76,8 +79,8 @@ onboarding 或 release-image 路径前，先给出一个只读命令地图和一
   marker 仍然是 blockers
 - `deployability:handoff` 会把不含 secret 的 Markdown 报告写入
   `exports/deployability/`，也可以用 `--output` 指定路径；JSON 形式输出同一组
-  bundle、compatibility、command-map、per-pipeline summaries、安全说明和下一步命令
-  metadata，不混入终端文本或 secret 值
+  bundle、compatibility、command-map、shared per-pipeline summaries、安全说明和
+  下一步命令 metadata，不混入终端文本或 secret 值
 
 ## 管线 A：Local Agent Loop
 
