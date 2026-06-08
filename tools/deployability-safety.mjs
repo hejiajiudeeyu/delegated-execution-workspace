@@ -138,6 +138,23 @@ const MATRIX = [
     notes: "writes a non-secret Markdown report under exports/deployability unless --output is provided"
   },
   {
+    command: "corepack pnpm run test:deployability",
+    json_command: null,
+    category: "top_level",
+    posture: "contract_test",
+    reads_env: false,
+    writes_files: false,
+    starts_services: false,
+    stops_services: false,
+    calls_docker: false,
+    probes_network: false,
+    private_terminal_text: false,
+    public_exposure_gate: false,
+    ci_safe: true,
+    dashboard_safe: false,
+    notes: "one-command top-level deployability regression suite for CI"
+  },
+  {
     command: "corepack pnpm run test:deployability-operations",
     json_command: null,
     category: "top_level",

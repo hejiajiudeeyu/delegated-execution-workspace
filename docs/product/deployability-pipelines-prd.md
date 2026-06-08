@@ -84,10 +84,11 @@ Acceptance:
   management regression suite as one command, covering daily local doctor,
   local-stack lifecycle metadata, self-host kit behavior, published-image smoke
   orchestration, and operator onboarding contract tests
-- the operations regression gate is discoverable from the first command map:
-  `deployability:overview` lists it in next commands, `deployability:safety`
-  gives it an explicit top-level `contract_test` posture, and
-  `deployability:commands` includes it in the searchable top-level catalog
+- the aggregate and operations regression gates are discoverable from the first
+  command map: `deployability:overview` lists both in next commands,
+  `deployability:safety` gives both an explicit top-level `contract_test`
+  posture, and `deployability:commands` includes both in the searchable
+  top-level catalog
 - `deployability:commands -- --json` emits a clean command catalog with
   category, posture, track, and pipeline filters, merging overview,
   quickstart, and safety metadata, and inheriting base safety posture for
@@ -384,9 +385,10 @@ Acceptance:
   ready-now versus planned boundaries, and secret-safety defaults
 - Deployability Profiles include `selfhost:init -- --json` and the public-stack
   variant as machine-readable first-run initialization commands
-- Deployability Profiles include `test:deployability-operations` and explain
-  that the operations gate is discoverable from overview next commands, the
-  safety matrix `contract_test` posture, and the searchable command catalog
+- Deployability Profiles include `test:deployability` and
+  `test:deployability-operations`, explaining that both gates are discoverable
+  from overview next commands, the safety matrix `contract_test` posture, and
+  the searchable command catalog
 - console prototype highlights management rather than only visual polish
 - self-host messaging is honest about what is ready now versus planned
 - brand-site build and deployability-content smoke pass

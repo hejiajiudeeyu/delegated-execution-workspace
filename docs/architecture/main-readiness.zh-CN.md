@@ -203,8 +203,9 @@ corepack pnpm run test:integration
   local-stack lifecycle metadata、self-host kit 行为、published-image smoke 编排和
   operator onboarding contract tests 组成的 operator-facing 部署与管理回归套件
 - `deployability:overview -- --json` / `deployability:safety -- --json` /
-  `deployability:commands -- --json`：通过，operations regression gate 已能从
-  next commands、明确的 top-level safety posture 和可搜索命令目录中发现
+  `deployability:commands -- --json`：通过，aggregate regression gate 和
+  operations regression gate 已能从 next commands、明确的 top-level
+  `contract_test` safety posture 和可搜索命令目录中发现
 - `deployability:commands -- --json`：通过，输出命令目录及 category、posture、track
   和 pipeline filters，来源于 overview、quickstart 和 safety metadata，并让带
   profile 参数的命令变体继承基础安全姿态，不混入终端文本或 secret 值

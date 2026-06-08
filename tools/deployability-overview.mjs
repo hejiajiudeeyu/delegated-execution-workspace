@@ -19,6 +19,7 @@ const NEXT_COMMANDS = [
   "corepack pnpm run dev:doctor",
   "corepack pnpm run operator:onboarding:plan",
   "corepack pnpm run published-image:plan",
+  "corepack pnpm run test:deployability",
   "corepack pnpm run test:deployability-operations"
 ];
 

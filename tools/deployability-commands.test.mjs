@@ -36,6 +36,10 @@ assert.equal(byCommand.get("corepack pnpm run deployability:dashboard").posture,
 assert.ok(byCommand.get("corepack pnpm run deployability:dashboard").track_keys.includes("daily_dev"));
 assert.equal(byCommand.get("corepack pnpm run deployability:safety").category, "top_level");
 assert.equal(byCommand.get("corepack pnpm run deployability:safety").posture, "read_only");
+assert.equal(byCommand.get("corepack pnpm run test:deployability").category, "top_level");
+assert.equal(byCommand.get("corepack pnpm run test:deployability").posture, "contract_test");
+assert.equal(byCommand.get("corepack pnpm run test:deployability").ci_safe, true);
+assert.equal(byCommand.get("corepack pnpm run test:deployability").dashboard_safe, false);
 assert.equal(byCommand.get("corepack pnpm run test:deployability-operations").category, "top_level");
 assert.equal(byCommand.get("corepack pnpm run test:deployability-operations").posture, "contract_test");
 assert.equal(byCommand.get("corepack pnpm run test:deployability-operations").ci_safe, true);
@@ -53,6 +57,7 @@ const topLevelBody = JSON.parse(topLevel.stdout);
 assert.ok(topLevelBody.commands.length > 0);
 assert.ok(topLevelBody.commands.every((item) => item.category === "top_level"));
 assert.ok(topLevelBody.commands.some((item) => item.command === "corepack pnpm run deployability:dashboard"));
+assert.ok(topLevelBody.commands.some((item) => item.command === "corepack pnpm run test:deployability"));
 assert.ok(topLevelBody.commands.some((item) => item.command === "corepack pnpm run test:deployability-operations"));
 assert.ok(!topLevelBody.commands.some((item) => item.command === "corepack pnpm run selfhost:up"));
 
@@ -93,6 +98,7 @@ assert.equal(text.status, 0, text.stderr || text.stdout);
 assert.match(text.stdout, /Deployability commands/);
 assert.match(text.stdout, /top_level/);
 assert.match(text.stdout, /corepack pnpm run deployability:dashboard/);
+assert.match(text.stdout, /corepack pnpm run test:deployability/);
 assert.match(text.stdout, /corepack pnpm run test:deployability-operations/);
 assert.ok(!text.stdout.includes("sk_commands_must_not_leak"));
 

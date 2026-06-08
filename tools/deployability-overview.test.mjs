@@ -43,6 +43,7 @@ assert.ok(body.next_commands.includes("corepack pnpm run deployability:quickstar
 assert.ok(body.next_commands.includes("corepack pnpm run deployability:safety"));
 assert.ok(body.next_commands.includes("corepack pnpm run deployability:doctor"));
 assert.ok(body.next_commands.includes("corepack pnpm run operator:onboarding:plan"));
+assert.ok(body.next_commands.includes("corepack pnpm run test:deployability"));
 assert.ok(body.next_commands.includes("corepack pnpm run test:deployability-operations"));
 assert.ok(body.safety_defaults.some((item) => /does not read \.env/i.test(item)));
 assert.ok(!json.stdout.includes("sk_overview_must_not_leak"));
@@ -53,6 +54,7 @@ assert.equal(text.status, 0, text.stderr || text.stdout);
 assert.match(text.stdout, /Deployability overview/);
 assert.match(text.stdout, /Local Agent Loop/);
 assert.match(text.stdout, /corepack pnpm run selfhost:profiles/);
+assert.match(text.stdout, /corepack pnpm run test:deployability/);
 assert.match(text.stdout, /corepack pnpm run test:deployability-operations/);
 assert.ok(!text.stdout.includes("sk_overview_must_not_leak"));
 

@@ -239,9 +239,9 @@ Observed results:
   local-stack lifecycle metadata, self-host kit behavior, published-image smoke
   orchestration, and operator onboarding contract tests
 - `deployability:overview -- --json` / `deployability:safety -- --json` /
-  `deployability:commands -- --json`: passed with the operations regression
-  gate discoverable from next commands, explicit top-level safety posture, and
-  the searchable command catalog
+  `deployability:commands -- --json`: passed with the aggregate and operations
+  regression gates discoverable from next commands, explicit top-level
+  `contract_test` safety posture, and the searchable command catalog
 - `deployability:commands -- --json`: passed, reporting a command catalog with
   category, posture, track, and pipeline filters, sourced from overview,
   quickstart, and safety metadata, including inherited safety posture for

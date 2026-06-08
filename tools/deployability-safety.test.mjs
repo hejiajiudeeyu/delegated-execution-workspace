@@ -39,6 +39,12 @@ assert.equal(byCommand.get("corepack pnpm run deployability:dashboard").probes_n
 assert.equal(byCommand.get("corepack pnpm run deployability:commands").posture, "read_only");
 assert.equal(byCommand.get("corepack pnpm run deployability:commands").calls_docker, false);
 assert.equal(byCommand.get("corepack pnpm run deployability:commands").probes_network, false);
+assert.equal(byCommand.get("corepack pnpm run test:deployability").category, "top_level");
+assert.equal(byCommand.get("corepack pnpm run test:deployability").posture, "contract_test");
+assert.equal(byCommand.get("corepack pnpm run test:deployability").reads_env, false);
+assert.equal(byCommand.get("corepack pnpm run test:deployability").calls_docker, false);
+assert.equal(byCommand.get("corepack pnpm run test:deployability").ci_safe, true);
+assert.equal(byCommand.get("corepack pnpm run test:deployability").dashboard_safe, false);
 assert.equal(byCommand.get("corepack pnpm run test:deployability-operations").category, "top_level");
 assert.equal(byCommand.get("corepack pnpm run test:deployability-operations").posture, "contract_test");
 assert.equal(byCommand.get("corepack pnpm run test:deployability-operations").reads_env, false);
