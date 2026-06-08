@@ -71,15 +71,15 @@ Acceptance:
   status, ecosystem_readiness scorecard, per-pipeline summaries, blockers,
   warnings, safety defaults, and next commands without reading `.env`, calling
   Docker, binding ports, probing networks, or printing secret values
-- the dashboard ecosystem_readiness scorecard maps the daily-deployable
+- the dashboard and handoff ecosystem_readiness scorecard maps the daily-deployable
   definition to profile choice, generated secrets, startup path, doctor path,
   runtime inspection, boundary understanding, and brand-site story; when all
   checks pass it reports `daily_deployable_with_safety_gates`
 - `deployability:overview`, `deployability:dashboard`, and
-  `deployability:handoff` use one shared fourth-repo pipeline summary metadata
-  source and consistency test for command counts, JSON counts, dashboard-safe
-  counts, CI-safe counts, public exposure gate counts, next commands, and safety
-  notes
+  `deployability:handoff` use shared fourth-repo metadata sources and
+  consistency tests for ecosystem_readiness, command counts, JSON counts,
+  dashboard-safe counts, CI-safe counts, public exposure gate counts, next
+  commands, and safety notes
 - `test:deployability` runs the top-level deployability regression suite as one
   command, covering overview, quickstart, safety, doctor, dashboard,
   pipeline-summary consistency, command catalog, handoff, and compatibility
@@ -111,9 +111,9 @@ Acceptance:
   dirty gitlink markers remain blockers
 - `deployability:handoff` writes a non-secret Markdown report under
   `exports/deployability/` unless `--output` is provided, and its JSON form
-  returns the same bundle, compatibility, command-map, shared per-pipeline
-  summary, safety-note, and next-command metadata without terminal prose or
-  secret values
+  returns the same bundle, compatibility, command-map, ecosystem_readiness,
+  shared per-pipeline summary, safety-note, and next-command metadata without
+  terminal prose or secret values
 
 ## Pipeline A: Local Agent Loop
 

@@ -65,13 +65,14 @@ onboarding 或 release-image 路径前，先给出一个只读命令地图和一
   ecosystem_readiness scorecard、per-pipeline summaries、blockers、warnings、
   安全默认值和下一步命令，不读取 `.env`、不调用 Docker、不绑定端口、不探测网络、
   不打印 secret 值
-- dashboard 的 ecosystem_readiness scorecard 把 daily-deployable 定义映射为
+- dashboard 和 handoff 的 ecosystem_readiness scorecard 把 daily-deployable 定义映射为
   profile choice、generated secrets、startup path、doctor path、runtime inspection、
   boundary understanding 和 brand-site story；全部通过时报告
   `daily_deployable_with_safety_gates`
 - `deployability:overview`、`deployability:dashboard` 和 `deployability:handoff`
-  共用第四仓 pipeline summary metadata 和一致性测试，覆盖命令数、JSON 入口数、
-  dashboard-safe 数、CI-safe 数、public exposure gate 数、下一步命令和安全说明
+  共用第四仓 metadata source 和一致性测试，覆盖 ecosystem_readiness、命令数、
+  JSON 入口数、dashboard-safe 数、CI-safe 数、public exposure gate 数、下一步命令
+  和安全说明
 - `test:deployability` 用一条命令运行顶层 deployability regression suite，覆盖
   overview、quickstart、safety、doctor、dashboard、pipeline-summary 一致性、命令目录、
   handoff 和 compatibility status tests
@@ -97,8 +98,8 @@ onboarding 或 release-image 路径前，先给出一个只读命令地图和一
   marker 仍然是 blockers
 - `deployability:handoff` 会把不含 secret 的 Markdown 报告写入
   `exports/deployability/`，也可以用 `--output` 指定路径；JSON 形式输出同一组
-  bundle、compatibility、command-map、shared per-pipeline summaries、安全说明和
-  下一步命令 metadata，不混入终端文本或 secret 值
+  bundle、compatibility、command-map、ecosystem_readiness、shared per-pipeline
+  summaries、安全说明和下一步命令 metadata，不混入终端文本或 secret 值
 
 ## 管线 A：Local Agent Loop
 

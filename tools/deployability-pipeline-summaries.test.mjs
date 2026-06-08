@@ -36,4 +36,10 @@ assert.deepEqual(
   "deployability handoff must expose the same pipeline summaries as deployability dashboard"
 );
 
+assert.deepEqual(
+  handoff.ecosystem_readiness,
+  dashboard.ecosystem_readiness,
+  "deployability handoff must expose the same ecosystem readiness scorecard as deployability dashboard"
+);
+
 console.log("[deployability-pipeline-summaries.test] ok");

@@ -99,6 +99,20 @@ try {
   assert.ok(body.command_map.some((item) => item.command === "corepack pnpm run deployability:dashboard"));
   assert.ok(body.command_map.some((item) => item.command === "corepack pnpm run deployability:commands"));
   assert.ok(body.command_map.some((item) => item.command === "corepack pnpm run compat:status"));
+  assert.equal(body.ecosystem_readiness.status, "daily_deployable_with_safety_gates");
+  assert.equal(body.ecosystem_readiness.goal, "daily-deployable");
+  assert.deepEqual(
+    body.ecosystem_readiness.checks.map((item) => item.key),
+    [
+      "profile_choice",
+      "secret_generation",
+      "startup_path",
+      "doctor_path",
+      "runtime_inspection",
+      "boundary_understanding",
+      "brand_site_story"
+    ]
+  );
   assert.ok(Array.isArray(body.pipeline_summaries));
   assert.deepEqual(
     body.pipeline_summaries.map((item) => item.key),
@@ -116,6 +130,9 @@ try {
   assert.match(markdown, /# Deployability Handoff/);
   assert.match(markdown, /## Current Bundle/);
   assert.match(markdown, /## Compatibility/);
+  assert.match(markdown, /## Ecosystem Readiness/);
+  assert.match(markdown, /daily_deployable_with_safety_gates/);
+  assert.match(markdown, /profile_choice: ok/);
   assert.match(markdown, /## Pipeline Summaries/);
   assert.match(markdown, /public_stack: ready_now_with_safety_gates/);
   assert.match(markdown, /exposure-gates=2/);

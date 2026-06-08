@@ -5,6 +5,7 @@ import path from "node:path";
 import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import YAML from "yaml";
+import { buildEcosystemReadiness } from "./lib/deployability-ecosystem-readiness.mjs";
 import { PIPELINES, buildPipelineSummaries } from "./lib/deployability-pipeline-summaries.mjs";
 
 const ROOT = process.cwd();
@@ -287,6 +288,10 @@ function reportData(output) {
       parse_error: commandCatalog.parse_error
     },
     command_map: COMMAND_MAP,
+    ecosystem_readiness: buildEcosystemReadiness({
+      catalogCommands: commandCatalog.body?.commands || [],
+      brandSiteOk: true
+    }),
     pipeline_summaries: buildPipelineSummaries({
       pipelines: PIPELINES,
       catalogCommands: commandCatalog.body?.commands || []
@@ -355,6 +360,17 @@ function markdownReport(data) {
     lines.push(`  - JSON: ${item.json_command}`);
     lines.push(`  - Purpose: ${item.purpose}`);
   }
+
+  lines.push("", "## Ecosystem Readiness", "");
+  lines.push(`- Goal: ${data.ecosystem_readiness.goal}`);
+  lines.push(`- Status: ${data.ecosystem_readiness.status}`);
+  for (const item of data.ecosystem_readiness.checks) {
+    lines.push(`- ${item.key}: ${item.ok ? "ok" : "blocked"}`);
+    lines.push(`  - Evidence: ${item.evidence.join(" | ")}`);
+    lines.push(`  - Next: ${item.next_commands.join(" | ")}`);
+  }
+  lines.push("", "### Ecosystem Safety Notes", "");
+  for (const note of data.ecosystem_readiness.safety_notes) lines.push(`- ${note}`);
 
   lines.push("", "## Pipeline Summaries", "");
   for (const item of data.pipeline_summaries) {
