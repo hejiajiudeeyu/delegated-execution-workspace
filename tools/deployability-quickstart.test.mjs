@@ -45,6 +45,16 @@ assert.ok(
     .find((item) => item.key === "daily_dev")
     .steps.some((step) => step.json_command === "corepack pnpm --silent run deployability:exposure -- --json")
 );
+assert.ok(
+  body.tracks
+    .find((item) => item.key === "daily_dev")
+    .steps.some((step) => step.command === "corepack pnpm run deployability:release -- --image-tag <candidate-tag>")
+);
+assert.ok(
+  body.tracks
+    .find((item) => item.key === "daily_dev")
+    .steps.some((step) => step.json_command === "corepack pnpm --silent run deployability:release -- --image-tag <candidate-tag> --json")
+);
 assert.ok(body.tracks.find((item) => item.key === "daily_dev").steps.some((step) => step.command === "corepack pnpm run deployability:doctor"));
 assert.ok(body.tracks.find((item) => item.key === "daily_dev").steps.some((step) => step.command === "corepack pnpm run deployability:dashboard"));
 assert.ok(
@@ -88,6 +98,11 @@ assert.ok(
 );
 assert.ok(body.tracks.find((item) => item.key === "public_stack").steps.some((step) => step.command === "corepack pnpm run selfhost:security-review -- --profile public-stack"));
 assert.ok(body.tracks.find((item) => item.key === "release_review").steps.some((step) => step.command === "corepack pnpm run published-image:plan"));
+assert.ok(
+  body.tracks
+    .find((item) => item.key === "release_review")
+    .steps.some((step) => step.command === "corepack pnpm run deployability:release -- --image-tag <candidate-tag>")
+);
 assert.ok(body.next_commands.includes("corepack pnpm run deployability:handoff"));
 assert.ok(body.next_commands.includes("corepack pnpm run deployability:safety"));
 assert.ok(body.next_commands.includes("corepack pnpm run deployability:explain"));
@@ -96,6 +111,7 @@ assert.ok(body.next_commands.includes("corepack pnpm run deployability:roadmap")
 assert.ok(body.next_commands.includes("corepack pnpm run deployability:status"));
 assert.ok(body.next_commands.includes("corepack pnpm run deployability:gates"));
 assert.ok(body.next_commands.includes("corepack pnpm run deployability:exposure"));
+assert.ok(body.next_commands.includes("corepack pnpm run deployability:release -- --image-tag <candidate-tag>"));
 assert.ok(body.next_commands.includes("corepack pnpm run deployability:doctor"));
 assert.ok(body.next_commands.includes("corepack pnpm run deployability:dashboard"));
 assert.ok(body.next_commands.includes("corepack pnpm run deployability:recipe -- --profile public-stack"));
@@ -120,6 +136,7 @@ assert.match(text.stdout, /corepack pnpm run deployability:roadmap/);
 assert.match(text.stdout, /corepack pnpm run deployability:status/);
 assert.match(text.stdout, /corepack pnpm run deployability:gates/);
 assert.match(text.stdout, /corepack pnpm run deployability:exposure/);
+assert.match(text.stdout, /corepack pnpm run deployability:release -- --image-tag <candidate-tag>/);
 assert.match(text.stdout, /corepack pnpm run deployability:doctor/);
 assert.match(text.stdout, /corepack pnpm run deployability:dashboard/);
 assert.match(text.stdout, /corepack pnpm run deployability:dashboard -- --profile public-stack/);

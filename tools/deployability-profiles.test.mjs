@@ -22,7 +22,7 @@ const body = JSON.parse(json.stdout);
 assert.equal(body.command, "deployability:profiles");
 assert.equal(body.ok, true);
 assert.equal(body.mode, "profile_catalog");
-assert.equal(body.current_bundle.change_id, "CHG-2026-126");
+assert.equal(body.current_bundle.change_id, "CHG-2026-127");
 assert.equal(body.ecosystem_readiness.status, "daily_deployable_with_safety_gates");
 assert.equal(body.profile_filter.requested, null);
 assert.equal(body.profile_filter.resolved, null);

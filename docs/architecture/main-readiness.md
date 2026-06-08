@@ -175,6 +175,13 @@ CHG-2026-105:
   existing public-stack security review, calls Docker only for compose config,
   does not start services or bind ports, and reports public exposure findings
   under `exposure_blockers`
+- `deployability:release` is available as a non-destructive release candidate
+  gate, and supports
+  `corepack pnpm run deployability:release -- --image-tag <candidate-tag>` and
+  `corepack pnpm --silent run deployability:release -- --image-tag <candidate-tag> --json`;
+  it aggregates production hardening, public exposure, published-image plan,
+  and dry-run smoke evidence without publishing images or packages, starting
+  services, probing endpoints, or printing secret values
 - `deployability:doctor` is available as a read-only deployability readiness
   snapshot for compatibility ledger, top-level scripts, documentation,
   brand-site file alignment, brand-site deployability content smoke, and

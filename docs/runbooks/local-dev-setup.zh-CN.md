@@ -110,6 +110,8 @@ corepack pnpm run deployability:gates
 corepack pnpm --silent run deployability:gates -- --json
 corepack pnpm run deployability:exposure
 corepack pnpm --silent run deployability:exposure -- --json
+corepack pnpm run deployability:release -- --image-tag <candidate-tag>
+corepack pnpm --silent run deployability:release -- --image-tag <candidate-tag> --json
 corepack pnpm run deployability:doctor
 corepack pnpm --silent run deployability:doctor -- --json
 corepack pnpm run deployability:dashboard
@@ -204,6 +206,13 @@ claiming production readiness 前必须通过哪些 gate，但不想执行 gate 
 这类 `exposure_blockers` 时，可以使用 `corepack pnpm run deployability:exposure`
 或 `corepack pnpm --silent run deployability:exposure -- --json`；它只为 compose
 config 调用 Docker，不启动服务、不绑定端口、不探测网络、不打印 secret 值。
+
+`deployability:release` 是非破坏性的 release candidate gate。当 dashboard 需要在
+真实 release-owned smoke 前聚合 production hardening、public exposure、
+published-image plan 和 dry-run smoke evidence 时，可以使用
+`corepack pnpm run deployability:release -- --image-tag <candidate-tag>` 或
+`corepack pnpm --silent run deployability:release -- --image-tag <candidate-tag> --json`；
+它不发布镜像或包、不启动服务、不探测 endpoint、不打印 secret 值。
 
 `deployability:profiles` 是给 operator、dashboard、CI 和管理脚本使用的专用只读
 profile catalog。它从 dashboard `profile_summaries` 和共享第四仓 profile registry

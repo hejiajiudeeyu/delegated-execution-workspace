@@ -33,6 +33,8 @@ Required commands:
 - `corepack pnpm --silent run deployability:gates -- --json`
 - `corepack pnpm run deployability:exposure`
 - `corepack pnpm --silent run deployability:exposure -- --json`
+- `corepack pnpm run deployability:release -- --image-tag <candidate-tag>`
+- `corepack pnpm --silent run deployability:release -- --image-tag <candidate-tag> --json`
 - `corepack pnpm run deployability:doctor`
 - `corepack pnpm --silent run deployability:doctor -- --json`
 - `corepack pnpm run deployability:dashboard`
@@ -133,6 +135,11 @@ Acceptance:
   security review, calls Docker only for compose config, does not start
   services or bind ports, and separates script blockers from
   `exposure_blockers`
+- `deployability:release -- --image-tag <candidate-tag> --json` emits
+  `release_candidate_review`, a non-destructive release gate that aggregates
+  production hardening, public exposure, published-image plan, and dry-run
+  smoke evidence without publishing images or packages, starting services,
+  probing endpoints, or printing secret values
 - doctor reports compatibility ledger, top-level scripts, documentation,
   brand-site file alignment, brand-site deployability content smoke, and
   safety-contract alignment as one read-only snapshot without executing Docker,

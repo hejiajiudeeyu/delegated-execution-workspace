@@ -32,6 +32,8 @@ onboarding 或 release-image 路径前，先给出一个只读命令地图和一
 - `corepack pnpm --silent run deployability:gates -- --json`
 - `corepack pnpm run deployability:exposure`
 - `corepack pnpm --silent run deployability:exposure -- --json`
+- `corepack pnpm run deployability:release -- --image-tag <candidate-tag>`
+- `corepack pnpm --silent run deployability:release -- --image-tag <candidate-tag> --json`
 - `corepack pnpm run deployability:doctor`
 - `corepack pnpm --silent run deployability:doctor -- --json`
 - `corepack pnpm run deployability:dashboard`
@@ -122,6 +124,10 @@ onboarding 或 release-image 路径前，先给出一个只读命令地图和一
   非破坏性的 public-stack exposure blocker snapshot；它运行现有 security review，
   只为 compose config 调用 Docker，不启动服务、不绑定端口，并把脚本 blocker 与
   `exposure_blockers` 分开
+- `deployability:release -- --image-tag <candidate-tag> --json` 输出
+  `release_candidate_review`，也就是非破坏性的 release gate；它聚合 production
+  hardening、public exposure、published-image plan 和 dry-run smoke evidence，
+  但不发布镜像或包、不启动服务、不探测 endpoint、不打印 secret 值
 - doctor 把 compatibility ledger、顶层 scripts、文档、brand-site file alignment、
   brand-site deployability content smoke 和 safety-contract 对齐状态收成一个只读快照，
   不执行 Docker、不读取 `.env`、不探测网络、不打印 secrets

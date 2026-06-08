@@ -112,6 +112,11 @@ assert.equal(byCommand.get("corepack pnpm run deployability:exposure").category,
 assert.equal(byCommand.get("corepack pnpm run deployability:exposure").posture, "public_exposure_gate");
 assert.equal(byCommand.get("corepack pnpm run deployability:exposure").dashboard_safe, true);
 assert.ok(byCommand.get("corepack pnpm run deployability:exposure").track_keys.includes("daily_dev"));
+assert.equal(byCommand.get("corepack pnpm run deployability:release -- --image-tag <candidate-tag>").category, "top_level");
+assert.equal(byCommand.get("corepack pnpm run deployability:release -- --image-tag <candidate-tag>").posture, "release_candidate_gate");
+assert.equal(byCommand.get("corepack pnpm run deployability:release -- --image-tag <candidate-tag>").dashboard_safe, true);
+assert.ok(byCommand.get("corepack pnpm run deployability:release -- --image-tag <candidate-tag>").track_keys.includes("daily_dev"));
+assert.ok(byCommand.get("corepack pnpm run deployability:release -- --image-tag <candidate-tag>").pipeline_keys.includes("published_image"));
 assert.equal(byCommand.get("corepack pnpm run test:deployability").category, "top_level");
 assert.equal(byCommand.get("corepack pnpm run test:deployability").posture, "contract_test");
 assert.equal(byCommand.get("corepack pnpm run test:deployability").ci_safe, true);
@@ -151,6 +156,7 @@ assert.ok(body.next_commands.includes("corepack pnpm run deployability:readiness
 assert.ok(body.next_commands.includes("corepack pnpm run deployability:status"));
 assert.ok(body.next_commands.includes("corepack pnpm run deployability:gates"));
 assert.ok(body.next_commands.includes("corepack pnpm run deployability:exposure"));
+assert.ok(body.next_commands.includes("corepack pnpm run deployability:release -- --image-tag <candidate-tag>"));
 assert.ok(body.safety_defaults.some((item) => /does not read \.env/i.test(item)));
 assert.ok(!body.commands.some((item) => item.category === "unmapped" || item.posture === "unmapped"));
 assert.ok(!json.stdout.includes("[ok]"));
@@ -169,6 +175,7 @@ assert.ok(topLevelBody.commands.some((item) => item.command === "corepack pnpm r
 assert.ok(topLevelBody.commands.some((item) => item.command === "corepack pnpm run deployability:status"));
 assert.ok(topLevelBody.commands.some((item) => item.command === "corepack pnpm run deployability:gates"));
 assert.ok(topLevelBody.commands.some((item) => item.command === "corepack pnpm run deployability:exposure"));
+assert.ok(topLevelBody.commands.some((item) => item.command === "corepack pnpm run deployability:release -- --image-tag <candidate-tag>"));
 assert.ok(topLevelBody.commands.some((item) => item.command === "corepack pnpm run deployability:dashboard -- --profile public-stack"));
 assert.ok(topLevelBody.commands.some((item) => item.command === "corepack pnpm run deployability:action-plan"));
 assert.ok(topLevelBody.commands.some((item) => item.command === "corepack pnpm run deployability:profiles"));
@@ -194,6 +201,7 @@ assert.ok(readOnlyBody.commands.some((item) => item.command === "corepack pnpm r
 assert.ok(readOnlyBody.commands.some((item) => item.command === "corepack pnpm run deployability:status"));
 assert.ok(readOnlyBody.commands.some((item) => item.command === "corepack pnpm run deployability:gates"));
 assert.ok(!readOnlyBody.commands.some((item) => item.command === "corepack pnpm run deployability:exposure"));
+assert.ok(!readOnlyBody.commands.some((item) => item.command === "corepack pnpm run deployability:release -- --image-tag <candidate-tag>"));
 assert.ok(readOnlyBody.commands.some((item) => item.command === "corepack pnpm run deployability:recipe"));
 assert.ok(!readOnlyBody.commands.some((item) => item.command === "corepack pnpm run selfhost:up"));
 
@@ -209,6 +217,7 @@ assert.ok(dailyDevBody.commands.some((item) => item.command === "corepack pnpm r
 assert.ok(dailyDevBody.commands.some((item) => item.command === "corepack pnpm run deployability:status"));
 assert.ok(dailyDevBody.commands.some((item) => item.command === "corepack pnpm run deployability:gates"));
 assert.ok(dailyDevBody.commands.some((item) => item.command === "corepack pnpm run deployability:exposure"));
+assert.ok(dailyDevBody.commands.some((item) => item.command === "corepack pnpm run deployability:release -- --image-tag <candidate-tag>"));
 assert.ok(dailyDevBody.commands.some((item) => item.command === "corepack pnpm run deployability:dashboard"));
 assert.ok(dailyDevBody.commands.some((item) => item.command === "corepack pnpm run deployability:dashboard -- --profile public-stack"));
 assert.ok(dailyDevBody.commands.some((item) => item.command === "corepack pnpm run deployability:action-plan"));

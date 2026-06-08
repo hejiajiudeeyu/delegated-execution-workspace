@@ -56,6 +56,8 @@ assert.ok(checksByKey.get("top_level_scripts").data.required_scripts.includes("d
 assert.ok(checksByKey.get("top_level_scripts").data.required_scripts.includes("test:deployability-production"));
 assert.ok(checksByKey.get("top_level_scripts").data.required_scripts.includes("deployability:exposure"));
 assert.ok(checksByKey.get("top_level_scripts").data.required_scripts.includes("test:deployability-exposure"));
+assert.ok(checksByKey.get("top_level_scripts").data.required_scripts.includes("deployability:release"));
+assert.ok(checksByKey.get("top_level_scripts").data.required_scripts.includes("test:deployability-release"));
 assert.ok(checksByKey.get("top_level_scripts").data.required_scripts.includes("deployability:status"));
 assert.ok(checksByKey.get("top_level_scripts").data.required_scripts.includes("test:deployability-status"));
 assert.ok(checksByKey.get("top_level_scripts").data.required_scripts.includes("deployability:gates"));
@@ -82,6 +84,7 @@ assert.ok(body.next_commands.includes("corepack pnpm run deployability:roadmap")
 assert.ok(body.next_commands.includes("corepack pnpm run deployability:status"));
 assert.ok(body.next_commands.includes("corepack pnpm run deployability:gates"));
 assert.ok(body.next_commands.includes("corepack pnpm run deployability:exposure"));
+assert.ok(body.next_commands.includes("corepack pnpm run deployability:release -- --image-tag <candidate-tag>"));
 assert.ok(body.next_commands.includes("corepack pnpm run deployability:dashboard"));
 assert.ok(body.next_commands.includes("corepack pnpm run deployability:action-plan"));
 assert.ok(body.next_commands.includes("corepack pnpm run deployability:profiles"));
@@ -111,6 +114,7 @@ assert.match(text.stdout, /corepack pnpm run deployability:production/);
 assert.match(text.stdout, /corepack pnpm run deployability:status/);
 assert.match(text.stdout, /corepack pnpm run deployability:gates/);
 assert.match(text.stdout, /corepack pnpm run deployability:exposure/);
+assert.match(text.stdout, /corepack pnpm run deployability:release -- --image-tag <candidate-tag>/);
 assert.match(text.stdout, /corepack pnpm run deployability:dashboard/);
 assert.match(text.stdout, /corepack pnpm run deployability:action-plan/);
 assert.match(text.stdout, /corepack pnpm run deployability:profiles/);

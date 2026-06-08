@@ -131,6 +131,8 @@ corepack pnpm run deployability:gates
 corepack pnpm --silent run deployability:gates -- --json
 corepack pnpm run deployability:exposure
 corepack pnpm --silent run deployability:exposure -- --json
+corepack pnpm run deployability:release -- --image-tag <candidate-tag>
+corepack pnpm --silent run deployability:release -- --image-tag <candidate-tag> --json
 corepack pnpm run deployability:doctor
 corepack pnpm --silent run deployability:doctor -- --json
 corepack pnpm run deployability:dashboard
@@ -236,6 +238,14 @@ needs the actual public exposure review result, including `exposure_blockers`
 such as localhost public origin. It calls Docker only for compose config and
 does not start services, bind ports, probe network endpoints, or print secret
 values.
+
+`deployability:release` is the non-destructive release candidate gate. Use
+`corepack pnpm run deployability:release -- --image-tag <candidate-tag>` or
+`corepack pnpm --silent run deployability:release -- --image-tag <candidate-tag> --json`
+when a dashboard needs to combine production hardening, public exposure,
+published-image plan, and dry-run smoke evidence before a real release-owned
+smoke. It does not publish images or packages, start services, probe endpoints,
+or print secret values.
 
 `deployability:profiles` is the dedicated read-only profile catalog for
 operators, dashboards, CI, and management scripts. It derives profile cards

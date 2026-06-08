@@ -23,7 +23,7 @@ const body = JSON.parse(json.stdout);
 assert.equal(body.command, "deployability:explain");
 assert.equal(body.mode, "operator_explainer");
 assert.equal(body.ok, true);
-assert.equal(body.current_bundle.change_id, "CHG-2026-126");
+assert.equal(body.current_bundle.change_id, "CHG-2026-127");
 assert.equal(body.summary.status, "daily_deployable_with_planned_hardening");
 assert.equal(body.summary.explainer_count, 5);
 assert.equal(body.summary.warning_count, body.warnings.length);

@@ -133,6 +133,8 @@ corepack pnpm run deployability:gates
 corepack pnpm --silent run deployability:gates -- --json
 corepack pnpm run deployability:exposure
 corepack pnpm --silent run deployability:exposure -- --json
+corepack pnpm run deployability:release -- --image-tag <candidate-tag>
+corepack pnpm --silent run deployability:release -- --image-tag <candidate-tag> --json
 corepack pnpm run deployability:doctor
 corepack pnpm --silent run deployability:doctor -- --json
 corepack pnpm run deployability:dashboard
@@ -339,6 +341,11 @@ Notes:
   It runs the non-destructive public-stack security review, calls Docker only
   for compose config, does not start services or bind ports, and reports
   findings such as localhost public origin under `exposure_blockers`.
+- Use `corepack pnpm --silent run deployability:release -- --image-tag <candidate-tag> --json`
+  when an operator console needs a release candidate gate. It aggregates
+  production hardening, public exposure, published-image plan, and dry-run
+  smoke evidence without publishing images or packages, starting services,
+  probing endpoints, or printing secret values.
 - Use `corepack pnpm --silent run deployability:menu -- --profile public-stack --json`
   when a management UI needs one public-stack first screen. The focused menu
   includes `selected_onboarding_plan` from the read-only

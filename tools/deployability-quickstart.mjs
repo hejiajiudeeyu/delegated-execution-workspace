@@ -57,6 +57,11 @@ const TRACKS = [
         json_command: "corepack pnpm --silent run deployability:exposure -- --json"
       },
       {
+        label: "Review release candidate gates",
+        command: "corepack pnpm run deployability:release -- --image-tag <candidate-tag>",
+        json_command: "corepack pnpm --silent run deployability:release -- --image-tag <candidate-tag> --json"
+      },
+      {
         label: "Run the read-only deployability doctor",
         command: "corepack pnpm run deployability:doctor",
         json_command: "corepack pnpm --silent run deployability:doctor -- --json"
@@ -225,6 +230,11 @@ const TRACKS = [
     purpose: "Inspect published-image smoke intent before asking platform-owned release checks to run.",
     steps: [
       {
+        label: "Review release candidate gates",
+        command: "corepack pnpm run deployability:release -- --image-tag <candidate-tag>",
+        json_command: "corepack pnpm --silent run deployability:release -- --image-tag <candidate-tag> --json"
+      },
+      {
         label: "Inspect image plan",
         command: "corepack pnpm run published-image:plan",
         json_command: "corepack pnpm --silent run published-image:plan -- --json"
@@ -255,6 +265,7 @@ const NEXT_COMMANDS = [
   "corepack pnpm run deployability:status",
   "corepack pnpm run deployability:gates",
   "corepack pnpm run deployability:exposure",
+  "corepack pnpm run deployability:release -- --image-tag <candidate-tag>",
   "corepack pnpm run deployability:doctor",
   "corepack pnpm run deployability:dashboard",
   "corepack pnpm run deployability:profiles",

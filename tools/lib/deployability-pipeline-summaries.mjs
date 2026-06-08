@@ -167,11 +167,13 @@ export const PIPELINES = [
     status: "ready_now",
     purpose: "Release-image review and delegated public-stack smoke for candidate image tags.",
     commands: [
+      "corepack pnpm run deployability:release -- --image-tag <candidate-tag>",
       "corepack pnpm run published-image:plan",
       "corepack pnpm run published-image:smoke -- --dry-run --image-tag <candidate-tag>",
       "corepack pnpm run published-image:smoke -- --image-tag <candidate-tag>"
     ],
     json_commands: [
+      "corepack pnpm --silent run deployability:release -- --image-tag <candidate-tag> --json",
       "corepack pnpm --silent run published-image:plan -- --json",
       "corepack pnpm --silent run published-image:smoke -- --dry-run --image-tag <candidate-tag> --json"
     ],
