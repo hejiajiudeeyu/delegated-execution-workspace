@@ -117,6 +117,8 @@ corepack pnpm run deployability:quickstart
 corepack pnpm --silent run deployability:quickstart -- --json
 corepack pnpm run deployability:safety
 corepack pnpm --silent run deployability:safety -- --json
+corepack pnpm run deployability:explain
+corepack pnpm --silent run deployability:explain -- --json
 corepack pnpm run deployability:readiness
 corepack pnpm --silent run deployability:readiness -- --json
 corepack pnpm run deployability:roadmap
@@ -179,6 +181,12 @@ which deployability commands are read-only, write files, start or stop services,
 call Docker, probe networks, or print private terminal text. Its JSON form is
 safe for dashboards and does not read `.env`, call Docker, probe networks, or
 print secret values.
+
+`deployability:explain` is the read-only operator explainer for architecture,
+truth-source boundaries, profile selection, public-exposure gates, production
+hardening, and cross-repo validation. Its JSON form is meant for onboarding
+screens and management UIs before an operator chooses a profile; it does not
+read `.env`, call Docker, probe networks, or print secret values.
 
 `deployability:doctor` is the read-only deployability alignment snapshot. It
 checks the compatibility ledger, top-level scripts, documentation, brand-site

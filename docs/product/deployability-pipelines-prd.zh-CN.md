@@ -18,6 +18,8 @@ onboarding 或 release-image 路径前，先给出一个只读命令地图和一
 - `corepack pnpm --silent run deployability:quickstart -- --json`
 - `corepack pnpm run deployability:safety`
 - `corepack pnpm --silent run deployability:safety -- --json`
+- `corepack pnpm run deployability:explain`
+- `corepack pnpm --silent run deployability:explain -- --json`
 - `corepack pnpm run deployability:readiness`
 - `corepack pnpm --silent run deployability:readiness -- --json`
 - `corepack pnpm run deployability:roadmap`
@@ -92,6 +94,9 @@ onboarding 或 release-image 路径前，先给出一个只读命令地图和一
   但不执行命令
 - `deployability:safety -- --json` 输出干净的命令姿态、CI / dashboard 适用性、
   安全默认值和下一步命令 metadata，不混入终端文本或 secret 值
+- `deployability:explain -- --json` 输出只读 operator explainer，用于解释架构、
+  truth-source 边界、profile 选择、public exposure gates、production hardening
+  和跨仓验证顺序，不执行命令、不打印 secret 值
 - `deployability:readiness -- --json` 输出独立 daily-deployable scorecard，
   给人、CI 和管理 UI 使用，包含检查证据、summary counts、blockers、warnings、
   safety notes 和 next commands，而不要求调用方解析完整 dashboard 或 handoff payload

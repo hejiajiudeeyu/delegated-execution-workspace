@@ -19,6 +19,8 @@ Required commands:
 - `corepack pnpm --silent run deployability:quickstart -- --json`
 - `corepack pnpm run deployability:safety`
 - `corepack pnpm --silent run deployability:safety -- --json`
+- `corepack pnpm run deployability:explain`
+- `corepack pnpm --silent run deployability:explain -- --json`
 - `corepack pnpm run deployability:readiness`
 - `corepack pnpm --silent run deployability:readiness -- --json`
 - `corepack pnpm run deployability:roadmap`
@@ -97,6 +99,10 @@ Acceptance:
 - `deployability:safety -- --json` emits clean command posture, CI/dashboard
   suitability, safety-default, and next-command metadata without terminal prose
   or secret values
+- `deployability:explain -- --json` emits the read-only operator explainer for
+  architecture, truth-source boundaries, profile selection, public exposure
+  gates, production hardening, and cross-repo validation order without
+  executing commands or printing secret values
 - `deployability:readiness -- --json` emits the standalone daily-deployable
   scorecard for humans, CI, and management UIs, including check evidence,
   summary counts, blockers, warnings, safety notes, and next commands without

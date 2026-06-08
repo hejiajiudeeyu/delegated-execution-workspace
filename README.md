@@ -119,6 +119,8 @@ corepack pnpm run deployability:quickstart
 corepack pnpm --silent run deployability:quickstart -- --json
 corepack pnpm run deployability:safety
 corepack pnpm --silent run deployability:safety -- --json
+corepack pnpm run deployability:explain
+corepack pnpm --silent run deployability:explain -- --json
 corepack pnpm run deployability:readiness
 corepack pnpm --silent run deployability:readiness -- --json
 corepack pnpm run deployability:roadmap
@@ -309,6 +311,11 @@ Notes:
   management UI or planning review needs the PRD milestone view. It separates
   satisfied, gated, and planned work so daily deployability stays visible
   without overstating public production readiness.
+- Use `corepack pnpm --silent run deployability:explain -- --json` when an
+  operator console or onboarding surface needs a read-only architecture,
+  source-of-truth boundary, profile, gate, and validation explainer before
+  choosing a deployment path. It only projects existing metadata and does not
+  read `.env`, call Docker, probe networks, or print secret values.
 - Use `corepack pnpm --silent run deployability:status -- --json` when an
   operator console needs one compact first-glance status. It aggregates
   readiness, roadmap, and the public-stack recipe into status cards without

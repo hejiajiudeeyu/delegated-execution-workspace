@@ -130,6 +130,12 @@ CHG-2026-105:
   may print private terminal text, or gates public exposure, and supports
   `--json` without reading `.env`, calling Docker, binding ports, probing
   networks, or printing secrets
+- `deployability:explain` is available as a read-only operator explainer for
+  architecture, truth-source boundaries, profile selection, public exposure
+  gates, production hardening, and fourth-repo validation order, and supports
+  `corepack pnpm run deployability:explain` and
+  `corepack pnpm --silent run deployability:explain -- --json` without reading
+  `.env`, calling Docker, binding ports, probing networks, or printing secrets
 - `deployability:readiness` is available as a standalone daily-deployable
   scorecard for humans, CI, and management UIs, and supports
   `corepack pnpm run deployability:readiness` and

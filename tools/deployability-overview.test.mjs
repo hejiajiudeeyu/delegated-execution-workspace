@@ -69,6 +69,7 @@ assert.ok(
 assert.ok(body.next_commands.includes("corepack pnpm run selfhost:profiles"));
 assert.ok(body.next_commands.includes("corepack pnpm run deployability:quickstart"));
 assert.ok(body.next_commands.includes("corepack pnpm run deployability:safety"));
+assert.ok(body.next_commands.includes("corepack pnpm run deployability:explain"));
 assert.ok(body.next_commands.includes("corepack pnpm run deployability:readiness"));
 assert.ok(body.next_commands.includes("corepack pnpm run deployability:roadmap"));
 assert.ok(body.next_commands.includes("corepack pnpm run deployability:status"));
@@ -93,6 +94,7 @@ assert.match(text.stdout, /selfhost:backup-plan/);
 assert.match(text.stdout, /selfhost:quickstart -- --profile all-in-one/);
 assert.match(text.stdout, /corepack pnpm run selfhost:profiles/);
 assert.match(text.stdout, /corepack pnpm run deployability:readiness/);
+assert.match(text.stdout, /corepack pnpm run deployability:explain/);
 assert.match(text.stdout, /corepack pnpm run deployability:roadmap/);
 assert.match(text.stdout, /corepack pnpm run deployability:status/);
 assert.match(text.stdout, /corepack pnpm run deployability:gates/);

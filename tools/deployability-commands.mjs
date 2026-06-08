@@ -22,6 +22,7 @@ const SAFETY_DEFAULTS = [
 const NEXT_COMMANDS = [
   "corepack pnpm run deployability:quickstart",
   "corepack pnpm run deployability:safety",
+  "corepack pnpm run deployability:explain",
   "corepack pnpm run deployability:readiness",
   "corepack pnpm run deployability:status",
   "corepack pnpm run deployability:gates",

@@ -75,6 +75,7 @@ CALL ANYTHING 现在的仓库边界是正确的：
 | 可部署性总览 | 第四仓 | `corepack pnpm run deployability:overview`，以及作为全部部署/管理路径只读命令地图的 `corepack pnpm --silent run deployability:overview -- --json`，包含 all-in-one demo profile |
 | 可部署性 quickstart | 第四仓 | `corepack pnpm run deployability:quickstart`，以及作为 daily development、all-in-one demo、self-host、public-stack 和 release-review 路径只读首次使用指南的 `corepack pnpm --silent run deployability:quickstart -- --json`；daily development 会在进入更深的 profile-specific 命令前先暴露专用 profile catalog、action-plan profile selector 和 focused dashboard / handoff 示例 |
 | 可部署性安全矩阵 | 第四仓 | `corepack pnpm run deployability:safety`，以及作为部署命令 read/write/startup/network/logging 姿态说明矩阵的 `corepack pnpm --silent run deployability:safety -- --json`，包含作为 dashboard-safe read-only 命令的专用 profile catalog 和 action-plan profile selector |
+| 可部署性 operator explainer | 第四仓 | `corepack pnpm run deployability:explain`，以及作为 operator 和管理 UI 使用的只读架构、truth-source 边界、profile、gate 和跨仓验证解释面的 `corepack pnpm --silent run deployability:explain -- --json` |
 | 可部署性 readiness scorecard | 第四仓 | `corepack pnpm run deployability:readiness`，以及作为人、CI 和管理 UI 使用的独立 daily-deployable scorecard 的 `corepack pnpm --silent run deployability:readiness -- --json`；它复用 command catalog 和 doctor metadata，输出检查证据、summary counts、blockers、warnings、安全说明和下一步命令，让调用方不用解析完整 dashboard 或 handoff payload |
 | 可部署性 roadmap | 第四仓 | `corepack pnpm run deployability:roadmap`，以及作为管理 UI 和规划评审使用的只读 PRD milestone view 的 `corepack pnpm --silent run deployability:roadmap -- --json`；它把已满足、受 gate 保护、阻塞和规划中的 deployability 工作分开呈现，让 daily deployability 可见，但不夸大 public production readiness |
 | 可部署性 operator status | 第四仓 | `corepack pnpm run deployability:status`，以及作为第一屏管理界面 compact operator status 的 `corepack pnpm --silent run deployability:status -- --json`；它把 readiness、roadmap 和 public-stack recipe 聚合成 status cards、primary next commands、source health 和 safety defaults，且不执行部署命令 |
@@ -157,6 +158,9 @@ CALL ANYTHING 现在的仓库边界是正确的：
 - 可部署性安全矩阵 metadata 可以机器读取，列出命令分类、read/write/startup/network/logging
   姿态、CI / dashboard 适用性、安全说明和下一步命令，但不读取 `.env`、不调用 Docker、
   不绑定端口、不探测网络、不打印 secret 值
+- 可部署性 explainer metadata 可以机器读取，列出仓库角色、truth-source 边界、
+  daily deployability、profile selection、public exposure gates、production
+  hardening 和第四仓验证顺序，但不执行命令、不打印 secret 值
 - 可部署性 doctor metadata 可以机器读取，输出 compatibility ledger、scripts、
   文档、brand-site file alignment、brand-site deployability content smoke 和
   safety-contract 检查、blockers、warnings 和下一步命令，但不读取 `.env`、
@@ -251,7 +255,8 @@ CALL ANYTHING 现在的仓库边界是正确的：
 - fresh checkout 可以运行 `deployability:overview`、
   `deployability:overview -- --json`、`deployability:quickstart`、
   `deployability:quickstart -- --json`、`deployability:safety`、
-  `deployability:safety -- --json`、`deployability:doctor`、
+  `deployability:safety -- --json`、`deployability:explain`、
+  `deployability:explain -- --json`、`deployability:doctor`、
   `deployability:doctor -- --json`、`deployability:dashboard`、
   `deployability:dashboard -- --json`、`deployability:action-plan`、
   `deployability:action-plan -- --json`、`deployability:profiles`、

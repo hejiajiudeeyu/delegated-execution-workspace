@@ -96,6 +96,8 @@ corepack pnpm run deployability:quickstart
 corepack pnpm --silent run deployability:quickstart -- --json
 corepack pnpm run deployability:safety
 corepack pnpm --silent run deployability:safety -- --json
+corepack pnpm run deployability:explain
+corepack pnpm --silent run deployability:explain -- --json
 corepack pnpm run deployability:readiness
 corepack pnpm --silent run deployability:readiness -- --json
 corepack pnpm run deployability:roadmap
@@ -155,6 +157,11 @@ daily development、self-host platform、public-stack 公开暴露复核和 rele
 会写文件、会启动或停止服务、会调用 Docker、会探测网络，或会输出私有终端文本。
 JSON 形式适合 dashboard 消费，且不读取 `.env`、不调用 Docker、不探测网络、不打印
 secret 值。
+
+`deployability:explain` 是只读 operator explainer，用来解释架构、truth-source
+边界、profile 选择、public-exposure gates、production hardening 和跨仓验证。
+JSON 形式适合 onboarding 屏和管理 UI 在 operator 选择 profile 前使用；它不读取
+`.env`、不调用 Docker、不探测网络、不打印 secret 值。
 
 `deployability:doctor` 是只读 deployability 对齐快照。它会在 operator 进入具体
 管线诊断前检查 compatibility ledger、顶层 scripts、文档、brand-site file alignment、
