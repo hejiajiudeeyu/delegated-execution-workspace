@@ -32,7 +32,7 @@ CALL ANYTHING 现在的仓库边界是正确的：
 
 让 CALL ANYTHING 可以作为一个可管理的本地 / 自托管系统被部署：
 
-- 有一个非常明确的 quick-start 路径
+- 有一个非常明确的 quick-start 路径，也就是 one obvious quick-start path
 - 部署 profile 数量少且命名稳定
 - 能自动生成生产级本地 secrets
 - 有确定性的 health check
@@ -49,7 +49,7 @@ CALL ANYTHING 现在的仓库边界是正确的：
 
 ## 4. Readiness 定义
 
-当一个 fresh operator 能完成下面动作时，生态才算「日常可部署」：
+当一个 fresh operator 能完成下面动作时，生态才算「日常可部署」（daily-deployable）：
 
 1. 选择 profile：local agent loop、all-in-one demo、public platform、formal production stack
 2. 生成 `.env` secrets，不再手工改 placeholder

@@ -20,11 +20,11 @@ protocol/client/platform SHA 组合可用于本地跨仓开发和已认证的源
 - `repos/platform`：`5961309c6b0ca4e8df22dbb5be92ac0845bf8d25`
 - `repos/brand-site`：`46d71b8c7e0b9848229f56edf8edf0dad316b2dd`
 
-当前 bundle 为 `changes/CHG-2026-097.yaml`。
+当前 bundle 为 `changes/CHG-2026-098.yaml`。
 
 ## 当前判断
 
-CHG-2026-097 收口后，当前固定组合已经可以用于日常第四仓开发：
+CHG-2026-098 收口后，当前固定组合已经可以用于日常第四仓开发：
 
 - submodule SHA 完整性已验证
 - 边界治理已覆盖新的 platform billing data package
@@ -173,7 +173,7 @@ corepack pnpm run test:integration
 - `check:submodules`：通过
 - `check:boundaries`：通过，已把 `@delexec/billing-store` 归入
   `platform/data`
-- `check:bundles`：通过，使用 `CHG-2026-097`
+- `check:bundles`：通过，使用 `CHG-2026-098`
 - `test:contracts`：通过，platform package validation 已识别
   `@delexec/billing-store` 和 `@delexec/platform-api` dependency graph
 - `test:integration`：通过，完整 request/response 路径成功

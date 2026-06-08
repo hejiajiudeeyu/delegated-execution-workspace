@@ -31,10 +31,17 @@ const checksByKey = new Map(body.checks.map((item) => [item.key, item]));
 assert.equal(checksByKey.get("compatibility_ledger").ok, true);
 assert.equal(checksByKey.get("top_level_scripts").ok, true);
 assert.equal(checksByKey.get("documentation_alignment").ok, true);
+assert.equal(checksByKey.get("ecosystem_prd_alignment").ok, true);
 assert.equal(checksByKey.get("brand_site_alignment").ok, true);
 assert.equal(checksByKey.get("brand_site_content_smoke").ok, true);
 assert.equal(checksByKey.get("safety_contract").ok, true);
 assert.ok(checksByKey.get("documentation_alignment").evidence.includes("README.md"));
+assert.ok(checksByKey.get("ecosystem_prd_alignment").evidence.includes("docs/product/deployability-ecosystem-prd.md"));
+assert.ok(checksByKey.get("ecosystem_prd_alignment").evidence.includes("docs/product/deployability-ecosystem-prd.zh-CN.md"));
+assert.ok(checksByKey.get("ecosystem_prd_alignment").data.required_strings.includes("daily-deployable"));
+assert.ok(checksByKey.get("ecosystem_prd_alignment").data.required_strings.includes("Sub2API"));
+assert.ok(checksByKey.get("ecosystem_prd_alignment").data.required_strings.includes("CLIProxyAPI"));
+assert.ok(checksByKey.get("ecosystem_prd_alignment").data.required_strings.includes("one obvious quick-start path"));
 assert.ok(checksByKey.get("top_level_scripts").data.required_scripts.includes("test:deployability"));
 assert.ok(
   checksByKey.get("top_level_scripts").data.required_scripts.includes("test:deployability-pipeline-summaries")
@@ -58,6 +65,7 @@ assert.equal(text.status, 0, text.stderr || text.stdout);
 assert.match(text.stdout, /Deployability doctor/);
 assert.match(text.stdout, /compatibility ledger/);
 assert.match(text.stdout, /documentation alignment/);
+assert.match(text.stdout, /ecosystem PRD alignment/);
 assert.match(text.stdout, /brand-site alignment/);
 assert.match(text.stdout, /brand-site content smoke/);
 assert.match(text.stdout, /corepack pnpm run deployability:dashboard/);

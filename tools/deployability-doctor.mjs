@@ -56,6 +56,18 @@ const DOC_ALIGNMENT_FILES = [
   "docs/architecture/main-readiness.zh-CN.md"
 ];
 
+const ECOSYSTEM_PRD_FILES = [
+  "docs/product/deployability-ecosystem-prd.md",
+  "docs/product/deployability-ecosystem-prd.zh-CN.md"
+];
+
+const ECOSYSTEM_PRD_NEEDLES = [
+  "daily-deployable",
+  "Sub2API",
+  "CLIProxyAPI",
+  "one obvious quick-start path"
+];
+
 const BRAND_SITE_ALIGNMENT_FILES = [
   "repos/brand-site/scripts/deployability-content-smoke.mjs",
   "repos/brand-site/src/app/pages/Docs/DeployabilityProfiles.tsx",
@@ -357,6 +369,7 @@ function doctorData() {
     checkCompatibilityLedger(),
     checkTopLevelScripts(),
     checkFilesContain("documentation_alignment", "documentation alignment", DOC_ALIGNMENT_FILES, DOCTOR_COMMANDS),
+    checkFilesContain("ecosystem_prd_alignment", "ecosystem PRD alignment", ECOSYSTEM_PRD_FILES, ECOSYSTEM_PRD_NEEDLES),
     checkFilesContain("brand_site_alignment", "brand-site alignment", BRAND_SITE_ALIGNMENT_FILES, DOCTOR_COMMANDS),
     checkBrandSiteContentSmoke(),
     checkSafetyContract()
