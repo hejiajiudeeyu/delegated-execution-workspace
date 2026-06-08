@@ -121,6 +121,8 @@ corepack pnpm run deployability:safety
 corepack pnpm --silent run deployability:safety -- --json
 corepack pnpm run deployability:readiness
 corepack pnpm --silent run deployability:readiness -- --json
+corepack pnpm run deployability:roadmap
+corepack pnpm --silent run deployability:roadmap -- --json
 corepack pnpm run deployability:doctor
 corepack pnpm --silent run deployability:doctor -- --json
 corepack pnpm run deployability:dashboard
@@ -299,6 +301,10 @@ Notes:
   startup path, doctor path, runtime inspection, boundary understanding, and
   brand-site story evidence without reading `.env`, calling Docker, probing
   networks, or printing secret values.
+- Use `corepack pnpm --silent run deployability:roadmap -- --json` when a
+  management UI or planning review needs the PRD milestone view. It separates
+  satisfied, gated, and planned work so daily deployability stays visible
+  without overstating public production readiness.
 - Use `corepack pnpm --silent run deployability:menu -- --profile public-stack --json`
   when a management UI needs one public-stack first screen. The focused menu
   includes `selected_onboarding_plan` from the read-only

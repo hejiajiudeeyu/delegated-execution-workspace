@@ -73,6 +73,7 @@ The ecosystem is "daily-deployable" when a fresh operator can:
 | Deployability quickstart | fourth repo | `corepack pnpm run deployability:quickstart`, plus `corepack pnpm --silent run deployability:quickstart -- --json` as the read-only first-use guide for daily development, all-in-one demo, self-host, public-stack, and release-review paths; daily development includes the dedicated profile catalog, action-plan profile selector, and focused dashboard/handoff examples before operators choose deeper profile-specific commands |
 | Deployability safety matrix | fourth repo | `corepack pnpm run deployability:safety`, plus `corepack pnpm --silent run deployability:safety -- --json` as the descriptive read/write/startup/network/logging posture map for deployment commands, including the dedicated profile catalog and action-plan profile selector as dashboard-safe read-only commands |
 | Deployability readiness scorecard | fourth repo | `corepack pnpm run deployability:readiness`, plus `corepack pnpm --silent run deployability:readiness -- --json` as the standalone daily-deployable scorecard for humans, CI, and management UIs; it reuses command-catalog and doctor metadata to report check evidence, summary counts, blockers, warnings, safety notes, and next commands without requiring consumers to parse the full dashboard or handoff payload |
+| Deployability roadmap | fourth repo | `corepack pnpm run deployability:roadmap`, plus `corepack pnpm --silent run deployability:roadmap -- --json` as the read-only PRD milestone view for management UIs and planning reviews; it separates satisfied, gated, blocked, and planned deployability work so daily deployability remains visible without overstating public production readiness |
 | Deployability doctor | fourth repo | `corepack pnpm run deployability:doctor`, plus `corepack pnpm --silent run deployability:doctor -- --json` as the read-only readiness snapshot for compatibility ledger, top-level scripts, docs, brand-site, and safety-contract alignment |
 | Deployability dashboard | fourth repo | `corepack pnpm run deployability:dashboard`, plus `corepack pnpm --silent run deployability:dashboard -- --json` as the single read-only aggregate payload for top-level dashboards and CI, combining overview, quickstart, safety, doctor, compatibility, top-level `profile_selector`, derived `profile_summaries` with shared `attention` metadata, top-level `recommended_profile_keys`, ecosystem_readiness, and per-pipeline summary sections; `--profile <key-or-alias>` emits a focused dashboard payload with `profile_filter`, filtered command catalog, one owning pipeline summary, and one profile summary while keeping ecosystem_readiness global |
 | Deployability action plan | fourth repo | `corepack pnpm run deployability:action-plan`, plus `corepack pnpm --silent run deployability:action-plan -- --json` as the read-only operator next-action selector that combines dashboard readiness and command catalog posture into profile-level recommended commands, dashboard-safe commands, public-exposure gates, service-touching command lists, profile `attention` metadata, and top-level `recommended_profile_keys`; `--list-profiles` / `--profiles` prints the read-only profile selector directory with keys, aliases, pipeline keys, and purposes without calling dashboard/catalog metadata; `--profile <key-or-alias>` narrows the output to one operator target and reports unknown profiles as blockers |
@@ -261,6 +262,10 @@ Required baseline:
   bundle, submodule SHAs, ledger matches, dirty submodules, blockers, warnings,
   and next commands without reading `.env`, calling Docker, probing networks, or
   printing secrets
+- machine-readable deployability roadmap metadata that reports PRD milestones,
+  satisfied/gated/blocked/planned status, evidence commands, PRD sources,
+  remaining work, source status, and next commands without reading `.env`,
+  calling Docker, binding ports, probing networks, or printing secrets
 - machine-readable deployability handoff metadata, paired with a non-secret
   Markdown report, that combines current bundle, compatibility warnings,
   command map, profile selector, ecosystem_readiness, shared per-pipeline
@@ -278,7 +283,8 @@ Required baseline:
   `deployability:overview -- --json`, `deployability:quickstart`,
   `deployability:quickstart -- --json`, `deployability:safety`,
   `deployability:safety -- --json`, `deployability:readiness`,
-  `deployability:readiness -- --json`, `deployability:doctor`,
+  `deployability:readiness -- --json`, `deployability:roadmap`,
+  `deployability:roadmap -- --json`, `deployability:doctor`,
   `deployability:doctor -- --json`, `deployability:dashboard`,
   `deployability:dashboard -- --json`, `deployability:action-plan`,
   `deployability:action-plan -- --json`, `deployability:profiles`,

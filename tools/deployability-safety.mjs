@@ -70,6 +70,23 @@ const MATRIX = [
     notes: "read-only standalone daily-deployable scorecard for humans, CI, and management UIs"
   },
   {
+    command: "corepack pnpm run deployability:roadmap",
+    json_command: "corepack pnpm --silent run deployability:roadmap -- --json",
+    category: "top_level",
+    posture: "read_only",
+    reads_env: false,
+    writes_files: false,
+    starts_services: false,
+    stops_services: false,
+    calls_docker: false,
+    probes_network: false,
+    private_terminal_text: false,
+    public_exposure_gate: false,
+    ci_safe: true,
+    dashboard_safe: true,
+    notes: "read-only PRD milestone roadmap for management UIs and operator planning"
+  },
+  {
     command: "corepack pnpm run deployability:doctor",
     json_command: "corepack pnpm --silent run deployability:doctor -- --json",
     category: "top_level",

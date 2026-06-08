@@ -21,6 +21,8 @@ Required commands:
 - `corepack pnpm --silent run deployability:safety -- --json`
 - `corepack pnpm run deployability:readiness`
 - `corepack pnpm --silent run deployability:readiness -- --json`
+- `corepack pnpm run deployability:roadmap`
+- `corepack pnpm --silent run deployability:roadmap -- --json`
 - `corepack pnpm run deployability:doctor`
 - `corepack pnpm --silent run deployability:doctor -- --json`
 - `corepack pnpm run deployability:dashboard`
@@ -54,6 +56,7 @@ Required commands:
 - `corepack pnpm run test:deployability-overview`
 - `corepack pnpm run test:deployability-quickstart`
 - `corepack pnpm run test:deployability-safety`
+- `corepack pnpm run test:deployability-roadmap`
 - `corepack pnpm run test:deployability-doctor`
 - `corepack pnpm run test:deployability-dashboard`
 - `corepack pnpm run test:deployability-action-plan`
@@ -94,6 +97,11 @@ Acceptance:
   scorecard for humans, CI, and management UIs, including check evidence,
   summary counts, blockers, warnings, safety notes, and next commands without
   requiring consumers to parse the full dashboard or handoff payload
+- `deployability:roadmap -- --json` emits the read-only PRD milestone view for
+  management UIs and planning reviews, including satisfied, gated, blocked, and
+  planned milestones, PRD sources, evidence commands, remaining work, source
+  status, and next commands without reading `.env`, calling Docker, binding
+  ports, probing networks, or printing secret values
 - doctor reports compatibility ledger, top-level scripts, documentation,
   brand-site file alignment, brand-site deployability content smoke, and
   safety-contract alignment as one read-only snapshot without executing Docker,
@@ -147,7 +155,7 @@ Acceptance:
   dashboard-safe counts, CI-safe counts, public exposure gate counts, next
   commands, and safety notes
 - `test:deployability` runs the top-level deployability regression suite as one
-  command, covering overview, quickstart, safety, doctor, dashboard,
+  command, covering overview, quickstart, safety, readiness, roadmap, doctor, dashboard,
   profile catalog, pipeline-summary consistency, command catalog, handoff, and
   compatibility status tests
 - `test:deployability-operations` runs the operator-facing deployment and
