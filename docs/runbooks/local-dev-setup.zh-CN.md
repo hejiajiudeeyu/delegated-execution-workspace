@@ -102,6 +102,8 @@ corepack pnpm run deployability:dashboard
 corepack pnpm --silent run deployability:dashboard -- --json
 corepack pnpm run deployability:action-plan
 corepack pnpm --silent run deployability:action-plan -- --json
+corepack pnpm run deployability:action-plan -- --list-profiles
+corepack pnpm --silent run deployability:action-plan -- --list-profiles --json
 corepack pnpm run deployability:action-plan -- --profile public-stack
 corepack pnpm --silent run deployability:action-plan -- --profile public-stack --json
 corepack pnpm run deployability:commands
@@ -153,6 +155,9 @@ dashboard 和命令目录合成 profile 级 recommended commands、dashboard-saf
 commands、public-exposure gates、service-touching commands、safety notes 和
 next JSON commands，同时不读取 `.env`、不调用 Docker、不绑定端口、不探测网络、
 不打印 secrets。
+当 operator 或 dashboard 需要先获得支持的 profile keys、aliases、pipeline keys
+和 purposes 时，可以先用 `--list-profiles` 或 `--profiles`，该模式不会调用
+dashboard 或 command catalog。
 当 operator 只需要某一条路径时，可以用 `--profile public-stack` 或其他 profile
 key / alias 聚焦输出。JSON 形式会包含 `profile_filter`，未知 profile 会以 blocker
 返回。

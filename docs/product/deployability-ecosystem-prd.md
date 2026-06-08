@@ -74,7 +74,7 @@ The ecosystem is "daily-deployable" when a fresh operator can:
 | Deployability safety matrix | fourth repo | `corepack pnpm run deployability:safety`, plus `corepack pnpm --silent run deployability:safety -- --json` as the descriptive read/write/startup/network/logging posture map for deployment commands |
 | Deployability doctor | fourth repo | `corepack pnpm run deployability:doctor`, plus `corepack pnpm --silent run deployability:doctor -- --json` as the read-only readiness snapshot for compatibility ledger, top-level scripts, docs, brand-site, and safety-contract alignment |
 | Deployability dashboard | fourth repo | `corepack pnpm run deployability:dashboard`, plus `corepack pnpm --silent run deployability:dashboard -- --json` as the single read-only aggregate payload for top-level dashboards and CI, combining overview, quickstart, safety, doctor, compatibility, ecosystem_readiness, and per-pipeline summary sections |
-| Deployability action plan | fourth repo | `corepack pnpm run deployability:action-plan`, plus `corepack pnpm --silent run deployability:action-plan -- --json` as the read-only operator next-action selector that combines dashboard readiness and command catalog posture into profile-level recommended commands, dashboard-safe commands, public-exposure gates, and service-touching command lists; `--profile <key-or-alias>` narrows the output to one operator target and reports unknown profiles as blockers |
+| Deployability action plan | fourth repo | `corepack pnpm run deployability:action-plan`, plus `corepack pnpm --silent run deployability:action-plan -- --json` as the read-only operator next-action selector that combines dashboard readiness and command catalog posture into profile-level recommended commands, dashboard-safe commands, public-exposure gates, and service-touching command lists; `--list-profiles` / `--profiles` prints the read-only profile selector directory with keys, aliases, pipeline keys, and purposes without calling dashboard/catalog metadata; `--profile <key-or-alias>` narrows the output to one operator target and reports unknown profiles as blockers |
 | Deployability commands catalog | fourth repo | `corepack pnpm run deployability:commands`, plus `corepack pnpm --silent run deployability:commands -- --json` as the read-only searchable command catalog with category, posture, first-use track, pipeline filters, inherited safety posture for profile-specific command variants, and no `unmapped` category/posture values for ready-now command paths |
 | Deployability recovery evidence path | fourth repo | `deployability:overview`, `deployability:dashboard`, `deployability:handoff`, and `deployability:commands -- --pipeline recovery_evidence` expose ops-report, audit export, backup, restore, and rotation commands as one ready-now evidence and recovery pipeline |
 | Deployability handoff | fourth repo | `corepack pnpm run deployability:handoff`, plus `corepack pnpm --silent run deployability:handoff -- --json` for a non-secret ecosystem handoff report under `exports/deployability/`, including the same ecosystem_readiness scorecard used by the dashboard |
@@ -171,6 +171,10 @@ Required baseline:
   dashboard-safe commands, public-exposure gate commands, service-touching
   commands, safety notes, and next JSON commands without reading `.env`,
   calling Docker, binding ports, probing networks, or printing secrets
+- machine-readable deployability action-plan profile-list metadata that exposes
+  the supported profile keys, aliases, pipeline keys, and purposes without
+  calling dashboard/catalog metadata, reading `.env`, calling Docker, binding
+  ports, probing networks, or printing secrets
 - machine-readable ecosystem_readiness metadata that turns the daily-deployable
   definition into a dashboard and handoff scorecard for profile choice,
   generated secrets, startup path, doctor path, runtime inspection, boundary
@@ -217,6 +221,8 @@ Required baseline:
   `deployability:dashboard -- --json`, `deployability:action-plan`,
   `deployability:action-plan -- --json`, `deployability:commands`,
   `deployability:action-plan -- --profile public-stack`,
+  `deployability:action-plan -- --list-profiles`,
+  `deployability:action-plan -- --list-profiles --json`,
   `deployability:action-plan -- --profile public-stack --json`,
   `deployability:commands -- --json`, `compat:status`,
   `compat:status -- --json`, `deployability:handoff`,

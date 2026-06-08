@@ -25,6 +25,8 @@ Required commands:
 - `corepack pnpm --silent run deployability:dashboard -- --json`
 - `corepack pnpm run deployability:action-plan`
 - `corepack pnpm --silent run deployability:action-plan -- --json`
+- `corepack pnpm run deployability:action-plan -- --list-profiles`
+- `corepack pnpm --silent run deployability:action-plan -- --list-profiles --json`
 - `corepack pnpm run deployability:action-plan -- --profile public-stack`
 - `corepack pnpm --silent run deployability:action-plan -- --profile public-stack --json`
 - `corepack pnpm run deployability:commands`
@@ -86,6 +88,11 @@ Acceptance:
   schema narrowed to `public_stack`, includes `profile_filter`, and keeps
   unknown profile names as clean blockers rather than falling back to all
   profiles
+- `deployability:action-plan -- --list-profiles --json` emits a clean
+  `profile_list` payload with supported keys, aliases, pipeline keys, purposes,
+  safety defaults, and next profile commands without calling dashboard/catalog
+  metadata, reading `.env`, calling Docker, binding ports, probing networks, or
+  printing secret values
 - the dashboard and handoff ecosystem_readiness scorecard maps the daily-deployable
   definition to profile choice, generated secrets, startup path, doctor path,
   runtime inspection, boundary understanding, and brand-site story; when all

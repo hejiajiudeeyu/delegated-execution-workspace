@@ -150,6 +150,10 @@ CHG-2026-105:
   commands, safety notes, and JSON entry points, and supports
   `corepack pnpm run deployability:action-plan` and
   `corepack pnpm --silent run deployability:action-plan -- --json`; operators
+  and dashboards can list supported profile keys, aliases, pipeline keys, and
+  purposes with
+  `corepack pnpm --silent run deployability:action-plan -- --list-profiles --json`
+  without calling dashboard/catalog metadata; operators
   can focus the same schema with
   `corepack pnpm --silent run deployability:action-plan -- --profile public-stack --json`,
   which emits `profile_filter` and reports unknown profile names as blockers
@@ -248,6 +252,9 @@ Observed results:
   recommended commands, dashboard-safe commands, public-exposure gates,
   service-touching commands, safety notes, and next JSON commands without
   terminal prose or secret values
+- `deployability:action-plan -- --list-profiles --json`: passed, reporting
+  supported profile keys, aliases, pipeline keys, purposes, and next profile
+  commands without calling dashboard/catalog metadata or printing secret values
 - `deployability:action-plan -- --profile public-stack --json`: passed,
   reporting only `public_stack`, `profile_filter`, and public-stack exposure
   gate commands, while unknown profile names return blockers without secret

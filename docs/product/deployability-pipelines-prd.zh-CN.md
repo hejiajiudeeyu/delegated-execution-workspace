@@ -24,6 +24,8 @@ onboarding 或 release-image 路径前，先给出一个只读命令地图和一
 - `corepack pnpm --silent run deployability:dashboard -- --json`
 - `corepack pnpm run deployability:action-plan`
 - `corepack pnpm --silent run deployability:action-plan -- --json`
+- `corepack pnpm run deployability:action-plan -- --list-profiles`
+- `corepack pnpm --silent run deployability:action-plan -- --list-profiles --json`
 - `corepack pnpm run deployability:action-plan -- --profile public-stack`
 - `corepack pnpm --silent run deployability:action-plan -- --profile public-stack --json`
 - `corepack pnpm run deployability:commands`
@@ -78,6 +80,10 @@ onboarding 或 release-image 路径前，先给出一个只读命令地图和一
 - `deployability:action-plan -- --profile public-stack --json` 会以同一 schema
   聚焦到 `public_stack`，包含 `profile_filter`，并把未知 profile 名称作为干净
   blockers 返回，而不是回退为全部 profiles
+- `deployability:action-plan -- --list-profiles --json` 输出干净的
+  `profile_list` payload，包含支持的 keys、aliases、pipeline keys、purposes、
+  safety defaults 和下一步 profile 命令；该模式不调用 dashboard/catalog
+  metadata、不读取 `.env`、不调用 Docker、不绑定端口、不探测网络、不打印 secret 值
 - dashboard 和 handoff 的 ecosystem_readiness scorecard 把 daily-deployable 定义映射为
   profile choice、generated secrets、startup path、doctor path、runtime inspection、
   boundary understanding 和 brand-site story；全部通过时报告

@@ -42,7 +42,7 @@ assert.equal(json.status, 0, json.stderr || json.stdout);
 const body = JSON.parse(json.stdout);
 assert.equal(body.command, "deployability:action-plan");
 assert.equal(body.ok, true);
-assert.equal(body.current_bundle.change_id, "CHG-2026-105");
+assert.equal(body.current_bundle.change_id, "CHG-2026-106");
 assert.equal(body.ecosystem_readiness.status, "daily_deployable_with_safety_gates");
 assert.deepEqual(
   body.profiles.map((item) => item.key),
@@ -98,11 +98,61 @@ assert.deepEqual(unknownProfileBody.profiles, []);
 assert.ok(unknownProfileBody.blockers.some((item) => /unknown profile/i.test(item)));
 assert.ok(!unknownProfile.stdout.includes("sk_action_plan_must_not_leak"));
 
+const profileList = run(["--json", "--list-profiles"]);
+assert.equal(profileList.status, 0, profileList.stderr || profileList.stdout);
+const profileListBody = JSON.parse(profileList.stdout);
+assert.equal(profileListBody.command, "deployability:action-plan");
+assert.equal(profileListBody.ok, true);
+assert.equal(profileListBody.mode, "profile_list");
+assert.equal(profileListBody.profile_filter.requested, null);
+assert.equal(profileListBody.profile_filter.resolved, null);
+assert.deepEqual(
+  profileListBody.profiles.map((item) => item.key),
+  [
+    "daily_dev",
+    "all_in_one_demo",
+    "selfhost_platform",
+    "public_stack",
+    "recovery_evidence",
+    "operator_onboarding",
+    "published_image"
+  ]
+);
+const publicStackProfile = profileListBody.profiles.find((item) => item.key === "public_stack");
+assert.ok(publicStackProfile.aliases.includes("public-stack"));
+assert.equal(publicStackProfile.pipeline_key, "public_stack");
+assert.match(publicStackProfile.purpose, /public exposure/i);
+assert.ok(profileListBody.next_commands.includes("corepack pnpm run deployability:action-plan -- --profile public-stack"));
+assert.deepEqual(profileListBody.source_status, {});
+assert.ok(!profileList.stdout.includes("sk_action_plan_must_not_leak"));
+
+const profileListText = run(["--profiles"]);
+assert.equal(profileListText.status, 0, profileListText.stderr || profileListText.stdout);
+assert.match(profileListText.stdout, /Available deployability profiles/);
+assert.match(profileListText.stdout, /public_stack/);
+assert.match(profileListText.stdout, /aliases: public-stack, public_stack/);
+assert.ok(!profileListText.stdout.includes("sk_action_plan_must_not_leak"));
+
 assert.ok(body.next_commands.includes("corepack pnpm run deployability:dashboard"));
 assert.ok(body.next_commands.includes("corepack pnpm run deployability:handoff"));
 assert.ok(body.safety_defaults.some((item) => /does not read \.env/i.test(item)));
 assert.ok(!json.stdout.includes("[ok]"));
 assert.ok(!json.stdout.includes("sk_action_plan_must_not_leak"));
+
+const pipedJson = spawnSync(process.execPath, [SCRIPT, "--json"], {
+  cwd: REPO_ROOT,
+  encoding: "utf8",
+  maxBuffer: 20 * 1024 * 1024,
+  env: {
+    ...process.env,
+    PLATFORM_ADMIN_API_KEY: "sk_action_plan_must_not_leak"
+  }
+});
+assert.equal(pipedJson.status, 0, pipedJson.stderr || pipedJson.stdout);
+const pipedBody = JSON.parse(pipedJson.stdout);
+assert.equal(pipedBody.command, "deployability:action-plan");
+assert.equal(pipedBody.current_bundle.change_id, "CHG-2026-106");
+assert.ok(!pipedJson.stdout.includes("sk_action_plan_must_not_leak"));
 
 const text = run([]);
 assert.equal(text.status, 0, text.stderr || text.stdout);

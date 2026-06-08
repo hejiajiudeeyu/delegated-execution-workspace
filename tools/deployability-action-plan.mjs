@@ -79,6 +79,7 @@ function parseArgs(argv) {
   const profileIndex = args.indexOf("--profile");
   return {
     json: args.includes("--json"),
+    listProfiles: args.includes("--list-profiles") || args.includes("--profiles"),
     profile: profileIndex === -1 ? null : args[profileIndex + 1] || ""
   };
 }
@@ -147,6 +148,43 @@ function commandNames(commands) {
   return unique(commands.map((item) => item.command));
 }
 
+function profileDirectory() {
+  return PROFILE_PIPELINES.map((profile) => ({
+    key: profile.key,
+    aliases: profile.aliases,
+    label: profile.label,
+    pipeline_key: profile.pipeline_key,
+    purpose: profile.purpose
+  }));
+}
+
+function profileListData() {
+  return {
+    command: "deployability:action-plan",
+    mode: "profile_list",
+    ok: true,
+    current_bundle: null,
+    ecosystem_readiness: null,
+    profile_filter: {
+      requested: null,
+      resolved: null
+    },
+    source_status: {},
+    profiles: profileDirectory(),
+    blockers: [],
+    warnings: [],
+    safety_defaults: SAFETY_DEFAULTS,
+    next_commands: [
+      ...PROFILE_PIPELINES.map((profile) => `corepack pnpm run deployability:action-plan -- --profile ${profile.aliases[0]}`),
+      "corepack pnpm --silent run deployability:action-plan -- --list-profiles --json"
+    ],
+    notes: [
+      "profile list mode is read-only and does not call dashboard, command catalog, Docker, or network endpoints",
+      "use --profile <key-or-alias> to focus the full operator action plan on one target"
+    ]
+  };
+}
+
 function buildProfiles({ dashboard, commandCatalog, profileFilter }) {
   const profiles = profileFilter.resolved
     ? PROFILE_PIPELINES.filter((profile) => profile.key === profileFilter.resolved)
@@ -188,6 +226,8 @@ function buildProfiles({ dashboard, commandCatalog, profileFilter }) {
 }
 
 function actionPlanData(args) {
+  if (args.listProfiles) return profileListData();
+
   const profileFilter = resolveProfileFilter(args.profile);
   const dashboardResult = runJsonScript("tools/deployability-dashboard.mjs");
   const commandCatalogResult = runJsonScript("tools/deployability-commands.mjs");
@@ -248,6 +288,21 @@ function printJson(data) {
 }
 
 function printText(data) {
+  if (data.mode === "profile_list") {
+    console.log("Available deployability profiles");
+    console.log("===============================");
+    console.log("Read-only profile directory for deployability action plans.\n");
+    for (const profile of data.profiles) {
+      console.log(`- ${profile.key}: ${profile.label}`);
+      console.log(`  aliases: ${profile.aliases.join(", ")}`);
+      console.log(`  pipeline: ${profile.pipeline_key}`);
+      console.log(`  purpose: ${profile.purpose}`);
+    }
+    console.log("\nNext commands:");
+    for (const command of data.next_commands) console.log(`- ${command}`);
+    return;
+  }
+
   console.log("Deployability action plan");
   console.log("=========================");
   console.log("Read-only operator action plan for choosing the next deployability command.\n");
@@ -292,4 +347,4 @@ if (args.json) {
 } else {
   printText(data);
 }
-process.exit(data.ok ? 0 : 1);
+process.exitCode = data.ok ? 0 : 1;

@@ -123,6 +123,8 @@ corepack pnpm run deployability:dashboard
 corepack pnpm --silent run deployability:dashboard -- --json
 corepack pnpm run deployability:action-plan
 corepack pnpm --silent run deployability:action-plan -- --json
+corepack pnpm run deployability:action-plan -- --list-profiles
+corepack pnpm --silent run deployability:action-plan -- --list-profiles --json
 corepack pnpm run deployability:action-plan -- --profile public-stack
 corepack pnpm --silent run deployability:action-plan -- --profile public-stack --json
 corepack pnpm run deployability:commands
@@ -180,6 +182,9 @@ combines the dashboard and command catalog into profile-level recommended
 commands, dashboard-safe commands, public-exposure gates, service-touching
 commands, safety notes, and next JSON commands without reading `.env`, calling
 Docker, binding ports, probing the network, or printing secrets.
+Use `--list-profiles` or `--profiles` first when an operator or dashboard
+needs the supported profile keys, aliases, pipeline keys, and purposes without
+calling the dashboard or command catalog.
 Use `--profile public-stack` or another profile key/alias when an operator
 needs only one focused next-action list. The JSON form includes
 `profile_filter` and returns a blocker for unknown profile names.

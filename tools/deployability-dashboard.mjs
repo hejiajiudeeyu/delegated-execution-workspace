@@ -197,4 +197,4 @@ if (args.json) {
 } else {
   printText(data);
 }
-process.exit(data.ok ? 0 : 1);
+process.exitCode = data.ok ? 0 : 1;
