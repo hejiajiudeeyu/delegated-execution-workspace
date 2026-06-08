@@ -148,8 +148,9 @@ CALL ANYTHING 现在的仓库边界是正确的：
   姿态、CI / dashboard 适用性、安全说明和下一步命令，但不读取 `.env`、不调用 Docker、
   不绑定端口、不探测网络、不打印 secret 值
 - 可部署性 doctor metadata 可以机器读取，输出 compatibility ledger、scripts、
-  文档、brand-site 和 safety-contract 检查、blockers、warnings 和下一步命令，
-  但不读取 `.env`、不调用 Docker、不绑定端口、不探测网络、不打印 secret 值
+  文档、brand-site file alignment、brand-site deployability content smoke 和
+  safety-contract 检查、blockers、warnings 和下一步命令，但不读取 `.env`、
+  不调用 Docker、不绑定端口、不探测网络、不打印 secret 值
 - 兼容状态 metadata 可以机器读取，输出当前 bundle、submodule SHAs、ledger matches、
   dirty submodules、blockers、warnings 和下一步命令，但不读取 `.env`、不调用 Docker、
   不探测网络、不打印 secret 值

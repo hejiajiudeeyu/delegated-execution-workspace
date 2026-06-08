@@ -52,9 +52,9 @@ onboarding 或 release-image 路径前，先给出一个只读命令地图和一
   但不执行命令
 - `deployability:safety -- --json` 输出干净的命令姿态、CI / dashboard 适用性、
   安全默认值和下一步命令 metadata，不混入终端文本或 secret 值
-- doctor 把 compatibility ledger、顶层 scripts、文档、brand-site 和
-  safety-contract 对齐状态收成一个只读快照，不执行 Docker、不读取 `.env`、
-  不探测网络、不打印 secrets
+- doctor 把 compatibility ledger、顶层 scripts、文档、brand-site file alignment、
+  brand-site deployability content smoke 和 safety-contract 对齐状态收成一个只读快照，
+  不执行 Docker、不读取 `.env`、不探测网络、不打印 secrets
 - `deployability:doctor -- --json` 输出干净的 checks、blockers、warnings、
   evidence、安全默认值和下一步命令 metadata，不混入终端文本或 secret 值
 - `deployability:dashboard -- --json` 输出一个干净的顶层 payload，包含

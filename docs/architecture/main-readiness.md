@@ -132,7 +132,8 @@ CHG-2026-097:
   networks, or printing secrets
 - `deployability:doctor` is available as a read-only deployability readiness
   snapshot for compatibility ledger, top-level scripts, documentation,
-  brand-site, and safety-contract alignment, and supports
+  brand-site file alignment, brand-site deployability content smoke, and
+  safety-contract alignment, and supports
   `corepack pnpm --silent run deployability:doctor -- --json` without reading
   `.env`, calling Docker, binding ports, probing networks, or printing secrets
 - `deployability:dashboard` is available as a read-only aggregate payload for
@@ -221,9 +222,9 @@ Observed results:
   dashboard-safe posture for deployability, selfhost, dev, and release commands
   without terminal prose or secret values
 - `deployability:doctor -- --json`: passed, reporting compatibility ledger,
-  top-level scripts, documentation, brand-site, and safety-contract checks,
-  warnings, blockers, evidence, safety defaults, and next commands without
-  terminal prose or secret values
+  top-level scripts, documentation, brand-site file alignment, brand-site
+  content smoke, and safety-contract checks, warnings, blockers, evidence,
+  safety defaults, and next commands without terminal prose or secret values
 - `deployability:dashboard -- --json`: passed, reporting overview, quickstart,
   safety, doctor, and compatibility sections, section status, blockers,
   warnings, per-pipeline summaries, safety defaults, and next commands without

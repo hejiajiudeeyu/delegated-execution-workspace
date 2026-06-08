@@ -57,8 +57,9 @@ Acceptance:
   suitability, safety-default, and next-command metadata without terminal prose
   or secret values
 - doctor reports compatibility ledger, top-level scripts, documentation,
-  brand-site, and safety-contract alignment as one read-only snapshot without
-  executing Docker, reading `.env`, probing networks, or printing secrets
+  brand-site file alignment, brand-site deployability content smoke, and
+  safety-contract alignment as one read-only snapshot without executing Docker,
+  reading `.env`, probing networks, or printing secrets
 - `deployability:doctor -- --json` emits clean check, blocker, warning,
   evidence, safety-default, and next-command metadata without terminal prose or
   secret values

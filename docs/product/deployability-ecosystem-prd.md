@@ -156,9 +156,10 @@ Required baseline:
   notes, and next commands without reading `.env`, calling Docker, binding
   ports, probing networks, or printing secrets
 - machine-readable deployability doctor metadata that reports compatibility
-  ledger, script, documentation, brand-site, and safety-contract checks,
-  blockers, warnings, and next commands without reading `.env`, calling Docker,
-  binding ports, probing networks, or printing secrets
+  ledger, script, documentation, brand-site file alignment, brand-site
+  deployability content smoke, and safety-contract checks, blockers, warnings,
+  and next commands without reading `.env`, calling Docker, binding ports,
+  probing networks, or printing secrets
 - machine-readable deployability dashboard metadata that aggregates overview,
   quickstart, safety, doctor, compatibility, and per-pipeline summary JSON
   sections as one top-level payload without reading `.env`, calling Docker,

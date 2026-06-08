@@ -59,6 +59,8 @@ const BRAND_SITE_ALIGNMENT_FILES = [
   "repos/brand-site/src/app/pages/en/Docs/DeployabilityProfiles.tsx"
 ];
 
+const BRAND_SITE_CONTENT_SMOKE_COMMAND = "npm run smoke:deployability-content";
+
 const SAFETY_DEFAULTS = [
   "deployability doctor is read-only and does not read .env files",
   "deployability doctor does not call Docker, bind ports, or probe network endpoints",
@@ -296,12 +298,62 @@ function checkSafetyContract() {
   };
 }
 
+function checkBrandSiteContentSmoke() {
+  const cwd = path.join(ROOT, "repos/brand-site");
+  if (!fs.existsSync(path.join(cwd, "package.json"))) {
+    return {
+      key: "brand_site_content_smoke",
+      label: "brand-site content smoke",
+      ok: false,
+      blockers: ["repos/brand-site/package.json: missing"],
+      warnings: [],
+      evidence: [],
+      data: {
+        command: BRAND_SITE_CONTENT_SMOKE_COMMAND,
+        exit_code: null,
+        stderr: []
+      }
+    };
+  }
+
+  const result = spawnSync("npm", ["run", "smoke:deployability-content"], {
+    cwd,
+    encoding: "utf8",
+    maxBuffer: 1024 * 1024 * 10,
+    env: process.env
+  });
+  const stderr = result.stderr.trim().split("\n").filter(Boolean).slice(-20);
+  const blockers =
+    result.status === 0
+      ? []
+      : [
+          `repos/brand-site: ${BRAND_SITE_CONTENT_SMOKE_COMMAND} failed with exit ${
+            result.status ?? "unknown"
+          }`
+        ];
+
+  return {
+    key: "brand_site_content_smoke",
+    label: "brand-site content smoke",
+    ok: blockers.length === 0,
+    blockers,
+    warnings: [],
+    evidence: blockers.length === 0 ? [BRAND_SITE_CONTENT_SMOKE_COMMAND] : [],
+    data: {
+      command: BRAND_SITE_CONTENT_SMOKE_COMMAND,
+      exit_code: result.status,
+      stderr
+    }
+  };
+}
+
 function doctorData() {
   const checks = [
     checkCompatibilityLedger(),
     checkTopLevelScripts(),
     checkFilesContain("documentation_alignment", "documentation alignment", DOC_ALIGNMENT_FILES, DOCTOR_COMMANDS),
     checkFilesContain("brand_site_alignment", "brand-site alignment", BRAND_SITE_ALIGNMENT_FILES, DOCTOR_COMMANDS),
+    checkBrandSiteContentSmoke(),
     checkSafetyContract()
   ];
   const blockers = checks.flatMap((check) => check.blockers);

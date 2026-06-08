@@ -153,11 +153,11 @@ safe for dashboards and does not read `.env`, call Docker, probe networks, or
 print secret values.
 
 `deployability:doctor` is the read-only deployability alignment snapshot. It
-checks the compatibility ledger, top-level scripts, documentation, brand-site,
-and safety contract before an operator continues to pipeline-specific
-diagnostics. Its JSON form reports checks, blockers, warnings, evidence, and
-next commands without reading `.env`, calling Docker, probing networks, or
-printing secret values.
+checks the compatibility ledger, top-level scripts, documentation, brand-site
+file alignment, brand-site deployability content smoke, and safety contract
+before an operator continues to pipeline-specific diagnostics. Its JSON form
+reports checks, blockers, warnings, evidence, and next commands without reading
+`.env`, calling Docker, probing networks, or printing secret values.
 
 `deployability:dashboard` is the read-only aggregate payload for dashboards and
 CI. It combines overview, quickstart, safety, doctor, and compatibility JSON
