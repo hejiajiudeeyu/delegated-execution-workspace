@@ -168,6 +168,13 @@ CHG-2026-105:
   `.env`, calling Docker, binding ports, probing networks, or printing secrets;
   it projects roadmap, command catalog, and status metadata into management
   gate cards without executing the underlying gate commands
+- `deployability:exposure` is available as a non-destructive public-stack
+  exposure blocker snapshot, and supports
+  `corepack pnpm run deployability:exposure` and
+  `corepack pnpm --silent run deployability:exposure -- --json`; it runs the
+  existing public-stack security review, calls Docker only for compose config,
+  does not start services or bind ports, and reports public exposure findings
+  under `exposure_blockers`
 - `deployability:doctor` is available as a read-only deployability readiness
   snapshot for compatibility ledger, top-level scripts, documentation,
   brand-site file alignment, brand-site deployability content smoke, and

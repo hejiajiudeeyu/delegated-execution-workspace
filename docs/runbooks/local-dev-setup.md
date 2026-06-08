@@ -129,6 +129,8 @@ corepack pnpm run deployability:status
 corepack pnpm --silent run deployability:status -- --json
 corepack pnpm run deployability:gates
 corepack pnpm --silent run deployability:gates -- --json
+corepack pnpm run deployability:exposure
+corepack pnpm --silent run deployability:exposure -- --json
 corepack pnpm run deployability:doctor
 corepack pnpm --silent run deployability:doctor -- --json
 corepack pnpm run deployability:dashboard
@@ -226,6 +228,14 @@ exposure and production hardening. Use
 `corepack pnpm --silent run deployability:gates -- --json` when a dashboard
 needs to show what must pass before opening edge routes or claiming production
 readiness without running the gate commands.
+
+`deployability:exposure` is the non-destructive public-stack exposure blocker
+snapshot. Use `corepack pnpm run deployability:exposure` or
+`corepack pnpm --silent run deployability:exposure -- --json` when a dashboard
+needs the actual public exposure review result, including `exposure_blockers`
+such as localhost public origin. It calls Docker only for compose config and
+does not start services, bind ports, probe network endpoints, or print secret
+values.
 
 `deployability:profiles` is the dedicated read-only profile catalog for
 operators, dashboards, CI, and management scripts. It derives profile cards

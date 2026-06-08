@@ -27,6 +27,7 @@ const NEXT_COMMANDS = [
   "corepack pnpm run deployability:production",
   "corepack pnpm run deployability:status",
   "corepack pnpm run deployability:gates",
+  "corepack pnpm run deployability:exposure",
   "corepack pnpm run deployability:dashboard",
   "corepack pnpm run deployability:handoff"
 ];

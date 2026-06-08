@@ -155,6 +155,23 @@ const MATRIX = [
     notes: "read-only public exposure and production hardening gate checklist for management surfaces"
   },
   {
+    command: "corepack pnpm run deployability:exposure",
+    json_command: "corepack pnpm --silent run deployability:exposure -- --json",
+    category: "top_level",
+    posture: "public_exposure_gate",
+    reads_env: true,
+    writes_files: false,
+    starts_services: false,
+    stops_services: false,
+    calls_docker: true,
+    probes_network: false,
+    private_terminal_text: false,
+    public_exposure_gate: true,
+    ci_safe: true,
+    dashboard_safe: true,
+    notes: "non-destructive public-stack exposure review; calls docker compose config through selfhost security-review without starting services"
+  },
+  {
     command: "corepack pnpm run deployability:doctor",
     json_command: "corepack pnpm --silent run deployability:doctor -- --json",
     category: "top_level",
@@ -970,6 +987,7 @@ const NEXT_COMMANDS = [
   "corepack pnpm run deployability:readiness",
   "corepack pnpm run deployability:status",
   "corepack pnpm run deployability:gates",
+  "corepack pnpm run deployability:exposure",
   "corepack pnpm run deployability:dashboard",
   "corepack pnpm run deployability:recipe -- --profile public-stack",
   "corepack pnpm run deployability:commands",

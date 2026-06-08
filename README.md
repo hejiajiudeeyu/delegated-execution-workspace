@@ -131,6 +131,8 @@ corepack pnpm run deployability:status
 corepack pnpm --silent run deployability:status -- --json
 corepack pnpm run deployability:gates
 corepack pnpm --silent run deployability:gates -- --json
+corepack pnpm run deployability:exposure
+corepack pnpm --silent run deployability:exposure -- --json
 corepack pnpm run deployability:doctor
 corepack pnpm --silent run deployability:doctor -- --json
 corepack pnpm run deployability:dashboard
@@ -332,6 +334,11 @@ Notes:
   checklist. It keeps public-stack exposure gated and formal production
   hardening planned without running security-review, Docker, network, or
   release commands.
+- Use `corepack pnpm --silent run deployability:exposure -- --json` when an
+  operator console needs the actual public-stack exposure blocker snapshot.
+  It runs the non-destructive public-stack security review, calls Docker only
+  for compose config, does not start services or bind ports, and reports
+  findings such as localhost public origin under `exposure_blockers`.
 - Use `corepack pnpm --silent run deployability:menu -- --profile public-stack --json`
   when a management UI needs one public-stack first screen. The focused menu
   includes `selected_onboarding_plan` from the read-only

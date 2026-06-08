@@ -31,6 +31,8 @@ Required commands:
 - `corepack pnpm --silent run deployability:status -- --json`
 - `corepack pnpm run deployability:gates`
 - `corepack pnpm --silent run deployability:gates -- --json`
+- `corepack pnpm run deployability:exposure`
+- `corepack pnpm --silent run deployability:exposure -- --json`
 - `corepack pnpm run deployability:doctor`
 - `corepack pnpm --silent run deployability:doctor -- --json`
 - `corepack pnpm run deployability:dashboard`
@@ -126,6 +128,11 @@ Acceptance:
   hardening gate checklist for management UIs, projecting roadmap, command
   catalog, and status metadata into explicit gate cards without running
   security-review, Docker, network, or release commands
+- `deployability:exposure -- --json` emits `public_exposure_review`, a
+  non-destructive public-stack exposure blocker snapshot that runs the existing
+  security review, calls Docker only for compose config, does not start
+  services or bind ports, and separates script blockers from
+  `exposure_blockers`
 - doctor reports compatibility ledger, top-level scripts, documentation,
   brand-site file alignment, brand-site deployability content smoke, and
   safety-contract alignment as one read-only snapshot without executing Docker,

@@ -108,6 +108,8 @@ corepack pnpm run deployability:status
 corepack pnpm --silent run deployability:status -- --json
 corepack pnpm run deployability:gates
 corepack pnpm --silent run deployability:gates -- --json
+corepack pnpm run deployability:exposure
+corepack pnpm --silent run deployability:exposure -- --json
 corepack pnpm run deployability:doctor
 corepack pnpm --silent run deployability:doctor -- --json
 corepack pnpm run deployability:dashboard
@@ -196,6 +198,12 @@ compact read-only gate checklist。当 dashboard 需要展示 opening edge route
 claiming production readiness 前必须通过哪些 gate，但不想执行 gate 命令时，可以使用
 `corepack pnpm run deployability:gates` 或
 `corepack pnpm --silent run deployability:gates -- --json`。
+
+`deployability:exposure` 是非破坏性的 public-stack exposure blocker snapshot。
+当 dashboard 需要实际 public exposure review 结果，包括 localhost public origin
+这类 `exposure_blockers` 时，可以使用 `corepack pnpm run deployability:exposure`
+或 `corepack pnpm --silent run deployability:exposure -- --json`；它只为 compose
+config 调用 Docker，不启动服务、不绑定端口、不探测网络、不打印 secret 值。
 
 `deployability:profiles` 是给 operator、dashboard、CI 和管理脚本使用的专用只读
 profile catalog。它从 dashboard `profile_summaries` 和共享第四仓 profile registry
