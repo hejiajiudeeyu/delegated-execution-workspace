@@ -45,6 +45,11 @@ const COMMAND_MAP = [
     purpose: "emit the single read-only JSON payload for top-level deployability dashboards and CI"
   },
   {
+    command: "corepack pnpm run deployability:commands",
+    json_command: "corepack pnpm --silent run deployability:commands -- --json",
+    purpose: "browse the read-only command catalog by category, posture, track, or pipeline"
+  },
+  {
     command: "corepack pnpm run dev:doctor",
     json_command: "corepack pnpm --silent run dev:doctor -- --json",
     purpose: "diagnose the local caller-skill and MCP development loop"

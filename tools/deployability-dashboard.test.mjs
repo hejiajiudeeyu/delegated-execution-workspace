@@ -1,4 +1,6 @@
 import assert from "node:assert/strict";
+import fs from "node:fs";
+import os from "node:os";
 import path from "node:path";
 import { spawnSync } from "node:child_process";
 
@@ -6,6 +8,25 @@ const REPO_ROOT = path.resolve(new URL("..", import.meta.url).pathname);
 const SCRIPT = path.join(REPO_ROOT, "tools/deployability-dashboard.mjs");
 
 function run(args) {
+  if (args.includes("--json")) {
+    const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "deployability-dashboard-test-"));
+    const stdoutPath = path.join(tmpDir, "stdout.json");
+    const stdoutFd = fs.openSync(stdoutPath, "w");
+    const result = spawnSync(process.execPath, [SCRIPT, ...args], {
+      cwd: REPO_ROOT,
+      encoding: "utf8",
+      stdio: ["ignore", stdoutFd, "pipe"],
+      env: {
+        ...process.env,
+        PLATFORM_ADMIN_API_KEY: "sk_dashboard_must_not_leak"
+      }
+    });
+    fs.closeSync(stdoutFd);
+    return {
+      ...result,
+      stdout: fs.readFileSync(stdoutPath, "utf8")
+    };
+  }
   return spawnSync(process.execPath, [SCRIPT, ...args], {
     cwd: REPO_ROOT,
     encoding: "utf8",
@@ -24,14 +45,15 @@ assert.equal(body.ok, true);
 assert.ok(body.generated_at);
 assert.deepEqual(
   Object.keys(body.sections),
-  ["overview", "quickstart", "safety", "doctor", "compatibility"]
+  ["overview", "quickstart", "safety", "commands", "doctor", "compatibility"]
 );
 assert.equal(body.sections.overview.command, "deployability:overview");
 assert.equal(body.sections.quickstart.command, "deployability:quickstart");
 assert.equal(body.sections.safety.command, "deployability:safety");
+assert.equal(body.sections.commands.command, "deployability:commands");
 assert.equal(body.sections.doctor.command, "deployability:doctor");
 assert.equal(body.sections.compatibility.command, "compat:status");
-assert.equal(body.current_bundle.change_id, "CHG-2026-095");
+assert.equal(body.current_bundle.change_id, "CHG-2026-096");
 assert.ok(body.warnings.includes("repos/client: uncommitted worktree changes"));
 assert.ok(body.next_commands.includes("corepack pnpm run deployability:doctor"));
 assert.ok(body.next_commands.includes("corepack pnpm run deployability:handoff"));
@@ -43,8 +65,9 @@ const text = run([]);
 assert.equal(text.status, 0, text.stderr || text.stdout);
 assert.match(text.stdout, /Deployability dashboard/);
 assert.match(text.stdout, /overview/);
+assert.match(text.stdout, /commands/);
 assert.match(text.stdout, /compatibility/);
-assert.match(text.stdout, /CHG-2026-095/);
+assert.match(text.stdout, /CHG-2026-096/);
 assert.match(text.stdout, /corepack pnpm run deployability:handoff/);
 assert.ok(!text.stdout.includes("sk_dashboard_must_not_leak"));
 

@@ -9,6 +9,7 @@ const SECTION_SCRIPTS = [
   ["overview", "tools/deployability-overview.mjs"],
   ["quickstart", "tools/deployability-quickstart.mjs"],
   ["safety", "tools/deployability-safety.mjs"],
+  ["commands", "tools/deployability-commands.mjs"],
   ["doctor", "tools/deployability-doctor.mjs"],
   ["compatibility", "tools/compat-status.mjs"]
 ];
@@ -22,6 +23,7 @@ const SAFETY_DEFAULTS = [
 
 const NEXT_COMMANDS = [
   "corepack pnpm run deployability:doctor",
+  "corepack pnpm run deployability:commands",
   "corepack pnpm run deployability:handoff",
   "corepack pnpm run selfhost:readiness -- --all",
   "corepack pnpm run operator:onboarding:plan",

@@ -23,6 +23,8 @@ Required commands:
 - `corepack pnpm --silent run deployability:doctor -- --json`
 - `corepack pnpm run deployability:dashboard`
 - `corepack pnpm --silent run deployability:dashboard -- --json`
+- `corepack pnpm run deployability:commands`
+- `corepack pnpm --silent run deployability:commands -- --json`
 - `corepack pnpm run compat:status`
 - `corepack pnpm --silent run compat:status -- --json`
 - `corepack pnpm run deployability:handoff`
@@ -32,6 +34,7 @@ Required commands:
 - `corepack pnpm run test:deployability-safety`
 - `corepack pnpm run test:deployability-doctor`
 - `corepack pnpm run test:deployability-dashboard`
+- `corepack pnpm run test:deployability-commands`
 - `corepack pnpm run test:compat-status`
 - `corepack pnpm run test:deployability-handoff`
 
@@ -64,6 +67,10 @@ Acceptance:
   status, blockers, warnings, safety defaults, and next commands without
   reading `.env`, calling Docker, binding ports, probing networks, or printing
   secret values
+- `deployability:commands -- --json` emits a clean command catalog with
+  category, posture, track, and pipeline filters, merging overview,
+  quickstart, and safety metadata without reading `.env`, calling Docker,
+  binding ports, probing networks, or printing secret values
 - `deployability:overview -- --json` emits clean pipeline, safety-default, and
   next-command metadata without terminal `[ok]` / `[fail]` prose or secret
   values

@@ -32,6 +32,11 @@ const TRACKS = [
         json_command: "corepack pnpm --silent run deployability:dashboard -- --json"
       },
       {
+        label: "Browse the command catalog",
+        command: "corepack pnpm run deployability:commands",
+        json_command: "corepack pnpm --silent run deployability:commands -- --json"
+      },
+      {
         label: "Create a non-secret daily handoff",
         command: "corepack pnpm run deployability:handoff",
         json_command: "corepack pnpm --silent run deployability:handoff -- --json"
@@ -138,6 +143,7 @@ const NEXT_COMMANDS = [
   "corepack pnpm run deployability:safety",
   "corepack pnpm run deployability:doctor",
   "corepack pnpm run deployability:dashboard",
+  "corepack pnpm run deployability:commands",
   "corepack pnpm run compat:status",
   "corepack pnpm run deployability:handoff",
   "corepack pnpm run check:submodules",

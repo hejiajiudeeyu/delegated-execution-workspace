@@ -74,6 +74,7 @@ The ecosystem is "daily-deployable" when a fresh operator can:
 | Deployability safety matrix | fourth repo | `corepack pnpm run deployability:safety`, plus `corepack pnpm --silent run deployability:safety -- --json` as the descriptive read/write/startup/network/logging posture map for deployment commands |
 | Deployability doctor | fourth repo | `corepack pnpm run deployability:doctor`, plus `corepack pnpm --silent run deployability:doctor -- --json` as the read-only readiness snapshot for compatibility ledger, top-level scripts, docs, brand-site, and safety-contract alignment |
 | Deployability dashboard | fourth repo | `corepack pnpm run deployability:dashboard`, plus `corepack pnpm --silent run deployability:dashboard -- --json` as the single read-only aggregate payload for top-level dashboards and CI, combining overview, quickstart, safety, doctor, and compatibility sections |
+| Deployability commands catalog | fourth repo | `corepack pnpm run deployability:commands`, plus `corepack pnpm --silent run deployability:commands -- --json` as the read-only searchable command catalog with category, posture, first-use track, and pipeline filters |
 | Deployability handoff | fourth repo | `corepack pnpm run deployability:handoff`, plus `corepack pnpm --silent run deployability:handoff -- --json` for a non-secret ecosystem handoff report under `exports/deployability/` |
 | Daily local doctor | fourth repo | `corepack pnpm run dev:doctor`, plus `corepack pnpm --silent run dev:doctor -- --json` for dashboards and scripts |
 | Local agent loop management metadata | fourth repo | `corepack pnpm run dev:local:plan`, `dev:local:up`, `dev:local:status`, `dev:local:logs`, and `dev:local:down`, plus `--json` for dashboards and scripts |
@@ -162,6 +163,10 @@ Required baseline:
   quickstart, safety, doctor, and compatibility JSON sections as one top-level
   payload without reading `.env`, calling Docker, binding ports, probing
   networks, or printing secrets
+- machine-readable deployability command catalog metadata that merges overview,
+  quickstart, and safety metadata into a filterable command list without
+  reading `.env`, calling Docker, binding ports, probing networks, or printing
+  secrets
 - machine-readable compatibility status metadata that reports the current
   bundle, submodule SHAs, ledger matches, dirty submodules, blockers, warnings,
   and next commands without reading `.env`, calling Docker, probing networks, or
@@ -178,7 +183,8 @@ Required baseline:
   `deployability:quickstart -- --json`, `deployability:safety`,
   `deployability:safety -- --json`, `deployability:doctor`,
   `deployability:doctor -- --json`, `deployability:dashboard`,
-  `deployability:dashboard -- --json`, `compat:status`,
+  `deployability:dashboard -- --json`, `deployability:commands`,
+  `deployability:commands -- --json`, `compat:status`,
   `compat:status -- --json`, `deployability:handoff`,
   `deployability:handoff -- --json`, `dev:local:plan -- --json`,
   `dev:local:up -- --json`, `dev:local:status -- --json`,
