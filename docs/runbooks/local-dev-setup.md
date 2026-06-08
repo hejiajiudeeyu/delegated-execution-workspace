@@ -185,6 +185,9 @@ Docker, binding ports, probing the network, or printing secrets.
 Use `--list-profiles` or `--profiles` first when an operator or dashboard
 needs the supported profile keys, aliases, pipeline keys, and purposes without
 calling the dashboard or command catalog.
+The same selector is also present in `deployability:quickstart`,
+`deployability:safety`, and `deployability:commands -- --track daily_dev`, so
+management surfaces can discover it before rendering a focused action plan.
 Use `--profile public-stack` or another profile key/alias when an operator
 needs only one focused next-action list. The JSON form includes
 `profile_filter` and returns a blocker for unknown profile names.

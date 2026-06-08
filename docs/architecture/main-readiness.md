@@ -153,7 +153,9 @@ CHG-2026-105:
   and dashboards can list supported profile keys, aliases, pipeline keys, and
   purposes with
   `corepack pnpm --silent run deployability:action-plan -- --list-profiles --json`
-  without calling dashboard/catalog metadata; operators
+  without calling dashboard/catalog metadata; the same selector is discoverable
+  from `deployability:quickstart`, `deployability:safety`, and
+  `deployability:commands -- --track daily_dev`; operators
   can focus the same schema with
   `corepack pnpm --silent run deployability:action-plan -- --profile public-stack --json`,
   which emits `profile_filter` and reports unknown profile names as blockers
@@ -255,6 +257,10 @@ Observed results:
 - `deployability:action-plan -- --list-profiles --json`: passed, reporting
   supported profile keys, aliases, pipeline keys, purposes, and next profile
   commands without calling dashboard/catalog metadata or printing secret values
+- `deployability:quickstart`, `deployability:safety`, and
+  `deployability:commands -- --track daily_dev`: passed, surfacing the
+  action-plan profile selector as a first-use, read-only, dashboard-safe
+  top-level command
 - `deployability:action-plan -- --profile public-stack --json`: passed,
   reporting only `public_stack`, `profile_filter`, and public-stack exposure
   gate commands, while unknown profile names return blockers without secret

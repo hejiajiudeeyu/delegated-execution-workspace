@@ -32,6 +32,11 @@ const TRACKS = [
         json_command: "corepack pnpm --silent run deployability:dashboard -- --json"
       },
       {
+        label: "List supported action-plan profiles",
+        command: "corepack pnpm run deployability:action-plan -- --list-profiles",
+        json_command: "corepack pnpm --silent run deployability:action-plan -- --list-profiles --json"
+      },
+      {
         label: "Choose the next operator action",
         command: "corepack pnpm run deployability:action-plan",
         json_command: "corepack pnpm --silent run deployability:action-plan -- --json"
@@ -180,6 +185,7 @@ const NEXT_COMMANDS = [
   "corepack pnpm run deployability:safety",
   "corepack pnpm run deployability:doctor",
   "corepack pnpm run deployability:dashboard",
+  "corepack pnpm run deployability:action-plan -- --list-profiles",
   "corepack pnpm run deployability:action-plan",
   "corepack pnpm run deployability:commands",
   "corepack pnpm run compat:status",

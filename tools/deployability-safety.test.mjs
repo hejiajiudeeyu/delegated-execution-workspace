@@ -54,6 +54,12 @@ assert.equal(byCommand.get("corepack pnpm run deployability:action-plan").postur
 assert.equal(byCommand.get("corepack pnpm run deployability:action-plan").reads_env, false);
 assert.equal(byCommand.get("corepack pnpm run deployability:action-plan").calls_docker, false);
 assert.equal(byCommand.get("corepack pnpm run deployability:action-plan").dashboard_safe, true);
+assert.equal(byCommand.get("corepack pnpm run deployability:action-plan -- --list-profiles").category, "top_level");
+assert.equal(byCommand.get("corepack pnpm run deployability:action-plan -- --list-profiles").posture, "read_only");
+assert.equal(byCommand.get("corepack pnpm run deployability:action-plan -- --list-profiles").reads_env, false);
+assert.equal(byCommand.get("corepack pnpm run deployability:action-plan -- --list-profiles").calls_docker, false);
+assert.equal(byCommand.get("corepack pnpm run deployability:action-plan -- --list-profiles").probes_network, false);
+assert.equal(byCommand.get("corepack pnpm run deployability:action-plan -- --list-profiles").dashboard_safe, true);
 assert.equal(byCommand.get("corepack pnpm run deployability:commands").posture, "read_only");
 assert.equal(byCommand.get("corepack pnpm run deployability:commands").calls_docker, false);
 assert.equal(byCommand.get("corepack pnpm run deployability:commands").probes_network, false);

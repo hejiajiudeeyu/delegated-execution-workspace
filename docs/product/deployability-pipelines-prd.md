@@ -59,6 +59,9 @@ Acceptance:
 - quickstart lists Daily Development, All-in-One Demo, Selfhost Platform,
   Public Stack, and Release Review as ordered first-use tracks without
   executing commands
+- quickstart exposes `deployability:action-plan -- --list-profiles` in the
+  Daily Development track before the full action plan so operators and
+  dashboards can render a profile selector first
 - `deployability:quickstart -- --json` emits clean track, step, safety-default,
   and next-command metadata without terminal prose or secret values
 - safety matrix lists read/write/startup/stop/Docker/network/logging posture
@@ -120,6 +123,10 @@ Acceptance:
   quickstart, and safety metadata, and inheriting base safety posture for
   profile-specific command variants without reading `.env`, calling Docker,
   binding ports, probing networks, or printing secret values
+- `deployability:commands -- --track daily_dev --json` includes
+  `deployability:action-plan -- --list-profiles` as a `top_level` /
+  `read_only` / dashboard-safe command, sourced from quickstart and safety
+  metadata
 - `deployability:commands -- --json` does not expose `unmapped` category or
   posture values for ready-now command paths; local doctor/acceptance commands
   and full published-image smoke use explicit `runtime_diagnostic`,

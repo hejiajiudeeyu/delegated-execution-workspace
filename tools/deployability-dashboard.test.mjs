@@ -53,7 +53,7 @@ assert.equal(body.sections.safety.command, "deployability:safety");
 assert.equal(body.sections.commands.command, "deployability:commands");
 assert.equal(body.sections.doctor.command, "deployability:doctor");
 assert.equal(body.sections.compatibility.command, "compat:status");
-assert.equal(body.current_bundle.change_id, "CHG-2026-106");
+assert.equal(body.current_bundle.change_id, "CHG-2026-107");
 assert.equal(body.ecosystem_readiness.status, "daily_deployable_with_safety_gates");
 assert.equal(body.ecosystem_readiness.goal, "daily-deployable");
 assert.deepEqual(
@@ -150,7 +150,7 @@ assert.equal(pipedJson.status, 0, pipedJson.stderr || pipedJson.stdout);
 assert.ok(pipedJson.stdout.length > 65536);
 const pipedBody = JSON.parse(pipedJson.stdout);
 assert.equal(pipedBody.command, "deployability:dashboard");
-assert.equal(pipedBody.current_bundle.change_id, "CHG-2026-106");
+assert.equal(pipedBody.current_bundle.change_id, "CHG-2026-107");
 assert.ok(!pipedJson.stdout.includes("sk_dashboard_must_not_leak"));
 
 const text = run([]);
@@ -165,7 +165,7 @@ assert.match(text.stdout, /Pipeline summaries/);
 assert.match(text.stdout, /all_in_one_demo/);
 assert.match(text.stdout, /recovery_evidence/);
 assert.match(text.stdout, /public_stack/);
-assert.match(text.stdout, /CHG-2026-106/);
+assert.match(text.stdout, /CHG-2026-107/);
 assert.match(text.stdout, /corepack pnpm run deployability:action-plan/);
 assert.match(text.stdout, /corepack pnpm run deployability:handoff/);
 assert.ok(!text.stdout.includes("sk_dashboard_must_not_leak"));

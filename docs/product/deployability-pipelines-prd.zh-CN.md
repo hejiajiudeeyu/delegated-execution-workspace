@@ -55,6 +55,9 @@ onboarding 或 release-image 路径前，先给出一个只读命令地图和一
 - overview 是只读的：不读取 `.env`、不调用 Docker、不绑定端口、不探测网络 endpoint
 - quickstart 列出 Daily Development、All-in-One Demo、Selfhost Platform、
   Public Stack 和 Release Review 五条首次使用路径，按顺序给出命令，但不执行命令
+- quickstart 会在 Daily Development track 里把
+  `deployability:action-plan -- --list-profiles` 放在完整 action plan 前，让
+  operator 和 dashboard 可以先渲染 profile selector
 - `deployability:quickstart -- --json` 输出干净的 track、step、安全默认值和下一步命令
   metadata，不混入终端文本或 secret 值
 - safety matrix 会列出 top-level、local-loop、self-host、public-stack 和
@@ -106,6 +109,9 @@ onboarding 或 release-image 路径前，先给出一个只读命令地图和一
   track 和 pipeline filters，并合并 overview、quickstart 和 safety metadata，
   同时让带 profile 参数的命令变体继承基础安全姿态，不读取 `.env`、不调用 Docker、
   不绑定端口、不探测网络、不打印 secret 值
+- `deployability:commands -- --track daily_dev --json` 会包含
+  `deployability:action-plan -- --list-profiles`，并把它标成 `top_level` /
+  `read_only` / dashboard-safe 命令；该条目来自 quickstart 与 safety metadata
 - `deployability:commands -- --json` 不会让 ready-now 命令路径暴露 `unmapped`
   category 或 posture；本地 doctor / acceptance 命令和真实 published-image smoke
   会使用明确的 `runtime_diagnostic`、`runtime_acceptance` 和 `delegated_smoke`

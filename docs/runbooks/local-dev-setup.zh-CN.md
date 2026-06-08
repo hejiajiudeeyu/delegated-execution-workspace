@@ -158,6 +158,9 @@ next JSON commands，同时不读取 `.env`、不调用 Docker、不绑定端口
 当 operator 或 dashboard 需要先获得支持的 profile keys、aliases、pipeline keys
 和 purposes 时，可以先用 `--list-profiles` 或 `--profiles`，该模式不会调用
 dashboard 或 command catalog。
+同一个 selector 也会出现在 `deployability:quickstart`、`deployability:safety`
+和 `deployability:commands -- --track daily_dev` 里，方便管理面在渲染聚焦
+action plan 前自动发现 profile 选择器。
 当 operator 只需要某一条路径时，可以用 `--profile public-stack` 或其他 profile
 key / alias 聚焦输出。JSON 形式会包含 `profile_filter`，未知 profile 会以 blocker
 返回。

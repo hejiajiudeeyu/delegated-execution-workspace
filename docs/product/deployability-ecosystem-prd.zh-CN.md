@@ -73,12 +73,12 @@ CALL ANYTHING 现在的仓库边界是正确的：
 | 兼容性台账 | 第四仓 | change bundles 和必跑 gates |
 | 兼容状态 | 第四仓 | `corepack pnpm run compat:status`，以及给当前 bundle、submodule SHA、dirty worktree、blockers 和 warnings metadata 使用的 `corepack pnpm --silent run compat:status -- --json` |
 | 可部署性总览 | 第四仓 | `corepack pnpm run deployability:overview`，以及作为全部部署/管理路径只读命令地图的 `corepack pnpm --silent run deployability:overview -- --json`，包含 all-in-one demo profile |
-| 可部署性 quickstart | 第四仓 | `corepack pnpm run deployability:quickstart`，以及作为 daily development、all-in-one demo、self-host、public-stack 和 release-review 路径只读首次使用指南的 `corepack pnpm --silent run deployability:quickstart -- --json` |
-| 可部署性安全矩阵 | 第四仓 | `corepack pnpm run deployability:safety`，以及作为部署命令 read/write/startup/network/logging 姿态说明矩阵的 `corepack pnpm --silent run deployability:safety -- --json` |
+| 可部署性 quickstart | 第四仓 | `corepack pnpm run deployability:quickstart`，以及作为 daily development、all-in-one demo、self-host、public-stack 和 release-review 路径只读首次使用指南的 `corepack pnpm --silent run deployability:quickstart -- --json`；daily development 会在完整 action plan 前先暴露 action-plan profile selector |
+| 可部署性安全矩阵 | 第四仓 | `corepack pnpm run deployability:safety`，以及作为部署命令 read/write/startup/network/logging 姿态说明矩阵的 `corepack pnpm --silent run deployability:safety -- --json`，包含作为 dashboard-safe read-only 命令的 action-plan profile selector |
 | 可部署性 doctor | 第四仓 | `corepack pnpm run deployability:doctor`，以及作为 compatibility ledger、顶层 scripts、docs、brand-site 和 safety-contract 对齐状态只读快照的 `corepack pnpm --silent run deployability:doctor -- --json` |
 | 可部署性 dashboard | 第四仓 | `corepack pnpm run deployability:dashboard`，以及作为顶层 dashboard 和 CI 的只读聚合 payload 的 `corepack pnpm --silent run deployability:dashboard -- --json`，组合 overview、quickstart、safety、doctor、compatibility、ecosystem_readiness 和 per-pipeline summary sections |
 | 可部署性 action plan | 第四仓 | `corepack pnpm run deployability:action-plan`，以及作为只读 operator 下一步动作选择器的 `corepack pnpm --silent run deployability:action-plan -- --json`，把 dashboard readiness 和 command catalog posture 合成 profile 级 recommended commands、dashboard-safe commands、public-exposure gates 和 service-touching command lists；`--list-profiles` / `--profiles` 输出只读 profile selector 目录，包含 keys、aliases、pipeline keys 和 purposes，且不调用 dashboard/catalog metadata；`--profile <key-or-alias>` 会把输出聚焦到单个 operator 目标，并把未知 profile 作为 blockers 返回 |
-| 可部署性命令目录 | 第四仓 | `corepack pnpm run deployability:commands`，以及作为按 category、posture、首次使用 track 和 pipeline 过滤的只读命令目录的 `corepack pnpm --silent run deployability:commands -- --json`，并为带 profile 参数的命令变体继承基础安全姿态；ready-now 命令路径不再出现 `unmapped` category / posture |
+| 可部署性命令目录 | 第四仓 | `corepack pnpm run deployability:commands`，以及作为按 category、posture、首次使用 track 和 pipeline 过滤的只读命令目录的 `corepack pnpm --silent run deployability:commands -- --json`，并为带 profile 参数的命令变体继承基础安全姿态；action-plan profile selector 会出现在 `daily_dev` track；ready-now 命令路径不再出现 `unmapped` category / posture |
 | 可部署性恢复证据路径 | 第四仓 | `deployability:overview`、`deployability:dashboard`、`deployability:handoff` 和 `deployability:commands -- --pipeline recovery_evidence` 把 ops-report、audit export、backup、restore 和 rotation 命令作为一条 ready-now 证据与恢复管线暴露 |
 | 可部署性交接报告 | 第四仓 | `corepack pnpm run deployability:handoff`，以及用于输出 `exports/deployability/` 下不含 secret 的生态交接报告 metadata 的 `corepack pnpm --silent run deployability:handoff -- --json`，包含与 dashboard 相同的 ecosystem_readiness scorecard |
 | 日常本地 doctor | 第四仓 | `corepack pnpm run dev:doctor`，以及给 dashboard 和脚本使用的 `corepack pnpm --silent run dev:doctor -- --json` |
@@ -167,6 +167,9 @@ CALL ANYTHING 现在的仓库边界是正确的：
 - 可部署性 action-plan profile-list metadata 可以机器读取，输出支持的 profile
   keys、aliases、pipeline keys 和 purposes；该模式不调用 dashboard/catalog
   metadata、不读取 `.env`、不调用 Docker、不绑定端口、不探测网络、不打印 secret 值
+- quickstart、safety 和 command-catalog metadata 可以机器读取，把 action-plan
+  profile selector 作为 first-use、read-only、dashboard-safe 的顶层命令暴露出来，
+  让 operator 先选择 profile，再进入聚焦 action plan
 - ecosystem_readiness metadata 可以机器读取，把 daily-deployable 定义转成
   dashboard 和 handoff scorecard，覆盖 profile 选择、生成 secrets、启动路径、
   doctor 路径、runtime inspection、边界理解和 brand-site 叙事；所有检查通过时报告
