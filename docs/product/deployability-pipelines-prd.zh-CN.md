@@ -59,11 +59,12 @@ onboarding 或 release-image 路径前，先给出一个只读命令地图和一
   evidence、安全默认值和下一步命令 metadata，不混入终端文本或 secret 值
 - `deployability:dashboard -- --json` 输出一个干净的顶层 payload，包含
   overview、quickstart、safety、doctor 和 compatibility sections、section status、
-  blockers、warnings、安全默认值和下一步命令，不读取 `.env`、不调用 Docker、
-  不绑定端口、不探测网络、不打印 secret 值
+  per-pipeline summaries、blockers、warnings、安全默认值和下一步命令，不读取 `.env`、
+  不调用 Docker、不绑定端口、不探测网络、不打印 secret 值
 - `deployability:commands -- --json` 输出干净的命令目录，包含 category、posture、
   track 和 pipeline filters，并合并 overview、quickstart 和 safety metadata，
-  不读取 `.env`、不调用 Docker、不绑定端口、不探测网络、不打印 secret 值
+  同时让带 profile 参数的命令变体继承基础安全姿态，不读取 `.env`、不调用 Docker、
+  不绑定端口、不探测网络、不打印 secret 值
 - `deployability:overview -- --json` 输出干净的 pipeline、安全默认值和下一步命令
   metadata，不混入终端 `[ok]` / `[fail]` 文本或 secret 值
 - docs 和 brand-site 把它描述成第一张命令地图，而不是替代各管线自己的

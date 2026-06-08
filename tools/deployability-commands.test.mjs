@@ -65,6 +65,24 @@ assert.ok(dailyDevBody.commands.every((item) => item.track_keys.includes("daily_
 assert.ok(dailyDevBody.commands.some((item) => item.command === "corepack pnpm run deployability:doctor"));
 assert.ok(dailyDevBody.commands.some((item) => item.command === "corepack pnpm run deployability:dashboard"));
 
+const publicStack = run(["--json", "--pipeline", "public_stack"]);
+assert.equal(publicStack.status, 0, publicStack.stderr || publicStack.stdout);
+const publicStackBody = JSON.parse(publicStack.stdout);
+const publicStackCommands = new Map(publicStackBody.commands.map((item) => [item.command, item]));
+assert.equal(
+  publicStackCommands.get("corepack pnpm run selfhost:security-review -- --profile public-stack").posture,
+  "public_exposure_gate"
+);
+assert.equal(
+  publicStackCommands.get("corepack pnpm run selfhost:security-review -- --profile public-stack").dashboard_safe,
+  true
+);
+assert.equal(
+  publicStackCommands.get("corepack pnpm run selfhost:up -- --profile public-stack").posture,
+  "starts_services"
+);
+assert.ok(!publicStackBody.commands.some((item) => item.posture === "unmapped"));
+
 const text = run(["--category", "top_level"]);
 assert.equal(text.status, 0, text.stderr || text.stdout);
 assert.match(text.stdout, /Deployability commands/);

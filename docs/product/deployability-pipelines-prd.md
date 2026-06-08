@@ -64,12 +64,13 @@ Acceptance:
   secret values
 - `deployability:dashboard -- --json` emits one clean top-level payload with
   overview, quickstart, safety, doctor, and compatibility sections, section
-  status, blockers, warnings, safety defaults, and next commands without
-  reading `.env`, calling Docker, binding ports, probing networks, or printing
-  secret values
+  status, per-pipeline summaries, blockers, warnings, safety defaults, and next
+  commands without reading `.env`, calling Docker, binding ports, probing
+  networks, or printing secret values
 - `deployability:commands -- --json` emits a clean command catalog with
   category, posture, track, and pipeline filters, merging overview,
-  quickstart, and safety metadata without reading `.env`, calling Docker,
+  quickstart, and safety metadata, and inheriting base safety posture for
+  profile-specific command variants without reading `.env`, calling Docker,
   binding ports, probing networks, or printing secret values
 - `deployability:overview -- --json` emits clean pipeline, safety-default, and
   next-command metadata without terminal `[ok]` / `[fail]` prose or secret

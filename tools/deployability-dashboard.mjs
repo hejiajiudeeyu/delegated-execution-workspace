@@ -62,6 +62,28 @@ function unique(items) {
   return [...new Set(items.filter(Boolean))];
 }
 
+function buildPipelineSummaries(sections) {
+  const catalogCommands = sections.commands?.commands || [];
+  return (sections.overview?.pipelines || []).map((pipeline) => {
+    const pipelineCatalogCommands = catalogCommands.filter((entry) => entry.pipeline_keys?.includes(pipeline.key));
+    return {
+      key: pipeline.key,
+      label: pipeline.label,
+      status: pipeline.status,
+      purpose: pipeline.purpose,
+      command_count: pipeline.commands?.length || 0,
+      json_command_count: pipeline.json_commands?.length || 0,
+      catalog_command_count: pipelineCatalogCommands.length,
+      dashboard_safe_command_count: pipelineCatalogCommands.filter((entry) => entry.dashboard_safe === true).length,
+      ci_safe_command_count: pipelineCatalogCommands.filter((entry) => entry.ci_safe === true).length,
+      public_exposure_gate_count: pipelineCatalogCommands.filter((entry) => entry.public_exposure_gate === true).length,
+      next_commands: pipeline.commands || [],
+      next_json_commands: pipeline.json_commands || [],
+      safety_notes: pipeline.safety_notes || []
+    };
+  });
+}
+
 function dashboardData() {
   const sectionResults = SECTION_SCRIPTS.map(([key, script]) => [key, runJsonScript(script)]);
   const sections = Object.fromEntries(sectionResults.map(([key, result]) => [key, result.body]));
@@ -98,6 +120,7 @@ function dashboardData() {
     current_bundle: currentBundle,
     sections,
     section_status: sectionStatus,
+    pipeline_summaries: buildPipelineSummaries(sections),
     blockers,
     warnings,
     safety_defaults: SAFETY_DEFAULTS,
@@ -132,6 +155,15 @@ function printText(data) {
 
   for (const [key, status] of Object.entries(data.section_status)) {
     console.log(`${key}: ${status.ok ? "ok" : "blocked"} exit=${status.exit_code}`);
+  }
+
+  if (data.pipeline_summaries.length) {
+    console.log("\nPipeline summaries:");
+    for (const pipeline of data.pipeline_summaries) {
+      console.log(
+        `- ${pipeline.key}: ${pipeline.status}; commands=${pipeline.command_count}; json=${pipeline.json_command_count}; dashboard-safe=${pipeline.dashboard_safe_command_count}; exposure-gates=${pipeline.public_exposure_gate_count}`
+      );
+    }
   }
 
   if (data.blockers.length) {

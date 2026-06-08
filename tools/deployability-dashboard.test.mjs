@@ -54,6 +54,27 @@ assert.equal(body.sections.commands.command, "deployability:commands");
 assert.equal(body.sections.doctor.command, "deployability:doctor");
 assert.equal(body.sections.compatibility.command, "compat:status");
 assert.equal(body.current_bundle.change_id, "CHG-2026-096");
+assert.ok(Array.isArray(body.pipeline_summaries));
+assert.deepEqual(
+  body.pipeline_summaries.map((item) => item.key),
+  ["local_agent_loop", "selfhost_platform", "public_stack", "operator_onboarding", "published_image"]
+);
+const publicStack = body.pipeline_summaries.find((item) => item.key === "public_stack");
+assert.equal(publicStack.status, "ready_now_with_safety_gates");
+assert.equal(publicStack.command_count, 5);
+assert.equal(publicStack.json_command_count, 5);
+assert.ok(publicStack.dashboard_safe_command_count >= 3);
+assert.ok(publicStack.public_exposure_gate_count >= 2);
+assert.ok(
+  publicStack.next_json_commands.includes(
+    "corepack pnpm --silent run selfhost:security-review -- --profile public-stack --json"
+  )
+);
+assert.ok(publicStack.safety_notes.some((item) => /unsafe public origins/i.test(item)));
+const operatorOnboarding = body.pipeline_summaries.find((item) => item.key === "operator_onboarding");
+assert.ok(operatorOnboarding.dashboard_safe_command_count >= 2);
+const publishedImage = body.pipeline_summaries.find((item) => item.key === "published_image");
+assert.ok(publishedImage.dashboard_safe_command_count >= 2);
 assert.ok(body.warnings.includes("repos/client: uncommitted worktree changes"));
 assert.ok(body.next_commands.includes("corepack pnpm run deployability:doctor"));
 assert.ok(body.next_commands.includes("corepack pnpm run deployability:handoff"));
@@ -67,6 +88,8 @@ assert.match(text.stdout, /Deployability dashboard/);
 assert.match(text.stdout, /overview/);
 assert.match(text.stdout, /commands/);
 assert.match(text.stdout, /compatibility/);
+assert.match(text.stdout, /Pipeline summaries/);
+assert.match(text.stdout, /public_stack/);
 assert.match(text.stdout, /CHG-2026-096/);
 assert.match(text.stdout, /corepack pnpm run deployability:handoff/);
 assert.ok(!text.stdout.includes("sk_dashboard_must_not_leak"));

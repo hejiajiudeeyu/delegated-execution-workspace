@@ -165,10 +165,49 @@ function mergeQuickstart(commands, quickstart) {
 
 function mergeOverview(commands, overview) {
   for (const pipeline of overview?.pipelines || []) {
-    for (const command of pipeline.commands || []) {
+    for (const [index, command] of (pipeline.commands || []).entries()) {
       const entry = ensureCommand(commands, command);
+      entry.json_command = entry.json_command || pipeline.json_commands?.[index] || null;
       entry.pipeline_keys.push(pipeline.key);
       entry.labels.push(`${pipeline.label}: ${pipeline.purpose}`);
+    }
+  }
+}
+
+function baseCommandFor(command) {
+  const argsMarker = " -- ";
+  if (!command.includes(argsMarker)) return null;
+  return command.slice(0, command.indexOf(argsMarker));
+}
+
+function mergeInheritedSafety(commands) {
+  const safetyFields = [
+    "category",
+    "posture",
+    "reads_env",
+    "writes_files",
+    "starts_services",
+    "stops_services",
+    "calls_docker",
+    "probes_network",
+    "private_terminal_text",
+    "public_exposure_gate",
+    "ci_safe",
+    "dashboard_safe"
+  ];
+
+  for (const entry of commands.values()) {
+    if (entry.posture !== "unmapped") continue;
+    const baseCommand = baseCommandFor(entry.command);
+    if (!baseCommand) continue;
+    const baseEntry = commands.get(baseCommand);
+    if (!baseEntry || baseEntry.posture === "unmapped") continue;
+    for (const field of safetyFields) {
+      entry[field] = baseEntry[field];
+    }
+    entry.notes.push(`inherits safety posture from ${baseCommand}`);
+    for (const note of baseEntry.notes || []) {
+      entry.notes.push(note);
     }
   }
 }
@@ -209,6 +248,7 @@ function commandData(args) {
   mergeSafety(commands, sourceResults.safety.body);
   mergeQuickstart(commands, sourceResults.quickstart.body);
   mergeOverview(commands, sourceResults.overview.body);
+  mergeInheritedSafety(commands);
 
   const allCommands = normalizeCommands(commands);
   const filteredCommands = applyFilters(allCommands, args);

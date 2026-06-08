@@ -136,7 +136,7 @@ CHG-2026-096:
   `.env`, calling Docker, binding ports, probing networks, or printing secrets
 - `deployability:dashboard` is available as a read-only aggregate payload for
   dashboards and CI, combining overview, quickstart, safety, doctor, and
-  compatibility sections, and supports
+  compatibility sections plus per-pipeline summaries, and supports
   `corepack pnpm run deployability:dashboard` and
   `corepack pnpm --silent run deployability:dashboard -- --json` without
   reading `.env`, calling Docker, binding ports, probing networks, or printing
@@ -144,7 +144,8 @@ CHG-2026-096:
 - `deployability:commands` is available as a read-only command catalog for
   humans, dashboards, and CI, merging overview, quickstart, and safety metadata
   into a list filterable by category, posture, first-use track, and pipeline,
-  and supports `corepack pnpm run deployability:commands` and
+  including inherited safety posture for profile-specific command variants, and
+  supports `corepack pnpm run deployability:commands` and
   `corepack pnpm --silent run deployability:commands -- --json` without reading
   `.env`, calling Docker, binding ports, probing networks, or printing secrets
 - `compat:status` is available as a read-only compatibility-ledger snapshot
@@ -216,11 +217,12 @@ Observed results:
   terminal prose or secret values
 - `deployability:dashboard -- --json`: passed, reporting overview, quickstart,
   safety, doctor, and compatibility sections, section status, blockers,
-  warnings, safety defaults, and next commands without terminal prose or secret
-  values
+  warnings, per-pipeline summaries, safety defaults, and next commands without
+  terminal prose or secret values
 - `deployability:commands -- --json`: passed, reporting a command catalog with
   category, posture, track, and pipeline filters, sourced from overview,
-  quickstart, and safety metadata without terminal prose or secret values
+  quickstart, and safety metadata, including inherited safety posture for
+  profile-specific command variants, without terminal prose or secret values
 - `compat:status -- --json`: passed, reporting the current bundle as matching
   the current protocol/client/platform/brand-site gitlinks; it also surfaced
   existing dirty submodule worktrees as warnings without treating them as ledger

@@ -161,15 +161,16 @@ printing secret values.
 
 `deployability:dashboard` is the read-only aggregate payload for dashboards and
 CI. It combines overview, quickstart, safety, doctor, and compatibility JSON
-sections without reading `.env`, calling Docker, binding ports, probing
-networks, or printing secret values. Profile-specific readiness, preflight,
-status, smoke, and audit commands remain authoritative.
+sections plus per-pipeline summaries without reading `.env`, calling Docker,
+binding ports, probing networks, or printing secret values. Profile-specific
+readiness, preflight, status, smoke, and audit commands remain authoritative.
 
 `deployability:commands` is the read-only command catalog for humans,
 dashboards, and CI. It merges overview, quickstart, and safety metadata into
 one list that can be filtered by category, posture, first-use track, or
-pipeline. It does not read `.env`, call Docker, bind ports, probe networks, or
-print secret values.
+pipeline, and profile-specific command variants inherit the safety posture of
+their base command. It does not read `.env`, call Docker, bind ports, probe
+networks, or print secret values.
 
 `compat:status` is the read-only compatibility-ledger snapshot. It compares the
 current submodule gitlinks to the latest `changes/CHG-*.yaml`, reports dirty
