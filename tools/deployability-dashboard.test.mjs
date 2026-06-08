@@ -53,7 +53,42 @@ assert.equal(body.sections.safety.command, "deployability:safety");
 assert.equal(body.sections.commands.command, "deployability:commands");
 assert.equal(body.sections.doctor.command, "deployability:doctor");
 assert.equal(body.sections.compatibility.command, "compat:status");
-assert.equal(body.current_bundle.change_id, "CHG-2026-098");
+assert.equal(body.current_bundle.change_id, "CHG-2026-099");
+assert.equal(body.ecosystem_readiness.status, "daily_deployable_with_safety_gates");
+assert.equal(body.ecosystem_readiness.goal, "daily-deployable");
+assert.deepEqual(
+  body.ecosystem_readiness.checks.map((item) => item.key),
+  [
+    "profile_choice",
+    "secret_generation",
+    "startup_path",
+    "doctor_path",
+    "runtime_inspection",
+    "boundary_understanding",
+    "brand_site_story"
+  ]
+);
+assert.ok(body.ecosystem_readiness.checks.every((item) => item.ok === true));
+assert.ok(
+  body.ecosystem_readiness.checks
+    .find((item) => item.key === "profile_choice")
+    .evidence.includes("corepack pnpm run selfhost:profiles")
+);
+assert.ok(
+  body.ecosystem_readiness.checks
+    .find((item) => item.key === "secret_generation")
+    .evidence.includes("corepack pnpm run selfhost:init")
+);
+assert.ok(
+  body.ecosystem_readiness.checks
+    .find((item) => item.key === "runtime_inspection")
+    .evidence.includes("corepack pnpm run selfhost:status")
+);
+assert.ok(
+  body.ecosystem_readiness.checks
+    .find((item) => item.key === "boundary_understanding")
+    .evidence.includes("corepack pnpm run deployability:safety")
+);
 assert.ok(Array.isArray(body.pipeline_summaries));
 assert.deepEqual(
   body.pipeline_summaries.map((item) => item.key),
@@ -88,9 +123,11 @@ assert.match(text.stdout, /Deployability dashboard/);
 assert.match(text.stdout, /overview/);
 assert.match(text.stdout, /commands/);
 assert.match(text.stdout, /compatibility/);
+assert.match(text.stdout, /Ecosystem readiness/);
+assert.match(text.stdout, /daily_deployable_with_safety_gates/);
 assert.match(text.stdout, /Pipeline summaries/);
 assert.match(text.stdout, /public_stack/);
-assert.match(text.stdout, /CHG-2026-098/);
+assert.match(text.stdout, /CHG-2026-099/);
 assert.match(text.stdout, /corepack pnpm run deployability:handoff/);
 assert.ok(!text.stdout.includes("sk_dashboard_must_not_leak"));
 

@@ -62,8 +62,13 @@ onboarding 或 release-image 路径前，先给出一个只读命令地图和一
   evidence、安全默认值和下一步命令 metadata，不混入终端文本或 secret 值
 - `deployability:dashboard -- --json` 输出一个干净的顶层 payload，包含
   overview、quickstart、safety、doctor 和 compatibility sections、section status、
-  per-pipeline summaries、blockers、warnings、安全默认值和下一步命令，不读取 `.env`、
-  不调用 Docker、不绑定端口、不探测网络、不打印 secret 值
+  ecosystem_readiness scorecard、per-pipeline summaries、blockers、warnings、
+  安全默认值和下一步命令，不读取 `.env`、不调用 Docker、不绑定端口、不探测网络、
+  不打印 secret 值
+- dashboard 的 ecosystem_readiness scorecard 把 daily-deployable 定义映射为
+  profile choice、generated secrets、startup path、doctor path、runtime inspection、
+  boundary understanding 和 brand-site story；全部通过时报告
+  `daily_deployable_with_safety_gates`
 - `deployability:overview`、`deployability:dashboard` 和 `deployability:handoff`
   共用第四仓 pipeline summary metadata 和一致性测试，覆盖命令数、JSON 入口数、
   dashboard-safe 数、CI-safe 数、public exposure gate 数、下一步命令和安全说明

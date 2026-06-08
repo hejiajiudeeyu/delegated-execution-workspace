@@ -63,6 +63,125 @@ function unique(items) {
   return [...new Set(items.filter(Boolean))];
 }
 
+function commandCatalog(sections) {
+  return sections.commands?.commands || [];
+}
+
+function hasCommand(sections, command) {
+  return commandCatalog(sections).some((item) => item.command === command || item.json_command === command);
+}
+
+function doctorCheckOk(sections, key) {
+  return sections.doctor?.checks?.some((item) => item.key === key && item.ok === true) || false;
+}
+
+function readinessCheck(key, label, evidence, ok, nextCommands = []) {
+  return {
+    key,
+    label,
+    ok,
+    evidence,
+    next_commands: nextCommands
+  };
+}
+
+function ecosystemReadiness(sections) {
+  const checks = [
+    readinessCheck(
+      "profile_choice",
+      "operator can choose a named deployment profile",
+      [
+        "corepack pnpm run deployability:overview",
+        "corepack pnpm run selfhost:profiles",
+        "corepack pnpm run selfhost:quickstart"
+      ],
+      hasCommand(sections, "corepack pnpm run deployability:overview") &&
+        hasCommand(sections, "corepack pnpm run selfhost:profiles") &&
+        hasCommand(sections, "corepack pnpm run selfhost:quickstart"),
+      ["corepack pnpm run selfhost:profiles", "corepack pnpm run selfhost:quickstart"]
+    ),
+    readinessCheck(
+      "secret_generation",
+      "operator can generate or harden local secrets without printing values",
+      ["corepack pnpm run selfhost:init", "corepack pnpm --silent run selfhost:init -- --json"],
+      hasCommand(sections, "corepack pnpm run selfhost:init") &&
+        hasCommand(sections, "corepack pnpm --silent run selfhost:init -- --json"),
+      ["corepack pnpm run selfhost:init"]
+    ),
+    readinessCheck(
+      "startup_path",
+      "operator can start the selected profile through documented lifecycle commands",
+      [
+        "corepack pnpm run dev:local:up",
+        "corepack pnpm run selfhost:up",
+        "corepack pnpm run selfhost:up -- --profile public-stack"
+      ],
+      hasCommand(sections, "corepack pnpm run dev:local:up") &&
+        hasCommand(sections, "corepack pnpm run selfhost:up") &&
+        hasCommand(sections, "corepack pnpm run selfhost:up -- --profile public-stack"),
+      ["corepack pnpm run dev:local:up", "corepack pnpm run selfhost:up"]
+    ),
+    readinessCheck(
+      "doctor_path",
+      "operator can run doctor/readiness commands before claiming readiness",
+      ["corepack pnpm run deployability:doctor", "corepack pnpm run dev:doctor", "corepack pnpm run selfhost:doctor"],
+      hasCommand(sections, "corepack pnpm run deployability:doctor") &&
+        hasCommand(sections, "corepack pnpm run dev:doctor") &&
+        hasCommand(sections, "corepack pnpm run selfhost:doctor"),
+      ["corepack pnpm run deployability:doctor", "corepack pnpm run selfhost:readiness"]
+    ),
+    readinessCheck(
+      "runtime_inspection",
+      "operator can inspect logs and runtime state from one command surface",
+      [
+        "corepack pnpm run dev:local:status",
+        "corepack pnpm run dev:local:logs",
+        "corepack pnpm run selfhost:status",
+        "corepack pnpm run selfhost:logs"
+      ],
+      hasCommand(sections, "corepack pnpm run dev:local:status") &&
+        hasCommand(sections, "corepack pnpm run dev:local:logs") &&
+        hasCommand(sections, "corepack pnpm run selfhost:status") &&
+        hasCommand(sections, "corepack pnpm run selfhost:logs"),
+      ["corepack pnpm run dev:local:status", "corepack pnpm run selfhost:status"]
+    ),
+    readinessCheck(
+      "boundary_understanding",
+      "operator can understand local/public, metadata, secret, and safety boundaries",
+      [
+        "corepack pnpm run deployability:safety",
+        "corepack pnpm run deployability:commands",
+        "corepack pnpm run deployability:handoff",
+        "corepack pnpm run compat:status"
+      ],
+      hasCommand(sections, "corepack pnpm run deployability:safety") &&
+        hasCommand(sections, "corepack pnpm run deployability:commands") &&
+        hasCommand(sections, "corepack pnpm run compat:status"),
+      ["corepack pnpm run deployability:safety", "corepack pnpm run deployability:handoff"]
+    ),
+    readinessCheck(
+      "brand_site_story",
+      "operator can find the same deployment story on the public brand site",
+      [
+        "repos/brand-site/src/app/pages/Docs/DeployabilityProfiles.tsx",
+        "repos/brand-site/src/app/pages/en/Docs/DeployabilityProfiles.tsx",
+        "npm run smoke:deployability-content"
+      ],
+      doctorCheckOk(sections, "brand_site_alignment") && doctorCheckOk(sections, "brand_site_content_smoke"),
+      ["corepack pnpm run deployability:doctor"]
+    )
+  ];
+  return {
+    goal: "daily-deployable",
+    status: checks.every((item) => item.ok) ? "daily_deployable_with_safety_gates" : "blocked",
+    checks,
+    safety_notes: [
+      "public-stack remains ready-now with safety gates, not automatically public-exposure ready",
+      "billing, email transport, and marketplace production readiness stay outside this scorecard until their own gates pass"
+    ]
+  };
+}
+
 function dashboardData() {
   const sectionResults = SECTION_SCRIPTS.map(([key, script]) => [key, runJsonScript(script)]);
   const sections = Object.fromEntries(sectionResults.map(([key, result]) => [key, result.body]));
@@ -99,6 +218,7 @@ function dashboardData() {
     current_bundle: currentBundle,
     sections,
     section_status: sectionStatus,
+    ecosystem_readiness: ecosystemReadiness(sections),
     pipeline_summaries: buildPipelineSummaries({
       pipelines: sections.overview?.pipelines || [],
       catalogCommands: sections.commands?.commands || []
@@ -140,6 +260,13 @@ function printText(data) {
   }
 
   if (data.pipeline_summaries.length) {
+    console.log("\nEcosystem readiness:");
+    console.log(`- goal=${data.ecosystem_readiness.goal}`);
+    console.log(`- status=${data.ecosystem_readiness.status}`);
+    for (const check of data.ecosystem_readiness.checks) {
+      console.log(`- ${check.key}: ${check.ok ? "ok" : "blocked"}`);
+    }
+
     console.log("\nPipeline summaries:");
     for (const pipeline of data.pipeline_summaries) {
       console.log(

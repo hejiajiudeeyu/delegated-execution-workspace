@@ -76,7 +76,7 @@ CALL ANYTHING 现在的仓库边界是正确的：
 | 可部署性 quickstart | 第四仓 | `corepack pnpm run deployability:quickstart`，以及作为 daily development、self-host、public-stack 和 release-review 路径只读首次使用指南的 `corepack pnpm --silent run deployability:quickstart -- --json` |
 | 可部署性安全矩阵 | 第四仓 | `corepack pnpm run deployability:safety`，以及作为部署命令 read/write/startup/network/logging 姿态说明矩阵的 `corepack pnpm --silent run deployability:safety -- --json` |
 | 可部署性 doctor | 第四仓 | `corepack pnpm run deployability:doctor`，以及作为 compatibility ledger、顶层 scripts、docs、brand-site 和 safety-contract 对齐状态只读快照的 `corepack pnpm --silent run deployability:doctor -- --json` |
-| 可部署性 dashboard | 第四仓 | `corepack pnpm run deployability:dashboard`，以及作为顶层 dashboard 和 CI 的只读聚合 payload 的 `corepack pnpm --silent run deployability:dashboard -- --json`，组合 overview、quickstart、safety、doctor、compatibility 和 per-pipeline summary sections |
+| 可部署性 dashboard | 第四仓 | `corepack pnpm run deployability:dashboard`，以及作为顶层 dashboard 和 CI 的只读聚合 payload 的 `corepack pnpm --silent run deployability:dashboard -- --json`，组合 overview、quickstart、safety、doctor、compatibility、ecosystem_readiness 和 per-pipeline summary sections |
 | 可部署性命令目录 | 第四仓 | `corepack pnpm run deployability:commands`，以及作为按 category、posture、首次使用 track 和 pipeline 过滤的只读命令目录的 `corepack pnpm --silent run deployability:commands -- --json`，并为带 profile 参数的命令变体继承基础安全姿态 |
 | 可部署性交接报告 | 第四仓 | `corepack pnpm run deployability:handoff`，以及用于输出 `exports/deployability/` 下不含 secret 的生态交接报告 metadata 的 `corepack pnpm --silent run deployability:handoff -- --json` |
 | 日常本地 doctor | 第四仓 | `corepack pnpm run dev:doctor`，以及给 dashboard 和脚本使用的 `corepack pnpm --silent run dev:doctor -- --json` |
@@ -155,8 +155,13 @@ CALL ANYTHING 现在的仓库边界是正确的：
   dirty submodules、blockers、warnings 和下一步命令，但不读取 `.env`、不调用 Docker、
   不探测网络、不打印 secret 值
 - 可部署性 dashboard metadata 可以机器读取，把 overview、quickstart、safety、
-  doctor、compatibility 和 per-pipeline summary JSON sections 聚合成一个顶层 payload，
-  但不读取 `.env`、不调用 Docker、不绑定端口、不探测网络、不打印 secret 值
+  doctor、compatibility、ecosystem_readiness 和 per-pipeline summary JSON sections
+  聚合成一个顶层 payload，但不读取 `.env`、不调用 Docker、不绑定端口、不探测网络、
+  不打印 secret 值
+- ecosystem_readiness metadata 可以机器读取，把 daily-deployable 定义转成
+  dashboard scorecard，覆盖 profile 选择、生成 secrets、启动路径、doctor 路径、
+  runtime inspection、边界理解和 brand-site 叙事；所有检查通过时报告
+  daily_deployable_with_safety_gates，而不是宣称无需 gate 的公网生产 ready
 - `deployability:overview`、`deployability:dashboard` 和 `deployability:handoff`
   共用第四仓 pipeline summary metadata，让命令数、JSON 入口数、dashboard-safe 数、
   CI-safe 数、public exposure gate 数、下一步命令和安全说明在不同 surfaces 间保持一致

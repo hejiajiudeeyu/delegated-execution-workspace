@@ -73,7 +73,7 @@ The ecosystem is "daily-deployable" when a fresh operator can:
 | Deployability quickstart | fourth repo | `corepack pnpm run deployability:quickstart`, plus `corepack pnpm --silent run deployability:quickstart -- --json` as the read-only first-use guide for daily development, self-host, public-stack, and release-review paths |
 | Deployability safety matrix | fourth repo | `corepack pnpm run deployability:safety`, plus `corepack pnpm --silent run deployability:safety -- --json` as the descriptive read/write/startup/network/logging posture map for deployment commands |
 | Deployability doctor | fourth repo | `corepack pnpm run deployability:doctor`, plus `corepack pnpm --silent run deployability:doctor -- --json` as the read-only readiness snapshot for compatibility ledger, top-level scripts, docs, brand-site, and safety-contract alignment |
-| Deployability dashboard | fourth repo | `corepack pnpm run deployability:dashboard`, plus `corepack pnpm --silent run deployability:dashboard -- --json` as the single read-only aggregate payload for top-level dashboards and CI, combining overview, quickstart, safety, doctor, compatibility, and per-pipeline summary sections |
+| Deployability dashboard | fourth repo | `corepack pnpm run deployability:dashboard`, plus `corepack pnpm --silent run deployability:dashboard -- --json` as the single read-only aggregate payload for top-level dashboards and CI, combining overview, quickstart, safety, doctor, compatibility, ecosystem_readiness, and per-pipeline summary sections |
 | Deployability commands catalog | fourth repo | `corepack pnpm run deployability:commands`, plus `corepack pnpm --silent run deployability:commands -- --json` as the read-only searchable command catalog with category, posture, first-use track, pipeline filters, and inherited safety posture for profile-specific command variants |
 | Deployability handoff | fourth repo | `corepack pnpm run deployability:handoff`, plus `corepack pnpm --silent run deployability:handoff -- --json` for a non-secret ecosystem handoff report under `exports/deployability/` |
 | Daily local doctor | fourth repo | `corepack pnpm run dev:doctor`, plus `corepack pnpm --silent run dev:doctor -- --json` for dashboards and scripts |
@@ -161,9 +161,15 @@ Required baseline:
   and next commands without reading `.env`, calling Docker, binding ports,
   probing networks, or printing secrets
 - machine-readable deployability dashboard metadata that aggregates overview,
-  quickstart, safety, doctor, compatibility, and per-pipeline summary JSON
-  sections as one top-level payload without reading `.env`, calling Docker,
-  binding ports, probing networks, or printing secrets
+  quickstart, safety, doctor, compatibility, ecosystem_readiness, and
+  per-pipeline summary JSON sections as one top-level payload without reading
+  `.env`, calling Docker, binding ports, probing networks, or printing secrets
+- machine-readable ecosystem_readiness metadata that turns the daily-deployable
+  definition into a dashboard scorecard for profile choice, generated secrets,
+  startup path, doctor path, runtime inspection, boundary understanding, and
+  brand-site story; when all checks pass it reports
+  daily_deployable_with_safety_gates rather than claiming ungated public
+  production readiness
 - shared fourth-repo pipeline summary metadata for `deployability:overview`,
   `deployability:dashboard`, and `deployability:handoff`, so command counts,
   JSON entry counts, dashboard-safe counts, CI-safe counts, public exposure

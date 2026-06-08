@@ -44,6 +44,10 @@ assert.equal(byCommand.get("corepack pnpm run test:deployability-operations").ca
 assert.equal(byCommand.get("corepack pnpm run test:deployability-operations").posture, "contract_test");
 assert.equal(byCommand.get("corepack pnpm run test:deployability-operations").ci_safe, true);
 assert.equal(byCommand.get("corepack pnpm run test:deployability-operations").dashboard_safe, false);
+assert.equal(byCommand.get("corepack pnpm run dev:local:status").posture, "runtime_snapshot");
+assert.equal(byCommand.get("corepack pnpm run dev:local:status").dashboard_safe, true);
+assert.equal(byCommand.get("corepack pnpm run selfhost:doctor").posture, "read_only");
+assert.equal(byCommand.get("corepack pnpm run selfhost:doctor").dashboard_safe, true);
 assert.equal(byCommand.get("corepack pnpm run selfhost:up").posture, "starts_services");
 assert.equal(byCommand.get("corepack pnpm run selfhost:up").calls_docker, true);
 assert.ok(body.next_commands.includes("corepack pnpm run deployability:dashboard"));

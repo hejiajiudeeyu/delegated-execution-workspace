@@ -20,12 +20,12 @@ repositories.
 - `repos/platform`: `5961309c6b0ca4e8df22dbb5be92ac0845bf8d25`
 - `repos/brand-site`: `46d71b8c7e0b9848229f56edf8edf0dad316b2dd`
 
-The current bundle is `changes/CHG-2026-098.yaml`.
+The current bundle is `changes/CHG-2026-099.yaml`.
 
 ## Readiness Verdict
 
 The pinned combination is ready for daily fourth-repo development after
-CHG-2026-098:
+CHG-2026-099:
 
 - submodule SHA integrity is verified
 - boundary governance covers the new platform billing data package
@@ -202,7 +202,7 @@ Observed results:
 - `check:submodules`: passed
 - `check:boundaries`: passed after adding `@delexec/billing-store` to
   `platform/data`
-- `check:bundles`: passed with `CHG-2026-098`
+- `check:bundles`: passed with `CHG-2026-099`
 - `test:contracts`: passed, including `@delexec/billing-store` in platform
   package validation and the `@delexec/platform-api` dependency graph
 - `test:integration`: passed with a successful request/response path

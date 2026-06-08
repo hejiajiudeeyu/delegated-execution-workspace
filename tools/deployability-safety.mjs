@@ -206,6 +206,23 @@ const MATRIX = [
     notes: "starts platform profile plus managed relay/supervisor; JSON omits child command stdout"
   },
   {
+    command: "corepack pnpm run dev:local:status",
+    json_command: "corepack pnpm --silent run dev:local:status -- --json",
+    category: "local_agent_loop",
+    posture: "runtime_snapshot",
+    reads_env: false,
+    writes_files: false,
+    starts_services: false,
+    stops_services: false,
+    calls_docker: false,
+    probes_network: false,
+    private_terminal_text: false,
+    public_exposure_gate: false,
+    ci_safe: false,
+    dashboard_safe: true,
+    notes: "reports managed relay/supervisor pid and log metadata without printing secret values"
+  },
+  {
     command: "corepack pnpm run dev:local:logs",
     json_command: "corepack pnpm --silent run dev:local:logs -- --json",
     category: "local_agent_loop",
@@ -289,6 +306,23 @@ const MATRIX = [
     ci_safe: true,
     dashboard_safe: true,
     notes: "read-only selected-profile readiness summary before startup"
+  },
+  {
+    command: "corepack pnpm run selfhost:doctor",
+    json_command: "corepack pnpm --silent run selfhost:doctor -- --json",
+    category: "selfhost",
+    posture: "read_only",
+    reads_env: false,
+    writes_files: false,
+    starts_services: false,
+    stops_services: false,
+    calls_docker: false,
+    probes_network: false,
+    private_terminal_text: false,
+    public_exposure_gate: false,
+    ci_safe: true,
+    dashboard_safe: true,
+    notes: "read-only selected-profile diagnostic snapshot before startup"
   },
   {
     command: "corepack pnpm run selfhost:ports",

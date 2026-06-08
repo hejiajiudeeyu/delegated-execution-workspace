@@ -68,9 +68,13 @@ Acceptance:
   secret values
 - `deployability:dashboard -- --json` emits one clean top-level payload with
   overview, quickstart, safety, doctor, and compatibility sections, section
-  status, per-pipeline summaries, blockers, warnings, safety defaults, and next
-  commands without reading `.env`, calling Docker, binding ports, probing
-  networks, or printing secret values
+  status, ecosystem_readiness scorecard, per-pipeline summaries, blockers,
+  warnings, safety defaults, and next commands without reading `.env`, calling
+  Docker, binding ports, probing networks, or printing secret values
+- the dashboard ecosystem_readiness scorecard maps the daily-deployable
+  definition to profile choice, generated secrets, startup path, doctor path,
+  runtime inspection, boundary understanding, and brand-site story; when all
+  checks pass it reports `daily_deployable_with_safety_gates`
 - `deployability:overview`, `deployability:dashboard`, and
   `deployability:handoff` use one shared fourth-repo pipeline summary metadata
   source and consistency test for command counts, JSON counts, dashboard-safe
