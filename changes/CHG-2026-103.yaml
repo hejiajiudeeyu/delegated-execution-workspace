@@ -1,0 +1,15 @@
+change_id: CHG-2026-103
+goal: map remaining deployability command catalog postures
+protocol_sha: da3027100cfe9391f7f8d03be18a108ee2804cf6
+client_sha: f1d6a2d8c9b83517cdf6ca9803b223847f880e9a
+platform_sha: 5961309c6b0ca4e8df22dbb5be92ac0845bf8d25
+brand_site_sha: 738945425f3fd1c788ebea0cb7333e94abe82b40
+owner: hejiajiudeeyu
+risk_level: low
+affected_scope:
+  - orchestration
+  - brand-site
+  - documentation
+contracts_check: passed
+integration_check: passed
+notes: "Maps the remaining ready-now deployability command catalog entries to explicit category and posture metadata so dashboard and operator filters no longer surface unmapped values. Local Agent Loop now aligns human and JSON command summary entries for dev:local status/log/down, maps dev:doctor as runtime_diagnostic, and maps test:agent-e2e plus mcp:golden-four as runtime_acceptance. Published Image Release Smoke now maps the real non-dry-run published-image:smoke command as delegated_smoke while retaining dry-run metadata for dashboards. Updates deployability PRDs, readiness docs, and call-anything-brand-site Deployability Profiles to document the no-unmapped catalog acceptance. Keeps protocol, client, and platform SHAs unchanged."

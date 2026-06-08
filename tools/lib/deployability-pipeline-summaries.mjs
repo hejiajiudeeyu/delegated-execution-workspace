@@ -7,6 +7,9 @@ export const PIPELINES = [
     commands: [
       "corepack pnpm run dev:local:plan",
       "corepack pnpm run dev:local:up",
+      "corepack pnpm run dev:local:status",
+      "corepack pnpm run dev:local:logs",
+      "corepack pnpm run dev:local:down",
       "corepack pnpm run dev:doctor",
       "corepack pnpm run test:agent-e2e",
       "corepack pnpm run mcp:golden-four"
@@ -17,7 +20,9 @@ export const PIPELINES = [
       "corepack pnpm --silent run dev:local:status -- --json",
       "corepack pnpm --silent run dev:local:logs -- --json",
       "corepack pnpm --silent run dev:local:down -- --json",
-      "corepack pnpm --silent run dev:doctor -- --json"
+      "corepack pnpm --silent run dev:doctor -- --json",
+      null,
+      null
     ],
     safety_notes: [
       "local lifecycle JSON omits child command stdout",

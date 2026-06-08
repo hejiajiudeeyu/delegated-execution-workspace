@@ -32,7 +32,11 @@ for (const command of [
   "corepack pnpm run selfhost:backup-validate",
   "corepack pnpm run selfhost:restore-plan",
   "corepack pnpm run selfhost:rotate-plan",
-  "corepack pnpm run selfhost:rotate"
+  "corepack pnpm run selfhost:rotate",
+  "corepack pnpm run dev:doctor",
+  "corepack pnpm run test:agent-e2e",
+  "corepack pnpm run mcp:golden-four",
+  "corepack pnpm run published-image:smoke -- --image-tag <candidate-tag>"
 ]) {
   assert.ok(byCommand.has(command), `${command} should be in the safety matrix`);
 }
@@ -51,6 +55,19 @@ assert.equal(byCommand.get("corepack pnpm run deployability:commands").calls_doc
 assert.equal(byCommand.get("corepack pnpm run deployability:commands").probes_network, false);
 assert.equal(byCommand.get("corepack pnpm run dev:local:status").posture, "runtime_snapshot");
 assert.equal(byCommand.get("corepack pnpm run dev:local:status").dashboard_safe, true);
+assert.equal(byCommand.get("corepack pnpm run dev:doctor").category, "local_agent_loop");
+assert.equal(byCommand.get("corepack pnpm run dev:doctor").posture, "runtime_diagnostic");
+assert.equal(byCommand.get("corepack pnpm run dev:doctor").calls_docker, true);
+assert.equal(byCommand.get("corepack pnpm run dev:doctor").probes_network, true);
+assert.equal(byCommand.get("corepack pnpm run dev:doctor").dashboard_safe, true);
+assert.equal(byCommand.get("corepack pnpm run test:agent-e2e").category, "local_agent_loop");
+assert.equal(byCommand.get("corepack pnpm run test:agent-e2e").posture, "runtime_acceptance");
+assert.equal(byCommand.get("corepack pnpm run test:agent-e2e").probes_network, true);
+assert.equal(byCommand.get("corepack pnpm run test:agent-e2e").dashboard_safe, false);
+assert.equal(byCommand.get("corepack pnpm run mcp:golden-four").category, "local_agent_loop");
+assert.equal(byCommand.get("corepack pnpm run mcp:golden-four").posture, "runtime_acceptance");
+assert.equal(byCommand.get("corepack pnpm run mcp:golden-four").probes_network, true);
+assert.equal(byCommand.get("corepack pnpm run mcp:golden-four").dashboard_safe, false);
 assert.equal(byCommand.get("corepack pnpm run selfhost:doctor").posture, "read_only");
 assert.equal(byCommand.get("corepack pnpm run selfhost:doctor").dashboard_safe, true);
 assert.equal(byCommand.get("corepack pnpm run selfhost:ops-report").posture, "writes_report");
@@ -96,6 +113,10 @@ assert.equal(byCommand.get("corepack pnpm run selfhost:logs").private_terminal_t
 assert.equal(byCommand.get("corepack pnpm run selfhost:audit-export").probes_network, true);
 assert.equal(byCommand.get("corepack pnpm run selfhost:security-review").public_exposure_gate, true);
 assert.equal(byCommand.get("corepack pnpm run published-image:smoke -- --dry-run --image-tag <candidate-tag>").starts_services, false);
+assert.equal(byCommand.get("corepack pnpm run published-image:smoke -- --image-tag <candidate-tag>").posture, "delegated_smoke");
+assert.equal(byCommand.get("corepack pnpm run published-image:smoke -- --image-tag <candidate-tag>").starts_services, true);
+assert.equal(byCommand.get("corepack pnpm run published-image:smoke -- --image-tag <candidate-tag>").calls_docker, true);
+assert.equal(byCommand.get("corepack pnpm run published-image:smoke -- --image-tag <candidate-tag>").dashboard_safe, false);
 
 assert.ok(body.safety_defaults.some((item) => /does not read \.env/i.test(item)));
 assert.ok(body.next_commands.includes("corepack pnpm run deployability:quickstart"));

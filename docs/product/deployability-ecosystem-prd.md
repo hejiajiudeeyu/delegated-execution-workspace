@@ -74,7 +74,7 @@ The ecosystem is "daily-deployable" when a fresh operator can:
 | Deployability safety matrix | fourth repo | `corepack pnpm run deployability:safety`, plus `corepack pnpm --silent run deployability:safety -- --json` as the descriptive read/write/startup/network/logging posture map for deployment commands |
 | Deployability doctor | fourth repo | `corepack pnpm run deployability:doctor`, plus `corepack pnpm --silent run deployability:doctor -- --json` as the read-only readiness snapshot for compatibility ledger, top-level scripts, docs, brand-site, and safety-contract alignment |
 | Deployability dashboard | fourth repo | `corepack pnpm run deployability:dashboard`, plus `corepack pnpm --silent run deployability:dashboard -- --json` as the single read-only aggregate payload for top-level dashboards and CI, combining overview, quickstart, safety, doctor, compatibility, ecosystem_readiness, and per-pipeline summary sections |
-| Deployability commands catalog | fourth repo | `corepack pnpm run deployability:commands`, plus `corepack pnpm --silent run deployability:commands -- --json` as the read-only searchable command catalog with category, posture, first-use track, pipeline filters, and inherited safety posture for profile-specific command variants |
+| Deployability commands catalog | fourth repo | `corepack pnpm run deployability:commands`, plus `corepack pnpm --silent run deployability:commands -- --json` as the read-only searchable command catalog with category, posture, first-use track, pipeline filters, inherited safety posture for profile-specific command variants, and no `unmapped` category/posture values for ready-now command paths |
 | Deployability recovery evidence path | fourth repo | `deployability:overview`, `deployability:dashboard`, `deployability:handoff`, and `deployability:commands -- --pipeline recovery_evidence` expose ops-report, audit export, backup, restore, and rotation commands as one ready-now evidence and recovery pipeline |
 | Deployability handoff | fourth repo | `corepack pnpm run deployability:handoff`, plus `corepack pnpm --silent run deployability:handoff -- --json` for a non-secret ecosystem handoff report under `exports/deployability/`, including the same ecosystem_readiness scorecard used by the dashboard |
 | Daily local doctor | fourth repo | `corepack pnpm run dev:doctor`, plus `corepack pnpm --silent run dev:doctor -- --json` for dashboards and scripts |
@@ -181,8 +181,11 @@ Required baseline:
   it as public exposure or formal production readiness
 - machine-readable deployability command catalog metadata that merges overview,
   quickstart, and safety metadata into a filterable command list, including
-  inherited posture for profile-specific command variants, without reading
-  `.env`, calling Docker, binding ports, probing networks, or printing secrets
+  inherited posture for profile-specific command variants and explicit
+  `runtime_diagnostic`, `runtime_acceptance`, and `delegated_smoke` posture
+  labels for local doctor/acceptance and real published-image smoke commands,
+  without reading `.env`, calling Docker, binding ports, probing networks, or
+  printing secrets
 - machine-readable compatibility status metadata that reports the current
   bundle, submodule SHAs, ledger matches, dirty submodules, blockers, warnings,
   and next commands without reading `.env`, calling Docker, probing networks, or
@@ -211,6 +214,8 @@ Required baseline:
   `deployability:handoff -- --json`, `test:deployability`,
   `test:deployability-operations`,
   `deployability:commands -- --pipeline recovery_evidence`,
+  `deployability:commands -- --pipeline local_agent_loop`,
+  `deployability:commands -- --pipeline published_image`,
   `dev:local:plan -- --json`,
   `dev:local:up -- --json`, `dev:local:status -- --json`,
   `dev:local:logs -- --json`, `dev:local:down -- --json`,
@@ -221,8 +226,9 @@ Required baseline:
   `selfhost:status -- --json`, `selfhost:up -- --json`, `selfhost:logs -- --json`,
   `selfhost:down -- --json`, `selfhost:smoke -- --json`, `dev:doctor`,
   `dev:doctor -- --json`,
-  `test:agent-e2e`, `published-image:plan -- --json`,
-  `published-image:smoke -- --dry-run --json`, `selfhost:security-review`,
+  `test:agent-e2e`, `mcp:golden-four`, `published-image:plan -- --json`,
+  `published-image:smoke -- --dry-run --json`, `published-image:smoke -- --image-tag <candidate-tag>`,
+  `selfhost:security-review`,
   `selfhost:audit-export -- --json`, `selfhost:backup-plan`,
   `selfhost:restore-plan`, `selfhost:rotate-plan`, `operator:onboarding:check`, and
   `operator:onboarding:check -- --json`.

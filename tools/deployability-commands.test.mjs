@@ -26,7 +26,9 @@ assert.ok(Array.isArray(body.commands));
 assert.ok(body.commands.length >= 12);
 assert.ok(body.filters.categories.includes("top_level"));
 assert.ok(body.filters.categories.includes("selfhost"));
+assert.ok(!body.filters.categories.includes("unmapped"));
 assert.ok(body.filters.postures.includes("read_only"));
+assert.ok(!body.filters.postures.includes("unmapped"));
 assert.ok(body.filters.tracks.includes("daily_dev"));
 assert.ok(body.filters.tracks.includes("all_in_one_demo"));
 assert.ok(body.filters.pipelines.includes("all_in_one_demo"));
@@ -49,6 +51,12 @@ assert.equal(byCommand.get("corepack pnpm run test:deployability-operations").ci
 assert.equal(byCommand.get("corepack pnpm run test:deployability-operations").dashboard_safe, false);
 assert.equal(byCommand.get("corepack pnpm run dev:local:status").posture, "runtime_snapshot");
 assert.equal(byCommand.get("corepack pnpm run dev:local:status").dashboard_safe, true);
+assert.equal(byCommand.get("corepack pnpm run dev:doctor").category, "local_agent_loop");
+assert.equal(byCommand.get("corepack pnpm run dev:doctor").posture, "runtime_diagnostic");
+assert.equal(byCommand.get("corepack pnpm run test:agent-e2e").category, "local_agent_loop");
+assert.equal(byCommand.get("corepack pnpm run test:agent-e2e").posture, "runtime_acceptance");
+assert.equal(byCommand.get("corepack pnpm run mcp:golden-four").category, "local_agent_loop");
+assert.equal(byCommand.get("corepack pnpm run mcp:golden-four").posture, "runtime_acceptance");
 assert.equal(byCommand.get("corepack pnpm run selfhost:doctor").posture, "read_only");
 assert.equal(byCommand.get("corepack pnpm run selfhost:doctor").dashboard_safe, true);
 assert.equal(byCommand.get("corepack pnpm run selfhost:ops-report").posture, "writes_report");
@@ -67,6 +75,7 @@ assert.equal(byCommand.get("corepack pnpm run selfhost:up").posture, "starts_ser
 assert.equal(byCommand.get("corepack pnpm run selfhost:up").calls_docker, true);
 assert.ok(body.next_commands.includes("corepack pnpm run deployability:dashboard"));
 assert.ok(body.safety_defaults.some((item) => /does not read \.env/i.test(item)));
+assert.ok(!body.commands.some((item) => item.category === "unmapped" || item.posture === "unmapped"));
 assert.ok(!json.stdout.includes("[ok]"));
 assert.ok(!json.stdout.includes("sk_commands_must_not_leak"));
 
@@ -139,6 +148,16 @@ assert.equal(recoveryEvidenceCommands.get("corepack pnpm run selfhost:rotate-pla
 assert.equal(recoveryEvidenceCommands.get("corepack pnpm run selfhost:rotate").posture, "writes_env");
 assert.ok(recoveryEvidencePipelineBody.commands.every((item) => item.pipeline_keys.includes("recovery_evidence")));
 assert.ok(!recoveryEvidencePipelineBody.commands.some((item) => item.posture === "unmapped"));
+
+const publishedImagePipeline = run(["--json", "--pipeline", "published_image"]);
+assert.equal(publishedImagePipeline.status, 0, publishedImagePipeline.stderr || publishedImagePipeline.stdout);
+const publishedImagePipelineBody = JSON.parse(publishedImagePipeline.stdout);
+const publishedImageCommands = new Map(publishedImagePipelineBody.commands.map((item) => [item.command, item]));
+assert.equal(
+  publishedImageCommands.get("corepack pnpm run published-image:smoke -- --image-tag <candidate-tag>").posture,
+  "delegated_smoke"
+);
+assert.ok(!publishedImagePipelineBody.commands.some((item) => item.posture === "unmapped"));
 
 const allInOneTrack = run(["--json", "--track", "all_in_one_demo"]);
 assert.equal(allInOneTrack.status, 0, allInOneTrack.stderr || allInOneTrack.stdout);

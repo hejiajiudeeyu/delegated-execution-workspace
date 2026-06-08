@@ -99,6 +99,10 @@ Acceptance:
   quickstart, and safety metadata, and inheriting base safety posture for
   profile-specific command variants without reading `.env`, calling Docker,
   binding ports, probing networks, or printing secret values
+- `deployability:commands -- --json` does not expose `unmapped` category or
+  posture values for ready-now command paths; local doctor/acceptance commands
+  and full published-image smoke use explicit `runtime_diagnostic`,
+  `runtime_acceptance`, and `delegated_smoke` posture labels
 - `deployability:overview -- --json` emits clean pipeline, safety-default, and
   next-command metadata without terminal `[ok]` / `[fail]` prose or secret
   values
@@ -164,6 +168,10 @@ Acceptance:
 - `dev:local:down -- --json` returns stop step status and safety notes without
   printing child command stdout; `--keep-platform` keeps the platform profile
   out of the stop sequence
+- the command catalog maps `dev:doctor` as `runtime_diagnostic` and
+  `test:agent-e2e` / `mcp:golden-four` as `runtime_acceptance`, with matching
+  Local Agent Loop human and JSON command summary positions for status, logs,
+  down, doctor, and acceptance commands
 - six caller-skill actions are visible
 - bundled workspace-summary Hotline can run end to end
 - executable MCP golden-four smoke validates tool discovery, hotline search,
@@ -467,6 +475,9 @@ Acceptance:
   `test:deployability-operations`, explaining that both gates are discoverable
   from overview next commands, the safety matrix `contract_test` posture, and
   the searchable command catalog
+- Deployability Profiles explain that ready-now command catalog entries do not
+  fall back to `unmapped`, including `runtime_diagnostic`,
+  `runtime_acceptance`, and `delegated_smoke` posture examples
 - console prototype highlights management rather than only visual polish
 - self-host messaging is honest about what is ready now versus planned
 - brand-site build and deployability-content smoke pass
@@ -504,6 +515,9 @@ Required behavior:
   permits local probe-style skipping
 - command output shows only registry, tag, and command shape, never admin keys,
   bootstrap secrets, or `.env` values
+- the command catalog maps dry-run smoke as dashboard-safe metadata and the
+  real `published-image:smoke -- --image-tag <candidate-tag>` command as
+  `delegated_smoke` instead of `unmapped`
 
 Acceptance:
 

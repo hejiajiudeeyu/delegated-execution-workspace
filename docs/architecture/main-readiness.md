@@ -18,14 +18,14 @@ repositories.
 - `repos/protocol`: `da3027100cfe9391f7f8d03be18a108ee2804cf6`
 - `repos/client`: `f1d6a2d8c9b83517cdf6ca9803b223847f880e9a`
 - `repos/platform`: `5961309c6b0ca4e8df22dbb5be92ac0845bf8d25`
-- `repos/brand-site`: `e6b8d934b16d41f8a85f8ed7e8cffe00474cd34e`
+- `repos/brand-site`: `738945425f3fd1c788ebea0cb7333e94abe82b40`
 
-The current bundle is `changes/CHG-2026-102.yaml`.
+The current bundle is `changes/CHG-2026-103.yaml`.
 
 ## Readiness Verdict
 
 The pinned combination is ready for daily fourth-repo development after
-CHG-2026-102:
+CHG-2026-103:
 
 - submodule SHA integrity is verified
 - boundary governance covers the new platform billing data package
@@ -154,6 +154,9 @@ CHG-2026-102:
   supports `corepack pnpm run deployability:commands` and
   `corepack pnpm --silent run deployability:commands -- --json` without reading
   `.env`, calling Docker, binding ports, probing networks, or printing secrets
+- ready-now command catalog entries now have explicit category/posture metadata
+  instead of falling back to `unmapped`, including local `runtime_diagnostic`,
+  local `runtime_acceptance`, and published-image `delegated_smoke` paths
 - `compat:status` is available as a read-only compatibility-ledger snapshot
   that compares latest-bundle SHAs to current submodule gitlinks, reports dirty
   submodule worktrees as warnings, and keeps ledger mismatches or dirty gitlink
@@ -202,7 +205,7 @@ Observed results:
 - `check:submodules`: passed
 - `check:boundaries`: passed after adding `@delexec/billing-store` to
   `platform/data`
-- `check:bundles`: passed with `CHG-2026-102`
+- `check:bundles`: passed with `CHG-2026-103`
 - `test:contracts`: passed, including `@delexec/billing-store` in platform
   package validation and the `@delexec/platform-api` dependency graph
 - `test:integration`: passed with a successful request/response path
@@ -246,6 +249,8 @@ Observed results:
   category, posture, track, and pipeline filters, sourced from overview,
   quickstart, and safety metadata, including inherited safety posture for
   profile-specific command variants, without terminal prose or secret values
+- `deployability:commands -- --json`: passed with no `unmapped`
+  category/posture entries for ready-now command paths
 - `compat:status -- --json`: passed, reporting the current bundle as matching
   the current protocol/client/platform/brand-site gitlinks; it also surfaced
   existing dirty submodule worktrees as warnings without treating them as ledger
