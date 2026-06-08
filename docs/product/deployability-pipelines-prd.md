@@ -21,6 +21,8 @@ Required commands:
 - `corepack pnpm --silent run deployability:safety -- --json`
 - `corepack pnpm run deployability:explain`
 - `corepack pnpm --silent run deployability:explain -- --json`
+- `corepack pnpm run deployability:production`
+- `corepack pnpm --silent run deployability:production -- --json`
 - `corepack pnpm run deployability:readiness`
 - `corepack pnpm --silent run deployability:readiness -- --json`
 - `corepack pnpm run deployability:roadmap`
@@ -103,6 +105,10 @@ Acceptance:
   architecture, truth-source boundaries, profile selection, public exposure
   gates, production hardening, and cross-repo validation order without
   executing commands or printing secret values
+- `deployability:production -- --json` emits `production_hardening_review`, a
+  read-only boundary view that separates daily deployability from public
+  exposure and formal production readiness while surfacing billing, email,
+  marketplace, and formal release gates without executing commands
 - `deployability:readiness -- --json` emits the standalone daily-deployable
   scorecard for humans, CI, and management UIs, including check evidence,
   summary counts, blockers, warnings, safety notes, and next commands without

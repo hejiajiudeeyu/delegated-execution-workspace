@@ -119,6 +119,8 @@ corepack pnpm run deployability:safety
 corepack pnpm --silent run deployability:safety -- --json
 corepack pnpm run deployability:explain
 corepack pnpm --silent run deployability:explain -- --json
+corepack pnpm run deployability:production
+corepack pnpm --silent run deployability:production -- --json
 corepack pnpm run deployability:readiness
 corepack pnpm --silent run deployability:readiness -- --json
 corepack pnpm run deployability:roadmap
@@ -187,6 +189,13 @@ truth-source boundaries, profile selection, public-exposure gates, production
 hardening, and cross-repo validation. Its JSON form is meant for onboarding
 screens and management UIs before an operator chooses a profile; it does not
 read `.env`, call Docker, probe networks, or print secret values.
+
+`deployability:production` is the read-only production hardening boundary
+review. Use `corepack pnpm run deployability:production` or
+`corepack pnpm --silent run deployability:production -- --json` when a dashboard
+needs to separate daily deployability from public exposure and formal
+production readiness while surfacing billing, email, marketplace, and formal
+release gates without executing deployment commands.
 
 `deployability:doctor` is the read-only deployability alignment snapshot. It
 checks the compatibility ledger, top-level scripts, documentation, brand-site

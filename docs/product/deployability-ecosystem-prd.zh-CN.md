@@ -76,6 +76,7 @@ CALL ANYTHING 现在的仓库边界是正确的：
 | 可部署性 quickstart | 第四仓 | `corepack pnpm run deployability:quickstart`，以及作为 daily development、all-in-one demo、self-host、public-stack 和 release-review 路径只读首次使用指南的 `corepack pnpm --silent run deployability:quickstart -- --json`；daily development 会在进入更深的 profile-specific 命令前先暴露专用 profile catalog、action-plan profile selector 和 focused dashboard / handoff 示例 |
 | 可部署性安全矩阵 | 第四仓 | `corepack pnpm run deployability:safety`，以及作为部署命令 read/write/startup/network/logging 姿态说明矩阵的 `corepack pnpm --silent run deployability:safety -- --json`，包含作为 dashboard-safe read-only 命令的专用 profile catalog 和 action-plan profile selector |
 | 可部署性 operator explainer | 第四仓 | `corepack pnpm run deployability:explain`，以及作为 operator 和管理 UI 使用的只读架构、truth-source 边界、profile、gate 和跨仓验证解释面的 `corepack pnpm --silent run deployability:explain -- --json` |
+| 可部署性 production hardening review | 第四仓 | `corepack pnpm run deployability:production`，以及作为只读 production hardening 边界视图的 `corepack pnpm --silent run deployability:production -- --json`；它把 daily deployability 与 public exposure / formal production readiness 分开，展示 billing、email、marketplace 和 formal release gates，且不执行部署命令 |
 | 可部署性 readiness scorecard | 第四仓 | `corepack pnpm run deployability:readiness`，以及作为人、CI 和管理 UI 使用的独立 daily-deployable scorecard 的 `corepack pnpm --silent run deployability:readiness -- --json`；它复用 command catalog 和 doctor metadata，输出检查证据、summary counts、blockers、warnings、安全说明和下一步命令，让调用方不用解析完整 dashboard 或 handoff payload |
 | 可部署性 roadmap | 第四仓 | `corepack pnpm run deployability:roadmap`，以及作为管理 UI 和规划评审使用的只读 PRD milestone view 的 `corepack pnpm --silent run deployability:roadmap -- --json`；它把已满足、受 gate 保护、阻塞和规划中的 deployability 工作分开呈现，让 daily deployability 可见，但不夸大 public production readiness |
 | 可部署性 operator status | 第四仓 | `corepack pnpm run deployability:status`，以及作为第一屏管理界面 compact operator status 的 `corepack pnpm --silent run deployability:status -- --json`；它把 readiness、roadmap 和 public-stack recipe 聚合成 status cards、primary next commands、source health 和 safety defaults，且不执行部署命令 |
@@ -282,6 +283,8 @@ CALL ANYTHING 现在的仓库边界是正确的：
   `selfhost:status -- --json`、`selfhost:up -- --json`、`selfhost:logs -- --json`、
   `selfhost:down -- --json`、`selfhost:smoke -- --json`、`dev:doctor`、
   `dev:doctor -- --json`、`corepack pnpm run deployability:readiness`、
+  `corepack pnpm run deployability:production`、
+  `corepack pnpm --silent run deployability:production -- --json`、
   `corepack pnpm --silent run deployability:readiness -- --json`、
   `corepack pnpm run deployability:roadmap`、
   `corepack pnpm --silent run deployability:roadmap -- --json`、

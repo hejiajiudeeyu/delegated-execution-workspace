@@ -70,6 +70,23 @@ const MATRIX = [
     notes: "read-only architecture, ownership, profile, gate, and validation explainer for operators"
   },
   {
+    command: "corepack pnpm run deployability:production",
+    json_command: "corepack pnpm --silent run deployability:production -- --json",
+    category: "top_level",
+    posture: "read_only",
+    reads_env: false,
+    writes_files: false,
+    starts_services: false,
+    stops_services: false,
+    calls_docker: false,
+    probes_network: false,
+    private_terminal_text: false,
+    public_exposure_gate: false,
+    ci_safe: true,
+    dashboard_safe: true,
+    notes: "read-only production hardening boundary review for daily deployability, public exposure, and formal release gates"
+  },
+  {
     command: "corepack pnpm run deployability:readiness",
     json_command: "corepack pnpm --silent run deployability:readiness -- --json",
     category: "top_level",
@@ -949,6 +966,7 @@ const NEXT_COMMANDS = [
   "corepack pnpm run deployability:quickstart",
   "corepack pnpm run deployability:overview",
   "corepack pnpm run deployability:explain",
+  "corepack pnpm run deployability:production",
   "corepack pnpm run deployability:readiness",
   "corepack pnpm run deployability:status",
   "corepack pnpm run deployability:gates",

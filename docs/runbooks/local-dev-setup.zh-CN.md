@@ -98,6 +98,8 @@ corepack pnpm run deployability:safety
 corepack pnpm --silent run deployability:safety -- --json
 corepack pnpm run deployability:explain
 corepack pnpm --silent run deployability:explain -- --json
+corepack pnpm run deployability:production
+corepack pnpm --silent run deployability:production -- --json
 corepack pnpm run deployability:readiness
 corepack pnpm --silent run deployability:readiness -- --json
 corepack pnpm run deployability:roadmap
@@ -162,6 +164,12 @@ secret 值。
 边界、profile 选择、public-exposure gates、production hardening 和跨仓验证。
 JSON 形式适合 onboarding 屏和管理 UI 在 operator 选择 profile 前使用；它不读取
 `.env`、不调用 Docker、不探测网络、不打印 secret 值。
+
+`deployability:production` 是只读 production hardening 边界视图。当 dashboard
+需要把 daily deployability 与 public exposure / formal production readiness 分开，
+并展示 billing、email、marketplace 和 formal release gates 时，可以使用
+`corepack pnpm run deployability:production` 或
+`corepack pnpm --silent run deployability:production -- --json`；它不执行部署命令。
 
 `deployability:doctor` 是只读 deployability 对齐快照。它会在 operator 进入具体
 管线诊断前检查 compatibility ledger、顶层 scripts、文档、brand-site file alignment、

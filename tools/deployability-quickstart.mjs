@@ -27,6 +27,11 @@ const TRACKS = [
         json_command: "corepack pnpm --silent run deployability:explain -- --json"
       },
       {
+        label: "Review production hardening boundaries",
+        command: "corepack pnpm run deployability:production",
+        json_command: "corepack pnpm --silent run deployability:production -- --json"
+      },
+      {
         label: "Read the daily-deployable scorecard",
         command: "corepack pnpm run deployability:readiness",
         json_command: "corepack pnpm --silent run deployability:readiness -- --json"
@@ -239,6 +244,7 @@ const NEXT_COMMANDS = [
   "corepack pnpm run deployability:overview",
   "corepack pnpm run deployability:safety",
   "corepack pnpm run deployability:explain",
+  "corepack pnpm run deployability:production",
   "corepack pnpm run deployability:readiness",
   "corepack pnpm run deployability:roadmap",
   "corepack pnpm run deployability:status",

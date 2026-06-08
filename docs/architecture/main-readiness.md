@@ -136,6 +136,13 @@ CHG-2026-105:
   `corepack pnpm run deployability:explain` and
   `corepack pnpm --silent run deployability:explain -- --json` without reading
   `.env`, calling Docker, binding ports, probing networks, or printing secrets
+- `deployability:production` is available as a read-only production hardening
+  boundary review, and supports `corepack pnpm run deployability:production`
+  and `corepack pnpm --silent run deployability:production -- --json` without
+  reading `.env`, calling Docker, binding ports, probing networks, or printing
+  secrets; it separates daily deployability from public exposure and formal
+  production readiness while surfacing billing, email, marketplace, and formal
+  release gates
 - `deployability:readiness` is available as a standalone daily-deployable
   scorecard for humans, CI, and management UIs, and supports
   `corepack pnpm run deployability:readiness` and

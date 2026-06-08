@@ -73,6 +73,7 @@ The ecosystem is "daily-deployable" when a fresh operator can:
 | Deployability quickstart | fourth repo | `corepack pnpm run deployability:quickstart`, plus `corepack pnpm --silent run deployability:quickstart -- --json` as the read-only first-use guide for daily development, all-in-one demo, self-host, public-stack, and release-review paths; daily development includes the dedicated profile catalog, action-plan profile selector, and focused dashboard/handoff examples before operators choose deeper profile-specific commands |
 | Deployability safety matrix | fourth repo | `corepack pnpm run deployability:safety`, plus `corepack pnpm --silent run deployability:safety -- --json` as the descriptive read/write/startup/network/logging posture map for deployment commands, including the dedicated profile catalog and action-plan profile selector as dashboard-safe read-only commands |
 | Deployability operator explainer | fourth repo | `corepack pnpm run deployability:explain`, plus `corepack pnpm --silent run deployability:explain -- --json` as the read-only architecture, truth-source boundary, profile, gate, and cross-repo validation explainer for operators and management UIs |
+| Deployability production hardening review | fourth repo | `corepack pnpm run deployability:production`, plus `corepack pnpm --silent run deployability:production -- --json` as the read-only production hardening boundary view that separates daily deployability from public exposure and formal production readiness; it surfaces billing, email, marketplace, and formal release gates without executing deployment commands |
 | Deployability readiness scorecard | fourth repo | `corepack pnpm run deployability:readiness`, plus `corepack pnpm --silent run deployability:readiness -- --json` as the standalone daily-deployable scorecard for humans, CI, and management UIs; it reuses command-catalog and doctor metadata to report check evidence, summary counts, blockers, warnings, safety notes, and next commands without requiring consumers to parse the full dashboard or handoff payload |
 | Deployability roadmap | fourth repo | `corepack pnpm run deployability:roadmap`, plus `corepack pnpm --silent run deployability:roadmap -- --json` as the read-only PRD milestone view for management UIs and planning reviews; it separates satisfied, gated, blocked, and planned deployability work so daily deployability remains visible without overstating public production readiness |
 | Deployability operator status | fourth repo | `corepack pnpm run deployability:status`, plus `corepack pnpm --silent run deployability:status -- --json` as the compact operator status for first-glance management surfaces; it aggregates readiness, roadmap, and the public-stack recipe into status cards, primary next commands, source health, and safety defaults without executing deployment commands |
@@ -290,7 +291,8 @@ Required baseline:
   `deployability:overview -- --json`, `deployability:quickstart`,
   `deployability:quickstart -- --json`, `deployability:safety`,
   `deployability:safety -- --json`, `deployability:explain`,
-  `deployability:explain -- --json`, `deployability:readiness`,
+  `deployability:explain -- --json`, `deployability:production`,
+  `deployability:production -- --json`, `deployability:readiness`,
   `deployability:readiness -- --json`, `deployability:roadmap`,
   `deployability:roadmap -- --json`, `deployability:status`,
   `deployability:status -- --json`, `deployability:gates`,

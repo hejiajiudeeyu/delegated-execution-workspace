@@ -121,6 +121,8 @@ corepack pnpm run deployability:safety
 corepack pnpm --silent run deployability:safety -- --json
 corepack pnpm run deployability:explain
 corepack pnpm --silent run deployability:explain -- --json
+corepack pnpm run deployability:production
+corepack pnpm --silent run deployability:production -- --json
 corepack pnpm run deployability:readiness
 corepack pnpm --silent run deployability:readiness -- --json
 corepack pnpm run deployability:roadmap
@@ -316,6 +318,11 @@ Notes:
   source-of-truth boundary, profile, gate, and validation explainer before
   choosing a deployment path. It only projects existing metadata and does not
   read `.env`, call Docker, probe networks, or print secret values.
+- Use `corepack pnpm --silent run deployability:production -- --json` when an
+  operator console needs a read-only production hardening boundary review. It
+  separates daily deployability from public exposure and formal production
+  readiness, surfaces billing/email/marketplace/formal release gates, and does
+  not execute deployment commands.
 - Use `corepack pnpm --silent run deployability:status -- --json` when an
   operator console needs one compact first-glance status. It aggregates
   readiness, roadmap, and the public-stack recipe into status cards without
