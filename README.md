@@ -137,6 +137,8 @@ corepack pnpm run deployability:action-plan -- --profile public-stack
 corepack pnpm --silent run deployability:action-plan -- --profile public-stack --json
 corepack pnpm run deployability:commands
 corepack pnpm --silent run deployability:commands -- --json
+corepack pnpm run deployability:runbook
+corepack pnpm --silent run deployability:runbook -- --json
 corepack pnpm run deployability:commands -- --profile public-stack
 corepack pnpm --silent run deployability:commands -- --profile public-stack --json
 corepack pnpm run compat:status

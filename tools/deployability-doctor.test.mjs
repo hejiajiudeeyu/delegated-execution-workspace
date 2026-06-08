@@ -50,6 +50,8 @@ assert.ok(checksByKey.get("top_level_scripts").data.required_scripts.includes("d
 assert.ok(checksByKey.get("top_level_scripts").data.required_scripts.includes("test:deployability-action-plan"));
 assert.ok(checksByKey.get("top_level_scripts").data.required_scripts.includes("deployability:profiles"));
 assert.ok(checksByKey.get("top_level_scripts").data.required_scripts.includes("test:deployability-profiles"));
+assert.ok(checksByKey.get("top_level_scripts").data.required_scripts.includes("deployability:runbook"));
+assert.ok(checksByKey.get("top_level_scripts").data.required_scripts.includes("test:deployability-runbook"));
 assert.ok(checksByKey.get("top_level_scripts").data.required_scripts.includes("test:deployability-operations"));
 assert.ok(checksByKey.get("brand_site_alignment").evidence.some((item) => item.includes("DeployabilityProfiles.tsx")));
 assert.ok(checksByKey.get("brand_site_content_smoke").evidence.includes("npm run smoke:deployability-content"));
@@ -59,6 +61,7 @@ assert.ok(body.next_commands.includes("corepack pnpm run deployability:dashboard
 assert.ok(body.next_commands.includes("corepack pnpm run deployability:action-plan"));
 assert.ok(body.next_commands.includes("corepack pnpm run deployability:profiles"));
 assert.ok(body.next_commands.includes("corepack pnpm run deployability:commands"));
+assert.ok(body.next_commands.includes("corepack pnpm run deployability:runbook"));
 assert.ok(body.next_commands.includes("corepack pnpm run deployability:handoff"));
 assert.ok(body.next_commands.includes("corepack pnpm run test:deployability"));
 assert.ok(body.next_commands.includes("corepack pnpm run test:deployability-operations"));
@@ -78,6 +81,7 @@ assert.match(text.stdout, /corepack pnpm run deployability:dashboard/);
 assert.match(text.stdout, /corepack pnpm run deployability:action-plan/);
 assert.match(text.stdout, /corepack pnpm run deployability:profiles/);
 assert.match(text.stdout, /corepack pnpm run deployability:commands/);
+assert.match(text.stdout, /corepack pnpm run deployability:runbook/);
 assert.match(text.stdout, /corepack pnpm run deployability:handoff/);
 assert.ok(!text.stdout.includes("sk_doctor_must_not_leak"));
 

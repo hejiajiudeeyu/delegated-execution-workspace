@@ -202,6 +202,15 @@ CHG-2026-105:
   `corepack pnpm --silent run deployability:commands -- --profile public-stack --json`
   without reading `.env`, calling Docker, binding ports, probing networks, or
   printing secrets
+- `deployability:runbook` is available as a read-only profile runbook
+  projection for operators and management UIs. It supports
+  `corepack pnpm run deployability:runbook` and
+  `corepack pnpm --silent run deployability:runbook -- --json` for the profile
+  index, plus `--profile <key-or-alias>` for a staged `profile_runbook` with
+  inspect, gate, start, verify, operate, and evidence phases. The projection
+  reuses the profile catalog and command catalog, keeps gate phases before
+  start phases, and does not read `.env`, call Docker, bind ports, probe
+  networks, or print secrets
 - ready-now command catalog entries now have explicit category/posture metadata
   instead of falling back to `unmapped`, including local `runtime_diagnostic`,
   local `runtime_acceptance`, and published-image `delegated_smoke` paths
@@ -389,7 +398,7 @@ Observed results:
   bilingual Deployability Profiles route/content contract, including the
   admin-only Billing console narrative plus `selfhost:security-review` and
   `selfhost:audit-export` / `selfhost:profiles` / `selfhost:quickstart` / `selfhost:readiness -- --all` / `selfhost:readiness` / `selfhost:doctor` / `selfhost:init -- --json` / `selfhost:init -- --profile public-stack --json` / `selfhost:summary` / `selfhost:ports` /
-  `selfhost:ops-report` / `selfhost:status -- --json` / `selfhost:config -- --json` / `selfhost:backup-validate` / `selfhost:restore-plan` / `selfhost:rotate -- --profile public-stack --json` / `selfhost:rotate -- --profile public-stack --confirm --json` / `deployability:quickstart` / `deployability:quickstart -- --json` / `deployability:safety` / `deployability:safety -- --json` / `deployability:doctor` / `corepack pnpm run deployability:doctor` / `corepack pnpm --silent run deployability:doctor -- --json` / `deployability:dashboard` / `corepack pnpm run deployability:dashboard` / `corepack pnpm --silent run deployability:dashboard -- --json` / `deployability:action-plan` / `corepack pnpm run deployability:action-plan` / `corepack pnpm --silent run deployability:action-plan -- --json` / `deployability:commands` / `corepack pnpm run deployability:commands` / `corepack pnpm --silent run deployability:commands -- --json` / `deployability:handoff` / `deployability:handoff -- --json` / `operator:onboarding:check -- --json` / `published-image:smoke -- --dry-run --json`
+  `selfhost:ops-report` / `selfhost:status -- --json` / `selfhost:config -- --json` / `selfhost:backup-validate` / `selfhost:restore-plan` / `selfhost:rotate -- --profile public-stack --json` / `selfhost:rotate -- --profile public-stack --confirm --json` / `deployability:quickstart` / `deployability:quickstart -- --json` / `deployability:safety` / `deployability:safety -- --json` / `deployability:doctor` / `corepack pnpm run deployability:doctor` / `corepack pnpm --silent run deployability:doctor -- --json` / `deployability:dashboard` / `corepack pnpm run deployability:dashboard` / `corepack pnpm --silent run deployability:dashboard -- --json` / `deployability:action-plan` / `corepack pnpm run deployability:action-plan` / `corepack pnpm --silent run deployability:action-plan -- --json` / `deployability:commands` / `corepack pnpm run deployability:commands` / `corepack pnpm --silent run deployability:commands -- --json`, `corepack pnpm run deployability:runbook`, `corepack pnpm --silent run deployability:runbook -- --json` / `deployability:handoff` / `deployability:handoff -- --json` / `operator:onboarding:check -- --json` / `published-image:smoke -- --dry-run --json`
   commands
 - `repos/brand-site` `npm run build`: passed, including client build, SSR
   build, and prerender output for the new deployability docs routes
@@ -618,7 +627,7 @@ client-facing billing readiness, and the public-stack command examples include
 `selfhost:up -- --profile all-in-one`, `all_in_one_demo`,
 `selfhost:security-review`,
 `selfhost:audit-export`, `selfhost:audit-export -- --json`, `selfhost:profiles`, `selfhost:quickstart`, `selfhost:readiness -- --all`, `selfhost:readiness`, `selfhost:readiness -- --json`, `selfhost:doctor`, `selfhost:init -- --json`, `selfhost:init -- --profile public-stack --json`, `selfhost:summary`, `selfhost:ports`,
-`selfhost:up -- --json`, `selfhost:smoke -- --json`, `selfhost:logs -- --json`, `selfhost:down -- --json`, `selfhost:ops-report`, `deployability:safety`, `deployability:safety -- --json`, `deployability:doctor`, `corepack pnpm run deployability:doctor`, `corepack pnpm --silent run deployability:doctor -- --json`, `deployability:dashboard`, `corepack pnpm run deployability:dashboard`, `corepack pnpm --silent run deployability:dashboard -- --json`, `deployability:action-plan`, `corepack pnpm run deployability:action-plan`, `corepack pnpm --silent run deployability:action-plan -- --json`, `deployability:commands`, `corepack pnpm run deployability:commands`, `corepack pnpm --silent run deployability:commands -- --json`, `deployability:handoff`, `operator:onboarding:check -- --json`,
+`selfhost:up -- --json`, `selfhost:smoke -- --json`, `selfhost:logs -- --json`, `selfhost:down -- --json`, `selfhost:ops-report`, `deployability:safety`, `deployability:safety -- --json`, `deployability:doctor`, `corepack pnpm run deployability:doctor`, `corepack pnpm --silent run deployability:doctor -- --json`, `deployability:dashboard`, `corepack pnpm run deployability:dashboard`, `corepack pnpm --silent run deployability:dashboard -- --json`, `deployability:action-plan`, `corepack pnpm run deployability:action-plan`, `corepack pnpm --silent run deployability:action-plan -- --json`, `deployability:commands`, `corepack pnpm run deployability:commands`, `corepack pnpm --silent run deployability:commands -- --json`, `corepack pnpm run deployability:runbook`, `corepack pnpm --silent run deployability:runbook -- --json`, `deployability:handoff`, `operator:onboarding:check -- --json`,
 `deployability:commands -- --pipeline recovery_evidence`, `recovery_evidence`,
 `selfhost:plan`, `selfhost:plan -- --json`, `selfhost:backup-plan`, `selfhost:backup-validate`, `selfhost:restore-plan`, `selfhost:rotate-plan`, `selfhost:rotate -- --profile public-stack --json`, and `selfhost:rotate -- --profile public-stack --confirm --json` as pre-exposure safety,
 evidence, quickstart sequencing, human-readable and machine-readable readiness overview, selected-profile deployment maps, port visibility, safe startup/log/stop command metadata, operator next-action selection, handoff-report,

@@ -35,6 +35,8 @@ Required commands:
 - `corepack pnpm --silent run deployability:action-plan -- --profile public-stack --json`
 - `corepack pnpm run deployability:commands`
 - `corepack pnpm --silent run deployability:commands -- --json`
+- `corepack pnpm run deployability:runbook`
+- `corepack pnpm --silent run deployability:runbook -- --json`
 - `corepack pnpm run deployability:commands -- --profile public-stack`
 - `corepack pnpm --silent run deployability:commands -- --profile public-stack --json`
 - `corepack pnpm run compat:status`
@@ -146,6 +148,12 @@ Acceptance:
   quickstart, and safety metadata, and inheriting base safety posture for
   profile-specific command variants without reading `.env`, calling Docker,
   binding ports, probing networks, or printing secret values
+- `deployability:runbook -- --json` emits a clean `profile_runbook_index`
+  payload, and `deployability:runbook -- --profile public-stack --json`
+  emits a clean `profile_runbook` payload with inspect, gate, start, verify,
+  operate, and evidence phases. Gate phases must appear before start phases,
+  phase commands must preserve command-catalog safety posture metadata, and
+  unknown profiles must return blockers instead of falling back to all profiles
 - the same `deployability:commands -- --json` payload includes
   `filters.profiles` with supported profile keys, aliases, owning pipeline
   keys, and purposes so dashboards can render the command-catalog profile
@@ -173,9 +181,9 @@ Acceptance:
   commands
 - `deployability:commands -- --track daily_dev --json` includes
   `deployability:profiles` and
-  `deployability:action-plan -- --list-profiles` as `top_level` /
-  `read_only` / dashboard-safe commands, sourced from quickstart and safety
-  metadata
+  `deployability:action-plan -- --list-profiles` plus the daily profile
+  runbook entry as `top_level` / `read_only` / dashboard-safe commands,
+  sourced from quickstart and safety metadata
 - `deployability:commands -- --json` does not expose `unmapped` category or
   posture values for ready-now command paths; local doctor/acceptance commands
   and full published-image smoke use explicit `runtime_diagnostic`,

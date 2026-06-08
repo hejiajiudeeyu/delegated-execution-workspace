@@ -155,6 +155,23 @@ const MATRIX = [
     notes: "read-only searchable command catalog with safety posture and first-use context"
   },
   {
+    command: "corepack pnpm run deployability:runbook",
+    json_command: "corepack pnpm --silent run deployability:runbook -- --json",
+    category: "top_level",
+    posture: "read_only",
+    reads_env: false,
+    writes_files: false,
+    starts_services: false,
+    stops_services: false,
+    calls_docker: false,
+    probes_network: false,
+    private_terminal_text: false,
+    public_exposure_gate: false,
+    ci_safe: true,
+    dashboard_safe: true,
+    notes: "read-only staged profile runbook projection for operators and management UIs"
+  },
+  {
     command: "corepack pnpm run compat:status",
     json_command: "corepack pnpm --silent run compat:status -- --json",
     category: "top_level",

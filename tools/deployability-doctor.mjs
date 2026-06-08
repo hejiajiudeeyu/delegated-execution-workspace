@@ -22,6 +22,7 @@ const REQUIRED_SCRIPTS = [
   "deployability:action-plan",
   "deployability:profiles",
   "deployability:commands",
+  "deployability:runbook",
   "deployability:handoff",
   "compat:status",
   "test:deployability-overview",
@@ -33,6 +34,7 @@ const REQUIRED_SCRIPTS = [
   "test:deployability-profiles",
   "test:deployability-pipeline-summaries",
   "test:deployability-commands",
+  "test:deployability-runbook",
   "test:deployability-handoff",
   "test:deployability",
   "test:deployability-operations",
@@ -49,7 +51,9 @@ const DOCTOR_COMMANDS = [
   "corepack pnpm run deployability:profiles",
   "corepack pnpm --silent run deployability:profiles -- --json",
   "corepack pnpm run deployability:commands",
-  "corepack pnpm --silent run deployability:commands -- --json"
+  "corepack pnpm --silent run deployability:commands -- --json",
+  "corepack pnpm run deployability:runbook",
+  "corepack pnpm --silent run deployability:runbook -- --json"
 ];
 
 const DOC_ALIGNMENT_FILES = [
@@ -98,6 +102,7 @@ const NEXT_COMMANDS = [
   "corepack pnpm run deployability:action-plan",
   "corepack pnpm run deployability:profiles",
   "corepack pnpm run deployability:commands",
+  "corepack pnpm run deployability:runbook",
   "corepack pnpm run compat:status",
   "corepack pnpm run deployability:handoff",
   "corepack pnpm run test:deployability",

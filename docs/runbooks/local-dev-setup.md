@@ -131,6 +131,8 @@ corepack pnpm run deployability:action-plan -- --profile public-stack
 corepack pnpm --silent run deployability:action-plan -- --profile public-stack --json
 corepack pnpm run deployability:commands
 corepack pnpm --silent run deployability:commands -- --json
+corepack pnpm run deployability:runbook
+corepack pnpm --silent run deployability:runbook -- --json
 corepack pnpm run deployability:commands -- --profile public-stack
 corepack pnpm --silent run deployability:commands -- --profile public-stack --json
 corepack pnpm run compat:status
@@ -226,6 +228,16 @@ filters, so `--profile public-stack` returns only the public-stack command
 catalog and unknown profile names return clean blockers. Profile-specific
 command variants inherit the safety posture of their base command. It does not
 read `.env`, call Docker, bind ports, probe networks, or print secret values.
+
+`deployability:runbook` is the read-only staged runbook projection for one
+profile. Use `corepack pnpm run deployability:runbook`,
+`corepack pnpm --silent run deployability:runbook -- --json`, or
+`--profile public-stack` / another profile key or alias when an operator or
+dashboard needs the exact inspect, gate, start, verify, operate, and evidence
+sequence before copying commands. It reuses `deployability:profiles` and
+`deployability:commands`, keeps public exposure gates before startup, returns
+unknown-profile blockers, and does not read `.env`, call Docker, bind ports,
+probe networks, or print secret values.
 
 `deployability:dashboard -- --json` and `deployability:handoff -- --json`
 also expose the same directory as top-level `profile_selector`, so dashboards,
