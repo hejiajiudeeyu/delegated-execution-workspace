@@ -179,9 +179,10 @@ JSON form does not read `.env`, call Docker, probe networks, or print secrets.
 
 `deployability:handoff` writes a non-secret Markdown handoff report under
 `exports/deployability/` unless `--output` is provided. It combines the current
-bundle, compatibility warnings, command map, safety notes, and next validation
-commands. Its JSON form writes the same report and returns metadata without
-reading `.env`, calling Docker, probing networks, or printing secret values.
+bundle, compatibility warnings, command map, per-pipeline summaries, safety
+notes, and next validation commands. Its JSON form writes the same report and
+returns metadata without reading `.env`, calling Docker, probing networks, or
+printing secret values.
 
 `dev:doctor -- --json` reports local prerequisites, runtime health,
 caller-skill manifest/search checks, blockers, and next commands as clean JSON.

@@ -150,8 +150,9 @@ ledger mismatch 保持为 blockers。JSON 形式不读取 `.env`、不调用 Doc
 
 `deployability:handoff` 会把不含 secret 的 Markdown 交接报告写入
 `exports/deployability/`；也可以通过 `--output` 指定路径。报告聚合当前 bundle、
-兼容 warnings、命令地图、安全说明和下一步验证命令。JSON 形式会写同一份报告并输出
-metadata，不读取 `.env`、不调用 Docker、不探测网络、不打印 secret 值。
+兼容 warnings、命令地图、per-pipeline summaries、安全说明和下一步验证命令。JSON
+形式会写同一份报告并输出 metadata，不读取 `.env`、不调用 Docker、不探测网络、不打印
+secret 值。
 
 `dev:doctor -- --json` 会用干净 JSON 输出本地前置条件、runtime health、
 caller-skill manifest / search 检查、blockers 和下一步命令。它不会打印 raw

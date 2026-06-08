@@ -76,8 +76,8 @@ onboarding 或 release-image 路径前，先给出一个只读命令地图和一
   marker 仍然是 blockers
 - `deployability:handoff` 会把不含 secret 的 Markdown 报告写入
   `exports/deployability/`，也可以用 `--output` 指定路径；JSON 形式输出同一组
-  bundle、compatibility、command-map、安全说明和下一步命令 metadata，不混入终端
-  文本或 secret 值
+  bundle、compatibility、command-map、per-pipeline summaries、安全说明和下一步命令
+  metadata，不混入终端文本或 secret 值
 
 ## 管线 A：Local Agent Loop
 

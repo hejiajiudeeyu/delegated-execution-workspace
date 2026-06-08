@@ -85,8 +85,9 @@ Acceptance:
   dirty gitlink markers remain blockers
 - `deployability:handoff` writes a non-secret Markdown report under
   `exports/deployability/` unless `--output` is provided, and its JSON form
-  returns the same bundle, compatibility, command-map, safety-note, and
-  next-command metadata without terminal prose or secret values
+  returns the same bundle, compatibility, command-map, per-pipeline summary,
+  safety-note, and next-command metadata without terminal prose or secret
+  values
 
 ## Pipeline A: Local Agent Loop
 

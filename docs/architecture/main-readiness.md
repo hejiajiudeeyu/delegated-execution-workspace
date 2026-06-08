@@ -156,9 +156,9 @@ CHG-2026-096:
   or printing secrets
 - `deployability:handoff` is available as a non-secret ecosystem handoff report
   under `exports/deployability/`, combining current bundle metadata,
-  compatibility warnings, command map, safety notes, and next validation
-  commands, and supports `--json` without reading `.env`, calling Docker,
-  binding ports, probing networks, or printing secrets
+  compatibility warnings, command map, per-pipeline summaries, safety notes,
+  and next validation commands, and supports `--json` without reading `.env`,
+  calling Docker, binding ports, probing networks, or printing secrets
 - published-image smoke now has a fourth-repo entry point that reviews
   public-stack release images and delegates to platform smoke with
   `COMPOSE_NO_BUILD=true`
@@ -230,8 +230,8 @@ Observed results:
   blockers
 - `deployability:handoff -- --json`: passed, writing a Markdown handoff report
   under `exports/deployability/` while returning current bundle, compatibility,
-  command-map, safety-note, and next-validation metadata without terminal prose
-  or secret values
+  command-map, per-pipeline summary, safety-note, and next-validation metadata
+  without terminal prose or secret values
 - `selfhost:profiles` / `selfhost:quickstart` / `selfhost:readiness -- --all` /
   `selfhost:readiness` / `selfhost:doctor` / `selfhost:init` / `selfhost:init -- --json` /
   `selfhost:plan` / `selfhost:summary` / `selfhost:urls` / `selfhost:preflight`: added as the

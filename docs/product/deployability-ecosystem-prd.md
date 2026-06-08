@@ -173,8 +173,9 @@ Required baseline:
   printing secrets
 - machine-readable deployability handoff metadata, paired with a non-secret
   Markdown report, that combines current bundle, compatibility warnings,
-  command map, safety notes, and next validation commands without reading
-  `.env`, calling Docker, probing networks, or printing secrets
+  command map, per-pipeline summaries, safety notes, and next validation
+  commands without reading `.env`, calling Docker, probing networks, or
+  printing secrets
 
 ## 8. Success Metrics
 

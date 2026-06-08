@@ -160,8 +160,8 @@ CALL ANYTHING 现在的仓库边界是正确的：
   metadata 合并成可过滤命令列表，并让带 profile 参数的命令变体继承基础安全姿态，
   但不读取 `.env`、不调用 Docker、不绑定端口、不探测网络、不打印 secret 值
 - 可部署性交接 metadata 可以机器读取，并配套不含 secret 的 Markdown 报告，聚合
-  当前 bundle、兼容 warnings、命令地图、安全说明和下一步验证命令，但不读取 `.env`、
-  不调用 Docker、不探测网络、不打印 secret 值
+  当前 bundle、兼容 warnings、命令地图、per-pipeline summaries、安全说明和下一步
+  验证命令，但不读取 `.env`、不调用 Docker、不探测网络、不打印 secret 值
 
 ## 8. 成功指标
 
