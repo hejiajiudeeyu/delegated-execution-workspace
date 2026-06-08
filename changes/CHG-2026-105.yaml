@@ -1,0 +1,15 @@
+change_id: CHG-2026-105
+goal: focus deployability action plan by operator profile
+protocol_sha: da3027100cfe9391f7f8d03be18a108ee2804cf6
+client_sha: f1d6a2d8c9b83517cdf6ca9803b223847f880e9a
+platform_sha: 5961309c6b0ca4e8df22dbb5be92ac0845bf8d25
+brand_site_sha: 3b0b784f4d83a9a3413da9493e6683ff2447ceb0
+owner: hejiajiudeeyu
+risk_level: low
+affected_scope:
+  - orchestration
+  - brand-site
+  - documentation
+contracts_check: passed
+integration_check: passed
+notes: "Adds --profile filtering to the read-only deployability:action-plan command so operators can focus the next-action selector on one target such as public-stack. JSON now includes profile_filter, accepts profile keys and common aliases, narrows profiles to the requested target, and reports unknown profile names as blockers instead of falling back to all profiles. Updates PRDs, runbooks, readiness docs, and call-anything-brand-site Deployability Profiles to document focused action plans. Keeps protocol, client, and platform SHAs unchanged."

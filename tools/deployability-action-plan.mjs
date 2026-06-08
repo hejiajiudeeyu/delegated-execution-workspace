@@ -10,42 +10,49 @@ const ROOT = process.cwd();
 const PROFILE_PIPELINES = [
   {
     key: "daily_dev",
+    aliases: ["daily-dev", "daily_dev", "local-agent-loop", "local_agent_loop"],
     label: "Daily Development",
     pipeline_key: "local_agent_loop",
     purpose: "Start with the local caller-skill and MCP development loop."
   },
   {
     key: "all_in_one_demo",
+    aliases: ["all-in-one", "all-in-one-demo", "all_in_one_demo"],
     label: "All-in-One Demo",
     pipeline_key: "all_in_one_demo",
     purpose: "Evaluate the full product shape on one machine before splitting components."
   },
   {
     key: "selfhost_platform",
+    aliases: ["selfhost", "selfhost-platform", "selfhost_platform", "platform"],
     label: "Selfhost Platform",
     pipeline_key: "selfhost_platform",
     purpose: "Prepare and manage the private platform profile."
   },
   {
     key: "public_stack",
+    aliases: ["public-stack", "public_stack"],
     label: "Public Stack",
     pipeline_key: "public_stack",
     purpose: "Review public exposure gates before opening edge routes."
   },
   {
     key: "recovery_evidence",
+    aliases: ["recovery", "recovery-evidence", "recovery_evidence"],
     label: "Recovery & Evidence",
     pipeline_key: "recovery_evidence",
     purpose: "Prepare handoff, audit, backup, restore rehearsal, and rotation evidence."
   },
   {
     key: "operator_onboarding",
+    aliases: ["operator-onboarding", "operator_onboarding", "onboarding"],
     label: "Operator Onboarding",
     pipeline_key: "operator_onboarding",
     purpose: "Follow the public-stack first-use operator path."
   },
   {
     key: "published_image",
+    aliases: ["published-image", "published_image", "release-review", "release_review"],
     label: "Published Image",
     pipeline_key: "published_image",
     purpose: "Review published-image smoke metadata before running Docker."
@@ -68,8 +75,35 @@ const NEXT_COMMANDS = [
 ];
 
 function parseArgs(argv) {
+  const args = argv.slice(2);
+  const profileIndex = args.indexOf("--profile");
   return {
-    json: argv.slice(2).includes("--json")
+    json: args.includes("--json"),
+    profile: profileIndex === -1 ? null : args[profileIndex + 1] || ""
+  };
+}
+
+function normalizeProfile(value) {
+  return String(value || "")
+    .trim()
+    .toLowerCase()
+    .replace(/_/g, "-");
+}
+
+function resolveProfileFilter(requested) {
+  if (requested == null) {
+    return {
+      requested: null,
+      resolved: null
+    };
+  }
+  const normalized = normalizeProfile(requested);
+  const match = PROFILE_PIPELINES.find(
+    (item) => normalizeProfile(item.key) === normalized || (item.aliases || []).some((alias) => normalizeProfile(alias) === normalized)
+  );
+  return {
+    requested,
+    resolved: match?.key || null
   };
 }
 
@@ -113,8 +147,12 @@ function commandNames(commands) {
   return unique(commands.map((item) => item.command));
 }
 
-function buildProfiles({ dashboard, commandCatalog }) {
-  return PROFILE_PIPELINES.map((profile) => {
+function buildProfiles({ dashboard, commandCatalog, profileFilter }) {
+  const profiles = profileFilter.resolved
+    ? PROFILE_PIPELINES.filter((profile) => profile.key === profileFilter.resolved)
+    : PROFILE_PIPELINES;
+
+  return profiles.map((profile) => {
     const summary = dashboard.pipeline_summaries.find((item) => item.key === profile.pipeline_key) || null;
     const commands = commandsForPipeline(commandCatalog.commands || [], profile.pipeline_key);
     const dashboardSafe = commands.filter((item) => item.dashboard_safe === true);
@@ -149,16 +187,20 @@ function buildProfiles({ dashboard, commandCatalog }) {
   });
 }
 
-function actionPlanData() {
+function actionPlanData(args) {
+  const profileFilter = resolveProfileFilter(args.profile);
   const dashboardResult = runJsonScript("tools/deployability-dashboard.mjs");
   const commandCatalogResult = runJsonScript("tools/deployability-commands.mjs");
   const sourceResults = {
     dashboard: dashboardResult,
     commands: commandCatalogResult
   };
-  const blockers = Object.entries(sourceResults)
+  const blockers = [
+    ...(args.profile != null && profileFilter.resolved == null ? [`unknown profile: ${args.profile}`] : []),
+    ...Object.entries(sourceResults)
     .filter(([, result]) => !result.ok)
-    .map(([key, result]) => `${key}: ${result.parse_error || result.stderr.join("; ") || `exit=${result.exit_code}`}`);
+    .map(([key, result]) => `${key}: ${result.parse_error || result.stderr.join("; ") || `exit=${result.exit_code}`}`)
+  ];
 
   const dashboard = dashboardResult.body || {};
   const commandCatalog = commandCatalogResult.body || { commands: [] };
@@ -168,6 +210,7 @@ function actionPlanData() {
     ok: blockers.length === 0,
     current_bundle: dashboard.current_bundle || null,
     ecosystem_readiness: dashboard.ecosystem_readiness || null,
+    profile_filter: profileFilter,
     source_status: Object.fromEntries(
       Object.entries(sourceResults).map(([key, result]) => [
         key,
@@ -179,7 +222,7 @@ function actionPlanData() {
         }
       ])
     ),
-    profiles: buildProfiles({ dashboard, commandCatalog }),
+    profiles: profileFilter.resolved == null && args.profile != null ? [] : buildProfiles({ dashboard, commandCatalog, profileFilter }),
     blockers,
     warnings: unique(dashboard.warnings || []),
     safety_defaults: SAFETY_DEFAULTS,
@@ -243,7 +286,7 @@ function printText(data) {
 }
 
 const args = parseArgs(process.argv);
-const data = actionPlanData();
+const data = actionPlanData(args);
 if (args.json) {
   printJson(data);
 } else {

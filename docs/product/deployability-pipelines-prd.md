@@ -25,6 +25,8 @@ Required commands:
 - `corepack pnpm --silent run deployability:dashboard -- --json`
 - `corepack pnpm run deployability:action-plan`
 - `corepack pnpm --silent run deployability:action-plan -- --json`
+- `corepack pnpm run deployability:action-plan -- --profile public-stack`
+- `corepack pnpm --silent run deployability:action-plan -- --profile public-stack --json`
 - `corepack pnpm run deployability:commands`
 - `corepack pnpm --silent run deployability:commands -- --json`
 - `corepack pnpm run compat:status`
@@ -80,6 +82,10 @@ Acceptance:
   dashboard-safe commands, public-exposure gate commands, service-touching
   commands, safety notes, and next JSON commands without reading `.env`,
   calling Docker, binding ports, probing networks, or printing secret values
+- `deployability:action-plan -- --profile public-stack --json` emits the same
+  schema narrowed to `public_stack`, includes `profile_filter`, and keeps
+  unknown profile names as clean blockers rather than falling back to all
+  profiles
 - the dashboard and handoff ecosystem_readiness scorecard maps the daily-deployable
   definition to profile choice, generated secrets, startup path, doctor path,
   runtime inspection, boundary understanding, and brand-site story; when all
@@ -486,6 +492,9 @@ Acceptance:
 - Deployability Profiles include `deployability:action-plan` and explain that
   it is the read-only operator next-action selector between the dashboard and
   full command catalog
+- Deployability Profiles include the focused
+  `deployability:action-plan -- --profile public-stack --json` path and explain
+  profile aliases plus unknown-profile blockers
 - Deployability Profiles explain that ready-now command catalog entries do not
   fall back to `unmapped`, including `runtime_diagnostic`,
   `runtime_acceptance`, and `delegated_smoke` posture examples

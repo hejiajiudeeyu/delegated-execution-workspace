@@ -42,7 +42,7 @@ assert.equal(json.status, 0, json.stderr || json.stdout);
 const body = JSON.parse(json.stdout);
 assert.equal(body.command, "deployability:action-plan");
 assert.equal(body.ok, true);
-assert.equal(body.current_bundle.change_id, "CHG-2026-104");
+assert.equal(body.current_bundle.change_id, "CHG-2026-105");
 assert.equal(body.ecosystem_readiness.status, "daily_deployable_with_safety_gates");
 assert.deepEqual(
   body.profiles.map((item) => item.key),
@@ -74,6 +74,29 @@ const recovery = body.profiles.find((item) => item.key === "recovery_evidence");
 assert.ok(recovery.dashboard_safe_commands.includes("corepack pnpm run selfhost:ops-report"));
 assert.ok(recovery.dashboard_safe_commands.includes("corepack pnpm run selfhost:backup-plan"));
 assert.ok(recovery.dashboard_safe_commands.includes("corepack pnpm run selfhost:rotate-plan"));
+
+const publicStackOnly = run(["--json", "--profile", "public-stack"]);
+assert.equal(publicStackOnly.status, 0, publicStackOnly.stderr || publicStackOnly.stdout);
+const publicStackOnlyBody = JSON.parse(publicStackOnly.stdout);
+assert.equal(publicStackOnlyBody.ok, true);
+assert.equal(publicStackOnlyBody.profile_filter.requested, "public-stack");
+assert.equal(publicStackOnlyBody.profile_filter.resolved, "public_stack");
+assert.deepEqual(publicStackOnlyBody.profiles.map((item) => item.key), ["public_stack"]);
+assert.ok(
+  publicStackOnlyBody.profiles[0].public_exposure_gate_commands.includes(
+    "corepack pnpm run selfhost:security-review -- --profile public-stack"
+  )
+);
+
+const unknownProfile = run(["--json", "--profile", "moon-base"]);
+assert.equal(unknownProfile.status, 1, unknownProfile.stderr || unknownProfile.stdout);
+const unknownProfileBody = JSON.parse(unknownProfile.stdout);
+assert.equal(unknownProfileBody.ok, false);
+assert.equal(unknownProfileBody.profile_filter.requested, "moon-base");
+assert.equal(unknownProfileBody.profile_filter.resolved, null);
+assert.deepEqual(unknownProfileBody.profiles, []);
+assert.ok(unknownProfileBody.blockers.some((item) => /unknown profile/i.test(item)));
+assert.ok(!unknownProfile.stdout.includes("sk_action_plan_must_not_leak"));
 
 assert.ok(body.next_commands.includes("corepack pnpm run deployability:dashboard"));
 assert.ok(body.next_commands.includes("corepack pnpm run deployability:handoff"));

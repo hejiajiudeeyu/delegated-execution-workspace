@@ -102,6 +102,8 @@ corepack pnpm run deployability:dashboard
 corepack pnpm --silent run deployability:dashboard -- --json
 corepack pnpm run deployability:action-plan
 corepack pnpm --silent run deployability:action-plan -- --json
+corepack pnpm run deployability:action-plan -- --profile public-stack
+corepack pnpm --silent run deployability:action-plan -- --profile public-stack --json
 corepack pnpm run deployability:commands
 corepack pnpm --silent run deployability:commands -- --json
 corepack pnpm run compat:status
@@ -151,6 +153,9 @@ dashboard 和命令目录合成 profile 级 recommended commands、dashboard-saf
 commands、public-exposure gates、service-touching commands、safety notes 和
 next JSON commands，同时不读取 `.env`、不调用 Docker、不绑定端口、不探测网络、
 不打印 secrets。
+当 operator 只需要某一条路径时，可以用 `--profile public-stack` 或其他 profile
+key / alias 聚焦输出。JSON 形式会包含 `profile_filter`，未知 profile 会以 blocker
+返回。
 
 `deployability:commands` 是给人、dashboard 和 CI 使用的只读命令目录。它会把
 overview、quickstart 和 safety metadata 合并成一张列表，并支持按 category、posture、

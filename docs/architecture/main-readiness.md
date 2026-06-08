@@ -18,14 +18,14 @@ repositories.
 - `repos/protocol`: `da3027100cfe9391f7f8d03be18a108ee2804cf6`
 - `repos/client`: `f1d6a2d8c9b83517cdf6ca9803b223847f880e9a`
 - `repos/platform`: `5961309c6b0ca4e8df22dbb5be92ac0845bf8d25`
-- `repos/brand-site`: `0d423952207d15e43c48429400245b7589e932c1`
+- `repos/brand-site`: `3b0b784f4d83a9a3413da9493e6683ff2447ceb0`
 
-The current bundle is `changes/CHG-2026-104.yaml`.
+The current bundle is `changes/CHG-2026-105.yaml`.
 
 ## Readiness Verdict
 
 The pinned combination is ready for daily fourth-repo development after
-CHG-2026-104:
+CHG-2026-105:
 
 - submodule SHA integrity is verified
 - boundary governance covers the new platform billing data package
@@ -149,9 +149,12 @@ CHG-2026-104:
   commands, dashboard-safe commands, public-exposure gates, service-touching
   commands, safety notes, and JSON entry points, and supports
   `corepack pnpm run deployability:action-plan` and
-  `corepack pnpm --silent run deployability:action-plan -- --json` without
-  reading `.env`, calling Docker, binding ports, probing networks, or printing
-  secrets
+  `corepack pnpm --silent run deployability:action-plan -- --json`; operators
+  can focus the same schema with
+  `corepack pnpm --silent run deployability:action-plan -- --profile public-stack --json`,
+  which emits `profile_filter` and reports unknown profile names as blockers
+  without reading `.env`, calling Docker, binding ports, probing networks, or
+  printing secrets
 - `deployability:overview`, `deployability:dashboard`, and
   `deployability:handoff` now share one fourth-repo pipeline summary metadata
   builder, with a consistency test keeping command counts, JSON counts,
@@ -214,7 +217,7 @@ Observed results:
 - `check:submodules`: passed
 - `check:boundaries`: passed after adding `@delexec/billing-store` to
   `platform/data`
-- `check:bundles`: passed with `CHG-2026-104`
+- `check:bundles`: passed with `CHG-2026-105`
 - `test:contracts`: passed, including `@delexec/billing-store` in platform
   package validation and the `@delexec/platform-api` dependency graph
 - `test:integration`: passed with a successful request/response path
@@ -245,6 +248,10 @@ Observed results:
   recommended commands, dashboard-safe commands, public-exposure gates,
   service-touching commands, safety notes, and next JSON commands without
   terminal prose or secret values
+- `deployability:action-plan -- --profile public-stack --json`: passed,
+  reporting only `public_stack`, `profile_filter`, and public-stack exposure
+  gate commands, while unknown profile names return blockers without secret
+  values
 - `test:deployability-pipeline-summaries`: passed, proving dashboard and
   handoff expose the same shared `pipeline_summaries` payload
 - `test:deployability`: passed, running the top-level deployability regression
