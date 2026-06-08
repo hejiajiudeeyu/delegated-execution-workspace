@@ -100,6 +100,8 @@ corepack pnpm run deployability:readiness
 corepack pnpm --silent run deployability:readiness -- --json
 corepack pnpm run deployability:roadmap
 corepack pnpm --silent run deployability:roadmap -- --json
+corepack pnpm run deployability:status
+corepack pnpm --silent run deployability:status -- --json
 corepack pnpm run deployability:doctor
 corepack pnpm --silent run deployability:doctor -- --json
 corepack pnpm run deployability:dashboard
@@ -165,6 +167,12 @@ summaries，但不读取 `.env`、不调用 Docker、不绑定端口、不探测
 这些 per-pipeline summaries 与 `deployability:overview`、`deployability:handoff`
 共用同一个第四仓 metadata builder，让命令数和安全门禁计数在 docs、dashboard JSON
 和 handoff 报告之间保持一致。
+
+`deployability:status` 是给管理第一屏使用的 compact read-only operator status。
+当 dashboard 只需要 readiness、roadmap、public-stack gate 和 production-hardening
+状态，而不想解析更大的 dashboard payload 时，可以使用
+`corepack pnpm run deployability:status` 或
+`corepack pnpm --silent run deployability:status -- --json`。
 
 `deployability:profiles` 是给 operator、dashboard、CI 和管理脚本使用的专用只读
 profile catalog。它从 dashboard `profile_summaries` 和共享第四仓 profile registry

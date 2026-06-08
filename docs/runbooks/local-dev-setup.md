@@ -121,6 +121,8 @@ corepack pnpm run deployability:readiness
 corepack pnpm --silent run deployability:readiness -- --json
 corepack pnpm run deployability:roadmap
 corepack pnpm --silent run deployability:roadmap -- --json
+corepack pnpm run deployability:status
+corepack pnpm --silent run deployability:status -- --json
 corepack pnpm run deployability:doctor
 corepack pnpm --silent run deployability:doctor -- --json
 corepack pnpm run deployability:dashboard
@@ -192,6 +194,12 @@ The per-pipeline summaries use the same fourth-repo metadata builder as
 `deployability:overview` and `deployability:handoff`, so command counts and
 safety gate counts stay aligned across docs, dashboard JSON, and handoff
 reports.
+
+`deployability:status` is the compact read-only operator status for management
+first screens. Use `corepack pnpm run deployability:status` or
+`corepack pnpm --silent run deployability:status -- --json` when a dashboard
+needs readiness, roadmap, public-stack gating, and production-hardening status
+without parsing the larger dashboard payload.
 
 `deployability:profiles` is the dedicated read-only profile catalog for
 operators, dashboards, CI, and management scripts. It derives profile cards

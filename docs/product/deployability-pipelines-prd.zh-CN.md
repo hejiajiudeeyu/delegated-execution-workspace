@@ -22,6 +22,8 @@ onboarding 或 release-image 路径前，先给出一个只读命令地图和一
 - `corepack pnpm --silent run deployability:readiness -- --json`
 - `corepack pnpm run deployability:roadmap`
 - `corepack pnpm --silent run deployability:roadmap -- --json`
+- `corepack pnpm run deployability:status`
+- `corepack pnpm --silent run deployability:status -- --json`
 - `corepack pnpm run deployability:doctor`
 - `corepack pnpm --silent run deployability:doctor -- --json`
 - `corepack pnpm run deployability:dashboard`
@@ -95,6 +97,9 @@ onboarding 或 release-image 路径前，先给出一个只读命令地图和一
   评审使用，包含 satisfied、gated、blocked、planned milestones、PRD sources、
   evidence commands、remaining work、source status 和 next commands，同时不读取
   `.env`、不调用 Docker、不绑定端口、不探测网络、不打印 secret 值
+- `deployability:status -- --json` 输出面向第一屏管理界面的 compact operator
+  status payload，把 readiness、roadmap 和 public-stack recipe 聚合为 status
+  cards、source health、primary next commands 和 safety defaults，且不执行部署命令
 - doctor 把 compatibility ledger、顶层 scripts、文档、brand-site file alignment、
   brand-site deployability content smoke 和 safety-contract 对齐状态收成一个只读快照，
   不执行 Docker、不读取 `.env`、不探测网络、不打印 secrets

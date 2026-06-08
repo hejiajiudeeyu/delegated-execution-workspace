@@ -141,6 +141,13 @@ CHG-2026-105:
   `corepack pnpm run deployability:roadmap` and
   `corepack pnpm --silent run deployability:roadmap -- --json` without reading
   `.env`, calling Docker, binding ports, probing networks, or printing secrets
+- `deployability:status` is available as a compact read-only operator status
+  for management first screens, and supports
+  `corepack pnpm run deployability:status` and
+  `corepack pnpm --silent run deployability:status -- --json` without reading
+  `.env`, calling Docker, binding ports, probing networks, or printing secrets;
+  it aggregates readiness, roadmap, and public-stack recipe metadata without
+  becoming a new runtime truth source
 - `deployability:doctor` is available as a read-only deployability readiness
   snapshot for compatibility ledger, top-level scripts, documentation,
   brand-site file alignment, brand-site deployability content smoke, and

@@ -32,6 +32,11 @@ const TRACKS = [
         json_command: "corepack pnpm --silent run deployability:roadmap -- --json"
       },
       {
+        label: "Read the compact operator status",
+        command: "corepack pnpm run deployability:status",
+        json_command: "corepack pnpm --silent run deployability:status -- --json"
+      },
+      {
         label: "Run the read-only deployability doctor",
         command: "corepack pnpm run deployability:doctor",
         json_command: "corepack pnpm --silent run deployability:doctor -- --json"
@@ -225,6 +230,7 @@ const NEXT_COMMANDS = [
   "corepack pnpm run deployability:safety",
   "corepack pnpm run deployability:readiness",
   "corepack pnpm run deployability:roadmap",
+  "corepack pnpm run deployability:status",
   "corepack pnpm run deployability:doctor",
   "corepack pnpm run deployability:dashboard",
   "corepack pnpm run deployability:profiles",

@@ -23,6 +23,8 @@ Required commands:
 - `corepack pnpm --silent run deployability:readiness -- --json`
 - `corepack pnpm run deployability:roadmap`
 - `corepack pnpm --silent run deployability:roadmap -- --json`
+- `corepack pnpm run deployability:status`
+- `corepack pnpm --silent run deployability:status -- --json`
 - `corepack pnpm run deployability:doctor`
 - `corepack pnpm --silent run deployability:doctor -- --json`
 - `corepack pnpm run deployability:dashboard`
@@ -102,6 +104,10 @@ Acceptance:
   planned milestones, PRD sources, evidence commands, remaining work, source
   status, and next commands without reading `.env`, calling Docker, binding
   ports, probing networks, or printing secret values
+- `deployability:status -- --json` emits a compact operator status payload for
+  first-glance management surfaces, aggregating readiness, roadmap, and the
+  public-stack recipe into status cards, source health, primary next commands,
+  and safety defaults without executing deployment commands
 - doctor reports compatibility ledger, top-level scripts, documentation,
   brand-site file alignment, brand-site deployability content smoke, and
   safety-contract alignment as one read-only snapshot without executing Docker,
