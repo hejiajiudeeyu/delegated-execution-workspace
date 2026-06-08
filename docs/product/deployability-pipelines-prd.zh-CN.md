@@ -328,6 +328,11 @@ onboarding 或 release-image 路径前，先给出一个只读命令地图和一
 - `/docs/deployability-profiles` 与 `/en/docs/deployability-profiles` 解释
   Local Agent Loop、Selfhost Platform、Public Stack、Management Console、
   ready-now / planned 边界和 secrets 安全默认值
+- Deployability Profiles 包含 `selfhost:init -- --json` 及 public-stack 变体，
+  作为机器可读的首次初始化命令
+- Deployability Profiles 包含 `test:deployability-operations`，并解释
+  operations gate 可从 overview next commands、safety matrix 的 `contract_test`
+  姿态和可搜索命令目录中发现
 - console prototype 强调管理能力，而不只是视觉精致
 - self-host 文案诚实区分「现在可用」和「计划中」
 - brand-site build 与 deployability-content smoke 通过

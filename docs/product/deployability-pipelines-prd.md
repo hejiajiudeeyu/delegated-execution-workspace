@@ -384,6 +384,9 @@ Acceptance:
   ready-now versus planned boundaries, and secret-safety defaults
 - Deployability Profiles include `selfhost:init -- --json` and the public-stack
   variant as machine-readable first-run initialization commands
+- Deployability Profiles include `test:deployability-operations` and explain
+  that the operations gate is discoverable from overview next commands, the
+  safety matrix `contract_test` posture, and the searchable command catalog
 - console prototype highlights management rather than only visual polish
 - self-host messaging is honest about what is ready now versus planned
 - brand-site build and deployability-content smoke pass
