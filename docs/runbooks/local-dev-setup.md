@@ -117,6 +117,8 @@ corepack pnpm run deployability:quickstart
 corepack pnpm --silent run deployability:quickstart -- --json
 corepack pnpm run deployability:safety
 corepack pnpm --silent run deployability:safety -- --json
+corepack pnpm run deployability:readiness
+corepack pnpm --silent run deployability:readiness -- --json
 corepack pnpm run deployability:doctor
 corepack pnpm --silent run deployability:doctor -- --json
 corepack pnpm run deployability:dashboard

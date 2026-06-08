@@ -22,6 +22,11 @@ const TRACKS = [
         json_command: "corepack pnpm --silent run deployability:safety -- --json"
       },
       {
+        label: "Read the daily-deployable scorecard",
+        command: "corepack pnpm run deployability:readiness",
+        json_command: "corepack pnpm --silent run deployability:readiness -- --json"
+      },
+      {
         label: "Run the read-only deployability doctor",
         command: "corepack pnpm run deployability:doctor",
         json_command: "corepack pnpm --silent run deployability:doctor -- --json"
@@ -208,6 +213,7 @@ const SAFETY_DEFAULTS = [
 const NEXT_COMMANDS = [
   "corepack pnpm run deployability:overview",
   "corepack pnpm run deployability:safety",
+  "corepack pnpm run deployability:readiness",
   "corepack pnpm run deployability:doctor",
   "corepack pnpm run deployability:dashboard",
   "corepack pnpm run deployability:profiles",

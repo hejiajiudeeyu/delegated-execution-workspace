@@ -19,6 +19,8 @@ Required commands:
 - `corepack pnpm --silent run deployability:quickstart -- --json`
 - `corepack pnpm run deployability:safety`
 - `corepack pnpm --silent run deployability:safety -- --json`
+- `corepack pnpm run deployability:readiness`
+- `corepack pnpm --silent run deployability:readiness -- --json`
 - `corepack pnpm run deployability:doctor`
 - `corepack pnpm --silent run deployability:doctor -- --json`
 - `corepack pnpm run deployability:dashboard`
@@ -86,6 +88,10 @@ Acceptance:
 - `deployability:safety -- --json` emits clean command posture, CI/dashboard
   suitability, safety-default, and next-command metadata without terminal prose
   or secret values
+- `deployability:readiness -- --json` emits the standalone daily-deployable
+  scorecard for humans, CI, and management UIs, including check evidence,
+  summary counts, blockers, warnings, safety notes, and next commands without
+  requiring consumers to parse the full dashboard or handoff payload
 - doctor reports compatibility ledger, top-level scripts, documentation,
   brand-site file alignment, brand-site deployability content smoke, and
   safety-contract alignment as one read-only snapshot without executing Docker,

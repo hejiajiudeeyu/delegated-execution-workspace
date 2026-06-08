@@ -17,6 +17,7 @@ const REQUIRED_SCRIPTS = [
   "deployability:overview",
   "deployability:quickstart",
   "deployability:safety",
+  "deployability:readiness",
   "deployability:doctor",
   "deployability:dashboard",
   "deployability:action-plan",
@@ -29,6 +30,7 @@ const REQUIRED_SCRIPTS = [
   "test:deployability-overview",
   "test:deployability-quickstart",
   "test:deployability-safety",
+  "test:deployability-readiness",
   "test:deployability-doctor",
   "test:deployability-dashboard",
   "test:deployability-action-plan",
@@ -46,6 +48,8 @@ const REQUIRED_SCRIPTS = [
 const DOCTOR_COMMANDS = [
   "corepack pnpm run deployability:doctor",
   "corepack pnpm --silent run deployability:doctor -- --json",
+  "corepack pnpm run deployability:readiness",
+  "corepack pnpm --silent run deployability:readiness -- --json",
   "corepack pnpm run deployability:dashboard",
   "corepack pnpm --silent run deployability:dashboard -- --json",
   "corepack pnpm run deployability:action-plan",
@@ -106,6 +110,7 @@ const SAFETY_DEFAULTS = [
 const NEXT_COMMANDS = [
   "corepack pnpm run deployability:quickstart",
   "corepack pnpm run deployability:safety",
+  "corepack pnpm run deployability:readiness",
   "corepack pnpm run deployability:dashboard",
   "corepack pnpm run deployability:action-plan",
   "corepack pnpm run deployability:profiles",

@@ -46,6 +46,8 @@ assert.ok(checksByKey.get("top_level_scripts").data.required_scripts.includes("t
 assert.ok(
   checksByKey.get("top_level_scripts").data.required_scripts.includes("test:deployability-pipeline-summaries")
 );
+assert.ok(checksByKey.get("top_level_scripts").data.required_scripts.includes("deployability:readiness"));
+assert.ok(checksByKey.get("top_level_scripts").data.required_scripts.includes("test:deployability-readiness"));
 assert.ok(checksByKey.get("top_level_scripts").data.required_scripts.includes("deployability:action-plan"));
 assert.ok(checksByKey.get("top_level_scripts").data.required_scripts.includes("test:deployability-action-plan"));
 assert.ok(checksByKey.get("top_level_scripts").data.required_scripts.includes("deployability:profiles"));
@@ -59,6 +61,7 @@ assert.ok(checksByKey.get("brand_site_alignment").evidence.some((item) => item.i
 assert.ok(checksByKey.get("brand_site_content_smoke").evidence.includes("npm run smoke:deployability-content"));
 assert.ok(body.next_commands.includes("corepack pnpm run deployability:quickstart"));
 assert.ok(body.next_commands.includes("corepack pnpm run deployability:safety"));
+assert.ok(body.next_commands.includes("corepack pnpm run deployability:readiness"));
 assert.ok(body.next_commands.includes("corepack pnpm run deployability:dashboard"));
 assert.ok(body.next_commands.includes("corepack pnpm run deployability:action-plan"));
 assert.ok(body.next_commands.includes("corepack pnpm run deployability:profiles"));
@@ -80,6 +83,7 @@ assert.match(text.stdout, /documentation alignment/);
 assert.match(text.stdout, /ecosystem PRD alignment/);
 assert.match(text.stdout, /brand-site alignment/);
 assert.match(text.stdout, /brand-site content smoke/);
+assert.match(text.stdout, /corepack pnpm run deployability:readiness/);
 assert.match(text.stdout, /corepack pnpm run deployability:dashboard/);
 assert.match(text.stdout, /corepack pnpm run deployability:action-plan/);
 assert.match(text.stdout, /corepack pnpm run deployability:profiles/);

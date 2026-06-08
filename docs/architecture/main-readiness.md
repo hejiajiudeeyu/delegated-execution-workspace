@@ -130,6 +130,12 @@ CHG-2026-105:
   may print private terminal text, or gates public exposure, and supports
   `--json` without reading `.env`, calling Docker, binding ports, probing
   networks, or printing secrets
+- `deployability:readiness` is available as a standalone daily-deployable
+  scorecard for humans, CI, and management UIs, and supports
+  `corepack pnpm run deployability:readiness` and
+  `corepack pnpm --silent run deployability:readiness -- --json` without
+  reading `.env`, calling Docker, binding ports, probing networks, or printing
+  secrets
 - `deployability:doctor` is available as a read-only deployability readiness
   snapshot for compatibility ledger, top-level scripts, documentation,
   brand-site file alignment, brand-site deployability content smoke, and
