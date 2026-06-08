@@ -39,6 +39,7 @@ Required commands:
 - `corepack pnpm run test:compat-status`
 - `corepack pnpm run test:deployability-handoff`
 - `corepack pnpm run test:deployability`
+- `corepack pnpm run test:deployability-operations`
 
 Acceptance:
 
@@ -79,6 +80,10 @@ Acceptance:
   command, covering overview, quickstart, safety, doctor, dashboard,
   pipeline-summary consistency, command catalog, handoff, and compatibility
   status tests
+- `test:deployability-operations` runs the operator-facing deployment and
+  management regression suite as one command, covering daily local doctor,
+  local-stack lifecycle metadata, self-host kit behavior, published-image smoke
+  orchestration, and operator onboarding contract tests
 - `deployability:commands -- --json` emits a clean command catalog with
   category, posture, track, and pipeline filters, merging overview,
   quickstart, and safety metadata, and inheriting base safety posture for

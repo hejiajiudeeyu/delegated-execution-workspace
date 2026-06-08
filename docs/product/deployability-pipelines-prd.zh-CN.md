@@ -38,6 +38,7 @@ onboarding 或 release-image 路径前，先给出一个只读命令地图和一
 - `corepack pnpm run test:compat-status`
 - `corepack pnpm run test:deployability-handoff`
 - `corepack pnpm run test:deployability`
+- `corepack pnpm run test:deployability-operations`
 
 验收：
 
@@ -69,6 +70,9 @@ onboarding 或 release-image 路径前，先给出一个只读命令地图和一
 - `test:deployability` 用一条命令运行顶层 deployability regression suite，覆盖
   overview、quickstart、safety、doctor、dashboard、pipeline-summary 一致性、命令目录、
   handoff 和 compatibility status tests
+- `test:deployability-operations` 用一条命令运行面向 operator 的部署与管理回归套件，
+  覆盖 daily local doctor、local-stack lifecycle metadata、self-host kit 行为、
+  published-image smoke 编排和 operator onboarding contract tests
 - `deployability:commands -- --json` 输出干净的命令目录，包含 category、posture、
   track 和 pipeline filters，并合并 overview、quickstart 和 safety metadata，
   同时让带 profile 参数的命令变体继承基础安全姿态，不读取 `.env`、不调用 Docker、

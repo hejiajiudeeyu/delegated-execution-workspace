@@ -129,6 +129,8 @@ corepack pnpm run compat:status
 corepack pnpm --silent run compat:status -- --json
 corepack pnpm run deployability:handoff
 corepack pnpm --silent run deployability:handoff -- --json
+corepack pnpm run test:deployability
+corepack pnpm run test:deployability-operations
 corepack pnpm run dev:local:plan
 corepack pnpm --silent run dev:local:plan -- --json
 corepack pnpm run dev:local:up

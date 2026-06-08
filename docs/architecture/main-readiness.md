@@ -234,6 +234,10 @@ Observed results:
 - `test:deployability`: passed, running the top-level deployability regression
   suite across overview, quickstart, safety, doctor, dashboard, pipeline-summary
   consistency, command catalog, handoff, and compatibility status
+- `test:deployability-operations`: passed, running the operator-facing
+  deployment and management regression suite across daily local doctor,
+  local-stack lifecycle metadata, self-host kit behavior, published-image smoke
+  orchestration, and operator onboarding contract tests
 - `deployability:commands -- --json`: passed, reporting a command catalog with
   category, posture, track, and pipeline filters, sourced from overview,
   quickstart, and safety metadata, including inherited safety posture for

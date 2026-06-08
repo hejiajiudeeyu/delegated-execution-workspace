@@ -107,6 +107,7 @@ corepack pnpm --silent run compat:status -- --json
 corepack pnpm run deployability:handoff
 corepack pnpm --silent run deployability:handoff -- --json
 corepack pnpm run test:deployability
+corepack pnpm run test:deployability-operations
 corepack pnpm run dev:doctor
 corepack pnpm --silent run dev:doctor -- --json
 corepack pnpm run test:agent-e2e

@@ -199,6 +199,9 @@ corepack pnpm run test:integration
 - `test:deployability`：通过，用一条命令运行 overview、quickstart、safety、doctor、
   dashboard、pipeline-summary 一致性、命令目录、handoff 和 compatibility status
   顶层 deployability regression suite
+- `test:deployability-operations`：通过，用一条命令运行 daily local doctor、
+  local-stack lifecycle metadata、self-host kit 行为、published-image smoke 编排和
+  operator onboarding contract tests 组成的 operator-facing 部署与管理回归套件
 - `deployability:commands -- --json`：通过，输出命令目录及 category、posture、track
   和 pipeline filters，来源于 overview、quickstart 和 safety metadata，并让带
   profile 参数的命令变体继承基础安全姿态，不混入终端文本或 secret 值
