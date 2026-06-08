@@ -105,6 +105,7 @@ function dashboardData() {
     current_bundle: currentBundle,
     sections,
     section_status: sectionStatus,
+    profile_selector: sections.commands?.filters?.profiles || [],
     ecosystem_readiness: buildEcosystemReadiness({
       catalogCommands: sections.commands?.commands || [],
       brandSiteOk: doctorCheckOk(sections, "brand_site_alignment") && doctorCheckOk(sections, "brand_site_content_smoke")
@@ -162,6 +163,13 @@ function printText(data) {
       console.log(
         `- ${pipeline.key}: ${pipeline.status}; commands=${pipeline.command_count}; json=${pipeline.json_command_count}; dashboard-safe=${pipeline.dashboard_safe_command_count}; exposure-gates=${pipeline.public_exposure_gate_count}`
       );
+    }
+  }
+
+  if (data.profile_selector.length) {
+    console.log("\nProfile selector:");
+    for (const profile of data.profile_selector) {
+      console.log(`- ${profile.key} -> ${profile.pipeline_key}; aliases=${profile.aliases.join(", ")}`);
     }
   }
 

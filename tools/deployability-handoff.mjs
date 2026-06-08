@@ -293,6 +293,7 @@ function reportData(output) {
       parse_error: commandCatalog.parse_error
     },
     command_map: COMMAND_MAP,
+    profile_selector: commandCatalog.body?.filters?.profiles || [],
     ecosystem_readiness: buildEcosystemReadiness({
       catalogCommands: commandCatalog.body?.commands || [],
       brandSiteOk: true
@@ -364,6 +365,15 @@ function markdownReport(data) {
     lines.push(`- ${item.command}`);
     lines.push(`  - JSON: ${item.json_command}`);
     lines.push(`  - Purpose: ${item.purpose}`);
+  }
+
+  if (data.profile_selector.length) {
+    lines.push("", "## Profile Selector", "");
+    for (const profile of data.profile_selector) {
+      lines.push(`- ${profile.key} -> ${profile.pipeline_key}`);
+      lines.push(`  - Aliases: ${profile.aliases.join(", ")}`);
+      lines.push(`  - Purpose: ${profile.purpose}`);
+    }
   }
 
   lines.push("", "## Ecosystem Readiness", "");

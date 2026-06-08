@@ -100,6 +100,15 @@ try {
   assert.ok(body.command_map.some((item) => item.command === "corepack pnpm run deployability:action-plan"));
   assert.ok(body.command_map.some((item) => item.command === "corepack pnpm run deployability:commands"));
   assert.ok(body.command_map.some((item) => item.command === "corepack pnpm run compat:status"));
+  assert.ok(Array.isArray(body.profile_selector));
+  assert.equal(body.profile_selector.length, 7);
+  const handoffProfilesByKey = new Map(body.profile_selector.map((item) => [item.key, item]));
+  assert.deepEqual(handoffProfilesByKey.get("public_stack"), {
+    key: "public_stack",
+    aliases: ["public-stack", "public_stack"],
+    pipeline_key: "public_stack",
+    purpose: "Review public exposure gates before opening edge routes."
+  });
   assert.equal(body.ecosystem_readiness.status, "daily_deployable_with_safety_gates");
   assert.equal(body.ecosystem_readiness.goal, "daily-deployable");
   assert.deepEqual(
@@ -148,6 +157,8 @@ try {
   assert.match(markdown, /## Ecosystem Readiness/);
   assert.match(markdown, /daily_deployable_with_safety_gates/);
   assert.match(markdown, /profile_choice: ok/);
+  assert.match(markdown, /## Profile Selector/);
+  assert.match(markdown, /public_stack -> public_stack/);
   assert.match(markdown, /## Pipeline Summaries/);
   assert.match(markdown, /public_stack: ready_now_with_safety_gates/);
   assert.match(markdown, /exposure-gates=2/);

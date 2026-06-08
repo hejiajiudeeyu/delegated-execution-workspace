@@ -206,6 +206,11 @@ catalog and unknown profile names return clean blockers. Profile-specific
 command variants inherit the safety posture of their base command. It does not
 read `.env`, call Docker, bind ports, probe networks, or print secret values.
 
+`deployability:dashboard -- --json` and `deployability:handoff -- --json`
+also expose the same directory as top-level `profile_selector`, so dashboards,
+handoff tools, and management scripts can render profile choices without
+knowing the nested command-catalog section path.
+
 `compat:status` is the read-only compatibility-ledger snapshot. It compares the
 current submodule gitlinks to the latest `changes/CHG-*.yaml`, reports dirty
 submodule worktrees as warnings, and keeps ledger mismatches as blockers. Its

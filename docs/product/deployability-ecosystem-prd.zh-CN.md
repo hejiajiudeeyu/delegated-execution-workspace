@@ -76,11 +76,11 @@ CALL ANYTHING 现在的仓库边界是正确的：
 | 可部署性 quickstart | 第四仓 | `corepack pnpm run deployability:quickstart`，以及作为 daily development、all-in-one demo、self-host、public-stack 和 release-review 路径只读首次使用指南的 `corepack pnpm --silent run deployability:quickstart -- --json`；daily development 会在完整 action plan 前先暴露 action-plan profile selector |
 | 可部署性安全矩阵 | 第四仓 | `corepack pnpm run deployability:safety`，以及作为部署命令 read/write/startup/network/logging 姿态说明矩阵的 `corepack pnpm --silent run deployability:safety -- --json`，包含作为 dashboard-safe read-only 命令的 action-plan profile selector |
 | 可部署性 doctor | 第四仓 | `corepack pnpm run deployability:doctor`，以及作为 compatibility ledger、顶层 scripts、docs、brand-site 和 safety-contract 对齐状态只读快照的 `corepack pnpm --silent run deployability:doctor -- --json` |
-| 可部署性 dashboard | 第四仓 | `corepack pnpm run deployability:dashboard`，以及作为顶层 dashboard 和 CI 的只读聚合 payload 的 `corepack pnpm --silent run deployability:dashboard -- --json`，组合 overview、quickstart、safety、doctor、compatibility、ecosystem_readiness 和 per-pipeline summary sections |
+| 可部署性 dashboard | 第四仓 | `corepack pnpm run deployability:dashboard`，以及作为顶层 dashboard 和 CI 的只读聚合 payload 的 `corepack pnpm --silent run deployability:dashboard -- --json`，组合 overview、quickstart、safety、doctor、compatibility、顶层 `profile_selector`、ecosystem_readiness 和 per-pipeline summary sections |
 | 可部署性 action plan | 第四仓 | `corepack pnpm run deployability:action-plan`，以及作为只读 operator 下一步动作选择器的 `corepack pnpm --silent run deployability:action-plan -- --json`，把 dashboard readiness 和 command catalog posture 合成 profile 级 recommended commands、dashboard-safe commands、public-exposure gates 和 service-touching command lists；`--list-profiles` / `--profiles` 输出只读 profile selector 目录，包含 keys、aliases、pipeline keys 和 purposes，且不调用 dashboard/catalog metadata；`--profile <key-or-alias>` 会把输出聚焦到单个 operator 目标，并把未知 profile 作为 blockers 返回 |
 | 可部署性命令目录 | 第四仓 | `corepack pnpm run deployability:commands`，以及作为按 category、posture、首次使用 track 和 pipeline 过滤的只读命令目录的 `corepack pnpm --silent run deployability:commands -- --json`；`filters.profiles` 会输出可渲染 profile selector 的 keys、aliases、pipeline keys 和 purposes；`--profile <key-or-alias>` 会把 operator 熟悉的 profile 名称解析到所属 pipeline；带 profile 参数的命令变体会继承基础安全姿态；action-plan profile selector 会出现在 `daily_dev` track；ready-now 命令路径不再出现 `unmapped` category / posture |
 | 可部署性恢复证据路径 | 第四仓 | `deployability:overview`、`deployability:dashboard`、`deployability:handoff` 和 `deployability:commands -- --pipeline recovery_evidence` 把 ops-report、audit export、backup、restore 和 rotation 命令作为一条 ready-now 证据与恢复管线暴露 |
-| 可部署性交接报告 | 第四仓 | `corepack pnpm run deployability:handoff`，以及用于输出 `exports/deployability/` 下不含 secret 的生态交接报告 metadata 的 `corepack pnpm --silent run deployability:handoff -- --json`，包含与 dashboard 相同的 ecosystem_readiness scorecard |
+| 可部署性交接报告 | 第四仓 | `corepack pnpm run deployability:handoff`，以及用于输出 `exports/deployability/` 下不含 secret 的生态交接报告 metadata 的 `corepack pnpm --silent run deployability:handoff -- --json`，包含与 dashboard 相同的 profile selector 目录和 ecosystem_readiness scorecard |
 | 日常本地 doctor | 第四仓 | `corepack pnpm run dev:doctor`，以及给 dashboard 和脚本使用的 `corepack pnpm --silent run dev:doctor -- --json` |
 | Local agent loop 管理 metadata | 第四仓 | `corepack pnpm run dev:local:plan`、`dev:local:up`、`dev:local:status`、`dev:local:logs` 和 `dev:local:down`，并提供 `--json` 供 dashboard 和脚本消费 |
 | Agent-facing smoke | 第四仓 | `corepack pnpm run test:agent-e2e` |
@@ -157,9 +157,9 @@ CALL ANYTHING 现在的仓库边界是正确的：
   dirty submodules、blockers、warnings 和下一步命令，但不读取 `.env`、不调用 Docker、
   不探测网络、不打印 secret 值
 - 可部署性 dashboard metadata 可以机器读取，把 overview、quickstart、safety、
-  doctor、compatibility、ecosystem_readiness 和 per-pipeline summary JSON sections
-  聚合成一个顶层 payload，但不读取 `.env`、不调用 Docker、不绑定端口、不探测网络、
-  不打印 secret 值
+  doctor、compatibility、顶层 `profile_selector`、ecosystem_readiness 和
+  per-pipeline summary JSON sections 聚合成一个顶层 payload，但不读取 `.env`、
+  不调用 Docker、不绑定端口、不探测网络、不打印 secret 值
 - 可部署性 action-plan metadata 可以机器读取，把 dashboard 和命令目录合成
   profile 级 recommended commands、dashboard-safe commands、public-exposure gate
   commands、service-touching commands、safety notes 和 next JSON commands，
@@ -188,10 +188,13 @@ CALL ANYTHING 现在的仓库边界是正确的：
   doctor / acceptance 与真实 published-image smoke 命令给出 `runtime_diagnostic`、
   `runtime_acceptance` 和 `delegated_smoke` 明确姿态，但不读取 `.env`、
   不调用 Docker、不绑定端口、不探测网络、不打印 secret 值
+- dashboard 与 handoff profile selector metadata 可以机器读取，会把同一份命令目录
+  `filters.profiles` 目录提升为顶层 `profile_selector` 字段，让管理面不需要知道
+  内部 section 路径，也不需要调用 runtime 命令，就能渲染 profile 选择器
 - 可部署性交接 metadata 可以机器读取，并配套不含 secret 的 Markdown 报告，聚合
-  当前 bundle、兼容 warnings、命令地图、ecosystem_readiness、shared per-pipeline
-  summaries、安全说明和下一步验证命令，但不读取 `.env`、不调用 Docker、不探测网络、
-  不打印 secret 值
+  当前 bundle、兼容 warnings、命令地图、profile selector、ecosystem_readiness、
+  shared per-pipeline summaries、安全说明和下一步验证命令，但不读取 `.env`、
+  不调用 Docker、不探测网络、不打印 secret 值
 - recovery evidence metadata 可以机器读取，把现有 ops-report、audit-export、
   backup-plan、backup-validate、restore-plan、rotate-plan 和 rotate 命令暴露成
   `recovery_evidence` 管线，并给出 `writes_report`、`exports_evidence`、

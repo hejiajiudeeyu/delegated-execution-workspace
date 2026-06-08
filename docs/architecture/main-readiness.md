@@ -138,7 +138,8 @@ CHG-2026-105:
   `.env`, calling Docker, binding ports, probing networks, or printing secrets
 - `deployability:dashboard` is available as a read-only aggregate payload for
   dashboards and CI, combining overview, quickstart, safety, doctor, and
-  compatibility sections plus per-pipeline summaries, and supports
+  compatibility sections, top-level `profile_selector`, plus per-pipeline
+  summaries, and supports
   `corepack pnpm run deployability:dashboard` and
   `corepack pnpm --silent run deployability:dashboard -- --json` without
   reading `.env`, calling Docker, binding ports, probing networks, or printing
@@ -165,6 +166,10 @@ CHG-2026-105:
   `deployability:handoff` now share one fourth-repo pipeline summary metadata
   builder, with a consistency test keeping command counts, JSON counts,
   dashboard-safe counts, CI-safe counts, and public exposure gate counts aligned
+- `deployability:dashboard -- --json` and `deployability:handoff -- --json`
+  expose the command-catalog profile directory as top-level
+  `profile_selector`, so management surfaces can render profile choices from
+  either aggregate payload without parsing nested section paths
 - `deployability:commands` is available as a read-only command catalog for
   humans, dashboards, and CI, merging overview, quickstart, and safety metadata
   into a list filterable by category, posture, first-use track, and pipeline,
@@ -287,6 +292,9 @@ Observed results:
   quickstart, and safety metadata, including `filters.profiles` selector
   metadata and inherited safety posture for profile-specific command variants,
   without terminal prose or secret values
+- `deployability:dashboard -- --json` / `deployability:handoff -- --json`:
+  passed, lifting the same profile selector directory to top-level
+  `profile_selector` for dashboard and handoff consumers
 - `deployability:commands -- --profile public-stack --json`: passed, resolving
   the operator profile alias to `public_stack`, returning only public-stack
   pipeline commands, and reporting unknown profile names as blockers without

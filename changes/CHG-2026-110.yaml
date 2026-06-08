@@ -1,0 +1,15 @@
+change_id: CHG-2026-110
+goal: lift profile selector metadata into dashboard and handoff payloads
+protocol_sha: da3027100cfe9391f7f8d03be18a108ee2804cf6
+client_sha: f1d6a2d8c9b83517cdf6ca9803b223847f880e9a
+platform_sha: 5961309c6b0ca4e8df22dbb5be92ac0845bf8d25
+brand_site_sha: 5168d842b2e1f8d813c72ff9df17bb330025db90
+owner: hejiajiudeeyu
+risk_level: low
+affected_scope:
+  - orchestration
+  - brand-site
+  - documentation
+contracts_check: passed
+integration_check: passed
+notes: "Adds top-level profile_selector metadata to deployability:dashboard and deployability:handoff by reusing the existing deployability:commands filters.profiles directory. This lets dashboards, handoff reports, and management scripts render profile choices without parsing nested section paths or calling runtime commands. Updates PRDs, readiness docs, runbooks, and call-anything-brand-site. Protocol, client, and platform SHAs are unchanged."

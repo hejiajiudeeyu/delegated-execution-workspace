@@ -129,6 +129,10 @@ Acceptance:
   `filters.profiles` with supported profile keys, aliases, owning pipeline
   keys, and purposes so dashboards can render the command-catalog profile
   selector without parsing prose or calling runtime commands
+- `deployability:dashboard -- --json` and `deployability:handoff -- --json`
+  lift that same command-catalog profile directory to top-level
+  `profile_selector`, so management surfaces can render profile choices
+  without knowing the internal `sections.commands.filters.profiles` path
 - `deployability:commands -- --profile public-stack --json` resolves
   operator profile keys or aliases to the owning pipeline, emits the resolved
   `profile` filter metadata, filters the catalog to that pipeline, and reports
@@ -156,8 +160,8 @@ Acceptance:
 - `deployability:handoff` writes a non-secret Markdown report under
   `exports/deployability/` unless `--output` is provided, and its JSON form
   returns the same bundle, compatibility, command-map, ecosystem_readiness,
-  shared per-pipeline summary, safety-note, and next-command metadata without
-  terminal prose or secret values
+  top-level profile selector, shared per-pipeline summary, safety-note, and
+  next-command metadata without terminal prose or secret values
 
 ## Pipeline A: Local Agent Loop
 
@@ -520,6 +524,9 @@ Acceptance:
 - Deployability Profiles include the focused
   `deployability:action-plan -- --profile public-stack --json` path and explain
   profile aliases plus unknown-profile blockers
+- Deployability Profiles explain that dashboard and handoff expose top-level
+  `profile_selector` metadata sourced from the command catalog, so management
+  surfaces do not need to parse prose or runtime commands
 - Deployability Profiles explain that ready-now command catalog entries do not
   fall back to `unmapped`, including `runtime_diagnostic`,
   `runtime_acceptance`, and `delegated_smoke` posture examples
