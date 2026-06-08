@@ -114,6 +114,14 @@ try {
   assert.deepEqual(handoffProfileSummariesByKey.get("public_stack").aliases, ["public-stack", "public_stack"]);
   assert.equal(handoffProfileSummariesByKey.get("public_stack").pipeline_key, "public_stack");
   assert.equal(handoffProfileSummariesByKey.get("public_stack").status, "ready_now_with_safety_gates");
+  assert.equal(handoffProfileSummariesByKey.get("public_stack").attention.level, "safety_gate");
+  assert.equal(handoffProfileSummariesByKey.get("public_stack").attention.primary_command, "corepack pnpm run selfhost:readiness -- --profile public-stack");
+  assert.equal(handoffProfileSummariesByKey.get("public_stack").attention.primary_json_command, "corepack pnpm --silent run selfhost:readiness -- --profile public-stack --json");
+  assert.equal(body.recommended_profile_keys[0], "public_stack");
+  assert.deepEqual(
+    body.recommended_profile_keys,
+    [...body.profile_summaries].sort((left, right) => left.attention.rank - right.attention.rank).map((item) => item.key)
+  );
   assert.ok(
     handoffProfileSummariesByKey
       .get("public_stack")
@@ -187,7 +195,9 @@ try {
   assert.equal(focusedBody.ecosystem_readiness.status, "daily_deployable_with_safety_gates");
   assert.deepEqual(focusedBody.pipeline_summaries.map((item) => item.key), ["public_stack"]);
   assert.deepEqual(focusedBody.profile_summaries.map((item) => item.key), ["public_stack"]);
+  assert.deepEqual(focusedBody.recommended_profile_keys, ["public_stack"]);
   assert.equal(focusedBody.profile_summaries[0].status, "ready_now_with_safety_gates");
+  assert.equal(focusedBody.profile_summaries[0].attention.level, "safety_gate");
   assert.equal(focusedBody.command_catalog_status.profile.resolved, "public_stack");
   assert.deepEqual(focusedBody.profile_selector, body.profile_selector);
   const focusedMarkdown = fs.readFileSync(focusedOutput, "utf8");

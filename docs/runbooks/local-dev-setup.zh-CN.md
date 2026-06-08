@@ -192,8 +192,10 @@ secret 值。
 scorecard。focused public-stack 示例可从 `deployability:quickstart` 和
 `deployability:commands -- --track daily_dev` 发现。
 两个 payload 也包含 `profile_summaries`，这是派生出的 profile-card 数组，会把
-profile aliases / purpose 与 pipeline status、counts、next commands 和 safety notes
-合并在一起。
+profile aliases / purpose 与 pipeline status、counts、next commands、safety notes
+和 `deployability:action-plan` 使用的同一套 `attention` metadata 合并在一起。
+dashboard 可以用顶层 `recommended_profile_keys` 或每张卡的 `attention.rank` 排序，
+不必再单独调用 action-plan 命令。
 
 `compat:status` 是只读兼容台账快照。它会把当前 submodule gitlinks 和最新
 `changes/CHG-*.yaml` 对齐检查，把 dirty submodule worktree 报成 warnings，并把

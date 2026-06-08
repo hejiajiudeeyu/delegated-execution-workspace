@@ -226,7 +226,10 @@ scorecard. The focused public-stack examples are discoverable from
 `deployability:quickstart` and `deployability:commands -- --track daily_dev`.
 Both payloads also include `profile_summaries`, a derived profile-card array
 that joins profile aliases and purpose with pipeline status, counts, next
-commands, and safety notes.
+commands, safety notes, and the same `attention` metadata used by
+`deployability:action-plan`. Dashboards can sort either aggregate payload by
+top-level `recommended_profile_keys` or by each card's `attention.rank` without
+calling the action-plan command separately.
 
 `compat:status` is the read-only compatibility-ledger snapshot. It compares the
 current submodule gitlinks to the latest `changes/CHG-*.yaml`, reports dirty

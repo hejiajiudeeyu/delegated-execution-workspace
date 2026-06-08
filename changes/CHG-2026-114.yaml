@@ -1,0 +1,15 @@
+change_id: CHG-2026-114
+goal: surface profile attention metadata in dashboard and handoff
+protocol_sha: da3027100cfe9391f7f8d03be18a108ee2804cf6
+client_sha: f1d6a2d8c9b83517cdf6ca9803b223847f880e9a
+platform_sha: 5961309c6b0ca4e8df22dbb5be92ac0845bf8d25
+brand_site_sha: 1f554825bf863e790517b365aad34850ac432b0c
+owner: hejiajiudeeyu
+risk_level: low
+affected_scope:
+  - orchestration
+  - brand-site
+  - documentation
+contracts_check: passed
+integration_check: passed
+notes: "Adds shared profile attention metadata to deployability:dashboard and deployability:handoff profile_summaries, plus top-level recommended_profile_keys. The implementation extracts the attention derivation used by deployability:action-plan into a shared fourth-repo helper, so management surfaces can sort profile cards and highlight safety gates without calling action-plan or re-deriving risk from command lists. The projection remains derived from profile selector, pipeline summaries, and command catalog posture. Updates PRDs, readiness docs, runbooks, and call-anything-brand-site. Protocol, client, and platform SHAs are unchanged."

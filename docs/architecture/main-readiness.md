@@ -179,8 +179,8 @@ CHG-2026-105:
   global daily-deployable scorecard
 - `deployability:dashboard -- --json` and `deployability:handoff -- --json`
   also emit `profile_summaries`, joining profile aliases and purpose with
-  pipeline status, counts, next commands, and safety notes for management UI
-  cards
+  pipeline status, counts, next commands, safety notes, shared `attention`
+  metadata, and top-level `recommended_profile_keys` for management UI cards
 - `deployability:commands` is available as a read-only command catalog for
   humans, dashboards, and CI, merging overview, quickstart, and safety metadata
   into a list filterable by category, posture, first-use track, and pipeline,
@@ -313,7 +313,9 @@ Observed results:
   public-stack pipeline, and preserving global ecosystem_readiness
 - `deployability:dashboard -- --json` / `deployability:handoff -- --json`:
   passed, emitting `profile_summaries` as a derived management-card projection
-  across all profiles, and one-item `profile_summaries` in focused mode
+  across all profiles, including shared profile `attention` metadata and
+  top-level `recommended_profile_keys`; focused mode emits one-item
+  `profile_summaries` and one-item `recommended_profile_keys`
 - `deployability:commands -- --profile public-stack --json`: passed, resolving
   the operator profile alias to `public_stack`, returning only public-stack
   pipeline commands, and reporting unknown profile names as blockers without

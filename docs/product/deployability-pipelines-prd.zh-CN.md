@@ -126,7 +126,8 @@ onboarding 或 release-image 路径前，先给出一个只读命令地图和一
   并继承只读安全姿态
 - dashboard 与 handoff JSON 包含由 `profile_selector` 与 `pipeline_summaries`
   派生出的 `profile_summaries`，让 UI card 可以从一个数组展示 aliases、purpose、
-  status、command counts、exposure gates、next commands 和 safety notes
+  status、command counts、exposure gates、next commands、safety notes 和共享
+  `attention` metadata；两个 payload 也会输出顶层 `recommended_profile_keys`
 - `deployability:commands -- --profile public-stack --json` 会把 operator 输入的
   profile key 或 alias 解析到所属 pipeline，输出已解析的 `profile` filter
   metadata，只返回该 pipeline 的命令目录，并把未知 profile 名称作为干净 blocker

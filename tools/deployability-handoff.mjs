@@ -8,6 +8,7 @@ import YAML from "yaml";
 import { buildEcosystemReadiness } from "./lib/deployability-ecosystem-readiness.mjs";
 import { PIPELINES, buildPipelineSummaries } from "./lib/deployability-pipeline-summaries.mjs";
 import { buildProfileSummaries } from "./lib/deployability-profile-summaries.mjs";
+import { recommendedProfileKeys } from "./lib/deployability-profile-attention.mjs";
 
 const ROOT = process.cwd();
 const TOOL_ROOT = path.dirname(fileURLToPath(import.meta.url));
@@ -291,6 +292,11 @@ function reportData(output, args = parseArgs(process.argv)) {
     pipelines: PIPELINES,
     catalogCommands: commandCatalog.body?.commands || []
   }).filter((item) => profileFilter.pipeline == null || item.key === profileFilter.pipeline);
+  const profileSummaries = buildProfileSummaries({
+    profiles: commandCatalog.body?.filters?.profiles || [],
+    pipelineSummaries,
+    catalogCommands: commandCatalog.body?.commands || []
+  });
 
   return {
     command: "deployability:handoff",
@@ -318,10 +324,8 @@ function reportData(output, args = parseArgs(process.argv)) {
     command_map: COMMAND_MAP,
     profile_filter: profileFilter,
     profile_selector: commandCatalog.body?.filters?.profiles || [],
-    profile_summaries: buildProfileSummaries({
-      profiles: commandCatalog.body?.filters?.profiles || [],
-      pipelineSummaries
-    }),
+    profile_summaries: profileSummaries,
+    recommended_profile_keys: recommendedProfileKeys(profileSummaries),
     ecosystem_readiness: buildEcosystemReadiness({
       catalogCommands: readinessCommandCatalog.body?.commands || [],
       brandSiteOk: true

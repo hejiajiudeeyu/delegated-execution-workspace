@@ -5,6 +5,7 @@ import { spawnSync } from "node:child_process";
 import { buildEcosystemReadiness } from "./lib/deployability-ecosystem-readiness.mjs";
 import { buildPipelineSummaries } from "./lib/deployability-pipeline-summaries.mjs";
 import { buildProfileSummaries } from "./lib/deployability-profile-summaries.mjs";
+import { recommendedProfileKeys } from "./lib/deployability-profile-attention.mjs";
 
 const ROOT = process.cwd();
 
@@ -128,6 +129,11 @@ function dashboardData(args = parseArgs(process.argv)) {
     pipelines: sections.overview?.pipelines || [],
     catalogCommands: sections.commands?.commands || []
   }).filter((item) => profileFilter.pipeline == null || item.key === profileFilter.pipeline);
+  const profileSummaries = buildProfileSummaries({
+    profiles: sections.commands?.filters?.profiles || [],
+    pipelineSummaries,
+    catalogCommands: sections.commands?.commands || []
+  });
 
   return {
     command: "deployability:dashboard",
@@ -137,10 +143,8 @@ function dashboardData(args = parseArgs(process.argv)) {
     section_status: sectionStatus,
     profile_filter: profileFilter,
     profile_selector: sections.commands?.filters?.profiles || [],
-    profile_summaries: buildProfileSummaries({
-      profiles: sections.commands?.filters?.profiles || [],
-      pipelineSummaries
-    }),
+    profile_summaries: profileSummaries,
+    recommended_profile_keys: recommendedProfileKeys(profileSummaries),
     ecosystem_readiness: buildEcosystemReadiness({
       catalogCommands: readinessCommands,
       brandSiteOk: doctorCheckOk(sections, "brand_site_alignment") && doctorCheckOk(sections, "brand_site_content_smoke")

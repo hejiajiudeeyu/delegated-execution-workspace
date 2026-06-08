@@ -4,6 +4,14 @@ import path from "node:path";
 import fs from "node:fs";
 import os from "node:os";
 import { spawnSync } from "node:child_process";
+import {
+  buildAttentionInputs,
+  buildProfileAttention,
+  commandNames,
+  commandsForPipeline,
+  recommendedProfileKeys,
+  unique
+} from "./lib/deployability-profile-attention.mjs";
 
 const ROOT = process.cwd();
 
@@ -136,62 +144,6 @@ function runJsonScript(relativeScript) {
   };
 }
 
-function unique(items) {
-  return [...new Set(items.filter(Boolean))];
-}
-
-function commandsForPipeline(commands, pipelineKey) {
-  return commands.filter((item) => (item.pipeline_keys || []).includes(pipelineKey));
-}
-
-function commandNames(commands) {
-  return unique(commands.map((item) => item.command));
-}
-
-function profileSortIndex(profileKey) {
-  const index = PROFILE_PIPELINES.findIndex((item) => item.key === profileKey);
-  return index === -1 ? PROFILE_PIPELINES.length : index;
-}
-
-function buildAttention({
-  profile,
-  status,
-  recommendedCommands,
-  nextJsonCommands,
-  publicExposureGateCommands,
-  serviceTouchingCommands,
-  dashboardSafeCommands
-}) {
-  const publicExposureGateCount = publicExposureGateCommands.length;
-  const level = publicExposureGateCount > 0 || /safety[_-]?gate/i.test(status) ? "safety_gate" : "operational";
-  const rankBase = level === "safety_gate" ? 100 - publicExposureGateCount * 10 : 200;
-  const reasons = [];
-
-  if (publicExposureGateCount > 0) {
-    reasons.push(`${publicExposureGateCount} public exposure gate command(s)`);
-  }
-  if (/safety[_-]?gate/i.test(status)) {
-    reasons.push(`status=${status}`);
-  }
-  if (serviceTouchingCommands.length > 0) {
-    reasons.push(`${serviceTouchingCommands.length} service-touching command(s)`);
-  }
-  if (dashboardSafeCommands.length > 0) {
-    reasons.push(`${dashboardSafeCommands.length} dashboard-safe command(s)`);
-  }
-  if (reasons.length === 0) {
-    reasons.push("read-only operational metadata available");
-  }
-
-  return {
-    level,
-    rank: rankBase + profileSortIndex(profile.key),
-    primary_command: recommendedCommands[0] || null,
-    primary_json_command: nextJsonCommands[0] || null,
-    reasons
-  };
-}
-
 function profileDirectory() {
   return PROFILE_PIPELINES.map((profile) => ({
     key: profile.key,
@@ -243,19 +195,21 @@ function buildProfiles({ dashboard, commandCatalog, profileFilter }) {
       (item) => item.starts_services === true || item.stops_services === true || item.calls_docker === true
     );
     const status = summary?.status || "unknown";
-    const recommendedCommands = summary?.next_commands || commandNames(commands);
-    const nextJsonCommands = summary?.next_json_commands || unique(commands.map((item) => item.json_command));
+    const attentionInputs = buildAttentionInputs({ profile, summary, catalogCommands: commandCatalog.commands || [] });
+    const recommendedCommands = attentionInputs.recommendedCommands;
+    const nextJsonCommands = attentionInputs.nextJsonCommands;
     const dashboardSafeCommands = commandNames(dashboardSafe);
     const publicExposureGateCommands = commandNames(publicExposure);
     const serviceTouchingCommands = commandNames(serviceTouching);
-    const attention = buildAttention({
+    const attention = buildProfileAttention({
       profile,
       status,
       recommendedCommands,
       nextJsonCommands,
       publicExposureGateCommands,
       serviceTouchingCommands,
-      dashboardSafeCommands
+      dashboardSafeCommands,
+      profileOrder: PROFILE_PIPELINES.map((item) => item.key)
     });
 
     return {
@@ -324,7 +278,7 @@ function actionPlanData(args) {
       ])
     ),
     profiles,
-    recommended_profile_keys: [...profiles].sort((left, right) => left.attention.rank - right.attention.rank).map((item) => item.key),
+    recommended_profile_keys: recommendedProfileKeys(profiles),
     blockers,
     warnings: unique(dashboard.warnings || []),
     safety_defaults: SAFETY_DEFAULTS,

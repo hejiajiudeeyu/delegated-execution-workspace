@@ -144,8 +144,9 @@ Acceptance:
   quickstart and searchable command catalog with inherited read-only posture
 - dashboard and handoff JSON include `profile_summaries`, derived from
   `profile_selector` plus `pipeline_summaries`, so UI cards can show aliases,
-  purpose, status, command counts, exposure gates, next commands, and safety
-  notes from one array
+  purpose, status, command counts, exposure gates, next commands, safety notes,
+  and shared `attention` metadata from one array; both payloads also expose
+  top-level `recommended_profile_keys`
 - `deployability:commands -- --profile public-stack --json` resolves
   operator profile keys or aliases to the owning pipeline, emits the resolved
   `profile` filter metadata, filters the catalog to that pipeline, and reports
