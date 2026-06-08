@@ -69,8 +69,8 @@ The ecosystem is "daily-deployable" when a fresh operator can:
 | --- | --- | --- |
 | Compatibility ledger | fourth repo | change bundles and required gates |
 | Compatibility status | fourth repo | `corepack pnpm run compat:status`, plus `corepack pnpm --silent run compat:status -- --json` for current bundle, submodule SHA, dirty-worktree, blocker, and warning metadata |
-| Deployability overview | fourth repo | `corepack pnpm run deployability:overview`, plus `corepack pnpm --silent run deployability:overview -- --json` as the read-only command map for all deployment and management paths |
-| Deployability quickstart | fourth repo | `corepack pnpm run deployability:quickstart`, plus `corepack pnpm --silent run deployability:quickstart -- --json` as the read-only first-use guide for daily development, self-host, public-stack, and release-review paths |
+| Deployability overview | fourth repo | `corepack pnpm run deployability:overview`, plus `corepack pnpm --silent run deployability:overview -- --json` as the read-only command map for all deployment and management paths, including the all-in-one demo profile |
+| Deployability quickstart | fourth repo | `corepack pnpm run deployability:quickstart`, plus `corepack pnpm --silent run deployability:quickstart -- --json` as the read-only first-use guide for daily development, all-in-one demo, self-host, public-stack, and release-review paths |
 | Deployability safety matrix | fourth repo | `corepack pnpm run deployability:safety`, plus `corepack pnpm --silent run deployability:safety -- --json` as the descriptive read/write/startup/network/logging posture map for deployment commands |
 | Deployability doctor | fourth repo | `corepack pnpm run deployability:doctor`, plus `corepack pnpm --silent run deployability:doctor -- --json` as the read-only readiness snapshot for compatibility ledger, top-level scripts, docs, brand-site, and safety-contract alignment |
 | Deployability dashboard | fourth repo | `corepack pnpm run deployability:dashboard`, plus `corepack pnpm --silent run deployability:dashboard -- --json` as the single read-only aggregate payload for top-level dashboards and CI, combining overview, quickstart, safety, doctor, compatibility, ecosystem_readiness, and per-pipeline summary sections |
@@ -79,7 +79,7 @@ The ecosystem is "daily-deployable" when a fresh operator can:
 | Daily local doctor | fourth repo | `corepack pnpm run dev:doctor`, plus `corepack pnpm --silent run dev:doctor -- --json` for dashboards and scripts |
 | Local agent loop management metadata | fourth repo | `corepack pnpm run dev:local:plan`, `dev:local:up`, `dev:local:status`, `dev:local:logs`, and `dev:local:down`, plus `--json` for dashboards and scripts |
 | Agent-facing smoke | fourth repo | `corepack pnpm run test:agent-e2e` |
-| Self-host deployment map | fourth repo | `corepack pnpm run selfhost:profiles` |
+| Self-host deployment map | fourth repo | `corepack pnpm run selfhost:profiles`, including `platform`, `public-stack`, and `all-in-one` profiles |
 | Self-host quickstart sequence | fourth repo | `corepack pnpm run selfhost:quickstart` |
 | Self-host readiness overview | fourth repo | `corepack pnpm run selfhost:readiness -- --all`, plus `corepack pnpm --silent run ... --json` for automation |
 | Self-host deployment doctor | fourth repo | `corepack pnpm run selfhost:doctor`, plus `--json` for diagnostic panels |
@@ -174,6 +174,10 @@ Required baseline:
   `deployability:dashboard`, and `deployability:handoff`, so command counts,
   JSON entry counts, dashboard-safe counts, CI-safe counts, public exposure
   gate counts, next commands, and safety notes stay aligned across surfaces
+- machine-readable all-in-one demo metadata that exposes the existing
+  `all-in-one` selfhost profile as a local evaluation path, inherits selfhost
+  safety posture for profile-specific command variants, and avoids presenting
+  it as public exposure or formal production readiness
 - machine-readable deployability command catalog metadata that merges overview,
   quickstart, and safety metadata into a filterable command list, including
   inherited posture for profile-specific command variants, without reading

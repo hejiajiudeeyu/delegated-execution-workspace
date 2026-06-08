@@ -42,12 +42,12 @@ onboarding 或 release-image 路径前，先给出一个只读命令地图和一
 
 验收：
 
-- overview 列出 Local Agent Loop、Selfhost Platform、Public Stack、
-  Operator Onboarding 和 Published Image 路径
+- overview 列出 Local Agent Loop、All-in-One Demo、Selfhost Platform、
+  Public Stack、Operator Onboarding 和 Published Image 路径
 - overview 为每条路径列出人工命令和机器可读 JSON 命令
 - overview 是只读的：不读取 `.env`、不调用 Docker、不绑定端口、不探测网络 endpoint
-- quickstart 列出 Daily Development、Selfhost Platform、Public Stack 和
-  Release Review 四条首次使用路径，按顺序给出命令，但不执行命令
+- quickstart 列出 Daily Development、All-in-One Demo、Selfhost Platform、
+  Public Stack 和 Release Review 五条首次使用路径，按顺序给出命令，但不执行命令
 - `deployability:quickstart -- --json` 输出干净的 track、step、安全默认值和下一步命令
   metadata，不混入终端文本或 secret 值
 - safety matrix 会列出 top-level、local-loop、self-host、public-stack 和
@@ -149,6 +149,42 @@ onboarding 或 release-image 路径前，先给出一个只读命令地图和一
 - 可执行 MCP golden-four smoke 能验证 tool discovery、hotline search、
   request prepare、签名结果交付和 report recovery
 - docs 和 brand-site 都把这条路描述成最快本地路径
+
+## 管线 A1：All-in-One Demo Profile
+
+目标：给 fresh operator 一个单机产品评估路径，让他们先看懂 caller、
+responder、relay 和 platform 如何一起工作，再决定是否拆分组件职责。
+
+必备命令：
+
+- `corepack pnpm run selfhost:quickstart -- --profile all-in-one`
+- `corepack pnpm --silent run selfhost:quickstart -- --profile all-in-one --json`
+- `corepack pnpm run selfhost:readiness -- --profile all-in-one`
+- `corepack pnpm --silent run selfhost:readiness -- --profile all-in-one --json`
+- `corepack pnpm run selfhost:init -- --profile all-in-one`
+- `corepack pnpm --silent run selfhost:init -- --profile all-in-one --json`
+- `corepack pnpm run selfhost:preflight -- --profile all-in-one`
+- `corepack pnpm --silent run selfhost:preflight -- --profile all-in-one --json`
+- `corepack pnpm run selfhost:up -- --profile all-in-one`
+- `corepack pnpm --silent run selfhost:up -- --profile all-in-one --json`
+- `corepack pnpm run selfhost:status -- --profile all-in-one`
+- `corepack pnpm --silent run selfhost:status -- --profile all-in-one --json`
+- `corepack pnpm run selfhost:smoke -- --profile all-in-one`
+- `corepack pnpm --silent run selfhost:smoke -- --profile all-in-one --json`
+
+验收：
+
+- deployability overview 在 Local Agent Loop 和 Selfhost Platform 之间展示
+  `ready_now` 的 All-in-One Demo
+- deployability quickstart 把 `all_in_one_demo` 暴露为独立 first-use track
+- deployability commands 可以通过 `--pipeline all_in_one_demo` 和
+  `--track all_in_one_demo` 过滤
+- all-in-one profile-specific command variants 继承基础 selfhost safety
+  posture，而不是显示 `unmapped`
+- dashboard 和 handoff pipeline summaries 通过同一 shared metadata source
+  包含 All-in-One Demo
+- docs 和 brand-site 把 all-in-one 描述为本地评估 profile，而不是公网暴露或正式
+  production readiness
 
 ## 管线 B：Self-host Platform Profile
 
@@ -333,8 +369,8 @@ onboarding 或 release-image 路径前，先给出一个只读命令地图和一
 
 - homepage / docs 解释部署 profiles
 - `/docs/deployability-profiles` 与 `/en/docs/deployability-profiles` 解释
-  Local Agent Loop、Selfhost Platform、Public Stack、Management Console、
-  ready-now / planned 边界和 secrets 安全默认值
+  Local Agent Loop、All-in-One Demo、Selfhost Platform、Public Stack、
+  Management Console、ready-now / planned 边界和 secrets 安全默认值
 - Deployability Profiles 包含 `selfhost:init -- --json` 及 public-stack 变体，
   作为机器可读的首次初始化命令
 - Deployability Profiles 包含 `test:deployability` 与

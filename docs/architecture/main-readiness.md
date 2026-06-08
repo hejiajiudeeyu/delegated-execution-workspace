@@ -18,14 +18,14 @@ repositories.
 - `repos/protocol`: `da3027100cfe9391f7f8d03be18a108ee2804cf6`
 - `repos/client`: `f1d6a2d8c9b83517cdf6ca9803b223847f880e9a`
 - `repos/platform`: `5961309c6b0ca4e8df22dbb5be92ac0845bf8d25`
-- `repos/brand-site`: `c7b71a1766c1ee932957a122ae9db28bd9bbb7b6`
+- `repos/brand-site`: `13a8aebc984175e301b95b069678eaca1d0af28b`
 
-The current bundle is `changes/CHG-2026-100.yaml`.
+The current bundle is `changes/CHG-2026-101.yaml`.
 
 ## Readiness Verdict
 
 The pinned combination is ready for daily fourth-repo development after
-CHG-2026-100:
+CHG-2026-101:
 
 - submodule SHA integrity is verified
 - boundary governance covers the new platform billing data package
@@ -116,14 +116,14 @@ CHG-2026-100:
   caller-skill manifest/search checks, blockers, and next commands without raw
   logs or secret values
 - `deployability:overview` is available as the read-only first command map for
-  Local Agent Loop, Selfhost Platform, Public Stack, Operator Onboarding, and
-  Published Image paths, and supports `--json` without reading `.env`, calling
-  Docker, binding ports, probing networks, or printing secrets
+  Local Agent Loop, All-in-One Demo, Selfhost Platform, Public Stack, Operator
+  Onboarding, and Published Image paths, and supports `--json` without reading
+  `.env`, calling Docker, binding ports, probing networks, or printing secrets
 - `deployability:quickstart` is available as the read-only first-use guide for
-  a fresh checkout, listing Daily Development, Selfhost Platform, Public Stack,
-  and Release Review tracks with ordered commands and JSON entry points without
-  reading `.env`, calling Docker, binding ports, probing networks, or printing
-  secrets
+  a fresh checkout, listing Daily Development, All-in-One Demo, Selfhost
+  Platform, Public Stack, and Release Review tracks with ordered commands and
+  JSON entry points without reading `.env`, calling Docker, binding ports,
+  probing networks, or printing secrets
 - `deployability:safety` is available as a read-only safety posture matrix for
   deployability, selfhost, dev, and release commands, describing whether each
   command writes files, starts or stops services, calls Docker, probes networks,
@@ -202,7 +202,7 @@ Observed results:
 - `check:submodules`: passed
 - `check:boundaries`: passed after adding `@delexec/billing-store` to
   `platform/data`
-- `check:bundles`: passed with `CHG-2026-100`
+- `check:bundles`: passed with `CHG-2026-101`
 - `test:contracts`: passed, including `@delexec/billing-store` in platform
   package validation and the `@delexec/platform-api` dependency graph
 - `test:integration`: passed with a successful request/response path
@@ -522,12 +522,15 @@ marked admin-only and not production-default billing.
 
 The brand-site docs now expose `/docs/deployability-profiles` and
 `/en/docs/deployability-profiles` as bilingual public entry points for Local
-Agent Loop, Selfhost Platform, Public Stack, and Management Console. The pages
-keep self-host messaging honest by labeling current paths as ready now:
-local loop, selfhost, public-stack safety checks, published-image smoke, and
-Operator Onboarding. Management Console copy now also describes the admin-only
-Billing page as an operator surface, not as client-facing billing readiness, and
-the public-stack command examples include `selfhost:security-review`,
+Agent Loop, All-in-One Demo, Selfhost Platform, Public Stack, and Management
+Console. The pages keep self-host messaging honest by labeling current paths as
+ready now: local loop, all-in-one demo, selfhost, public-stack safety checks,
+published-image smoke, and Operator Onboarding. Management Console copy now
+also describes the admin-only Billing page as an operator surface, not as
+client-facing billing readiness, and the public-stack command examples include
+`selfhost:quickstart -- --profile all-in-one`,
+`selfhost:up -- --profile all-in-one`, `all_in_one_demo`,
+`selfhost:security-review`,
 `selfhost:audit-export`, `selfhost:audit-export -- --json`, `selfhost:profiles`, `selfhost:quickstart`, `selfhost:readiness -- --all`, `selfhost:readiness`, `selfhost:readiness -- --json`, `selfhost:doctor`, `selfhost:init -- --json`, `selfhost:init -- --profile public-stack --json`, `selfhost:summary`, `selfhost:ports`,
 `selfhost:up -- --json`, `selfhost:smoke -- --json`, `selfhost:logs -- --json`, `selfhost:down -- --json`, `selfhost:ops-report`, `deployability:safety`, `deployability:safety -- --json`, `deployability:doctor`, `corepack pnpm run deployability:doctor`, `corepack pnpm --silent run deployability:doctor -- --json`, `deployability:dashboard`, `corepack pnpm run deployability:dashboard`, `corepack pnpm --silent run deployability:dashboard -- --json`, `deployability:commands`, `corepack pnpm run deployability:commands`, `corepack pnpm --silent run deployability:commands -- --json`, `deployability:handoff`, `operator:onboarding:check -- --json`,
 `selfhost:plan`, `selfhost:plan -- --json`, `selfhost:backup-plan`, `selfhost:backup-validate`, `selfhost:restore-plan`, `selfhost:rotate-plan`, `selfhost:rotate -- --profile public-stack --json`, and `selfhost:rotate -- --profile public-stack --confirm --json` as pre-exposure safety,

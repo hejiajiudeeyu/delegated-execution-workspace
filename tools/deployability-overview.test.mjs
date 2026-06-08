@@ -25,13 +25,23 @@ assert.ok(body.generated_at);
 assert.ok(Array.isArray(body.pipelines));
 assert.deepEqual(
   body.pipelines.map((item) => item.key),
-  ["local_agent_loop", "selfhost_platform", "public_stack", "operator_onboarding", "published_image"]
+  ["local_agent_loop", "all_in_one_demo", "selfhost_platform", "public_stack", "operator_onboarding", "published_image"]
 );
 assert.ok(body.pipelines.find((item) => item.key === "local_agent_loop").commands.includes("corepack pnpm run dev:doctor"));
 assert.ok(
   body.pipelines
     .find((item) => item.key === "selfhost_platform")
     .json_commands.includes("corepack pnpm --silent run selfhost:profiles -- --json")
+);
+assert.ok(
+  body.pipelines
+    .find((item) => item.key === "all_in_one_demo")
+    .commands.includes("corepack pnpm run selfhost:quickstart -- --profile all-in-one")
+);
+assert.ok(
+  body.pipelines
+    .find((item) => item.key === "all_in_one_demo")
+    .json_commands.includes("corepack pnpm --silent run selfhost:quickstart -- --profile all-in-one --json")
 );
 assert.ok(
   body.pipelines
@@ -53,6 +63,8 @@ const text = run([]);
 assert.equal(text.status, 0, text.stderr || text.stdout);
 assert.match(text.stdout, /Deployability overview/);
 assert.match(text.stdout, /Local Agent Loop/);
+assert.match(text.stdout, /All-in-One Demo/);
+assert.match(text.stdout, /selfhost:quickstart -- --profile all-in-one/);
 assert.match(text.stdout, /corepack pnpm run selfhost:profiles/);
 assert.match(text.stdout, /corepack pnpm run test:deployability/);
 assert.match(text.stdout, /corepack pnpm run test:deployability-operations/);

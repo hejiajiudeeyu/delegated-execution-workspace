@@ -43,14 +43,15 @@ Required commands:
 
 Acceptance:
 
-- overview lists Local Agent Loop, Selfhost Platform, Public Stack, Operator
-  Onboarding, and Published Image paths
+- overview lists Local Agent Loop, All-in-One Demo, Selfhost Platform, Public
+  Stack, Operator Onboarding, and Published Image paths
 - overview includes the human commands and machine-readable JSON commands for
   each path
 - overview is read-only: it does not read `.env`, call Docker, bind ports, or
   probe network endpoints
-- quickstart lists Daily Development, Selfhost Platform, Public Stack, and
-  Release Review as ordered first-use tracks without executing commands
+- quickstart lists Daily Development, All-in-One Demo, Selfhost Platform,
+  Public Stack, and Release Review as ordered first-use tracks without
+  executing commands
 - `deployability:quickstart -- --json` emits clean track, step, safety-default,
   and next-command metadata without terminal prose or secret values
 - safety matrix lists read/write/startup/stop/Docker/network/logging posture
@@ -168,6 +169,42 @@ Acceptance:
 - executable MCP golden-four smoke validates tool discovery, hotline search,
   request preparation, signed result delivery, and report recovery
 - docs and brand-site describe this as the fastest local path
+
+## Pipeline A1: All-in-One Demo Profile
+
+Goal: give a fresh operator one single-machine product-evaluation path before
+they split caller, responder, relay, and platform responsibilities.
+
+Required commands:
+
+- `corepack pnpm run selfhost:quickstart -- --profile all-in-one`
+- `corepack pnpm --silent run selfhost:quickstart -- --profile all-in-one --json`
+- `corepack pnpm run selfhost:readiness -- --profile all-in-one`
+- `corepack pnpm --silent run selfhost:readiness -- --profile all-in-one --json`
+- `corepack pnpm run selfhost:init -- --profile all-in-one`
+- `corepack pnpm --silent run selfhost:init -- --profile all-in-one --json`
+- `corepack pnpm run selfhost:preflight -- --profile all-in-one`
+- `corepack pnpm --silent run selfhost:preflight -- --profile all-in-one --json`
+- `corepack pnpm run selfhost:up -- --profile all-in-one`
+- `corepack pnpm --silent run selfhost:up -- --profile all-in-one --json`
+- `corepack pnpm run selfhost:status -- --profile all-in-one`
+- `corepack pnpm --silent run selfhost:status -- --profile all-in-one --json`
+- `corepack pnpm run selfhost:smoke -- --profile all-in-one`
+- `corepack pnpm --silent run selfhost:smoke -- --profile all-in-one --json`
+
+Acceptance:
+
+- deployability overview shows All-in-One Demo as `ready_now` between Local
+  Agent Loop and Selfhost Platform
+- deployability quickstart exposes `all_in_one_demo` as its own first-use track
+- deployability commands can filter by `--pipeline all_in_one_demo` and
+  `--track all_in_one_demo`
+- all-in-one profile-specific command variants inherit the base selfhost safety
+  posture instead of showing `unmapped`
+- dashboard and handoff pipeline summaries include All-in-One Demo through the
+  same shared metadata source
+- docs and brand-site present all-in-one as a local evaluation profile, not as
+  public exposure or formal production readiness
 
 ## Pipeline B: Self-host Platform Profile
 
@@ -385,8 +422,9 @@ Acceptance:
 
 - homepage/docs explain the deployment profiles
 - `/docs/deployability-profiles` and `/en/docs/deployability-profiles` explain
-  Local Agent Loop, Selfhost Platform, Public Stack, Management Console,
-  ready-now versus planned boundaries, and secret-safety defaults
+  Local Agent Loop, All-in-One Demo, Selfhost Platform, Public Stack,
+  Management Console, ready-now versus planned boundaries, and secret-safety
+  defaults
 - Deployability Profiles include `selfhost:init -- --json` and the public-stack
   variant as machine-readable first-run initialization commands
 - Deployability Profiles include `test:deployability` and

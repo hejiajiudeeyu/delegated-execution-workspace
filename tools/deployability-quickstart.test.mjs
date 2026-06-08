@@ -25,7 +25,7 @@ assert.ok(body.generated_at);
 assert.equal(body.default_track, "daily_dev");
 assert.deepEqual(
   body.tracks.map((item) => item.key),
-  ["daily_dev", "selfhost_platform", "public_stack", "release_review"]
+  ["daily_dev", "all_in_one_demo", "selfhost_platform", "public_stack", "release_review"]
 );
 assert.ok(body.tracks.find((item) => item.key === "daily_dev").steps.some((step) => step.command === "corepack pnpm run deployability:overview"));
 assert.ok(body.tracks.find((item) => item.key === "daily_dev").steps.some((step) => step.command === "corepack pnpm run deployability:safety"));
@@ -34,6 +34,16 @@ assert.ok(body.tracks.find((item) => item.key === "daily_dev").steps.some((step)
 assert.ok(body.tracks.find((item) => item.key === "daily_dev").steps.some((step) => step.command === "corepack pnpm run deployability:commands"));
 assert.ok(body.tracks.find((item) => item.key === "daily_dev").steps.some((step) => step.command === "corepack pnpm run deployability:handoff"));
 assert.ok(body.tracks.find((item) => item.key === "selfhost_platform").steps.some((step) => step.command === "corepack pnpm run selfhost:quickstart"));
+assert.ok(
+  body.tracks
+    .find((item) => item.key === "all_in_one_demo")
+    .steps.some((step) => step.command === "corepack pnpm run selfhost:quickstart -- --profile all-in-one")
+);
+assert.ok(
+  body.tracks
+    .find((item) => item.key === "all_in_one_demo")
+    .steps.some((step) => step.command === "corepack pnpm run selfhost:readiness -- --profile all-in-one")
+);
 assert.ok(body.tracks.find((item) => item.key === "public_stack").steps.some((step) => step.command === "corepack pnpm run selfhost:security-review -- --profile public-stack"));
 assert.ok(body.tracks.find((item) => item.key === "release_review").steps.some((step) => step.command === "corepack pnpm run published-image:plan"));
 assert.ok(body.next_commands.includes("corepack pnpm run deployability:handoff"));
@@ -49,6 +59,8 @@ const text = run([]);
 assert.equal(text.status, 0, text.stderr || text.stdout);
 assert.match(text.stdout, /Deployability quickstart/);
 assert.match(text.stdout, /Daily development/);
+assert.match(text.stdout, /All-in-One Demo/);
+assert.match(text.stdout, /selfhost:quickstart -- --profile all-in-one/);
 assert.match(text.stdout, /Selfhost Platform/);
 assert.match(text.stdout, /Public Stack/);
 assert.match(text.stdout, /corepack pnpm run deployability:safety/);

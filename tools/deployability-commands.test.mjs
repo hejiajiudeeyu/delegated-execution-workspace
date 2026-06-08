@@ -28,6 +28,8 @@ assert.ok(body.filters.categories.includes("top_level"));
 assert.ok(body.filters.categories.includes("selfhost"));
 assert.ok(body.filters.postures.includes("read_only"));
 assert.ok(body.filters.tracks.includes("daily_dev"));
+assert.ok(body.filters.tracks.includes("all_in_one_demo"));
+assert.ok(body.filters.pipelines.includes("all_in_one_demo"));
 assert.ok(body.filters.pipelines.includes("selfhost_platform"));
 
 const byCommand = new Map(body.commands.map((item) => [item.command, item]));
@@ -96,6 +98,30 @@ assert.equal(
   "starts_services"
 );
 assert.ok(!publicStackBody.commands.some((item) => item.posture === "unmapped"));
+
+const allInOnePipeline = run(["--json", "--pipeline", "all_in_one_demo"]);
+assert.equal(allInOnePipeline.status, 0, allInOnePipeline.stderr || allInOnePipeline.stdout);
+const allInOnePipelineBody = JSON.parse(allInOnePipeline.stdout);
+const allInOnePipelineCommands = new Map(allInOnePipelineBody.commands.map((item) => [item.command, item]));
+assert.equal(
+  allInOnePipelineCommands.get("corepack pnpm run selfhost:quickstart -- --profile all-in-one").posture,
+  "read_only"
+);
+assert.equal(
+  allInOnePipelineCommands.get("corepack pnpm run selfhost:up -- --profile all-in-one").posture,
+  "starts_services"
+);
+assert.ok(!allInOnePipelineBody.commands.some((item) => item.posture === "unmapped"));
+
+const allInOneTrack = run(["--json", "--track", "all_in_one_demo"]);
+assert.equal(allInOneTrack.status, 0, allInOneTrack.stderr || allInOneTrack.stdout);
+const allInOneTrackBody = JSON.parse(allInOneTrack.stdout);
+assert.ok(allInOneTrackBody.commands.every((item) => item.track_keys.includes("all_in_one_demo")));
+assert.ok(
+  allInOneTrackBody.commands.some(
+    (item) => item.command === "corepack pnpm run selfhost:quickstart -- --profile all-in-one"
+  )
+);
 
 const text = run(["--category", "top_level"]);
 assert.equal(text.status, 0, text.stderr || text.stdout);

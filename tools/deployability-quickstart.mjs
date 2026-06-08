@@ -54,6 +54,38 @@ const TRACKS = [
     ]
   },
   {
+    key: "all_in_one_demo",
+    label: "All-in-One Demo",
+    purpose: "Run the single-machine caller, responder, relay, and platform stack for first-run product evaluation.",
+    steps: [
+      {
+        label: "Read the all-in-one copy-paste sequence",
+        command: "corepack pnpm run selfhost:quickstart -- --profile all-in-one",
+        json_command: "corepack pnpm --silent run selfhost:quickstart -- --profile all-in-one --json"
+      },
+      {
+        label: "Inspect all-in-one readiness",
+        command: "corepack pnpm run selfhost:readiness -- --profile all-in-one",
+        json_command: "corepack pnpm --silent run selfhost:readiness -- --profile all-in-one --json"
+      },
+      {
+        label: "Generate or harden all-in-one env",
+        command: "corepack pnpm run selfhost:init -- --profile all-in-one",
+        json_command: "corepack pnpm --silent run selfhost:init -- --profile all-in-one --json"
+      },
+      {
+        label: "Run all-in-one preflight before startup",
+        command: "corepack pnpm run selfhost:preflight -- --profile all-in-one",
+        json_command: "corepack pnpm --silent run selfhost:preflight -- --profile all-in-one --json"
+      },
+      {
+        label: "Start all-in-one only after preflight",
+        command: "corepack pnpm run selfhost:up -- --profile all-in-one",
+        json_command: "corepack pnpm --silent run selfhost:up -- --profile all-in-one --json"
+      }
+    ]
+  },
+  {
     key: "selfhost_platform",
     label: "Selfhost Platform",
     purpose: "Prepare the private platform profile before starting Docker or exposing routes.",

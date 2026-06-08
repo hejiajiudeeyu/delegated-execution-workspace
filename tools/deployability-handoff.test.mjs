@@ -116,8 +116,11 @@ try {
   assert.ok(Array.isArray(body.pipeline_summaries));
   assert.deepEqual(
     body.pipeline_summaries.map((item) => item.key),
-    ["local_agent_loop", "selfhost_platform", "public_stack", "operator_onboarding", "published_image"]
+    ["local_agent_loop", "all_in_one_demo", "selfhost_platform", "public_stack", "operator_onboarding", "published_image"]
   );
+  const allInOne = body.pipeline_summaries.find((item) => item.key === "all_in_one_demo");
+  assert.equal(allInOne.status, "ready_now");
+  assert.ok(allInOne.next_commands.includes("corepack pnpm run selfhost:quickstart -- --profile all-in-one"));
   const publicStack = body.pipeline_summaries.find((item) => item.key === "public_stack");
   assert.equal(publicStack.status, "ready_now_with_safety_gates");
   assert.equal(publicStack.public_exposure_gate_count, 2);

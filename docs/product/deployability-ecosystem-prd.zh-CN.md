@@ -72,8 +72,8 @@ CALL ANYTHING 现在的仓库边界是正确的：
 | --- | --- | --- |
 | 兼容性台账 | 第四仓 | change bundles 和必跑 gates |
 | 兼容状态 | 第四仓 | `corepack pnpm run compat:status`，以及给当前 bundle、submodule SHA、dirty worktree、blockers 和 warnings metadata 使用的 `corepack pnpm --silent run compat:status -- --json` |
-| 可部署性总览 | 第四仓 | `corepack pnpm run deployability:overview`，以及作为全部部署/管理路径只读命令地图的 `corepack pnpm --silent run deployability:overview -- --json` |
-| 可部署性 quickstart | 第四仓 | `corepack pnpm run deployability:quickstart`，以及作为 daily development、self-host、public-stack 和 release-review 路径只读首次使用指南的 `corepack pnpm --silent run deployability:quickstart -- --json` |
+| 可部署性总览 | 第四仓 | `corepack pnpm run deployability:overview`，以及作为全部部署/管理路径只读命令地图的 `corepack pnpm --silent run deployability:overview -- --json`，包含 all-in-one demo profile |
+| 可部署性 quickstart | 第四仓 | `corepack pnpm run deployability:quickstart`，以及作为 daily development、all-in-one demo、self-host、public-stack 和 release-review 路径只读首次使用指南的 `corepack pnpm --silent run deployability:quickstart -- --json` |
 | 可部署性安全矩阵 | 第四仓 | `corepack pnpm run deployability:safety`，以及作为部署命令 read/write/startup/network/logging 姿态说明矩阵的 `corepack pnpm --silent run deployability:safety -- --json` |
 | 可部署性 doctor | 第四仓 | `corepack pnpm run deployability:doctor`，以及作为 compatibility ledger、顶层 scripts、docs、brand-site 和 safety-contract 对齐状态只读快照的 `corepack pnpm --silent run deployability:doctor -- --json` |
 | 可部署性 dashboard | 第四仓 | `corepack pnpm run deployability:dashboard`，以及作为顶层 dashboard 和 CI 的只读聚合 payload 的 `corepack pnpm --silent run deployability:dashboard -- --json`，组合 overview、quickstart、safety、doctor、compatibility、ecosystem_readiness 和 per-pipeline summary sections |
@@ -82,7 +82,7 @@ CALL ANYTHING 现在的仓库边界是正确的：
 | 日常本地 doctor | 第四仓 | `corepack pnpm run dev:doctor`，以及给 dashboard 和脚本使用的 `corepack pnpm --silent run dev:doctor -- --json` |
 | Local agent loop 管理 metadata | 第四仓 | `corepack pnpm run dev:local:plan`、`dev:local:up`、`dev:local:status`、`dev:local:logs` 和 `dev:local:down`，并提供 `--json` 供 dashboard 和脚本消费 |
 | Agent-facing smoke | 第四仓 | `corepack pnpm run test:agent-e2e` |
-| Self-host 部署地图 | 第四仓 | `corepack pnpm run selfhost:profiles` |
+| Self-host 部署地图 | 第四仓 | `corepack pnpm run selfhost:profiles`，包含 `platform`、`public-stack` 和 `all-in-one` profiles |
 | Self-host quickstart 序列 | 第四仓 | `corepack pnpm run selfhost:quickstart` |
 | Self-host readiness 总览 | 第四仓 | `corepack pnpm run selfhost:readiness -- --all`，以及自动化使用的 `corepack pnpm --silent run ... --json` |
 | Self-host 部署 doctor | 第四仓 | `corepack pnpm run selfhost:doctor`，以及用于诊断面板的 `--json` |
@@ -165,6 +165,9 @@ CALL ANYTHING 现在的仓库边界是正确的：
 - `deployability:overview`、`deployability:dashboard` 和 `deployability:handoff`
   共用第四仓 pipeline summary metadata，让命令数、JSON 入口数、dashboard-safe 数、
   CI-safe 数、public exposure gate 数、下一步命令和安全说明在不同 surfaces 间保持一致
+- all-in-one demo metadata 可以机器读取，把现有 `all-in-one` selfhost profile
+  暴露为本地评估路径，让带 profile 参数的命令变体继承 selfhost safety posture，
+  同时避免把它表达成公网暴露或正式 production readiness
 - 可部署性命令目录 metadata 可以机器读取，把 overview、quickstart 和 safety
   metadata 合并成可过滤命令列表，并让带 profile 参数的命令变体继承基础安全姿态，
   但不读取 `.env`、不调用 Docker、不绑定端口、不探测网络、不打印 secret 值

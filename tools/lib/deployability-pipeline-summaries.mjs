@@ -25,6 +25,34 @@ export const PIPELINES = [
     ]
   },
   {
+    key: "all_in_one_demo",
+    label: "All-in-One Demo",
+    status: "ready_now",
+    purpose: "Single-machine caller, responder, relay, and platform stack for first-run product evaluation.",
+    commands: [
+      "corepack pnpm run selfhost:quickstart -- --profile all-in-one",
+      "corepack pnpm run selfhost:readiness -- --profile all-in-one",
+      "corepack pnpm run selfhost:init -- --profile all-in-one",
+      "corepack pnpm run selfhost:preflight -- --profile all-in-one",
+      "corepack pnpm run selfhost:up -- --profile all-in-one",
+      "corepack pnpm run selfhost:status -- --profile all-in-one",
+      "corepack pnpm run selfhost:smoke -- --profile all-in-one"
+    ],
+    json_commands: [
+      "corepack pnpm --silent run selfhost:quickstart -- --profile all-in-one --json",
+      "corepack pnpm --silent run selfhost:readiness -- --profile all-in-one --json",
+      "corepack pnpm --silent run selfhost:init -- --profile all-in-one --json",
+      "corepack pnpm --silent run selfhost:preflight -- --profile all-in-one --json",
+      "corepack pnpm --silent run selfhost:up -- --profile all-in-one --json",
+      "corepack pnpm --silent run selfhost:status -- --profile all-in-one --json",
+      "corepack pnpm --silent run selfhost:smoke -- --profile all-in-one --json"
+    ],
+    safety_notes: [
+      "all-in-one stays a local evaluation profile, not a public exposure profile",
+      "startup and smoke JSON inherit selfhost safety posture and omit secret values"
+    ]
+  },
+  {
     key: "selfhost_platform",
     label: "Selfhost Platform",
     status: "ready_now",

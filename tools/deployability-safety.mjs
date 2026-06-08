@@ -257,6 +257,23 @@ const MATRIX = [
     notes: "profile selector data without reading secrets"
   },
   {
+    command: "corepack pnpm run selfhost:quickstart",
+    json_command: "corepack pnpm --silent run selfhost:quickstart -- --json",
+    category: "selfhost",
+    posture: "read_only",
+    reads_env: false,
+    writes_files: false,
+    starts_services: false,
+    stops_services: false,
+    calls_docker: false,
+    probes_network: false,
+    private_terminal_text: false,
+    public_exposure_gate: false,
+    ci_safe: true,
+    dashboard_safe: true,
+    notes: "copy-paste sequence for a selected selfhost profile without executing commands"
+  },
+  {
     command: "corepack pnpm run selfhost:init",
     json_command: "corepack pnpm --silent run selfhost:init -- --json",
     category: "selfhost",
