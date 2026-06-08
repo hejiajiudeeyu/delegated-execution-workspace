@@ -18,14 +18,14 @@ repositories.
 - `repos/protocol`: `da3027100cfe9391f7f8d03be18a108ee2804cf6`
 - `repos/client`: `f1d6a2d8c9b83517cdf6ca9803b223847f880e9a`
 - `repos/platform`: `5961309c6b0ca4e8df22dbb5be92ac0845bf8d25`
-- `repos/brand-site`: `178d9dd7644a4463e39db6f94e9675b1022659f0`
+- `repos/brand-site`: `46d71b8c7e0b9848229f56edf8edf0dad316b2dd`
 
-The current bundle is `changes/CHG-2026-096.yaml`.
+The current bundle is `changes/CHG-2026-097.yaml`.
 
 ## Readiness Verdict
 
 The pinned combination is ready for daily fourth-repo development after
-CHG-2026-096:
+CHG-2026-097:
 
 - submodule SHA integrity is verified
 - boundary governance covers the new platform billing data package
@@ -163,6 +163,10 @@ CHG-2026-096:
   compatibility warnings, command map, shared per-pipeline summaries, safety notes,
   and next validation commands, and supports `--json` without reading `.env`,
   calling Docker, binding ports, probing networks, or printing secrets
+- call-anything-brand-site Deployability Profiles now document the shared
+  `pipeline_summaries` contract used by dashboard and handoff, including
+  catalog, CI-safe, dashboard-safe, public exposure gate, next command, and next
+  JSON command fields
 - published-image smoke now has a fourth-repo entry point that reviews
   public-stack release images and delegates to platform smoke with
   `COMPOSE_NO_BUILD=true`
@@ -197,7 +201,7 @@ Observed results:
 - `check:submodules`: passed
 - `check:boundaries`: passed after adding `@delexec/billing-store` to
   `platform/data`
-- `check:bundles`: passed with `CHG-2026-096`
+- `check:bundles`: passed with `CHG-2026-097`
 - `test:contracts`: passed, including `@delexec/billing-store` in platform
   package validation and the `@delexec/platform-api` dependency graph
 - `test:integration`: passed with a successful request/response path
