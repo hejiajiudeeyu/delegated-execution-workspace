@@ -183,6 +183,19 @@ The per-pipeline summaries use the same fourth-repo metadata builder as
 safety gate counts stay aligned across docs, dashboard JSON, and handoff
 reports.
 
+`deployability:profiles` is the dedicated read-only profile catalog for
+operators, dashboards, CI, and management scripts. It derives profile cards
+from dashboard `profile_summaries` and the shared fourth-repo profile registry,
+then emits aliases, labels, owning pipeline keys, status, counts, next commands,
+next JSON commands, safety notes, shared `attention` metadata, and top-level
+`recommended_profile_keys` without reading `.env`, calling Docker, binding
+ports, probing networks, or printing secrets. Use
+`corepack pnpm run deployability:profiles`,
+`corepack pnpm --silent run deployability:profiles -- --json`, or
+`--profile public-stack` / another profile key/alias when a surface only needs
+one card; unknown profiles return blockers instead of falling back to every
+profile.
+
 `deployability:action-plan` is the read-only operator action selector. It
 combines the dashboard and command catalog into profile-level recommended
 commands, dashboard-safe commands, public-exposure gates, service-touching

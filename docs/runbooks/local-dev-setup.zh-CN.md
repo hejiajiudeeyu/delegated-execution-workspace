@@ -156,6 +156,17 @@ summaries，但不读取 `.env`、不调用 Docker、不绑定端口、不探测
 共用同一个第四仓 metadata builder，让命令数和安全门禁计数在 docs、dashboard JSON
 和 handoff 报告之间保持一致。
 
+`deployability:profiles` 是给 operator、dashboard、CI 和管理脚本使用的专用只读
+profile catalog。它从 dashboard `profile_summaries` 和共享第四仓 profile registry
+派生 profile cards，输出 aliases、labels、所属 pipeline keys、status、counts、
+next commands、next JSON commands、safety notes、共享 `attention` metadata 和顶层
+`recommended_profile_keys`，同时不读取 `.env`、不调用 Docker、不绑定端口、
+不探测网络、不打印 secrets。当管理面只需要一张卡时，可以用
+`corepack pnpm run deployability:profiles`、
+`corepack pnpm --silent run deployability:profiles -- --json`，或
+`--profile public-stack` / 其他 profile key / alias；未知 profile 会返回
+blockers，而不是回退成全部 profiles。
+
 `deployability:action-plan` 是给 operator 使用的只读下一步动作选择器。它会把
 dashboard 和命令目录合成 profile 级 recommended commands、dashboard-safe
 commands、public-exposure gates、service-touching commands、safety notes 和

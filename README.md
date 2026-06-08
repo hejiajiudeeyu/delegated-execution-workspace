@@ -125,6 +125,10 @@ corepack pnpm run deployability:dashboard
 corepack pnpm --silent run deployability:dashboard -- --json
 corepack pnpm run deployability:dashboard -- --profile public-stack
 corepack pnpm --silent run deployability:dashboard -- --profile public-stack --json
+corepack pnpm run deployability:profiles
+corepack pnpm --silent run deployability:profiles -- --json
+corepack pnpm run deployability:profiles -- --profile public-stack
+corepack pnpm --silent run deployability:profiles -- --profile public-stack --json
 corepack pnpm run deployability:action-plan
 corepack pnpm --silent run deployability:action-plan -- --json
 corepack pnpm run deployability:action-plan -- --list-profiles

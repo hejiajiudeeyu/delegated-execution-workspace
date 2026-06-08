@@ -23,6 +23,10 @@ Required commands:
 - `corepack pnpm --silent run deployability:doctor -- --json`
 - `corepack pnpm run deployability:dashboard`
 - `corepack pnpm --silent run deployability:dashboard -- --json`
+- `corepack pnpm run deployability:profiles`
+- `corepack pnpm --silent run deployability:profiles -- --json`
+- `corepack pnpm run deployability:profiles -- --profile public-stack`
+- `corepack pnpm --silent run deployability:profiles -- --profile public-stack --json`
 - `corepack pnpm run deployability:action-plan`
 - `corepack pnpm --silent run deployability:action-plan -- --json`
 - `corepack pnpm run deployability:action-plan -- --list-profiles`
@@ -43,6 +47,7 @@ Required commands:
 - `corepack pnpm run test:deployability-doctor`
 - `corepack pnpm run test:deployability-dashboard`
 - `corepack pnpm run test:deployability-action-plan`
+- `corepack pnpm run test:deployability-profiles`
 - `corepack pnpm run test:deployability-pipeline-summaries`
 - `corepack pnpm run test:deployability-commands`
 - `corepack pnpm run test:compat-status`
@@ -64,6 +69,9 @@ Acceptance:
 - quickstart exposes `deployability:action-plan -- --list-profiles` in the
   Daily Development track before the full action plan so operators and
   dashboards can render a profile selector first
+- quickstart exposes `deployability:profiles` in the Daily Development track
+  before focused profile commands, so operators and dashboards can render a
+  complete profile-card catalog without calling action-plan mode first
 - `deployability:quickstart -- --json` emits clean track, step, safety-default,
   and next-command metadata without terminal prose or secret values
 - safety matrix lists read/write/startup/stop/Docker/network/logging posture
@@ -100,6 +108,17 @@ Acceptance:
   safety defaults, and next profile commands without calling dashboard/catalog
   metadata, reading `.env`, calling Docker, binding ports, probing networks, or
   printing secret values
+- `deployability:profiles -- --json` emits a clean `profile_catalog` payload
+  with current bundle, ecosystem readiness, aliases, labels, pipeline keys,
+  status, counts, next commands, next JSON commands, safety notes, shared
+  `attention` metadata, and top-level `recommended_profile_keys`, derived from
+  dashboard `profile_summaries` and the shared fourth-repo profile registry
+  without reading `.env`, calling Docker, binding ports, probing networks, or
+  printing secret values
+- `deployability:profiles -- --profile public-stack --json` emits the same
+  schema narrowed to `public_stack`, includes `profile_filter`, and reports
+  unknown profile names as clean blockers instead of falling back to all
+  profiles
 - the dashboard and handoff ecosystem_readiness scorecard maps the daily-deployable
   definition to profile choice, generated secrets, startup path, doctor path,
   runtime inspection, boundary understanding, and brand-site story; when all
@@ -111,8 +130,8 @@ Acceptance:
   commands, and safety notes
 - `test:deployability` runs the top-level deployability regression suite as one
   command, covering overview, quickstart, safety, doctor, dashboard,
-  pipeline-summary consistency, command catalog, handoff, and compatibility
-  status tests
+  profile catalog, pipeline-summary consistency, command catalog, handoff, and
+  compatibility status tests
 - `test:deployability-operations` runs the operator-facing deployment and
   management regression suite as one command, covering daily local doctor,
   local-stack lifecycle metadata, self-host kit behavior, published-image smoke
@@ -153,8 +172,9 @@ Acceptance:
   unknown profile names as clean blockers instead of falling back to all
   commands
 - `deployability:commands -- --track daily_dev --json` includes
-  `deployability:action-plan -- --list-profiles` as a `top_level` /
-  `read_only` / dashboard-safe command, sourced from quickstart and safety
+  `deployability:profiles` and
+  `deployability:action-plan -- --list-profiles` as `top_level` /
+  `read_only` / dashboard-safe commands, sourced from quickstart and safety
   metadata
 - `deployability:commands -- --json` does not expose `unmapped` category or
   posture values for ready-now command paths; local doctor/acceptance commands

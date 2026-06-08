@@ -58,6 +58,10 @@ assert.equal(byCommand.get("corepack pnpm run deployability:action-plan").catego
 assert.equal(byCommand.get("corepack pnpm run deployability:action-plan").posture, "read_only");
 assert.equal(byCommand.get("corepack pnpm run deployability:action-plan").dashboard_safe, true);
 assert.ok(byCommand.get("corepack pnpm run deployability:action-plan").track_keys.includes("daily_dev"));
+assert.equal(byCommand.get("corepack pnpm run deployability:profiles").category, "top_level");
+assert.equal(byCommand.get("corepack pnpm run deployability:profiles").posture, "read_only");
+assert.equal(byCommand.get("corepack pnpm run deployability:profiles").dashboard_safe, true);
+assert.ok(byCommand.get("corepack pnpm run deployability:profiles").track_keys.includes("daily_dev"));
 assert.equal(byCommand.get("corepack pnpm run deployability:action-plan -- --list-profiles").category, "top_level");
 assert.equal(byCommand.get("corepack pnpm run deployability:action-plan -- --list-profiles").posture, "read_only");
 assert.equal(byCommand.get("corepack pnpm run deployability:action-plan -- --list-profiles").dashboard_safe, true);
@@ -110,6 +114,7 @@ assert.ok(topLevelBody.commands.every((item) => item.category === "top_level"));
 assert.ok(topLevelBody.commands.some((item) => item.command === "corepack pnpm run deployability:dashboard"));
 assert.ok(topLevelBody.commands.some((item) => item.command === "corepack pnpm run deployability:dashboard -- --profile public-stack"));
 assert.ok(topLevelBody.commands.some((item) => item.command === "corepack pnpm run deployability:action-plan"));
+assert.ok(topLevelBody.commands.some((item) => item.command === "corepack pnpm run deployability:profiles"));
 assert.ok(topLevelBody.commands.some((item) => item.command === "corepack pnpm run deployability:action-plan -- --list-profiles"));
 assert.ok(topLevelBody.commands.some((item) => item.command === "corepack pnpm run test:deployability"));
 assert.ok(topLevelBody.commands.some((item) => item.command === "corepack pnpm run test:deployability-operations"));
@@ -130,6 +135,7 @@ assert.ok(dailyDevBody.commands.some((item) => item.command === "corepack pnpm r
 assert.ok(dailyDevBody.commands.some((item) => item.command === "corepack pnpm run deployability:dashboard"));
 assert.ok(dailyDevBody.commands.some((item) => item.command === "corepack pnpm run deployability:dashboard -- --profile public-stack"));
 assert.ok(dailyDevBody.commands.some((item) => item.command === "corepack pnpm run deployability:action-plan"));
+assert.ok(dailyDevBody.commands.some((item) => item.command === "corepack pnpm run deployability:profiles"));
 assert.ok(dailyDevBody.commands.some((item) => item.command === "corepack pnpm run deployability:action-plan -- --list-profiles"));
 assert.ok(dailyDevBody.commands.some((item) => item.command === "corepack pnpm run deployability:handoff -- --profile public-stack"));
 

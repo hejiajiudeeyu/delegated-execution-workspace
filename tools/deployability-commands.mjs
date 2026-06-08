@@ -2,6 +2,7 @@
 
 import path from "node:path";
 import { spawnSync } from "node:child_process";
+import { profileDirectory, resolveProfileFilter } from "./lib/deployability-profiles-registry.mjs";
 
 const ROOT = process.cwd();
 
@@ -16,51 +17,6 @@ const SAFETY_DEFAULTS = [
   "commands catalog only calls read-only deployability metadata commands",
   "commands catalog does not call Docker, bind ports, or probe network endpoints",
   "JSON output contains command metadata and filters without printing secret values"
-];
-
-const PROFILE_PIPELINES = [
-  {
-    key: "daily_dev",
-    aliases: ["daily-dev", "daily_dev", "local-agent-loop", "local_agent_loop"],
-    pipeline_key: "local_agent_loop",
-    purpose: "Start with the local caller-skill and MCP development loop."
-  },
-  {
-    key: "all_in_one_demo",
-    aliases: ["all-in-one", "all-in-one-demo", "all_in_one_demo"],
-    pipeline_key: "all_in_one_demo",
-    purpose: "Evaluate the full product shape on one machine before splitting components."
-  },
-  {
-    key: "selfhost_platform",
-    aliases: ["selfhost", "selfhost-platform", "selfhost_platform", "platform"],
-    pipeline_key: "selfhost_platform",
-    purpose: "Prepare and manage the private platform profile."
-  },
-  {
-    key: "public_stack",
-    aliases: ["public-stack", "public_stack"],
-    pipeline_key: "public_stack",
-    purpose: "Review public exposure gates before opening edge routes."
-  },
-  {
-    key: "recovery_evidence",
-    aliases: ["recovery", "recovery-evidence", "recovery_evidence"],
-    pipeline_key: "recovery_evidence",
-    purpose: "Prepare handoff, audit, backup, restore rehearsal, and rotation evidence."
-  },
-  {
-    key: "operator_onboarding",
-    aliases: ["operator-onboarding", "operator_onboarding", "onboarding"],
-    pipeline_key: "operator_onboarding",
-    purpose: "Follow the public-stack first-use operator path."
-  },
-  {
-    key: "published_image",
-    aliases: ["published-image", "published_image", "release-review", "release_review"],
-    pipeline_key: "published_image",
-    purpose: "Review published-image smoke metadata before running Docker."
-  }
 ];
 
 const NEXT_COMMANDS = [
@@ -157,41 +113,6 @@ function runJsonScript(relativeScript) {
 
 function unique(items) {
   return [...new Set(items.filter(Boolean))].sort();
-}
-
-function normalizeProfile(value) {
-  return String(value || "")
-    .trim()
-    .toLowerCase()
-    .replace(/_/g, "-");
-}
-
-function resolveProfileFilter(requested) {
-  if (requested == null) {
-    return {
-      requested: null,
-      resolved: null,
-      pipeline: null
-    };
-  }
-  const normalized = normalizeProfile(requested);
-  const match = PROFILE_PIPELINES.find(
-    (item) => normalizeProfile(item.key) === normalized || (item.aliases || []).some((alias) => normalizeProfile(alias) === normalized)
-  );
-  return {
-    requested,
-    resolved: match?.key || null,
-    pipeline: match?.pipeline_key || null
-  };
-}
-
-function profileDirectory() {
-  return PROFILE_PIPELINES.map((profile) => ({
-    key: profile.key,
-    aliases: profile.aliases,
-    pipeline_key: profile.pipeline_key,
-    purpose: profile.purpose
-  }));
 }
 
 function ensureCommand(commands, command) {

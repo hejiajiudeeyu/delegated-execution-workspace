@@ -22,6 +22,10 @@ onboarding 或 release-image 路径前，先给出一个只读命令地图和一
 - `corepack pnpm --silent run deployability:doctor -- --json`
 - `corepack pnpm run deployability:dashboard`
 - `corepack pnpm --silent run deployability:dashboard -- --json`
+- `corepack pnpm run deployability:profiles`
+- `corepack pnpm --silent run deployability:profiles -- --json`
+- `corepack pnpm run deployability:profiles -- --profile public-stack`
+- `corepack pnpm --silent run deployability:profiles -- --profile public-stack --json`
 - `corepack pnpm run deployability:action-plan`
 - `corepack pnpm --silent run deployability:action-plan -- --json`
 - `corepack pnpm run deployability:action-plan -- --list-profiles`
@@ -42,6 +46,7 @@ onboarding 或 release-image 路径前，先给出一个只读命令地图和一
 - `corepack pnpm run test:deployability-doctor`
 - `corepack pnpm run test:deployability-dashboard`
 - `corepack pnpm run test:deployability-action-plan`
+- `corepack pnpm run test:deployability-profiles`
 - `corepack pnpm run test:deployability-pipeline-summaries`
 - `corepack pnpm run test:deployability-commands`
 - `corepack pnpm run test:compat-status`
@@ -60,6 +65,9 @@ onboarding 或 release-image 路径前，先给出一个只读命令地图和一
 - quickstart 会在 Daily Development track 里把
   `deployability:action-plan -- --list-profiles` 放在完整 action plan 前，让
   operator 和 dashboard 可以先渲染 profile selector
+- quickstart 会在 Daily Development track 里暴露 `deployability:profiles`，
+  让 operator 和 dashboard 不必先调用 action-plan 模式，也能渲染完整
+  profile-card catalog
 - `deployability:quickstart -- --json` 输出干净的 track、step、安全默认值和下一步命令
   metadata，不混入终端文本或 secret 值
 - safety matrix 会列出 top-level、local-loop、self-host、public-stack 和
@@ -90,6 +98,15 @@ onboarding 或 release-image 路径前，先给出一个只读命令地图和一
   `profile_list` payload，包含支持的 keys、aliases、pipeline keys、purposes、
   safety defaults 和下一步 profile 命令；该模式不调用 dashboard/catalog
   metadata、不读取 `.env`、不调用 Docker、不绑定端口、不探测网络、不打印 secret 值
+- `deployability:profiles -- --json` 输出干净的 `profile_catalog` payload，
+  包含当前 bundle、ecosystem readiness、aliases、labels、pipeline keys、status、
+  counts、next commands、next JSON commands、safety notes、共享 `attention`
+  metadata 和顶层 `recommended_profile_keys`；这些字段从 dashboard
+  `profile_summaries` 和共享第四仓 profile registry 派生，不读取 `.env`、
+  不调用 Docker、不绑定端口、不探测网络、不打印 secret 值
+- `deployability:profiles -- --profile public-stack --json` 会以同一 schema
+  聚焦到 `public_stack`，包含 `profile_filter`，并把未知 profile 名称作为干净
+  blockers 返回，而不是回退为全部 profiles
 - dashboard 和 handoff 的 ecosystem_readiness scorecard 把 daily-deployable 定义映射为
   profile choice、generated secrets、startup path、doctor path、runtime inspection、
   boundary understanding 和 brand-site story；全部通过时报告
@@ -99,8 +116,8 @@ onboarding 或 release-image 路径前，先给出一个只读命令地图和一
   JSON 入口数、dashboard-safe 数、CI-safe 数、public exposure gate 数、下一步命令
   和安全说明
 - `test:deployability` 用一条命令运行顶层 deployability regression suite，覆盖
-  overview、quickstart、safety、doctor、dashboard、pipeline-summary 一致性、命令目录、
-  handoff 和 compatibility status tests
+  overview、quickstart、safety、doctor、dashboard、profile catalog、
+  pipeline-summary 一致性、命令目录、handoff 和 compatibility status tests
 - `test:deployability-operations` 用一条命令运行面向 operator 的部署与管理回归套件，
   覆盖 daily local doctor、local-stack lifecycle metadata、self-host kit 行为、
   published-image smoke 编排和 operator onboarding contract tests
@@ -133,8 +150,9 @@ onboarding 或 release-image 路径前，先给出一个只读命令地图和一
   metadata，只返回该 pipeline 的命令目录，并把未知 profile 名称作为干净 blocker
   返回，而不是回退到全量命令
 - `deployability:commands -- --track daily_dev --json` 会包含
-  `deployability:action-plan -- --list-profiles`，并把它标成 `top_level` /
-  `read_only` / dashboard-safe 命令；该条目来自 quickstart 与 safety metadata
+  `deployability:profiles` 和 `deployability:action-plan -- --list-profiles`，
+  并把它们标成 `top_level` / `read_only` / dashboard-safe 命令；这些条目来自
+  quickstart 与 safety metadata
 - `deployability:commands -- --json` 不会让 ready-now 命令路径暴露 `unmapped`
   category 或 posture；本地 doctor / acceptance 命令和真实 published-image smoke
   会使用明确的 `runtime_diagnostic`、`runtime_acceptance` 和 `delegated_smoke`

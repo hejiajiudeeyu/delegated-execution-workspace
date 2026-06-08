@@ -104,6 +104,23 @@ const MATRIX = [
     notes: "read-only operator action plan for choosing the next deployability command"
   },
   {
+    command: "corepack pnpm run deployability:profiles",
+    json_command: "corepack pnpm --silent run deployability:profiles -- --json",
+    category: "top_level",
+    posture: "read_only",
+    reads_env: false,
+    writes_files: false,
+    starts_services: false,
+    stops_services: false,
+    calls_docker: false,
+    probes_network: false,
+    private_terminal_text: false,
+    public_exposure_gate: false,
+    ci_safe: true,
+    dashboard_safe: true,
+    notes: "read-only profile catalog with attention ranking and next commands"
+  },
+  {
     command: "corepack pnpm run deployability:action-plan -- --list-profiles",
     json_command: "corepack pnpm --silent run deployability:action-plan -- --list-profiles --json",
     category: "top_level",
