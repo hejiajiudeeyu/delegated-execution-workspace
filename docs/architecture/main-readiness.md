@@ -18,14 +18,14 @@ repositories.
 - `repos/protocol`: `da3027100cfe9391f7f8d03be18a108ee2804cf6`
 - `repos/client`: `f1d6a2d8c9b83517cdf6ca9803b223847f880e9a`
 - `repos/platform`: `5961309c6b0ca4e8df22dbb5be92ac0845bf8d25`
-- `repos/brand-site`: `738945425f3fd1c788ebea0cb7333e94abe82b40`
+- `repos/brand-site`: `0d423952207d15e43c48429400245b7589e932c1`
 
-The current bundle is `changes/CHG-2026-103.yaml`.
+The current bundle is `changes/CHG-2026-104.yaml`.
 
 ## Readiness Verdict
 
 The pinned combination is ready for daily fourth-repo development after
-CHG-2026-103:
+CHG-2026-104:
 
 - submodule SHA integrity is verified
 - boundary governance covers the new platform billing data package
@@ -143,6 +143,15 @@ CHG-2026-103:
   `corepack pnpm --silent run deployability:dashboard -- --json` without
   reading `.env`, calling Docker, binding ports, probing networks, or printing
   secrets
+- `deployability:action-plan` is available as a read-only operator next-action
+  selector between the dashboard and the full command catalog. It combines
+  dashboard and command-catalog metadata into profile-level recommended
+  commands, dashboard-safe commands, public-exposure gates, service-touching
+  commands, safety notes, and JSON entry points, and supports
+  `corepack pnpm run deployability:action-plan` and
+  `corepack pnpm --silent run deployability:action-plan -- --json` without
+  reading `.env`, calling Docker, binding ports, probing networks, or printing
+  secrets
 - `deployability:overview`, `deployability:dashboard`, and
   `deployability:handoff` now share one fourth-repo pipeline summary metadata
   builder, with a consistency test keeping command counts, JSON counts,
@@ -188,7 +197,7 @@ platform API/read model and an operator-only console surface on top of
 persistence and schema groundwork, but it does not make billing a complete
 client-facing or end-user default path yet.
 
-## Verified On 2026-06-07
+## Verified On 2026-06-08
 
 The required fourth-repo gates pass on the current pinned combination:
 
@@ -205,7 +214,7 @@ Observed results:
 - `check:submodules`: passed
 - `check:boundaries`: passed after adding `@delexec/billing-store` to
   `platform/data`
-- `check:bundles`: passed with `CHG-2026-103`
+- `check:bundles`: passed with `CHG-2026-104`
 - `test:contracts`: passed, including `@delexec/billing-store` in platform
   package validation and the `@delexec/platform-api` dependency graph
 - `test:integration`: passed with a successful request/response path
@@ -231,6 +240,10 @@ Observed results:
 - `deployability:dashboard -- --json`: passed, reporting overview, quickstart,
   safety, doctor, and compatibility sections, section status, blockers,
   warnings, per-pipeline summaries, safety defaults, and next commands without
+  terminal prose or secret values
+- `deployability:action-plan -- --json`: passed, reporting profile-level
+  recommended commands, dashboard-safe commands, public-exposure gates,
+  service-touching commands, safety notes, and next JSON commands without
   terminal prose or secret values
 - `test:deployability-pipeline-summaries`: passed, proving dashboard and
   handoff expose the same shared `pipeline_summaries` payload
@@ -308,7 +321,7 @@ Observed results:
   bilingual Deployability Profiles route/content contract, including the
   admin-only Billing console narrative plus `selfhost:security-review` and
   `selfhost:audit-export` / `selfhost:profiles` / `selfhost:quickstart` / `selfhost:readiness -- --all` / `selfhost:readiness` / `selfhost:doctor` / `selfhost:init -- --json` / `selfhost:init -- --profile public-stack --json` / `selfhost:summary` / `selfhost:ports` /
-  `selfhost:ops-report` / `selfhost:status -- --json` / `selfhost:config -- --json` / `selfhost:backup-validate` / `selfhost:restore-plan` / `selfhost:rotate -- --profile public-stack --json` / `selfhost:rotate -- --profile public-stack --confirm --json` / `deployability:quickstart` / `deployability:quickstart -- --json` / `deployability:safety` / `deployability:safety -- --json` / `deployability:doctor` / `corepack pnpm run deployability:doctor` / `corepack pnpm --silent run deployability:doctor -- --json` / `deployability:dashboard` / `corepack pnpm run deployability:dashboard` / `corepack pnpm --silent run deployability:dashboard -- --json` / `deployability:commands` / `corepack pnpm run deployability:commands` / `corepack pnpm --silent run deployability:commands -- --json` / `deployability:handoff` / `deployability:handoff -- --json` / `operator:onboarding:check -- --json` / `published-image:smoke -- --dry-run --json`
+  `selfhost:ops-report` / `selfhost:status -- --json` / `selfhost:config -- --json` / `selfhost:backup-validate` / `selfhost:restore-plan` / `selfhost:rotate -- --profile public-stack --json` / `selfhost:rotate -- --profile public-stack --confirm --json` / `deployability:quickstart` / `deployability:quickstart -- --json` / `deployability:safety` / `deployability:safety -- --json` / `deployability:doctor` / `corepack pnpm run deployability:doctor` / `corepack pnpm --silent run deployability:doctor -- --json` / `deployability:dashboard` / `corepack pnpm run deployability:dashboard` / `corepack pnpm --silent run deployability:dashboard -- --json` / `deployability:action-plan` / `corepack pnpm run deployability:action-plan` / `corepack pnpm --silent run deployability:action-plan -- --json` / `deployability:commands` / `corepack pnpm run deployability:commands` / `corepack pnpm --silent run deployability:commands -- --json` / `deployability:handoff` / `deployability:handoff -- --json` / `operator:onboarding:check -- --json` / `published-image:smoke -- --dry-run --json`
   commands
 - `repos/brand-site` `npm run build`: passed, including client build, SSR
   build, and prerender output for the new deployability docs routes
@@ -537,10 +550,10 @@ client-facing billing readiness, and the public-stack command examples include
 `selfhost:up -- --profile all-in-one`, `all_in_one_demo`,
 `selfhost:security-review`,
 `selfhost:audit-export`, `selfhost:audit-export -- --json`, `selfhost:profiles`, `selfhost:quickstart`, `selfhost:readiness -- --all`, `selfhost:readiness`, `selfhost:readiness -- --json`, `selfhost:doctor`, `selfhost:init -- --json`, `selfhost:init -- --profile public-stack --json`, `selfhost:summary`, `selfhost:ports`,
-`selfhost:up -- --json`, `selfhost:smoke -- --json`, `selfhost:logs -- --json`, `selfhost:down -- --json`, `selfhost:ops-report`, `deployability:safety`, `deployability:safety -- --json`, `deployability:doctor`, `corepack pnpm run deployability:doctor`, `corepack pnpm --silent run deployability:doctor -- --json`, `deployability:dashboard`, `corepack pnpm run deployability:dashboard`, `corepack pnpm --silent run deployability:dashboard -- --json`, `deployability:commands`, `corepack pnpm run deployability:commands`, `corepack pnpm --silent run deployability:commands -- --json`, `deployability:handoff`, `operator:onboarding:check -- --json`,
+`selfhost:up -- --json`, `selfhost:smoke -- --json`, `selfhost:logs -- --json`, `selfhost:down -- --json`, `selfhost:ops-report`, `deployability:safety`, `deployability:safety -- --json`, `deployability:doctor`, `corepack pnpm run deployability:doctor`, `corepack pnpm --silent run deployability:doctor -- --json`, `deployability:dashboard`, `corepack pnpm run deployability:dashboard`, `corepack pnpm --silent run deployability:dashboard -- --json`, `deployability:action-plan`, `corepack pnpm run deployability:action-plan`, `corepack pnpm --silent run deployability:action-plan -- --json`, `deployability:commands`, `corepack pnpm run deployability:commands`, `corepack pnpm --silent run deployability:commands -- --json`, `deployability:handoff`, `operator:onboarding:check -- --json`,
 `deployability:commands -- --pipeline recovery_evidence`, `recovery_evidence`,
 `selfhost:plan`, `selfhost:plan -- --json`, `selfhost:backup-plan`, `selfhost:backup-validate`, `selfhost:restore-plan`, `selfhost:rotate-plan`, `selfhost:rotate -- --profile public-stack --json`, and `selfhost:rotate -- --profile public-stack --confirm --json` as pre-exposure safety,
-evidence, quickstart sequencing, human-readable and machine-readable readiness overview, selected-profile deployment maps, port visibility, safe startup/log/stop command metadata, handoff-report,
+evidence, quickstart sequencing, human-readable and machine-readable readiness overview, selected-profile deployment maps, port visibility, safe startup/log/stop command metadata, operator next-action selection, handoff-report,
 machine-readable handoff, backup planning, backup-artifact validation, recovery-rehearsal, rotation-planning, and rotation-metadata commands. Capabilities that
 are not ready remain outside the
 green path, and secrets, public origins, and billing readiness must not be

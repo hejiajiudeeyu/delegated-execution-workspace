@@ -123,6 +123,8 @@ corepack pnpm run deployability:doctor
 corepack pnpm --silent run deployability:doctor -- --json
 corepack pnpm run deployability:dashboard
 corepack pnpm --silent run deployability:dashboard -- --json
+corepack pnpm run deployability:action-plan
+corepack pnpm --silent run deployability:action-plan -- --json
 corepack pnpm run deployability:commands
 corepack pnpm --silent run deployability:commands -- --json
 corepack pnpm run compat:status

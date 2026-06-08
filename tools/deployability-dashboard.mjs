@@ -25,6 +25,7 @@ const SAFETY_DEFAULTS = [
 
 const NEXT_COMMANDS = [
   "corepack pnpm run deployability:doctor",
+  "corepack pnpm run deployability:action-plan",
   "corepack pnpm run deployability:commands",
   "corepack pnpm run deployability:handoff",
   "corepack pnpm run selfhost:readiness -- --all",

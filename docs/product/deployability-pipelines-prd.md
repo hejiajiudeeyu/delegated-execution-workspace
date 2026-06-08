@@ -23,6 +23,8 @@ Required commands:
 - `corepack pnpm --silent run deployability:doctor -- --json`
 - `corepack pnpm run deployability:dashboard`
 - `corepack pnpm --silent run deployability:dashboard -- --json`
+- `corepack pnpm run deployability:action-plan`
+- `corepack pnpm --silent run deployability:action-plan -- --json`
 - `corepack pnpm run deployability:commands`
 - `corepack pnpm --silent run deployability:commands -- --json`
 - `corepack pnpm run compat:status`
@@ -34,6 +36,7 @@ Required commands:
 - `corepack pnpm run test:deployability-safety`
 - `corepack pnpm run test:deployability-doctor`
 - `corepack pnpm run test:deployability-dashboard`
+- `corepack pnpm run test:deployability-action-plan`
 - `corepack pnpm run test:deployability-pipeline-summaries`
 - `corepack pnpm run test:deployability-commands`
 - `corepack pnpm run test:compat-status`
@@ -72,6 +75,11 @@ Acceptance:
   status, ecosystem_readiness scorecard, per-pipeline summaries, blockers,
   warnings, safety defaults, and next commands without reading `.env`, calling
   Docker, binding ports, probing networks, or printing secret values
+- `deployability:action-plan -- --json` emits a clean profile-level operator
+  action plan with current bundle, ecosystem readiness, recommended commands,
+  dashboard-safe commands, public-exposure gate commands, service-touching
+  commands, safety notes, and next JSON commands without reading `.env`,
+  calling Docker, binding ports, probing networks, or printing secret values
 - the dashboard and handoff ecosystem_readiness scorecard maps the daily-deployable
   definition to profile choice, generated secrets, startup path, doctor path,
   runtime inspection, boundary understanding, and brand-site story; when all
@@ -475,6 +483,9 @@ Acceptance:
   `test:deployability-operations`, explaining that both gates are discoverable
   from overview next commands, the safety matrix `contract_test` posture, and
   the searchable command catalog
+- Deployability Profiles include `deployability:action-plan` and explain that
+  it is the read-only operator next-action selector between the dashboard and
+  full command catalog
 - Deployability Profiles explain that ready-now command catalog entries do not
   fall back to `unmapped`, including `runtime_diagnostic`,
   `runtime_acceptance`, and `delegated_smoke` posture examples

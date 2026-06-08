@@ -50,6 +50,11 @@ const COMMAND_MAP = [
     purpose: "emit the single read-only JSON payload for top-level deployability dashboards and CI"
   },
   {
+    command: "corepack pnpm run deployability:action-plan",
+    json_command: "corepack pnpm --silent run deployability:action-plan -- --json",
+    purpose: "choose the next operator action by profile, dashboard safety, and public exposure posture"
+  },
+  {
     command: "corepack pnpm run deployability:commands",
     json_command: "corepack pnpm --silent run deployability:commands -- --json",
     purpose: "browse the read-only command catalog by category, posture, track, or pipeline"
@@ -415,6 +420,10 @@ function printText(data) {
   console.log(`ledger=${data.compatibility.ledger_matches_current ? "matches-current" : "mismatch"}`);
   console.log(`worktree=${data.compatibility.working_tree_clean ? "clean" : "dirty"}`);
   console.log(`output=${data.output}`);
+  console.log("\nCommand map:");
+  for (const item of data.command_map) {
+    console.log(`- ${item.command}`);
+  }
   if (data.compatibility.blockers.length) {
     console.log("\nBlockers:");
     for (const blocker of data.compatibility.blockers) console.log(`- ${blocker}`);

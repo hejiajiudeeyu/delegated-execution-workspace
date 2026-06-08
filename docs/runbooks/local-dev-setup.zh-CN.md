@@ -100,6 +100,8 @@ corepack pnpm run deployability:doctor
 corepack pnpm --silent run deployability:doctor -- --json
 corepack pnpm run deployability:dashboard
 corepack pnpm --silent run deployability:dashboard -- --json
+corepack pnpm run deployability:action-plan
+corepack pnpm --silent run deployability:action-plan -- --json
 corepack pnpm run deployability:commands
 corepack pnpm --silent run deployability:commands -- --json
 corepack pnpm run compat:status
@@ -143,6 +145,12 @@ summaries，但不读取 `.env`、不调用 Docker、不绑定端口、不探测
 这些 per-pipeline summaries 与 `deployability:overview`、`deployability:handoff`
 共用同一个第四仓 metadata builder，让命令数和安全门禁计数在 docs、dashboard JSON
 和 handoff 报告之间保持一致。
+
+`deployability:action-plan` 是给 operator 使用的只读下一步动作选择器。它会把
+dashboard 和命令目录合成 profile 级 recommended commands、dashboard-safe
+commands、public-exposure gates、service-touching commands、safety notes 和
+next JSON commands，同时不读取 `.env`、不调用 Docker、不绑定端口、不探测网络、
+不打印 secrets。
 
 `deployability:commands` 是给人、dashboard 和 CI 使用的只读命令目录。它会把
 overview、quickstart 和 safety metadata 合并成一张列表，并支持按 category、posture、

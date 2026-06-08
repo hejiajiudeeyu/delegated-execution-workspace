@@ -121,6 +121,8 @@ corepack pnpm run deployability:doctor
 corepack pnpm --silent run deployability:doctor -- --json
 corepack pnpm run deployability:dashboard
 corepack pnpm --silent run deployability:dashboard -- --json
+corepack pnpm run deployability:action-plan
+corepack pnpm --silent run deployability:action-plan -- --json
 corepack pnpm run deployability:commands
 corepack pnpm --silent run deployability:commands -- --json
 corepack pnpm run compat:status
@@ -170,6 +172,12 @@ The per-pipeline summaries use the same fourth-repo metadata builder as
 `deployability:overview` and `deployability:handoff`, so command counts and
 safety gate counts stay aligned across docs, dashboard JSON, and handoff
 reports.
+
+`deployability:action-plan` is the read-only operator action selector. It
+combines the dashboard and command catalog into profile-level recommended
+commands, dashboard-safe commands, public-exposure gates, service-touching
+commands, safety notes, and next JSON commands without reading `.env`, calling
+Docker, binding ports, probing the network, or printing secrets.
 
 `deployability:commands` is the read-only command catalog for humans,
 dashboards, and CI. It merges overview, quickstart, and safety metadata into

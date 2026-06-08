@@ -50,6 +50,10 @@ assert.equal(byCommand.get("corepack pnpm run deployability:doctor").probes_netw
 assert.equal(byCommand.get("corepack pnpm run deployability:dashboard").posture, "read_only");
 assert.equal(byCommand.get("corepack pnpm run deployability:dashboard").calls_docker, false);
 assert.equal(byCommand.get("corepack pnpm run deployability:dashboard").probes_network, false);
+assert.equal(byCommand.get("corepack pnpm run deployability:action-plan").posture, "read_only");
+assert.equal(byCommand.get("corepack pnpm run deployability:action-plan").reads_env, false);
+assert.equal(byCommand.get("corepack pnpm run deployability:action-plan").calls_docker, false);
+assert.equal(byCommand.get("corepack pnpm run deployability:action-plan").dashboard_safe, true);
 assert.equal(byCommand.get("corepack pnpm run deployability:commands").posture, "read_only");
 assert.equal(byCommand.get("corepack pnpm run deployability:commands").calls_docker, false);
 assert.equal(byCommand.get("corepack pnpm run deployability:commands").probes_network, false);

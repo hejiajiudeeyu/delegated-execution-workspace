@@ -97,6 +97,7 @@ try {
   assert.ok(body.command_map.some((item) => item.command === "corepack pnpm run deployability:safety"));
   assert.ok(body.command_map.some((item) => item.command === "corepack pnpm run deployability:doctor"));
   assert.ok(body.command_map.some((item) => item.command === "corepack pnpm run deployability:dashboard"));
+  assert.ok(body.command_map.some((item) => item.command === "corepack pnpm run deployability:action-plan"));
   assert.ok(body.command_map.some((item) => item.command === "corepack pnpm run deployability:commands"));
   assert.ok(body.command_map.some((item) => item.command === "corepack pnpm run compat:status"));
   assert.equal(body.ecosystem_readiness.status, "daily_deployable_with_safety_gates");
@@ -159,6 +160,7 @@ try {
   const text = run(tmpRoot, ["--output", textOutput], env);
   assert.equal(text.status, 0, text.stderr || text.stdout);
   assert.match(text.stdout, /Deployability handoff/);
+  assert.match(text.stdout, /deployability:action-plan/);
   assert.match(text.stdout, /CHG-2026-091/);
   assert.match(text.stdout, /text-handoff\.md/);
   assert.ok(fs.existsSync(textOutput));

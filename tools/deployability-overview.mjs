@@ -13,6 +13,7 @@ const NEXT_COMMANDS = [
   "corepack pnpm run deployability:quickstart",
   "corepack pnpm run deployability:safety",
   "corepack pnpm run deployability:doctor",
+  "corepack pnpm run deployability:action-plan",
   "corepack pnpm run compat:status",
   "corepack pnpm run selfhost:profiles",
   "corepack pnpm run selfhost:readiness -- --all",
