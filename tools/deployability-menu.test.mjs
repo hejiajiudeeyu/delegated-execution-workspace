@@ -22,7 +22,7 @@ const body = JSON.parse(json.stdout);
 assert.equal(body.command, "deployability:menu");
 assert.equal(body.mode, "operator_menu");
 assert.equal(body.ok, true);
-assert.equal(body.current_bundle.change_id, "CHG-2026-117");
+assert.equal(body.current_bundle.change_id, "CHG-2026-118");
 assert.equal(body.ecosystem_readiness.status, "daily_deployable_with_safety_gates");
 assert.ok(body.recommended_profile_keys.includes("public_stack"));
 assert.ok(Array.isArray(body.choices));
@@ -77,6 +77,20 @@ assert.equal(
   focusedBody.selected_runbook.phases
     .find((item) => item.key === "gate")
     .commands.some((item) => item.command === "corepack pnpm run selfhost:security-review -- --profile public-stack"),
+  true
+);
+assert.equal(focusedBody.selected_onboarding_plan.command, "operator:onboarding:plan");
+assert.equal(focusedBody.selected_onboarding_plan.profile, "public-stack");
+assert.ok(focusedBody.selected_onboarding_plan.phases.some((item) => item.id === "preflight"));
+assert.ok(focusedBody.selected_onboarding_plan.phases.some((item) => item.id === "operator_surface"));
+assert.ok(
+  focusedBody.selected_onboarding_plan.phases
+    .find((item) => item.id === "operator_surface")
+    .commands.some((item) => item.includes("/console/"))
+);
+assert.equal(focusedBody.selected_onboarding_plan.next, "corepack pnpm run operator:onboarding:check");
+assert.equal(
+  focusedBody.source_status.operator_onboarding.ok,
   true
 );
 assert.ok(!focused.stdout.includes("sk_menu_must_not_leak"));

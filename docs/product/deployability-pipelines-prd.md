@@ -39,6 +39,8 @@ Required commands:
 - `corepack pnpm --silent run deployability:runbook -- --json`
 - `corepack pnpm run deployability:menu`
 - `corepack pnpm --silent run deployability:menu -- --json`
+- `corepack pnpm run deployability:menu -- --profile public-stack`
+- `corepack pnpm --silent run deployability:menu -- --profile public-stack --json`
 - `corepack pnpm run deployability:commands -- --profile public-stack`
 - `corepack pnpm --silent run deployability:commands -- --profile public-stack --json`
 - `corepack pnpm run compat:status`
@@ -160,10 +162,15 @@ Acceptance:
   current bundle, ecosystem readiness, recommended profile keys, profile
   choices, attention metadata, primary commands, runbook, action-plan,
   dashboard, handoff, and command-catalog entry points. Focused
-  `deployability:menu -- --profile public-stack --json` must include
-  `profile_filter`, one menu choice, selected profile metadata, and selected
-  runbook phases without reading `.env`, calling Docker, binding ports, probing
-  networks, or printing secret values
+  `corepack pnpm run deployability:menu -- --profile public-stack` /
+  `corepack pnpm --silent run deployability:menu -- --profile public-stack --json`
+  must include
+  `profile_filter`, one menu choice, selected profile metadata, selected
+  runbook phases, and `selected_onboarding_plan` from the read-only
+  `operator:onboarding:plan` projection. The onboarding plan must preserve
+  preflight, operator surface, smoke/evidence, and contract-validation phases
+  without reading `.env`, calling Docker, binding ports, probing networks, or
+  printing secret values
 - the same `deployability:commands -- --json` payload includes
   `filters.profiles` with supported profile keys, aliases, owning pipeline
   keys, and purposes so dashboards can render the command-catalog profile

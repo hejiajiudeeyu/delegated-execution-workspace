@@ -141,6 +141,8 @@ corepack pnpm run deployability:runbook
 corepack pnpm --silent run deployability:runbook -- --json
 corepack pnpm run deployability:menu
 corepack pnpm --silent run deployability:menu -- --json
+corepack pnpm run deployability:menu -- --profile public-stack
+corepack pnpm --silent run deployability:menu -- --profile public-stack --json
 corepack pnpm run deployability:commands -- --profile public-stack
 corepack pnpm --silent run deployability:commands -- --profile public-stack --json
 corepack pnpm run compat:status
@@ -287,6 +289,11 @@ Notes:
   CI job, or deployment script needs created/hardened `.env` metadata, secret
   hygiene statuses, warnings, and next commands without parsing terminal prose.
   The JSON form does not print secret values or profile URL prose.
+- Use `corepack pnpm --silent run deployability:menu -- --profile public-stack --json`
+  when a management UI needs one public-stack first screen. The focused menu
+  includes `selected_onboarding_plan` from the read-only
+  `operator:onboarding:plan` projection, alongside the selected runbook, without
+  reading `.env`, calling Docker, probing networks, or printing secret values.
 
 Inspect the Nx workspace:
 

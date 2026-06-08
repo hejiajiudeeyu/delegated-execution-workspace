@@ -186,7 +186,7 @@ const MATRIX = [
     public_exposure_gate: false,
     ci_safe: true,
     dashboard_safe: true,
-    notes: "read-only first operator menu for profile choices, runbooks, dashboards, and handoff"
+    notes: "read-only first operator menu for profile choices, runbooks, public-stack onboarding plan, dashboards, and handoff"
   },
   {
     command: "corepack pnpm run compat:status",

@@ -57,7 +57,11 @@ const DOCTOR_COMMANDS = [
   "corepack pnpm run deployability:runbook",
   "corepack pnpm --silent run deployability:runbook -- --json",
   "corepack pnpm run deployability:menu",
-  "corepack pnpm --silent run deployability:menu -- --json"
+  "corepack pnpm --silent run deployability:menu -- --json",
+  "corepack pnpm run deployability:menu -- --profile public-stack",
+  "corepack pnpm --silent run deployability:menu -- --profile public-stack --json",
+  "selected_onboarding_plan",
+  "operator:onboarding:plan"
 ];
 
 const DOC_ALIGNMENT_FILES = [

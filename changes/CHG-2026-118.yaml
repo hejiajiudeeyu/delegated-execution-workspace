@@ -1,0 +1,14 @@
+change_id: CHG-2026-118
+goal: surface public-stack onboarding plan in deployability operator menu
+protocol_sha: da3027100cfe9391f7f8d03be18a108ee2804cf6
+client_sha: f1d6a2d8c9b83517cdf6ca9803b223847f880e9a
+platform_sha: 5961309c6b0ca4e8df22dbb5be92ac0845bf8d25
+brand_site_sha: 7feb4ac1b9c801338589802656d1101863e7b2cd
+owner: hejiajiudeeyu
+risk_level: low
+affected_scope:
+  - orchestration
+  - documentation
+contracts_check: passed
+integration_check: passed
+notes: "Adds selected_onboarding_plan to focused deployability:menu output for public-stack by reusing the read-only operator:onboarding:plan projection. This lets humans and management UIs render public-stack preflight, console setup, gateway credential setup, smoke/evidence, and onboarding validation next to the selected runbook without reading .env files, calling Docker, binding ports, probing networks, printing secrets, or introducing protocol/client/platform runtime truth."

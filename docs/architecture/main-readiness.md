@@ -215,11 +215,17 @@ CHG-2026-105:
   humans and management UIs. It supports
   `corepack pnpm run deployability:menu` and
   `corepack pnpm --silent run deployability:menu -- --json` for all profile
-  choices, plus `--profile <key-or-alias>` for one focused menu with selected
-  runbook metadata. It presents attention, primary command, runbook,
-  action-plan, dashboard, handoff, and command-catalog entry points without
-  reading `.env`, calling Docker, binding ports, probing networks, or printing
-  secrets
+  choices, plus `corepack pnpm run deployability:menu -- --profile public-stack`
+  and
+  `corepack pnpm --silent run deployability:menu -- --profile public-stack --json`
+  for one focused menu with selected runbook metadata. For public-stack, the focused JSON also includes
+  `selected_onboarding_plan` from the read-only `operator:onboarding:plan`
+  projection, so a management UI can show the `/console/` onboarding flow,
+  gateway credential setup, smoke/evidence steps, and onboarding check from the
+  same first screen. It presents attention, primary command, runbook,
+  action-plan, dashboard, handoff, command-catalog, and operator onboarding
+  entry points without reading `.env`, calling Docker, binding ports, probing
+  networks, or printing secrets
 - ready-now command catalog entries now have explicit category/posture metadata
   instead of falling back to `unmapped`, including local `runtime_diagnostic`,
   local `runtime_acceptance`, and published-image `delegated_smoke` paths

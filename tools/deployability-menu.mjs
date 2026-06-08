@@ -8,7 +8,7 @@ const ROOT = process.cwd();
 
 const SAFETY_DEFAULTS = [
   "deployability menu is read-only and does not read .env files directly",
-  "deployability menu only calls read-only deployability profile, dashboard, and runbook metadata",
+  "deployability menu only calls read-only deployability profile, runbook, and onboarding metadata",
   "deployability menu does not call Docker, bind ports, or probe network endpoints",
   "JSON output contains operator menu choices and next commands without printing secret values"
 ];
@@ -59,6 +59,28 @@ function runJsonScript(relativeScript, extraArgs = []) {
   };
 }
 
+function runOperatorOnboardingPlan() {
+  const result = spawnSync(process.execPath, [path.join(ROOT, "tools/operator-onboarding.mjs"), "plan", "--json"], {
+    cwd: ROOT,
+    encoding: "utf8",
+    env: process.env,
+    maxBuffer: 20 * 1024 * 1024
+  });
+  let body = null;
+  try {
+    body = result.stdout.trim() ? JSON.parse(result.stdout) : null;
+  } catch (error) {
+    body = null;
+  }
+  return {
+    ok: result.status === 0 && body != null && body.ok !== false,
+    exit_code: result.status,
+    stderr: result.stderr.trim().split("\n").filter(Boolean),
+    body,
+    parse_error: body == null ? "source did not emit valid JSON" : null
+  };
+}
+
 function sourceBlocker(label, result) {
   if (result.ok) return null;
   return `${label}: ${result.parse_error || result.stderr.join("; ") || `exit=${result.exit_code}`}`;
@@ -70,6 +92,15 @@ function commandProfileAlias(profile) {
 
 function buildChoice(profile) {
   const alias = commandProfileAlias(profile);
+  const onboardingCommands =
+    profile.key === "public_stack" || profile.key === "operator_onboarding"
+      ? {
+          operator_onboarding_plan: "corepack pnpm run operator:onboarding:plan",
+          operator_onboarding_plan_json: "corepack pnpm --silent run operator:onboarding:plan -- --json",
+          operator_onboarding_check: "corepack pnpm run operator:onboarding:check",
+          operator_onboarding_check_json: "corepack pnpm --silent run operator:onboarding:check -- --json"
+        }
+      : {};
   return {
     key: profile.key,
     aliases: profile.aliases || [],
@@ -91,7 +122,8 @@ function buildChoice(profile) {
       runbook: `corepack pnpm run deployability:runbook -- --profile ${alias}`,
       dashboard: `corepack pnpm run deployability:dashboard -- --profile ${alias}`,
       handoff: `corepack pnpm run deployability:handoff -- --profile ${alias}`,
-      command_catalog: `corepack pnpm run deployability:commands -- --profile ${alias}`
+      command_catalog: `corepack pnpm run deployability:commands -- --profile ${alias}`,
+      ...onboardingCommands
     }
   };
 }
@@ -104,9 +136,14 @@ function menuData(args) {
     args.profile == null || profileFilter.resolved == null
       ? null
       : runJsonScript("tools/deployability-runbook.mjs", ["--profile", args.profile]);
+  const onboardingResult =
+    args.profile != null && ["public_stack", "operator_onboarding"].includes(profileFilter.resolved)
+      ? runOperatorOnboardingPlan()
+      : null;
   const sourceBlockers = [
     sourceBlocker("profiles", profilesResult),
-    ...(runbookResult ? [sourceBlocker("runbook", runbookResult)] : [])
+    ...(runbookResult ? [sourceBlocker("runbook", runbookResult)] : []),
+    ...(onboardingResult ? [sourceBlocker("operator_onboarding", onboardingResult)] : [])
   ].filter(Boolean);
   const blockers = [
     ...(args.profile != null && profileFilter.resolved == null ? [`unknown profile: ${args.profile}`] : []),
@@ -131,6 +168,15 @@ function menuData(args) {
           next_commands: runbookResult.body.next_commands
         }
       : null,
+    selected_onboarding_plan: onboardingResult?.body
+      ? {
+          command: onboardingResult.body.command,
+          profile: onboardingResult.body.profile,
+          phases: onboardingResult.body.phases,
+          safety: onboardingResult.body.safety,
+          next: onboardingResult.body.next
+        }
+      : null,
     recommended_profile_keys: profilesResult.body?.recommended_profile_keys || [],
     choices,
     blockers,
@@ -151,6 +197,16 @@ function menuData(args) {
               parse_error: runbookResult.parse_error
             }
           }
+        : {}),
+      ...(onboardingResult
+        ? {
+            operator_onboarding: {
+              ok: onboardingResult.ok,
+              exit_code: onboardingResult.exit_code,
+              stderr: onboardingResult.stderr,
+              parse_error: onboardingResult.parse_error
+            }
+          }
         : {})
     },
     safety_defaults: SAFETY_DEFAULTS,
@@ -160,12 +216,13 @@ function menuData(args) {
       "corepack pnpm run deployability:profiles",
       "corepack pnpm run deployability:action-plan",
       "corepack pnpm run deployability:runbook",
+      "corepack pnpm run operator:onboarding:plan",
       "corepack pnpm run deployability:dashboard",
       "corepack pnpm run deployability:handoff"
     ],
     notes: [
       "use this as the first operator menu when a human or management UI needs profile choices plus next commands",
-      "menu choices are convenience projections over deployability profiles, action plans, runbooks, dashboard, and handoff metadata"
+      "menu choices are convenience projections over deployability profiles, action plans, runbooks, onboarding plans, dashboard, and handoff metadata"
     ]
   };
 }
@@ -199,6 +256,9 @@ function printText(data) {
     console.log(`status=${choice.status}; attention=${choice.attention?.level || "unknown"}; gate=${choice.requires_gate}`);
     console.log(`Primary: ${choice.commands.primary || "none"}`);
     console.log(`Runbook: ${choice.commands.runbook}`);
+    if (choice.commands.operator_onboarding_plan) {
+      console.log(`Onboarding: ${choice.commands.operator_onboarding_plan}`);
+    }
     console.log(`Action plan: ${choice.commands.action_plan}`);
     console.log(`Dashboard: ${choice.commands.dashboard}`);
     console.log(`Handoff: ${choice.commands.handoff}`);

@@ -244,12 +244,17 @@ probe networks, or print secret values.
 `deployability:menu` is the read-only first operator menu for humans and
 management UIs. Use `corepack pnpm run deployability:menu`,
 `corepack pnpm --silent run deployability:menu -- --json`, or
-`--profile public-stack` / another profile key or alias when a surface needs
-profile choices, attention, primary command, runbook, action-plan, dashboard,
-handoff, and command-catalog entry points in one payload. It is a convenience
-projection over existing deployability metadata, returns clean
-unknown-profile blockers, and does not read `.env`, call Docker, bind ports,
-probe networks, or print secret values.
+`corepack pnpm run deployability:menu -- --profile public-stack` /
+`corepack pnpm --silent run deployability:menu -- --profile public-stack --json`
+when a surface needs profile choices, attention, primary command, runbook,
+action-plan, dashboard, handoff, and command-catalog entry points in one payload. Focused public-stack
+JSON also includes `selected_onboarding_plan`, sourced from the read-only
+`operator:onboarding:plan` projection, so a management UI can render preflight,
+`/console/` setup, gateway credential setup, smoke/evidence, and onboarding
+contract validation next to the selected runbook. It is a convenience
+projection over existing deployability metadata, returns clean unknown-profile
+blockers, and does not read `.env`, call Docker, bind ports, probe networks, or
+print secret values.
 
 `deployability:dashboard -- --json` and `deployability:handoff -- --json`
 also expose the same directory as top-level `profile_selector`, so dashboards,

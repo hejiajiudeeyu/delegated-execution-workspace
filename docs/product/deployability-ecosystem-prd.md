@@ -78,7 +78,7 @@ The ecosystem is "daily-deployable" when a fresh operator can:
 | Deployability profiles catalog | fourth repo | `corepack pnpm run deployability:profiles`, plus `corepack pnpm --silent run deployability:profiles -- --json` as the dedicated read-only profile-card catalog for management UIs, dashboards, CI, and operator docs; it derives labels, aliases, pipeline keys, status, counts, safety notes, next commands, JSON commands, shared `attention` metadata, and `recommended_profile_keys` from dashboard `profile_summaries` and the shared fourth-repo profile registry; `--profile <key-or-alias>` returns one profile or a clean unknown-profile blocker |
 | Deployability commands catalog | fourth repo | `corepack pnpm run deployability:commands`, plus `corepack pnpm --silent run deployability:commands -- --json` as the read-only searchable command catalog with category, posture, first-use track, pipeline filters, `filters.profiles` selector metadata, `--profile <key-or-alias>` filtering that resolves operator profile names to their owning pipeline, inherited safety posture for profile-specific command variants, the dedicated profile catalog and action-plan profile selector surfaced under the `daily_dev` track, and no `unmapped` category/posture values for ready-now command paths |
 | Deployability profile runbook | fourth repo | `corepack pnpm run deployability:runbook`, plus `corepack pnpm --silent run deployability:runbook -- --json` as the read-only staged runbook projection for one selected profile; `--profile <key-or-alias>` emits `profile_runbook` phases in the order inspect, gate, start, verify, operate, and evidence, reusing profile catalog and command catalog metadata without executing commands |
-| Deployability operator menu | fourth repo | `corepack pnpm run deployability:menu`, plus `corepack pnpm --silent run deployability:menu -- --json` as the read-only first operator screen for humans and management UIs; it joins profile choices, attention, primary command, runbook, action-plan, dashboard, handoff, and command-catalog entry points without executing commands |
+| Deployability operator menu | fourth repo | `corepack pnpm run deployability:menu`, plus `corepack pnpm --silent run deployability:menu -- --json` as the read-only first operator screen for humans and management UIs; `corepack pnpm run deployability:menu -- --profile public-stack` and `corepack pnpm --silent run deployability:menu -- --profile public-stack --json` focus the public-stack first screen; it joins profile choices, attention, primary command, runbook, action-plan, dashboard, handoff, command-catalog, and public-stack operator-onboarding entry points without executing commands; focused public-stack JSON includes `selected_onboarding_plan` from `operator:onboarding:plan` |
 | Deployability recovery evidence path | fourth repo | `deployability:overview`, `deployability:dashboard`, `deployability:handoff`, and `deployability:commands -- --pipeline recovery_evidence` expose ops-report, audit export, backup, restore, and rotation commands as one ready-now evidence and recovery pipeline |
 | Deployability handoff | fourth repo | `corepack pnpm run deployability:handoff`, plus `corepack pnpm --silent run deployability:handoff -- --json` for a non-secret ecosystem handoff report under `exports/deployability/`, including the same profile selector directory, derived profile summaries, and ecosystem_readiness scorecard used by the dashboard; `--profile <key-or-alias>` writes a focused handoff report for one owning pipeline |
 | Daily local doctor | fourth repo | `corepack pnpm run dev:doctor`, plus `corepack pnpm --silent run dev:doctor -- --json` for dashboards and scripts |
@@ -225,11 +225,18 @@ Required baseline:
   read `.env`, call Docker, bind ports, probe networks, or print secrets
 - machine-readable deployability operator menu metadata that presents profile
   choices, attention level, primary command, runbook, action-plan, dashboard,
-  handoff, and command-catalog entry points on one first screen. The menu is a
-  convenience projection over existing deployability metadata, not a new truth
-  source; focused `--profile <key-or-alias>` output includes the selected
-  runbook, returns clean unknown-profile blockers, and does not read `.env`,
-  call Docker, bind ports, probe networks, or print secrets
+  handoff, command-catalog, and public-stack operator-onboarding entry points
+  on one first screen. The menu is a convenience projection over existing
+  deployability metadata, not a new truth source; focused
+  `corepack pnpm run deployability:menu -- --profile public-stack` /
+  `corepack pnpm --silent run deployability:menu -- --profile public-stack --json`
+  output includes the selected runbook, and focused public-stack output includes
+  `selected_onboarding_plan` from the read-only
+  `operator:onboarding:plan` projection so management UIs can render preflight,
+  `/console/` setup, gateway credential setup, smoke/evidence, and onboarding
+  contract validation without a second lookup. Unknown profiles return clean
+  blockers, and the command does not read `.env`, call Docker, bind ports,
+  probe networks, or print secrets
 - machine-readable dashboard and handoff profile selector metadata that lifts
   the same command-catalog `filters.profiles` directory to a top-level
   `profile_selector` field, so management surfaces can render profile choices

@@ -81,7 +81,7 @@ CALL ANYTHING 现在的仓库边界是正确的：
 | 可部署性 profile catalog | 第四仓 | `corepack pnpm run deployability:profiles`，以及作为管理 UI、dashboard、CI 和 operator docs 使用的专用只读 profile-card catalog 的 `corepack pnpm --silent run deployability:profiles -- --json`；它从 dashboard `profile_summaries` 和共享第四仓 profile registry 派生 labels、aliases、pipeline keys、status、counts、安全说明、下一步命令、JSON 命令、共享 `attention` metadata 和 `recommended_profile_keys`；`--profile <key-or-alias>` 返回单个 profile，未知 profile 返回干净 blocker |
 | 可部署性命令目录 | 第四仓 | `corepack pnpm run deployability:commands`，以及作为按 category、posture、首次使用 track 和 pipeline 过滤的只读命令目录的 `corepack pnpm --silent run deployability:commands -- --json`；`filters.profiles` 会输出可渲染 profile selector 的 keys、aliases、pipeline keys 和 purposes；`--profile <key-or-alias>` 会把 operator 熟悉的 profile 名称解析到所属 pipeline；带 profile 参数的命令变体会继承基础安全姿态；专用 profile catalog 和 action-plan profile selector 会出现在 `daily_dev` track；ready-now 命令路径不再出现 `unmapped` category / posture |
 | 可部署性 profile runbook | 第四仓 | `corepack pnpm run deployability:runbook`，以及作为单个 profile 只读阶段化 runbook 投影的 `corepack pnpm --silent run deployability:runbook -- --json`；`--profile <key-or-alias>` 输出 `profile_runbook`，按 inspect、gate、start、verify、operate、evidence 阶段组织命令，并复用 profile catalog 与 command catalog metadata，不执行命令 |
-| 可部署性 operator menu | 第四仓 | `corepack pnpm run deployability:menu`，以及作为人和管理 UI 第一屏只读 operator menu 的 `corepack pnpm --silent run deployability:menu -- --json`；它把 profile choices、attention、primary command、runbook、action-plan、dashboard、handoff 和 command catalog 入口汇到一起，不执行命令 |
+| 可部署性 operator menu | 第四仓 | `corepack pnpm run deployability:menu`，以及作为人和管理 UI 第一屏只读 operator menu 的 `corepack pnpm --silent run deployability:menu -- --json`；`corepack pnpm run deployability:menu -- --profile public-stack` 和 `corepack pnpm --silent run deployability:menu -- --profile public-stack --json` 会聚焦 public-stack 第一屏；它把 profile choices、attention、primary command、runbook、action-plan、dashboard、handoff、command catalog 和 public-stack operator-onboarding 入口汇到一起，不执行命令；聚焦 public-stack 的 JSON 会包含来自 `operator:onboarding:plan` 的 `selected_onboarding_plan` |
 | 可部署性恢复证据路径 | 第四仓 | `deployability:overview`、`deployability:dashboard`、`deployability:handoff` 和 `deployability:commands -- --pipeline recovery_evidence` 把 ops-report、audit export、backup、restore 和 rotation 命令作为一条 ready-now 证据与恢复管线暴露 |
 | 可部署性交接报告 | 第四仓 | `corepack pnpm run deployability:handoff`，以及用于输出 `exports/deployability/` 下不含 secret 的生态交接报告 metadata 的 `corepack pnpm --silent run deployability:handoff -- --json`，包含与 dashboard 相同的 profile selector 目录、派生 profile summaries 和 ecosystem_readiness scorecard；`--profile <key-or-alias>` 会为单个所属 pipeline 写出聚焦交接报告 |
 | 日常本地 doctor | 第四仓 | `corepack pnpm run dev:doctor`，以及给 dashboard 和脚本使用的 `corepack pnpm --silent run dev:doctor -- --json` |
@@ -219,9 +219,14 @@ CALL ANYTHING 现在的仓库边界是正确的：
   public exposure gate 位于 start 之前，未知 profile 返回干净 blocker，同时不读取
   `.env`、不调用 Docker、不绑定端口、不探测网络、不打印 secret 值
 - 可部署性 operator menu metadata 可以机器读取，把 profile choices、attention level、
-  primary command、runbook、action-plan、dashboard、handoff 和 command catalog 入口汇成
-  第一屏。menu 是现有 deployability metadata 的便利投影，不是新的真相来源；聚焦
-  `--profile <key-or-alias>` 输出会包含 selected runbook，未知 profile 返回干净 blocker，
+  primary command、runbook、action-plan、dashboard、handoff、command catalog 和
+  public-stack operator-onboarding 入口汇成第一屏。menu 是现有 deployability
+  metadata 的便利投影，不是新的真相来源；`corepack pnpm run deployability:menu -- --profile public-stack` /
+  `corepack pnpm --silent run deployability:menu -- --profile public-stack --json`
+  输出会包含 selected runbook，聚焦 public-stack 的输出还会包含来自只读
+  `operator:onboarding:plan` 投影的 `selected_onboarding_plan`，让管理 UI 不需要第二次
+  查找也能渲染 preflight、`/console/` setup、gateway credential setup、
+  smoke/evidence 和 onboarding contract validation。未知 profile 返回干净 blocker，
   并且不读取 `.env`、不调用 Docker、不绑定端口、不探测网络、不打印 secret 值
 - 可部署性交接 metadata 可以机器读取，并配套不含 secret 的 Markdown 报告，聚合
   当前 bundle、兼容 warnings、命令地图、profile selector、ecosystem_readiness、

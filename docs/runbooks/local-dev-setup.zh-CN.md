@@ -212,9 +212,14 @@ startup 之前，未知 profile 返回 blocker，并且不读取 `.env`、不调
 action-plan、dashboard、handoff 和 command catalog 入口时，可以使用
 `corepack pnpm run deployability:menu`、
 `corepack pnpm --silent run deployability:menu -- --json`，或
-`--profile public-stack` / 其他 profile key / alias。它是现有 deployability metadata
-的便利投影，未知 profile 返回干净 blocker，并且不读取 `.env`、不调用 Docker、
-不绑定端口、不探测网络、不打印 secret 值。
+`corepack pnpm run deployability:menu -- --profile public-stack` /
+`corepack pnpm --silent run deployability:menu -- --profile public-stack --json`。
+聚焦 public-stack 的 JSON 还会
+包含 `selected_onboarding_plan`，来源于只读 `operator:onboarding:plan` 投影，方便
+管理 UI 在 selected runbook 旁边渲染 preflight、`/console/` setup、gateway
+credential setup、smoke/evidence 和 onboarding contract validation。它是现有
+deployability metadata 的便利投影，未知 profile 返回干净 blocker，并且不读取
+`.env`、不调用 Docker、不绑定端口、不探测网络、不打印 secret 值。
 
 `deployability:dashboard -- --json` 和 `deployability:handoff -- --json` 也会把
 同一份目录作为顶层 `profile_selector` 输出，让 dashboard、交接工具和管理脚本不需要

@@ -38,6 +38,8 @@ onboarding 或 release-image 路径前，先给出一个只读命令地图和一
 - `corepack pnpm --silent run deployability:runbook -- --json`
 - `corepack pnpm run deployability:menu`
 - `corepack pnpm --silent run deployability:menu -- --json`
+- `corepack pnpm run deployability:menu -- --profile public-stack`
+- `corepack pnpm --silent run deployability:menu -- --profile public-stack --json`
 - `corepack pnpm run deployability:commands -- --profile public-stack`
 - `corepack pnpm --silent run deployability:commands -- --profile public-stack --json`
 - `corepack pnpm run compat:status`
@@ -141,9 +143,13 @@ onboarding 或 release-image 路径前，先给出一个只读命令地图和一
 - `deployability:menu -- --json` 输出干净的 `operator_menu` payload，包含当前 bundle、
   ecosystem readiness、recommended profile keys、profile choices、attention metadata、
   primary commands、runbook、action-plan、dashboard、handoff 和 command catalog 入口。
-  聚焦的 `deployability:menu -- --profile public-stack --json` 必须包含
-  `profile_filter`、一条 menu choice、selected profile metadata 和 selected runbook
-  phases，同时不读取 `.env`、不调用 Docker、不绑定端口、不探测网络、不打印 secret 值
+  聚焦的 `corepack pnpm run deployability:menu -- --profile public-stack` /
+  `corepack pnpm --silent run deployability:menu -- --profile public-stack --json` 必须包含
+  `profile_filter`、一条 menu choice、selected profile metadata、selected runbook
+  phases，以及来自只读 `operator:onboarding:plan` 投影的
+  `selected_onboarding_plan`。onboarding plan 必须保留 preflight、operator surface、
+  smoke/evidence 和 contract-validation phases，同时不读取 `.env`、不调用 Docker、
+  不绑定端口、不探测网络、不打印 secret 值
 - 同一个 `deployability:commands -- --json` payload 会包含 `filters.profiles`，
   输出支持的 profile keys、aliases、所属 pipeline keys 和 purposes，让 dashboard
   不解析 prose、不调用 runtime 命令也能渲染命令目录的 profile selector
