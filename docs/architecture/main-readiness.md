@@ -168,9 +168,10 @@ CHG-2026-105:
 - `deployability:commands` is available as a read-only command catalog for
   humans, dashboards, and CI, merging overview, quickstart, and safety metadata
   into a list filterable by category, posture, first-use track, and pipeline,
-  including `--profile <key-or-alias>` as an operator-friendly alias layer over
-  pipeline filters, inherited safety posture for profile-specific command
-  variants, and supports `corepack pnpm run deployability:commands`,
+  including `filters.profiles` selector metadata, `--profile <key-or-alias>` as
+  an operator-friendly alias layer over pipeline filters, inherited safety
+  posture for profile-specific command variants, and supports
+  `corepack pnpm run deployability:commands`,
   `corepack pnpm --silent run deployability:commands -- --json`, and
   `corepack pnpm --silent run deployability:commands -- --profile public-stack --json`
   without reading `.env`, calling Docker, binding ports, probing networks, or
@@ -283,8 +284,9 @@ Observed results:
   `contract_test` safety posture, and the searchable command catalog
 - `deployability:commands -- --json`: passed, reporting a command catalog with
   category, posture, track, and pipeline filters, sourced from overview,
-  quickstart, and safety metadata, including inherited safety posture for
-  profile-specific command variants, without terminal prose or secret values
+  quickstart, and safety metadata, including `filters.profiles` selector
+  metadata and inherited safety posture for profile-specific command variants,
+  without terminal prose or secret values
 - `deployability:commands -- --profile public-stack --json`: passed, resolving
   the operator profile alias to `public_stack`, returning only public-stack
   pipeline commands, and reporting unknown profile names as blockers without

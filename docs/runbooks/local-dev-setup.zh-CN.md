@@ -169,8 +169,10 @@ key / alias 聚焦输出。JSON 形式会包含 `profile_filter`，未知 profil
 
 `deployability:commands` 是给人、dashboard 和 CI 使用的只读命令目录。它会把
 overview、quickstart 和 safety metadata 合并成一张列表，并支持按 category、posture、
-首次使用 track 或 pipeline 过滤；也支持 `--profile <key-or-alias>` 作为 pipeline
-filter 的 operator-friendly alias 层，所以 `--profile public-stack` 只返回 public-stack
+首次使用 track 或 pipeline 过滤；JSON 形式会包含 `filters.profiles`，输出支持的
+profile keys、aliases、所属 pipeline keys 和 purposes，让 dashboard 可以直接从命令
+目录渲染 profile selector。它也支持 `--profile <key-or-alias>` 作为 pipeline filter
+的 operator-friendly alias 层，所以 `--profile public-stack` 只返回 public-stack
 命令目录，未知 profile 会以干净 blocker 返回。带 profile 参数的命令变体会继承基础
 命令的安全姿态。它不读取 `.env`、不调用 Docker、不绑定端口、不探测网络、不打印
 secret 值。

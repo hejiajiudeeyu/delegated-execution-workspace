@@ -34,6 +34,17 @@ assert.ok(body.filters.tracks.includes("all_in_one_demo"));
 assert.ok(body.filters.pipelines.includes("all_in_one_demo"));
 assert.ok(body.filters.pipelines.includes("selfhost_platform"));
 assert.ok(body.filters.pipelines.includes("recovery_evidence"));
+assert.ok(Array.isArray(body.filters.profiles));
+assert.equal(body.filters.profiles.length, 7);
+const profilesByKey = new Map(body.filters.profiles.map((item) => [item.key, item]));
+assert.deepEqual(profilesByKey.get("public_stack"), {
+  key: "public_stack",
+  aliases: ["public-stack", "public_stack"],
+  pipeline_key: "public_stack",
+  purpose: "Review public exposure gates before opening edge routes."
+});
+assert.ok(profilesByKey.get("recovery_evidence").aliases.includes("recovery"));
+assert.equal(profilesByKey.get("all_in_one_demo").pipeline_key, "all_in_one_demo");
 
 const byCommand = new Map(body.commands.map((item) => [item.command, item]));
 assert.equal(byCommand.get("corepack pnpm run deployability:dashboard").category, "top_level");
@@ -141,6 +152,7 @@ assert.deepEqual(publicStackProfileBody.filters_applied.profile, {
   resolved: "public_stack",
   pipeline: "public_stack"
 });
+assert.deepEqual(publicStackProfileBody.filters.profiles, body.filters.profiles);
 assert.ok(publicStackProfileBody.commands.length > 0);
 assert.ok(publicStackProfileBody.commands.every((item) => item.pipeline_keys.includes("public_stack")));
 assert.ok(
@@ -168,6 +180,7 @@ assert.deepEqual(unknownProfileBody.filters_applied.profile, {
   resolved: null,
   pipeline: null
 });
+assert.deepEqual(unknownProfileBody.filters.profiles, body.filters.profiles);
 assert.deepEqual(unknownProfileBody.commands, []);
 assert.ok(unknownProfileBody.blockers.includes("unknown profile: not-a-profile"));
 assert.ok(!unknownProfile.stdout.includes("sk_commands_must_not_leak"));

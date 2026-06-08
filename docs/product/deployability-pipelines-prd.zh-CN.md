@@ -111,6 +111,9 @@ onboarding 或 release-image 路径前，先给出一个只读命令地图和一
   track 和 pipeline filters，并合并 overview、quickstart 和 safety metadata，
   同时让带 profile 参数的命令变体继承基础安全姿态，不读取 `.env`、不调用 Docker、
   不绑定端口、不探测网络、不打印 secret 值
+- 同一个 `deployability:commands -- --json` payload 会包含 `filters.profiles`，
+  输出支持的 profile keys、aliases、所属 pipeline keys 和 purposes，让 dashboard
+  不解析 prose、不调用 runtime 命令也能渲染命令目录的 profile selector
 - `deployability:commands -- --profile public-stack --json` 会把 operator 输入的
   profile key 或 alias 解析到所属 pipeline，输出已解析的 `profile` filter
   metadata，只返回该 pipeline 的命令目录，并把未知 profile 名称作为干净 blocker

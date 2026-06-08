@@ -22,37 +22,44 @@ const PROFILE_PIPELINES = [
   {
     key: "daily_dev",
     aliases: ["daily-dev", "daily_dev", "local-agent-loop", "local_agent_loop"],
-    pipeline_key: "local_agent_loop"
+    pipeline_key: "local_agent_loop",
+    purpose: "Start with the local caller-skill and MCP development loop."
   },
   {
     key: "all_in_one_demo",
     aliases: ["all-in-one", "all-in-one-demo", "all_in_one_demo"],
-    pipeline_key: "all_in_one_demo"
+    pipeline_key: "all_in_one_demo",
+    purpose: "Evaluate the full product shape on one machine before splitting components."
   },
   {
     key: "selfhost_platform",
     aliases: ["selfhost", "selfhost-platform", "selfhost_platform", "platform"],
-    pipeline_key: "selfhost_platform"
+    pipeline_key: "selfhost_platform",
+    purpose: "Prepare and manage the private platform profile."
   },
   {
     key: "public_stack",
     aliases: ["public-stack", "public_stack"],
-    pipeline_key: "public_stack"
+    pipeline_key: "public_stack",
+    purpose: "Review public exposure gates before opening edge routes."
   },
   {
     key: "recovery_evidence",
     aliases: ["recovery", "recovery-evidence", "recovery_evidence"],
-    pipeline_key: "recovery_evidence"
+    pipeline_key: "recovery_evidence",
+    purpose: "Prepare handoff, audit, backup, restore rehearsal, and rotation evidence."
   },
   {
     key: "operator_onboarding",
     aliases: ["operator-onboarding", "operator_onboarding", "onboarding"],
-    pipeline_key: "operator_onboarding"
+    pipeline_key: "operator_onboarding",
+    purpose: "Follow the public-stack first-use operator path."
   },
   {
     key: "published_image",
     aliases: ["published-image", "published_image", "release-review", "release_review"],
-    pipeline_key: "published_image"
+    pipeline_key: "published_image",
+    purpose: "Review published-image smoke metadata before running Docker."
   }
 ];
 
@@ -176,6 +183,15 @@ function resolveProfileFilter(requested) {
     resolved: match?.key || null,
     pipeline: match?.pipeline_key || null
   };
+}
+
+function profileDirectory() {
+  return PROFILE_PIPELINES.map((profile) => ({
+    key: profile.key,
+    aliases: profile.aliases,
+    pipeline_key: profile.pipeline_key,
+    purpose: profile.purpose
+  }));
 }
 
 function ensureCommand(commands, command) {
@@ -366,7 +382,8 @@ function commandData(args) {
       categories: unique(allCommands.map((entry) => entry.category)),
       postures: unique(allCommands.map((entry) => entry.posture)),
       tracks: unique(allCommands.flatMap((entry) => entry.track_keys)),
-      pipelines: unique(allCommands.flatMap((entry) => entry.pipeline_keys))
+      pipelines: unique(allCommands.flatMap((entry) => entry.pipeline_keys)),
+      profiles: profileDirectory()
     },
     source_status: sourceStatus,
     command_count: filteredCommands.length,

@@ -125,6 +125,10 @@ Acceptance:
   quickstart, and safety metadata, and inheriting base safety posture for
   profile-specific command variants without reading `.env`, calling Docker,
   binding ports, probing networks, or printing secret values
+- the same `deployability:commands -- --json` payload includes
+  `filters.profiles` with supported profile keys, aliases, owning pipeline
+  keys, and purposes so dashboards can render the command-catalog profile
+  selector without parsing prose or calling runtime commands
 - `deployability:commands -- --profile public-stack --json` resolves
   operator profile keys or aliases to the owning pipeline, emits the resolved
   `profile` filter metadata, filters the catalog to that pipeline, and reports

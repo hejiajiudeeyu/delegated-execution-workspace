@@ -197,12 +197,14 @@ needs only one focused next-action list. The JSON form includes
 `deployability:commands` is the read-only command catalog for humans,
 dashboards, and CI. It merges overview, quickstart, and safety metadata into
 one list that can be filtered by category, posture, first-use track, or
-pipeline. It also supports `--profile <key-or-alias>` as the operator-friendly
-alias layer over pipeline filters, so `--profile public-stack` returns only the
-public-stack command catalog and unknown profile names return clean blockers.
-Profile-specific command variants inherit the safety posture of their base
-command. It does not read `.env`, call Docker, bind ports, probe networks, or
-print secret values.
+pipeline. Its JSON form includes `filters.profiles` with supported profile
+keys, aliases, owning pipeline keys, and purposes, so dashboards can render the
+profile selector from the command catalog itself. It also supports
+`--profile <key-or-alias>` as the operator-friendly alias layer over pipeline
+filters, so `--profile public-stack` returns only the public-stack command
+catalog and unknown profile names return clean blockers. Profile-specific
+command variants inherit the safety posture of their base command. It does not
+read `.env`, call Docker, bind ports, probe networks, or print secret values.
 
 `compat:status` is the read-only compatibility-ledger snapshot. It compares the
 current submodule gitlinks to the latest `changes/CHG-*.yaml`, reports dirty
