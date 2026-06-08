@@ -175,6 +175,10 @@ CHG-2026-105:
   profile resolver to emit `profile_filter`, focused command catalog metadata,
   and a single owning pipeline summary while keeping ecosystem_readiness as the
   global daily-deployable scorecard
+- `deployability:dashboard -- --json` and `deployability:handoff -- --json`
+  also emit `profile_summaries`, joining profile aliases and purpose with
+  pipeline status, counts, next commands, and safety notes for management UI
+  cards
 - `deployability:commands` is available as a read-only command catalog for
   humans, dashboards, and CI, merging overview, quickstart, and safety metadata
   into a list filterable by category, posture, first-use track, and pipeline,
@@ -304,6 +308,9 @@ Observed results:
   `deployability:handoff -- --profile public-stack --json`: passed, resolving
   `public-stack` to `public_stack`, filtering pipeline summaries to the
   public-stack pipeline, and preserving global ecosystem_readiness
+- `deployability:dashboard -- --json` / `deployability:handoff -- --json`:
+  passed, emitting `profile_summaries` as a derived management-card projection
+  across all profiles, and one-item `profile_summaries` in focused mode
 - `deployability:commands -- --profile public-stack --json`: passed, resolving
   the operator profile alias to `public_stack`, returning only public-stack
   pipeline commands, and reporting unknown profile names as blockers without

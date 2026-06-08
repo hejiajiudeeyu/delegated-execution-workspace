@@ -140,6 +140,10 @@ Acceptance:
   the global daily-deployable scorecard
 - focused dashboard and handoff commands are included in the daily development
   quickstart and searchable command catalog with inherited read-only posture
+- dashboard and handoff JSON include `profile_summaries`, derived from
+  `profile_selector` plus `pipeline_summaries`, so UI cards can show aliases,
+  purpose, status, command counts, exposure gates, next commands, and safety
+  notes from one array
 - `deployability:commands -- --profile public-stack --json` resolves
   operator profile keys or aliases to the owning pipeline, emits the resolved
   `profile` filter metadata, filters the catalog to that pipeline, and reports
@@ -537,6 +541,8 @@ Acceptance:
 - Deployability Profiles include focused dashboard and handoff examples for
   `--profile public-stack`, explaining that profile focus filters management
   metadata without changing the global ecosystem_readiness scorecard
+- Deployability Profiles explain `profile_summaries` as a dashboard/handoff
+  convenience projection for management UI cards
 - Deployability Profiles explain that ready-now command catalog entries do not
   fall back to `unmapped`, including `runtime_diagnostic`,
   `runtime_acceptance`, and `delegated_smoke` posture examples

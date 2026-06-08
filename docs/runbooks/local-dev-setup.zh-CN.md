@@ -189,6 +189,9 @@ secret 值。
 限制到所属 pipeline，同时让 `ecosystem_readiness` 继续表示全局 daily-deployable
 scorecard。focused public-stack 示例可从 `deployability:quickstart` 和
 `deployability:commands -- --track daily_dev` 发现。
+两个 payload 也包含 `profile_summaries`，这是派生出的 profile-card 数组，会把
+profile aliases / purpose 与 pipeline status、counts、next commands 和 safety notes
+合并在一起。
 
 `compat:status` 是只读兼容台账快照。它会把当前 submodule gitlinks 和最新
 `changes/CHG-*.yaml` 对齐检查，把 dirty submodule worktree 报成 warnings，并把

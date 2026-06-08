@@ -109,6 +109,16 @@ try {
     pipeline_key: "public_stack",
     purpose: "Review public exposure gates before opening edge routes."
   });
+  assert.equal(body.profile_summaries.length, 7);
+  const handoffProfileSummariesByKey = new Map(body.profile_summaries.map((item) => [item.key, item]));
+  assert.deepEqual(handoffProfileSummariesByKey.get("public_stack").aliases, ["public-stack", "public_stack"]);
+  assert.equal(handoffProfileSummariesByKey.get("public_stack").pipeline_key, "public_stack");
+  assert.equal(handoffProfileSummariesByKey.get("public_stack").status, "ready_now_with_safety_gates");
+  assert.ok(
+    handoffProfileSummariesByKey
+      .get("public_stack")
+      .next_commands.includes("corepack pnpm run selfhost:security-review -- --profile public-stack")
+  );
   assert.equal(body.ecosystem_readiness.status, "daily_deployable_with_safety_gates");
   assert.equal(body.ecosystem_readiness.goal, "daily-deployable");
   assert.deepEqual(
@@ -176,6 +186,8 @@ try {
   assert.equal(focusedBody.profile_filter.pipeline, "public_stack");
   assert.equal(focusedBody.ecosystem_readiness.status, "daily_deployable_with_safety_gates");
   assert.deepEqual(focusedBody.pipeline_summaries.map((item) => item.key), ["public_stack"]);
+  assert.deepEqual(focusedBody.profile_summaries.map((item) => item.key), ["public_stack"]);
+  assert.equal(focusedBody.profile_summaries[0].status, "ready_now_with_safety_gates");
   assert.equal(focusedBody.command_catalog_status.profile.resolved, "public_stack");
   assert.deepEqual(focusedBody.profile_selector, body.profile_selector);
   const focusedMarkdown = fs.readFileSync(focusedOutput, "utf8");

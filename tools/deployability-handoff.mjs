@@ -7,6 +7,7 @@ import { fileURLToPath } from "node:url";
 import YAML from "yaml";
 import { buildEcosystemReadiness } from "./lib/deployability-ecosystem-readiness.mjs";
 import { PIPELINES, buildPipelineSummaries } from "./lib/deployability-pipeline-summaries.mjs";
+import { buildProfileSummaries } from "./lib/deployability-profile-summaries.mjs";
 
 const ROOT = process.cwd();
 const TOOL_ROOT = path.dirname(fileURLToPath(import.meta.url));
@@ -317,6 +318,10 @@ function reportData(output, args = parseArgs(process.argv)) {
     command_map: COMMAND_MAP,
     profile_filter: profileFilter,
     profile_selector: commandCatalog.body?.filters?.profiles || [],
+    profile_summaries: buildProfileSummaries({
+      profiles: commandCatalog.body?.filters?.profiles || [],
+      pipelineSummaries
+    }),
     ecosystem_readiness: buildEcosystemReadiness({
       catalogCommands: readinessCommandCatalog.body?.commands || [],
       brandSiteOk: true
