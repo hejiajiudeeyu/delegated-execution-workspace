@@ -186,8 +186,12 @@ reports.
 `deployability:action-plan` is the read-only operator action selector. It
 combines the dashboard and command catalog into profile-level recommended
 commands, dashboard-safe commands, public-exposure gates, service-touching
-commands, safety notes, and next JSON commands without reading `.env`, calling
-Docker, binding ports, probing the network, or printing secrets.
+commands, safety notes, next JSON commands, profile `attention` metadata, and
+top-level `recommended_profile_keys` without reading `.env`, calling Docker,
+binding ports, probing the network, or printing secrets. Dashboards can use
+`attention.rank`, `attention.level`, and `attention.reasons` to sort profile
+cards and highlight public-exposure gates without re-deriving risk from command
+lists.
 Use `--list-profiles` or `--profiles` first when an operator or dashboard
 needs the supported profile keys, aliases, pipeline keys, and purposes without
 calling the dashboard or command catalog.

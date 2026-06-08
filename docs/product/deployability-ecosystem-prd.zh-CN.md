@@ -77,7 +77,7 @@ CALL ANYTHING 现在的仓库边界是正确的：
 | 可部署性安全矩阵 | 第四仓 | `corepack pnpm run deployability:safety`，以及作为部署命令 read/write/startup/network/logging 姿态说明矩阵的 `corepack pnpm --silent run deployability:safety -- --json`，包含作为 dashboard-safe read-only 命令的 action-plan profile selector |
 | 可部署性 doctor | 第四仓 | `corepack pnpm run deployability:doctor`，以及作为 compatibility ledger、顶层 scripts、docs、brand-site 和 safety-contract 对齐状态只读快照的 `corepack pnpm --silent run deployability:doctor -- --json` |
 | 可部署性 dashboard | 第四仓 | `corepack pnpm run deployability:dashboard`，以及作为顶层 dashboard 和 CI 的只读聚合 payload 的 `corepack pnpm --silent run deployability:dashboard -- --json`，组合 overview、quickstart、safety、doctor、compatibility、顶层 `profile_selector`、派生 `profile_summaries`、ecosystem_readiness 和 per-pipeline summary sections；`--profile <key-or-alias>` 会输出聚焦 dashboard payload，包含 `profile_filter`、过滤后的命令目录、一个所属 pipeline summary 和一个 profile summary，同时让 ecosystem_readiness 保持全局 |
-| 可部署性 action plan | 第四仓 | `corepack pnpm run deployability:action-plan`，以及作为只读 operator 下一步动作选择器的 `corepack pnpm --silent run deployability:action-plan -- --json`，把 dashboard readiness 和 command catalog posture 合成 profile 级 recommended commands、dashboard-safe commands、public-exposure gates 和 service-touching command lists；`--list-profiles` / `--profiles` 输出只读 profile selector 目录，包含 keys、aliases、pipeline keys 和 purposes，且不调用 dashboard/catalog metadata；`--profile <key-or-alias>` 会把输出聚焦到单个 operator 目标，并把未知 profile 作为 blockers 返回 |
+| 可部署性 action plan | 第四仓 | `corepack pnpm run deployability:action-plan`，以及作为只读 operator 下一步动作选择器的 `corepack pnpm --silent run deployability:action-plan -- --json`，把 dashboard readiness 和 command catalog posture 合成 profile 级 recommended commands、dashboard-safe commands、public-exposure gates、service-touching command lists、profile `attention` metadata 和顶层 `recommended_profile_keys`；`--list-profiles` / `--profiles` 输出只读 profile selector 目录，包含 keys、aliases、pipeline keys 和 purposes，且不调用 dashboard/catalog metadata；`--profile <key-or-alias>` 会把输出聚焦到单个 operator 目标，并把未知 profile 作为 blockers 返回 |
 | 可部署性命令目录 | 第四仓 | `corepack pnpm run deployability:commands`，以及作为按 category、posture、首次使用 track 和 pipeline 过滤的只读命令目录的 `corepack pnpm --silent run deployability:commands -- --json`；`filters.profiles` 会输出可渲染 profile selector 的 keys、aliases、pipeline keys 和 purposes；`--profile <key-or-alias>` 会把 operator 熟悉的 profile 名称解析到所属 pipeline；带 profile 参数的命令变体会继承基础安全姿态；action-plan profile selector 会出现在 `daily_dev` track；ready-now 命令路径不再出现 `unmapped` category / posture |
 | 可部署性恢复证据路径 | 第四仓 | `deployability:overview`、`deployability:dashboard`、`deployability:handoff` 和 `deployability:commands -- --pipeline recovery_evidence` 把 ops-report、audit export、backup、restore 和 rotation 命令作为一条 ready-now 证据与恢复管线暴露 |
 | 可部署性交接报告 | 第四仓 | `corepack pnpm run deployability:handoff`，以及用于输出 `exports/deployability/` 下不含 secret 的生态交接报告 metadata 的 `corepack pnpm --silent run deployability:handoff -- --json`，包含与 dashboard 相同的 profile selector 目录、派生 profile summaries 和 ecosystem_readiness scorecard；`--profile <key-or-alias>` 会为单个所属 pipeline 写出聚焦交接报告 |
@@ -162,8 +162,10 @@ CALL ANYTHING 现在的仓库边界是正确的：
   不调用 Docker、不绑定端口、不探测网络、不打印 secret 值
 - 可部署性 action-plan metadata 可以机器读取，把 dashboard 和命令目录合成
   profile 级 recommended commands、dashboard-safe commands、public-exposure gate
-  commands、service-touching commands、safety notes 和 next JSON commands，
-  但不读取 `.env`、不调用 Docker、不绑定端口、不探测网络、不打印 secret 值
+  commands、service-touching commands、safety notes、next JSON commands、
+  profile `attention` level / rank metadata、primary next commands 和顶层
+  `recommended_profile_keys`，但不读取 `.env`、不调用 Docker、不绑定端口、不探测网络、
+  不打印 secret 值
 - 可部署性 action-plan profile-list metadata 可以机器读取，输出支持的 profile
   keys、aliases、pipeline keys 和 purposes；该模式不调用 dashboard/catalog
   metadata、不读取 `.env`、不调用 Docker、不绑定端口、不探测网络、不打印 secret 值

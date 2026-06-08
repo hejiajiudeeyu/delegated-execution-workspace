@@ -87,8 +87,10 @@ Acceptance:
 - `deployability:action-plan -- --json` emits a clean profile-level operator
   action plan with current bundle, ecosystem readiness, recommended commands,
   dashboard-safe commands, public-exposure gate commands, service-touching
-  commands, safety notes, and next JSON commands without reading `.env`,
-  calling Docker, binding ports, probing networks, or printing secret values
+  commands, safety notes, next JSON commands, profile `attention` level/rank
+  metadata, primary next commands, and top-level `recommended_profile_keys`
+  without reading `.env`, calling Docker, binding ports, probing networks, or
+  printing secret values
 - `deployability:action-plan -- --profile public-stack --json` emits the same
   schema narrowed to `public_stack`, includes `profile_filter`, and keeps
   unknown profile names as clean blockers rather than falling back to all

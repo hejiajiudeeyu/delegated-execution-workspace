@@ -42,7 +42,7 @@ assert.equal(json.status, 0, json.stderr || json.stdout);
 const body = JSON.parse(json.stdout);
 assert.equal(body.command, "deployability:action-plan");
 assert.equal(body.ok, true);
-assert.equal(body.current_bundle.change_id, "CHG-2026-112");
+assert.equal(body.current_bundle.change_id, "CHG-2026-113");
 assert.equal(body.ecosystem_readiness.status, "daily_deployable_with_safety_gates");
 assert.deepEqual(
   body.profiles.map((item) => item.key),
@@ -60,6 +60,10 @@ assert.deepEqual(
 const publicStack = body.profiles.find((item) => item.key === "public_stack");
 assert.equal(publicStack.pipeline_key, "public_stack");
 assert.equal(publicStack.status, "ready_now_with_safety_gates");
+assert.equal(publicStack.attention.level, "safety_gate");
+assert.equal(publicStack.attention.primary_command, publicStack.recommended_commands[0]);
+assert.equal(publicStack.attention.primary_json_command, publicStack.next_json_commands[0]);
+assert.ok(publicStack.attention.reasons.some((item) => /public exposure gate/i.test(item)));
 assert.ok(publicStack.summary.public_exposure_gate_count >= 2);
 assert.ok(publicStack.dashboard_safe_commands.includes("corepack pnpm run selfhost:security-review -- --profile public-stack"));
 assert.ok(publicStack.public_exposure_gate_commands.includes("corepack pnpm run selfhost:security-review -- --profile public-stack"));
@@ -67,6 +71,8 @@ assert.ok(publicStack.next_json_commands.includes("corepack pnpm --silent run se
 
 const dailyDev = body.profiles.find((item) => item.key === "daily_dev");
 assert.equal(dailyDev.pipeline_key, "local_agent_loop");
+assert.equal(dailyDev.attention.level, "operational");
+assert.ok(publicStack.attention.rank < dailyDev.attention.rank);
 assert.ok(dailyDev.recommended_commands.includes("corepack pnpm run dev:local:plan"));
 assert.ok(dailyDev.dashboard_safe_commands.includes("corepack pnpm run dev:doctor"));
 
@@ -82,6 +88,8 @@ assert.equal(publicStackOnlyBody.ok, true);
 assert.equal(publicStackOnlyBody.profile_filter.requested, "public-stack");
 assert.equal(publicStackOnlyBody.profile_filter.resolved, "public_stack");
 assert.deepEqual(publicStackOnlyBody.profiles.map((item) => item.key), ["public_stack"]);
+assert.deepEqual(publicStackOnlyBody.recommended_profile_keys, ["public_stack"]);
+assert.equal(publicStackOnlyBody.profiles[0].attention.level, "safety_gate");
 assert.ok(
   publicStackOnlyBody.profiles[0].public_exposure_gate_commands.includes(
     "corepack pnpm run selfhost:security-review -- --profile public-stack"
@@ -135,6 +143,12 @@ assert.ok(!profileListText.stdout.includes("sk_action_plan_must_not_leak"));
 
 assert.ok(body.next_commands.includes("corepack pnpm run deployability:dashboard"));
 assert.ok(body.next_commands.includes("corepack pnpm run deployability:handoff"));
+assert.equal(body.recommended_profile_keys[0], "public_stack");
+assert.deepEqual(
+  body.recommended_profile_keys,
+  [...body.profiles].sort((left, right) => left.attention.rank - right.attention.rank).map((item) => item.key)
+);
+assert.ok(body.profiles.every((item) => Number.isInteger(item.attention.rank)));
 assert.ok(body.safety_defaults.some((item) => /does not read \.env/i.test(item)));
 assert.ok(!json.stdout.includes("[ok]"));
 assert.ok(!json.stdout.includes("sk_action_plan_must_not_leak"));
@@ -151,7 +165,7 @@ const pipedJson = spawnSync(process.execPath, [SCRIPT, "--json"], {
 assert.equal(pipedJson.status, 0, pipedJson.stderr || pipedJson.stdout);
 const pipedBody = JSON.parse(pipedJson.stdout);
 assert.equal(pipedBody.command, "deployability:action-plan");
-assert.equal(pipedBody.current_bundle.change_id, "CHG-2026-112");
+assert.equal(pipedBody.current_bundle.change_id, "CHG-2026-113");
 assert.ok(!pipedJson.stdout.includes("sk_action_plan_must_not_leak"));
 
 const text = run([]);

@@ -148,6 +148,50 @@ function commandNames(commands) {
   return unique(commands.map((item) => item.command));
 }
 
+function profileSortIndex(profileKey) {
+  const index = PROFILE_PIPELINES.findIndex((item) => item.key === profileKey);
+  return index === -1 ? PROFILE_PIPELINES.length : index;
+}
+
+function buildAttention({
+  profile,
+  status,
+  recommendedCommands,
+  nextJsonCommands,
+  publicExposureGateCommands,
+  serviceTouchingCommands,
+  dashboardSafeCommands
+}) {
+  const publicExposureGateCount = publicExposureGateCommands.length;
+  const level = publicExposureGateCount > 0 || /safety[_-]?gate/i.test(status) ? "safety_gate" : "operational";
+  const rankBase = level === "safety_gate" ? 100 - publicExposureGateCount * 10 : 200;
+  const reasons = [];
+
+  if (publicExposureGateCount > 0) {
+    reasons.push(`${publicExposureGateCount} public exposure gate command(s)`);
+  }
+  if (/safety[_-]?gate/i.test(status)) {
+    reasons.push(`status=${status}`);
+  }
+  if (serviceTouchingCommands.length > 0) {
+    reasons.push(`${serviceTouchingCommands.length} service-touching command(s)`);
+  }
+  if (dashboardSafeCommands.length > 0) {
+    reasons.push(`${dashboardSafeCommands.length} dashboard-safe command(s)`);
+  }
+  if (reasons.length === 0) {
+    reasons.push("read-only operational metadata available");
+  }
+
+  return {
+    level,
+    rank: rankBase + profileSortIndex(profile.key),
+    primary_command: recommendedCommands[0] || null,
+    primary_json_command: nextJsonCommands[0] || null,
+    reasons
+  };
+}
+
 function profileDirectory() {
   return PROFILE_PIPELINES.map((profile) => ({
     key: profile.key,
@@ -198,13 +242,29 @@ function buildProfiles({ dashboard, commandCatalog, profileFilter }) {
     const serviceTouching = commands.filter(
       (item) => item.starts_services === true || item.stops_services === true || item.calls_docker === true
     );
+    const status = summary?.status || "unknown";
+    const recommendedCommands = summary?.next_commands || commandNames(commands);
+    const nextJsonCommands = summary?.next_json_commands || unique(commands.map((item) => item.json_command));
+    const dashboardSafeCommands = commandNames(dashboardSafe);
+    const publicExposureGateCommands = commandNames(publicExposure);
+    const serviceTouchingCommands = commandNames(serviceTouching);
+    const attention = buildAttention({
+      profile,
+      status,
+      recommendedCommands,
+      nextJsonCommands,
+      publicExposureGateCommands,
+      serviceTouchingCommands,
+      dashboardSafeCommands
+    });
 
     return {
       key: profile.key,
       label: profile.label,
       pipeline_key: profile.pipeline_key,
       purpose: profile.purpose,
-      status: summary?.status || "unknown",
+      status,
+      attention,
       summary: summary
         ? {
             command_count: summary.command_count,
@@ -215,11 +275,11 @@ function buildProfiles({ dashboard, commandCatalog, profileFilter }) {
             public_exposure_gate_count: summary.public_exposure_gate_count
           }
         : null,
-      recommended_commands: summary?.next_commands || commandNames(commands),
-      next_json_commands: summary?.next_json_commands || unique(commands.map((item) => item.json_command)),
-      dashboard_safe_commands: commandNames(dashboardSafe),
-      public_exposure_gate_commands: commandNames(publicExposure),
-      service_touching_commands: commandNames(serviceTouching),
+      recommended_commands: recommendedCommands,
+      next_json_commands: nextJsonCommands,
+      dashboard_safe_commands: dashboardSafeCommands,
+      public_exposure_gate_commands: publicExposureGateCommands,
+      service_touching_commands: serviceTouchingCommands,
       safety_notes: unique([...(summary?.safety_notes || []), ...commands.flatMap((item) => item.notes || [])])
     };
   });
@@ -244,6 +304,7 @@ function actionPlanData(args) {
 
   const dashboard = dashboardResult.body || {};
   const commandCatalog = commandCatalogResult.body || { commands: [] };
+  const profiles = profileFilter.resolved == null && args.profile != null ? [] : buildProfiles({ dashboard, commandCatalog, profileFilter });
 
   return {
     command: "deployability:action-plan",
@@ -262,7 +323,8 @@ function actionPlanData(args) {
         }
       ])
     ),
-    profiles: profileFilter.resolved == null && args.profile != null ? [] : buildProfiles({ dashboard, commandCatalog, profileFilter }),
+    profiles,
+    recommended_profile_keys: [...profiles].sort((left, right) => left.attention.rank - right.attention.rank).map((item) => item.key),
     blockers,
     warnings: unique(dashboard.warnings || []),
     safety_defaults: SAFETY_DEFAULTS,
@@ -315,6 +377,7 @@ function printText(data) {
     const summary = profile.summary || {};
     console.log(`- ${profile.key}: ${profile.status}`);
     console.log(`  purpose: ${profile.purpose}`);
+    console.log(`  attention=${profile.attention.level}; rank=${profile.attention.rank}`);
     console.log(
       `  commands=${summary.command_count || 0}; json=${summary.json_command_count || 0}; dashboard-safe=${summary.dashboard_safe_command_count || 0}; public-exposure-gates=${summary.public_exposure_gate_count || 0}`
     );

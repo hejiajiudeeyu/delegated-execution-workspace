@@ -148,7 +148,8 @@ CHG-2026-105:
   selector between the dashboard and the full command catalog. It combines
   dashboard and command-catalog metadata into profile-level recommended
   commands, dashboard-safe commands, public-exposure gates, service-touching
-  commands, safety notes, and JSON entry points, and supports
+  commands, safety notes, JSON entry points, profile `attention` metadata, and
+  top-level `recommended_profile_keys`, and supports
   `corepack pnpm run deployability:action-plan` and
   `corepack pnpm --silent run deployability:action-plan -- --json`; operators
   and dashboards can list supported profile keys, aliases, pipeline keys, and
@@ -161,7 +162,8 @@ CHG-2026-105:
   `corepack pnpm --silent run deployability:action-plan -- --profile public-stack --json`,
   which emits `profile_filter` and reports unknown profile names as blockers
   without reading `.env`, calling Docker, binding ports, probing networks, or
-  printing secrets
+  printing secrets; management surfaces can sort cards by `attention.rank` and
+  highlight `attention.level=safety_gate` before public exposure
 - `deployability:overview`, `deployability:dashboard`, and
   `deployability:handoff` now share one fourth-repo pipeline summary metadata
   builder, with a consistency test keeping command counts, JSON counts,
@@ -270,8 +272,9 @@ Observed results:
   terminal prose or secret values
 - `deployability:action-plan -- --json`: passed, reporting profile-level
   recommended commands, dashboard-safe commands, public-exposure gates,
-  service-touching commands, safety notes, and next JSON commands without
-  terminal prose or secret values
+  service-touching commands, safety notes, next JSON commands, profile
+  `attention` metadata, and `recommended_profile_keys` without terminal prose
+  or secret values
 - `deployability:action-plan -- --list-profiles --json`: passed, reporting
   supported profile keys, aliases, pipeline keys, purposes, and next profile
   commands without calling dashboard/catalog metadata or printing secret values

@@ -80,8 +80,9 @@ onboarding 或 release-image 路径前，先给出一个只读命令地图和一
 - `deployability:action-plan -- --json` 输出干净的 profile 级 operator action
   plan，包含当前 bundle、ecosystem readiness、recommended commands、
   dashboard-safe commands、public-exposure gate commands、service-touching
-  commands、safety notes 和 next JSON commands，不读取 `.env`、不调用 Docker、
-  不绑定端口、不探测网络、不打印 secret 值
+  commands、safety notes、next JSON commands、profile `attention` level / rank
+  metadata、primary next commands 和顶层 `recommended_profile_keys`，不读取 `.env`、
+  不调用 Docker、不绑定端口、不探测网络、不打印 secret 值
 - `deployability:action-plan -- --profile public-stack --json` 会以同一 schema
   聚焦到 `public_stack`，包含 `profile_filter`，并把未知 profile 名称作为干净
   blockers 返回，而不是回退为全部 profiles

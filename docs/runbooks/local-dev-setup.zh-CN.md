@@ -159,8 +159,10 @@ summaries，但不读取 `.env`、不调用 Docker、不绑定端口、不探测
 `deployability:action-plan` 是给 operator 使用的只读下一步动作选择器。它会把
 dashboard 和命令目录合成 profile 级 recommended commands、dashboard-safe
 commands、public-exposure gates、service-touching commands、safety notes 和
-next JSON commands，同时不读取 `.env`、不调用 Docker、不绑定端口、不探测网络、
-不打印 secrets。
+next JSON commands、profile `attention` metadata 和顶层 `recommended_profile_keys`，
+同时不读取 `.env`、不调用 Docker、不绑定端口、不探测网络、不打印 secrets。
+dashboard 可以用 `attention.rank`、`attention.level` 和 `attention.reasons`
+排序 profile cards，并标出 public-exposure gates，而不需要从命令列表里重新推断风险。
 当 operator 或 dashboard 需要先获得支持的 profile keys、aliases、pipeline keys
 和 purposes 时，可以先用 `--list-profiles` 或 `--profiles`，该模式不会调用
 dashboard 或 command catalog。

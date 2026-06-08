@@ -1,0 +1,15 @@
+change_id: CHG-2026-113
+goal: add action-plan profile attention metadata
+protocol_sha: da3027100cfe9391f7f8d03be18a108ee2804cf6
+client_sha: f1d6a2d8c9b83517cdf6ca9803b223847f880e9a
+platform_sha: 5961309c6b0ca4e8df22dbb5be92ac0845bf8d25
+brand_site_sha: 96a4d8688dc69ae3df61c0ac517cf9ef48129d54
+owner: hejiajiudeeyu
+risk_level: low
+affected_scope:
+  - orchestration
+  - brand-site
+  - documentation
+contracts_check: passed
+integration_check: passed
+notes: "Adds derived profile attention metadata to deployability:action-plan so management surfaces can sort profile cards and highlight public exposure gates without re-deriving risk from command lists. Each profile receives attention.level, attention.rank, attention.reasons, primary_command, and primary_json_command, and the top-level payload exposes recommended_profile_keys. The metadata is derived from existing dashboard and command catalog posture data and does not introduce a new source of truth. Updates PRDs, readiness docs, local-dev runbooks, and call-anything-brand-site. Protocol, client, and platform SHAs are unchanged."
