@@ -112,6 +112,8 @@ corepack pnpm run deployability:commands
 corepack pnpm --silent run deployability:commands -- --json
 corepack pnpm run deployability:runbook
 corepack pnpm --silent run deployability:runbook -- --json
+corepack pnpm run deployability:menu
+corepack pnpm --silent run deployability:menu -- --json
 corepack pnpm run deployability:commands -- --profile public-stack
 corepack pnpm --silent run deployability:commands -- --profile public-stack --json
 corepack pnpm run compat:status
@@ -203,6 +205,15 @@ dashboard 需要在复制命令前看到 inspect、gate、start、verify、opera
 `--profile public-stack` / 其他 profile key / alias。它复用
 `deployability:profiles` 和 `deployability:commands`，让 public exposure gate 位于
 startup 之前，未知 profile 返回 blocker，并且不读取 `.env`、不调用 Docker、
+不绑定端口、不探测网络、不打印 secret 值。
+
+`deployability:menu` 是给人和管理 UI 使用的只读第一屏 operator menu。当界面需要在
+一个 payload 中展示 profile choices、attention、primary command、runbook、
+action-plan、dashboard、handoff 和 command catalog 入口时，可以使用
+`corepack pnpm run deployability:menu`、
+`corepack pnpm --silent run deployability:menu -- --json`，或
+`--profile public-stack` / 其他 profile key / alias。它是现有 deployability metadata
+的便利投影，未知 profile 返回干净 blocker，并且不读取 `.env`、不调用 Docker、
 不绑定端口、不探测网络、不打印 secret 值。
 
 `deployability:dashboard -- --json` 和 `deployability:handoff -- --json` 也会把

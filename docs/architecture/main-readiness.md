@@ -211,6 +211,15 @@ CHG-2026-105:
   reuses the profile catalog and command catalog, keeps gate phases before
   start phases, and does not read `.env`, call Docker, bind ports, probe
   networks, or print secrets
+- `deployability:menu` is available as a read-only first operator menu for
+  humans and management UIs. It supports
+  `corepack pnpm run deployability:menu` and
+  `corepack pnpm --silent run deployability:menu -- --json` for all profile
+  choices, plus `--profile <key-or-alias>` for one focused menu with selected
+  runbook metadata. It presents attention, primary command, runbook,
+  action-plan, dashboard, handoff, and command-catalog entry points without
+  reading `.env`, calling Docker, binding ports, probing networks, or printing
+  secrets
 - ready-now command catalog entries now have explicit category/posture metadata
   instead of falling back to `unmapped`, including local `runtime_diagnostic`,
   local `runtime_acceptance`, and published-image `delegated_smoke` paths

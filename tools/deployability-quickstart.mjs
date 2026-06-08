@@ -37,6 +37,11 @@ const TRACKS = [
         json_command: "corepack pnpm --silent run deployability:profiles -- --json"
       },
       {
+        label: "Open the operator menu",
+        command: "corepack pnpm run deployability:menu",
+        json_command: "corepack pnpm --silent run deployability:menu -- --json"
+      },
+      {
         label: "Emit a focused public-stack dashboard payload",
         command: "corepack pnpm run deployability:dashboard -- --profile public-stack",
         json_command: "corepack pnpm --silent run deployability:dashboard -- --profile public-stack --json"
@@ -206,6 +211,7 @@ const NEXT_COMMANDS = [
   "corepack pnpm run deployability:doctor",
   "corepack pnpm run deployability:dashboard",
   "corepack pnpm run deployability:profiles",
+  "corepack pnpm run deployability:menu",
   "corepack pnpm run deployability:action-plan -- --list-profiles",
   "corepack pnpm run deployability:action-plan",
   "corepack pnpm run deployability:commands",

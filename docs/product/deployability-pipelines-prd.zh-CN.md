@@ -36,6 +36,8 @@ onboarding 或 release-image 路径前，先给出一个只读命令地图和一
 - `corepack pnpm --silent run deployability:commands -- --json`
 - `corepack pnpm run deployability:runbook`
 - `corepack pnpm --silent run deployability:runbook -- --json`
+- `corepack pnpm run deployability:menu`
+- `corepack pnpm --silent run deployability:menu -- --json`
 - `corepack pnpm run deployability:commands -- --profile public-stack`
 - `corepack pnpm --silent run deployability:commands -- --profile public-stack --json`
 - `corepack pnpm run compat:status`
@@ -136,6 +138,12 @@ onboarding 或 release-image 路径前，先给出一个只读命令地图和一
   `profile_runbook` payload，并按 inspect、gate、start、verify、operate、evidence
   阶段组织命令。gate 必须位于 start 之前，阶段命令必须保留 command catalog 的
   safety posture metadata，未知 profile 必须返回 blocker，而不是回退到全部 profiles
+- `deployability:menu -- --json` 输出干净的 `operator_menu` payload，包含当前 bundle、
+  ecosystem readiness、recommended profile keys、profile choices、attention metadata、
+  primary commands、runbook、action-plan、dashboard、handoff 和 command catalog 入口。
+  聚焦的 `deployability:menu -- --profile public-stack --json` 必须包含
+  `profile_filter`、一条 menu choice、selected profile metadata 和 selected runbook
+  phases，同时不读取 `.env`、不调用 Docker、不绑定端口、不探测网络、不打印 secret 值
 - 同一个 `deployability:commands -- --json` payload 会包含 `filters.profiles`，
   输出支持的 profile keys、aliases、所属 pipeline keys 和 purposes，让 dashboard
   不解析 prose、不调用 runtime 命令也能渲染命令目录的 profile selector
@@ -157,9 +165,9 @@ onboarding 或 release-image 路径前，先给出一个只读命令地图和一
   metadata，只返回该 pipeline 的命令目录，并把未知 profile 名称作为干净 blocker
   返回，而不是回退到全量命令
 - `deployability:commands -- --track daily_dev --json` 会包含
-  `deployability:profiles`、`deployability:action-plan -- --list-profiles` 和 daily
-  profile runbook 入口，并把它们标成 `top_level` / `read_only` / dashboard-safe
-  命令；这些条目来自 quickstart 与 safety metadata
+  `deployability:profiles`、`deployability:action-plan -- --list-profiles`、
+  `deployability:menu` 和 daily profile runbook 入口，并把它们标成 `top_level` /
+  `read_only` / dashboard-safe 命令；这些条目来自 quickstart 与 safety metadata
 - `deployability:commands -- --json` 不会让 ready-now 命令路径暴露 `unmapped`
   category 或 posture；本地 doctor / acceptance 命令和真实 published-image smoke
   会使用明确的 `runtime_diagnostic`、`runtime_acceptance` 和 `delegated_smoke`

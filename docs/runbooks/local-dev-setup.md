@@ -133,6 +133,8 @@ corepack pnpm run deployability:commands
 corepack pnpm --silent run deployability:commands -- --json
 corepack pnpm run deployability:runbook
 corepack pnpm --silent run deployability:runbook -- --json
+corepack pnpm run deployability:menu
+corepack pnpm --silent run deployability:menu -- --json
 corepack pnpm run deployability:commands -- --profile public-stack
 corepack pnpm --silent run deployability:commands -- --profile public-stack --json
 corepack pnpm run compat:status
@@ -236,6 +238,16 @@ profile. Use `corepack pnpm run deployability:runbook`,
 dashboard needs the exact inspect, gate, start, verify, operate, and evidence
 sequence before copying commands. It reuses `deployability:profiles` and
 `deployability:commands`, keeps public exposure gates before startup, returns
+unknown-profile blockers, and does not read `.env`, call Docker, bind ports,
+probe networks, or print secret values.
+
+`deployability:menu` is the read-only first operator menu for humans and
+management UIs. Use `corepack pnpm run deployability:menu`,
+`corepack pnpm --silent run deployability:menu -- --json`, or
+`--profile public-stack` / another profile key or alias when a surface needs
+profile choices, attention, primary command, runbook, action-plan, dashboard,
+handoff, and command-catalog entry points in one payload. It is a convenience
+projection over existing deployability metadata, returns clean
 unknown-profile blockers, and does not read `.env`, call Docker, bind ports,
 probe networks, or print secret values.
 

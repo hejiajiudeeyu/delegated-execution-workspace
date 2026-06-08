@@ -37,6 +37,8 @@ Required commands:
 - `corepack pnpm --silent run deployability:commands -- --json`
 - `corepack pnpm run deployability:runbook`
 - `corepack pnpm --silent run deployability:runbook -- --json`
+- `corepack pnpm run deployability:menu`
+- `corepack pnpm --silent run deployability:menu -- --json`
 - `corepack pnpm run deployability:commands -- --profile public-stack`
 - `corepack pnpm --silent run deployability:commands -- --profile public-stack --json`
 - `corepack pnpm run compat:status`
@@ -154,6 +156,14 @@ Acceptance:
   operate, and evidence phases. Gate phases must appear before start phases,
   phase commands must preserve command-catalog safety posture metadata, and
   unknown profiles must return blockers instead of falling back to all profiles
+- `deployability:menu -- --json` emits a clean `operator_menu` payload with
+  current bundle, ecosystem readiness, recommended profile keys, profile
+  choices, attention metadata, primary commands, runbook, action-plan,
+  dashboard, handoff, and command-catalog entry points. Focused
+  `deployability:menu -- --profile public-stack --json` must include
+  `profile_filter`, one menu choice, selected profile metadata, and selected
+  runbook phases without reading `.env`, calling Docker, binding ports, probing
+  networks, or printing secret values
 - the same `deployability:commands -- --json` payload includes
   `filters.profiles` with supported profile keys, aliases, owning pipeline
   keys, and purposes so dashboards can render the command-catalog profile
@@ -181,7 +191,7 @@ Acceptance:
   commands
 - `deployability:commands -- --track daily_dev --json` includes
   `deployability:profiles` and
-  `deployability:action-plan -- --list-profiles` plus the daily profile
+  `deployability:action-plan -- --list-profiles`, `deployability:menu`, plus the daily profile
   runbook entry as `top_level` / `read_only` / dashboard-safe commands,
   sourced from quickstart and safety metadata
 - `deployability:commands -- --json` does not expose `unmapped` category or
