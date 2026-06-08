@@ -66,6 +66,12 @@ assert.ok(body.safety_defaults.some((item) => /does not start services/i.test(it
 assert.ok(!json.stdout.includes("[ok]"));
 assert.ok(!json.stdout.includes("sk_release_must_not_leak"));
 
+const pnpmSeparatedJson = run(["--", "--image-tag", "candidate-2026-06-09", "--json"]);
+assert.equal(pnpmSeparatedJson.status, 0, pnpmSeparatedJson.stderr || pnpmSeparatedJson.stdout);
+const pnpmSeparatedBody = JSON.parse(pnpmSeparatedJson.stdout);
+assert.equal(pnpmSeparatedBody.command, "deployability:release");
+assert.equal(pnpmSeparatedBody.image_tag, "candidate-2026-06-09");
+
 const text = run(["--image-tag", "candidate-2026-06-09"]);
 assert.equal(text.status, 0, text.stderr || text.stdout);
 assert.match(text.stdout, /Deployability release candidate/);

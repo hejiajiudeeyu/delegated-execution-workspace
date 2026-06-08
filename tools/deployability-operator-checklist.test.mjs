@@ -84,6 +84,13 @@ assert.ok(body.safety_defaults.some((item) => /does not start services/i.test(it
 assert.ok(!json.stdout.includes("[ok]"));
 assert.ok(!json.stdout.includes("sk_operator_checklist_must_not_leak"));
 
+const pnpmSeparatedJson = run(["--", "--profile", "public-stack", "--image-tag", "candidate-2026-06-09", "--json"]);
+assert.equal(pnpmSeparatedJson.status, 0, pnpmSeparatedJson.stderr || pnpmSeparatedJson.stdout);
+const pnpmSeparatedBody = JSON.parse(pnpmSeparatedJson.stdout);
+assert.equal(pnpmSeparatedBody.command, "deployability:operator-checklist");
+assert.equal(pnpmSeparatedBody.profile.name, "public-stack");
+assert.equal(pnpmSeparatedBody.image_tag, "candidate-2026-06-09");
+
 const text = run(["--profile", "public-stack", "--image-tag", "candidate-2026-06-09"]);
 assert.equal(text.status, 0, text.stderr || text.stdout);
 assert.match(text.stdout, /Deployability operator checklist/);

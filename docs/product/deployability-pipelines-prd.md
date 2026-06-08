@@ -149,6 +149,12 @@ Acceptance:
   checklist that groups menu, recipe, onboarding, public exposure gate, release
   candidate gate, backup-plan, and handoff evidence into ready/blocked items
   without executing lifecycle commands
+- documented pnpm copy-paste forms for release and operator checklist commands
+  tolerate the literal `--` separator before command arguments, so
+  `corepack pnpm --silent run deployability:release -- --image-tag <candidate-tag> --json`
+  and
+  `corepack pnpm --silent run deployability:operator-checklist -- --profile public-stack --image-tag <candidate-tag> --json`
+  remain machine-readable JSON entry points instead of failing argument parsing
 - doctor reports compatibility ledger, top-level scripts, documentation,
   brand-site file alignment, brand-site deployability content smoke, and
   safety-contract alignment as one read-only snapshot without executing Docker,

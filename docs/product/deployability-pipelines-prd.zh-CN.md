@@ -137,6 +137,12 @@ onboarding 或 release-image 路径前，先给出一个只读命令地图和一
   checklist；它把 menu、recipe、onboarding、public exposure gate、release
   candidate gate、backup-plan 和 handoff evidence 分组成 ready / blocked items，
   但不执行 lifecycle commands
+- release 和 operator checklist 的文档化 pnpm copy-paste 形式必须兼容命令参数前的
+  字面量 `--` 分隔符；因此
+  `corepack pnpm --silent run deployability:release -- --image-tag <candidate-tag> --json`
+  和
+  `corepack pnpm --silent run deployability:operator-checklist -- --profile public-stack --image-tag <candidate-tag> --json`
+  应保持机器可读 JSON 入口，而不是在参数解析阶段失败
 - doctor 把 compatibility ledger、顶层 scripts、文档、brand-site file alignment、
   brand-site deployability content smoke 和 safety-contract 对齐状态收成一个只读快照，
   不执行 Docker、不读取 `.env`、不探测网络、不打印 secrets

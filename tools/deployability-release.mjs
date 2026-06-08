@@ -39,6 +39,9 @@ function parseArgs(argv) {
   const values = argv.slice(2);
   for (let index = 0; index < values.length; index += 1) {
     const value = values[index];
+    if (value === "--") {
+      continue;
+    }
     if (value === "--json") {
       args.json = true;
       continue;
