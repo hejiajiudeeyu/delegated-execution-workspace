@@ -171,6 +171,8 @@ corepack pnpm run deployability:handoff
 corepack pnpm --silent run deployability:handoff -- --json
 corepack pnpm run deployability:handoff -- --profile public-stack
 corepack pnpm --silent run deployability:handoff -- --profile public-stack --json
+corepack pnpm run deployability:evidence -- --profile public-stack
+corepack pnpm --silent run deployability:evidence -- --profile public-stack --json
 corepack pnpm run test:deployability
 corepack pnpm run test:deployability-operations
 corepack pnpm run dev:local:plan

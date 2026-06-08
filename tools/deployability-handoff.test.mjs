@@ -161,6 +161,8 @@ try {
   assert.equal(publicStack.status, "ready_now_with_safety_gates");
   assert.equal(publicStack.public_exposure_gate_count, 3);
   assert.ok(publicStack.next_commands.includes("corepack pnpm run selfhost:security-review -- --profile public-stack"));
+  assert.equal(publicStack.command_count, 7);
+  assert.ok(publicStack.next_commands.includes("corepack pnpm run deployability:evidence -- --profile public-stack"));
   const recoveryEvidence = body.pipeline_summaries.find((item) => item.key === "recovery_evidence");
   assert.equal(recoveryEvidence.status, "ready_now");
   assert.ok(recoveryEvidence.next_commands.includes("corepack pnpm run selfhost:backup-plan"));

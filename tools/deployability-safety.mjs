@@ -394,6 +394,23 @@ const MATRIX = [
     notes: "writes a non-secret Markdown report under exports/deployability unless --output is provided"
   },
   {
+    command: "corepack pnpm run deployability:evidence -- --profile public-stack",
+    json_command: "corepack pnpm --silent run deployability:evidence -- --profile public-stack --json",
+    category: "top_level",
+    posture: "writes_report",
+    reads_env: false,
+    writes_files: true,
+    starts_services: false,
+    stops_services: false,
+    calls_docker: false,
+    probes_network: false,
+    private_terminal_text: false,
+    public_exposure_gate: false,
+    ci_safe: true,
+    dashboard_safe: true,
+    notes: "writes a non-secret deployability evidence bundle with dashboard, menu, recipe, handoff, and command-catalog artifacts"
+  },
+  {
     command: "corepack pnpm run test:deployability",
     json_command: null,
     category: "top_level",
@@ -1027,6 +1044,7 @@ const NEXT_COMMANDS = [
   "corepack pnpm run deployability:operator-checklist -- --profile public-stack --image-tag <candidate-tag>",
   "corepack pnpm run deployability:dashboard",
   "corepack pnpm run deployability:recipe -- --profile public-stack",
+  "corepack pnpm run deployability:evidence -- --profile public-stack",
   "corepack pnpm run deployability:commands",
   "corepack pnpm run selfhost:security-review -- --profile public-stack",
   "corepack pnpm run deployability:handoff"

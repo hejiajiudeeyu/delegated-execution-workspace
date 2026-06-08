@@ -66,6 +66,8 @@ onboarding 或 release-image 路径前，先给出一个只读命令地图和一
 - `corepack pnpm --silent run compat:status -- --json`
 - `corepack pnpm run deployability:handoff`
 - `corepack pnpm --silent run deployability:handoff -- --json`
+- `corepack pnpm run deployability:evidence -- --profile public-stack`
+- `corepack pnpm --silent run deployability:evidence -- --profile public-stack --json`
 - `corepack pnpm run test:deployability-overview`
 - `corepack pnpm run test:deployability-quickstart`
 - `corepack pnpm run test:deployability-safety`
@@ -249,6 +251,11 @@ onboarding 或 release-image 路径前，先给出一个只读命令地图和一
   bundle、compatibility、command-map、ecosystem_readiness、顶层 profile selector、
   shared per-pipeline summaries、安全说明和下一步命令 metadata，不混入终端文本或
   secret 值
+- `deployability:evidence` 会通过
+  `corepack pnpm run deployability:evidence -- --profile public-stack` /
+  `corepack pnpm --silent run deployability:evidence -- --profile public-stack --json`
+  写出不含 secret 的 evidence bundle directory，包含 manifest、聚焦 dashboard/menu/recipe/handoff/command-catalog
+  JSON 和 handoff Markdown，不调用 Docker、不探测网络
 
 ## 管线 A：Local Agent Loop
 

@@ -142,6 +142,8 @@ corepack pnpm run deployability:handoff
 corepack pnpm --silent run deployability:handoff -- --json
 corepack pnpm run deployability:handoff -- --profile public-stack
 corepack pnpm --silent run deployability:handoff -- --profile public-stack --json
+corepack pnpm run deployability:evidence -- --profile public-stack
+corepack pnpm --silent run deployability:evidence -- --profile public-stack --json
 corepack pnpm run test:deployability
 corepack pnpm run test:deployability-operations
 corepack pnpm run dev:doctor
@@ -310,6 +312,12 @@ ledger mismatch 保持为 blockers。JSON 形式不读取 `.env`、不调用 Doc
 兼容 warnings、命令地图、shared per-pipeline summaries、安全说明和下一步验证命令。JSON
 形式会写同一份报告并输出 metadata，不读取 `.env`、不调用 Docker、不探测网络、不打印
 secret 值。
+
+`deployability:evidence` 会为选定 profile 写出一个不含 secret 的 evidence bundle
+directory。管理 UI 或 operator 需要 manifest、聚焦 dashboard/menu/recipe/handoff/command-catalog
+JSON 和 handoff Markdown 时，可以使用 `corepack pnpm run deployability:evidence -- --profile public-stack`
+或 `corepack pnpm --silent run deployability:evidence -- --profile public-stack --json`；
+它不调用 Docker、不探测网络、不打印 secret 值。
 
 `dev:doctor -- --json` 会用干净 JSON 输出本地前置条件、runtime health、
 caller-skill manifest / search 检查、blockers 和下一步命令。它不会打印 raw

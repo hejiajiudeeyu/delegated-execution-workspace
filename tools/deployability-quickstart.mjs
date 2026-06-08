@@ -128,6 +128,11 @@ const TRACKS = [
         json_command: "corepack pnpm --silent run deployability:handoff -- --profile public-stack --json"
       },
       {
+        label: "Create a focused public-stack evidence bundle",
+        command: "corepack pnpm run deployability:evidence -- --profile public-stack",
+        json_command: "corepack pnpm --silent run deployability:evidence -- --profile public-stack --json"
+      },
+      {
         label: "Inspect the local stack plan",
         command: "corepack pnpm run dev:local:plan",
         json_command: "corepack pnpm --silent run dev:local:plan -- --json"
@@ -227,6 +232,11 @@ const TRACKS = [
         label: "Validate operator onboarding contract",
         command: "corepack pnpm run operator:onboarding:check",
         json_command: "corepack pnpm --silent run operator:onboarding:check -- --json"
+      },
+      {
+        label: "Export public-stack deployability evidence",
+        command: "corepack pnpm run deployability:evidence -- --profile public-stack",
+        json_command: "corepack pnpm --silent run deployability:evidence -- --profile public-stack --json"
       }
     ]
   },

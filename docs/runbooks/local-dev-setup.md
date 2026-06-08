@@ -163,6 +163,8 @@ corepack pnpm run deployability:handoff
 corepack pnpm --silent run deployability:handoff -- --json
 corepack pnpm run deployability:handoff -- --profile public-stack
 corepack pnpm --silent run deployability:handoff -- --profile public-stack --json
+corepack pnpm run deployability:evidence -- --profile public-stack
+corepack pnpm --silent run deployability:evidence -- --profile public-stack --json
 corepack pnpm run test:deployability
 corepack pnpm run test:deployability-operations
 corepack pnpm run dev:doctor
@@ -356,6 +358,12 @@ bundle, compatibility warnings, command map, shared per-pipeline summaries, safe
 notes, and next validation commands. Its JSON form writes the same report and
 returns metadata without reading `.env`, calling Docker, probing networks, or
 printing secret values.
+
+`deployability:evidence` writes one non-secret evidence bundle directory for a
+selected profile. Use `corepack pnpm run deployability:evidence -- --profile public-stack`
+or `corepack pnpm --silent run deployability:evidence -- --profile public-stack --json`
+when an operator or management UI needs manifest, focused dashboard/menu/recipe/handoff/command-catalog
+JSON, and handoff Markdown without calling Docker, probing networks, or printing secrets.
 
 `dev:doctor -- --json` reports local prerequisites, runtime health,
 caller-skill manifest/search checks, blockers, and next commands as clean JSON.

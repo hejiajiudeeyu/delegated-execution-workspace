@@ -23,7 +23,7 @@ const body = JSON.parse(json.stdout);
 assert.equal(body.command, "deployability:recipe");
 assert.equal(body.mode, "profile_recipe");
 assert.equal(body.ok, true);
-assert.equal(body.current_bundle.change_id, "CHG-2026-129");
+assert.equal(body.current_bundle.change_id, "CHG-2026-130");
 assert.deepEqual(body.profile_filter, {
   requested: "public-stack",
   resolved: "public_stack",

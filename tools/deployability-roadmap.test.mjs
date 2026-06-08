@@ -23,7 +23,7 @@ const body = JSON.parse(json.stdout);
 assert.equal(body.command, "deployability:roadmap");
 assert.equal(body.mode, "prd_roadmap");
 assert.equal(body.ok, true);
-assert.equal(body.current_bundle.change_id, "CHG-2026-129");
+assert.equal(body.current_bundle.change_id, "CHG-2026-130");
 assert.equal(body.summary.status, "daily_deployable_with_planned_hardening");
 assert.equal(body.summary.total_milestones, 6);
 assert.equal(body.summary.satisfied_milestones, 4);

@@ -94,6 +94,7 @@ CALL ANYTHING 现在的仓库边界是正确的：
 | 可部署性 profile recipe | 第四仓 | `corepack pnpm run deployability:recipe -- --profile public-stack`，以及作为单个 profile 只读线性首次运行配方的 `corepack pnpm --silent run deployability:recipe -- --profile public-stack --json`；它把 readiness、menu、runbook 和 onboarding metadata 合成 inspect、gate、start、verify、operate、evidence 步骤，不执行命令 |
 | 可部署性恢复证据路径 | 第四仓 | `deployability:overview`、`deployability:dashboard`、`deployability:handoff` 和 `deployability:commands -- --pipeline recovery_evidence` 把 ops-report、audit export、backup、restore 和 rotation 命令作为一条 ready-now 证据与恢复管线暴露 |
 | 可部署性交接报告 | 第四仓 | `corepack pnpm run deployability:handoff`，以及用于输出 `exports/deployability/` 下不含 secret 的生态交接报告 metadata 的 `corepack pnpm --silent run deployability:handoff -- --json`，包含与 dashboard 相同的 profile selector 目录、派生 profile summaries 和 ecosystem_readiness scorecard；`--profile <key-or-alias>` 会为单个所属 pipeline 写出聚焦交接报告 |
+| 可部署性 evidence bundle | 第四仓 | `corepack pnpm run deployability:evidence -- --profile public-stack`，以及用于输出不含 secret 的 evidence bundle directory 的 `corepack pnpm --silent run deployability:evidence -- --profile public-stack --json`，包含 manifest、聚焦 dashboard/menu/recipe/handoff/command-catalog JSON 和 handoff Markdown，供管理评审使用 |
 | 日常本地 doctor | 第四仓 | `corepack pnpm run dev:doctor`，以及给 dashboard 和脚本使用的 `corepack pnpm --silent run dev:doctor -- --json` |
 | Local agent loop 管理 metadata | 第四仓 | `corepack pnpm run dev:local:plan`、`dev:local:up`、`dev:local:status`、`dev:local:logs` 和 `dev:local:down`，并提供 `--json` 供 dashboard 和脚本消费 |
 | Agent-facing smoke | 第四仓 | `corepack pnpm run test:agent-e2e` |
@@ -272,7 +273,9 @@ CALL ANYTHING 现在的仓库边界是正确的：
   `deployability:action-plan -- --profile public-stack --json`、`deployability:commands`、
   `deployability:commands -- --json`、`deployability:commands -- --profile public-stack`、
   `compat:status`、`compat:status -- --json`、
-  `deployability:handoff`、`deployability:handoff -- --json`、`test:deployability`、
+  `deployability:handoff`、`deployability:handoff -- --json`、
+  `corepack pnpm run deployability:evidence -- --profile public-stack`、
+  `corepack pnpm --silent run deployability:evidence -- --profile public-stack --json`、`test:deployability`、
   `test:deployability-operations`、
   `deployability:commands -- --pipeline recovery_evidence`、
   `deployability:commands -- --pipeline local_agent_loop`、

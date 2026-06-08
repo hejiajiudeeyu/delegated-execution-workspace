@@ -306,6 +306,13 @@ CHG-2026-105:
   compatibility warnings, command map, shared per-pipeline summaries, safety notes,
   and next validation commands, and supports `--json` without reading `.env`,
   calling Docker, binding ports, probing networks, or printing secrets
+- `deployability:evidence` is available as a non-secret evidence bundle command
+  for operators and management UIs. It supports
+  `corepack pnpm run deployability:evidence -- --profile public-stack` and
+  `corepack pnpm --silent run deployability:evidence -- --profile public-stack --json`,
+  writing manifest, focused dashboard/menu/recipe/handoff/command-catalog JSON,
+  and handoff Markdown without reading `.env`, calling Docker, binding ports,
+  probing networks, or printing secrets
 - call-anything-brand-site Deployability Profiles now document the shared
   `pipeline_summaries` contract used by dashboard and handoff, including
   catalog, CI-safe, dashboard-safe, public exposure gate, next command, and next

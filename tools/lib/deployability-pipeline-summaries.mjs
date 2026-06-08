@@ -100,6 +100,7 @@ export const PIPELINES = [
       "corepack pnpm run selfhost:ports -- --profile public-stack",
       "corepack pnpm run selfhost:security-review -- --profile public-stack",
       "corepack pnpm run deployability:operator-checklist -- --profile public-stack --image-tag <candidate-tag>",
+      "corepack pnpm run deployability:evidence -- --profile public-stack",
       "corepack pnpm run selfhost:up -- --profile public-stack",
       "corepack pnpm run selfhost:smoke -- --profile public-stack"
     ],
@@ -108,6 +109,7 @@ export const PIPELINES = [
       "corepack pnpm --silent run selfhost:ports -- --profile public-stack --json",
       "corepack pnpm --silent run selfhost:security-review -- --profile public-stack --json",
       "corepack pnpm --silent run deployability:operator-checklist -- --profile public-stack --image-tag <candidate-tag> --json",
+      "corepack pnpm --silent run deployability:evidence -- --profile public-stack --json",
       "corepack pnpm --silent run selfhost:up -- --profile public-stack --json",
       "corepack pnpm --silent run selfhost:smoke -- --profile public-stack --json"
     ],
@@ -123,6 +125,7 @@ export const PIPELINES = [
     purpose: "Operator handoff, audit evidence, backup validation, restore rehearsal, and secret rotation planning.",
     commands: [
       "corepack pnpm run selfhost:ops-report",
+      "corepack pnpm run deployability:evidence -- --profile public-stack",
       "corepack pnpm run selfhost:audit-export",
       "corepack pnpm run selfhost:backup-plan",
       "corepack pnpm run selfhost:backup-validate",
@@ -132,6 +135,7 @@ export const PIPELINES = [
     ],
     json_commands: [
       "corepack pnpm --silent run selfhost:ops-report -- --json",
+      "corepack pnpm --silent run deployability:evidence -- --profile public-stack --json",
       "corepack pnpm --silent run selfhost:audit-export -- --json",
       "corepack pnpm --silent run selfhost:backup-plan -- --json",
       "corepack pnpm --silent run selfhost:backup-validate -- --backup-dir <backup-dir> --json",
