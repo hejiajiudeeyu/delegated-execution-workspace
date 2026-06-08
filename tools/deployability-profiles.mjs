@@ -2,14 +2,17 @@
 
 import path from "node:path";
 import { spawnSync } from "node:child_process";
+import { buildEcosystemReadiness } from "./lib/deployability-ecosystem-readiness.mjs";
 import { recommendedProfileKeys } from "./lib/deployability-profile-attention.mjs";
+import { buildProfileSummaries } from "./lib/deployability-profile-summaries.mjs";
+import { buildPipelineSummaries } from "./lib/deployability-pipeline-summaries.mjs";
 import { profileDirectory, resolveProfileFilter } from "./lib/deployability-profiles-registry.mjs";
 
 const ROOT = process.cwd();
 
 const SAFETY_DEFAULTS = [
   "deployability profile catalog is read-only and does not read .env files directly",
-  "deployability profile catalog only calls read-only deployability dashboard metadata",
+  "deployability profile catalog only calls read-only overview, command, and doctor metadata",
   "deployability profile catalog does not call Docker, bind ports, or probe network endpoints",
   "JSON output contains profile metadata, attention ranking, and next commands without printing secret values"
 ];
@@ -46,8 +49,8 @@ function parseArgs(argv) {
   return args;
 }
 
-function runJsonScript(relativeScript) {
-  const result = spawnSync(process.execPath, [path.join(ROOT, relativeScript), "--json"], {
+function runJsonScript(relativeScript, extraArgs = []) {
+  const result = spawnSync(process.execPath, [path.join(ROOT, relativeScript), "--json", ...extraArgs], {
     cwd: ROOT,
     encoding: "utf8",
     env: process.env,
@@ -68,11 +71,20 @@ function runJsonScript(relativeScript) {
   };
 }
 
-function buildProfileCards({ dashboard, profileFilter }) {
+function sourceBlocker(label, result) {
+  if (result.ok) return null;
+  return `${label}: ${result.parse_error || result.stderr.join("; ") || `exit=${result.exit_code}`}`;
+}
+
+function doctorCheckOk(doctor, key) {
+  return doctor?.checks?.some((item) => item.key === key && item.ok === true) || false;
+}
+
+function buildProfileCards({ profileSummaries, profileFilter }) {
   if (profileFilter.resolved == null && profileFilter.requested != null) return [];
 
   const profileByKey = new Map(profileDirectory({ includeLabel: true }).map((profile) => [profile.key, profile]));
-  return (dashboard.profile_summaries || [])
+  return (profileSummaries || [])
     .filter((summary) => profileFilter.resolved == null || summary.key === profileFilter.resolved)
     .map((summary) => {
       const profile = profileByKey.get(summary.key) || {};
@@ -99,33 +111,66 @@ function buildProfileCards({ dashboard, profileFilter }) {
 
 function profilesData(args) {
   const profileFilter = resolveProfileFilter(args.profile);
-  const dashboardResult = runJsonScript("tools/deployability-dashboard.mjs");
+  const overviewResult = runJsonScript("tools/deployability-overview.mjs");
+  const commandsResult = runJsonScript("tools/deployability-commands.mjs");
+  const doctorResult = runJsonScript("tools/deployability-doctor.mjs");
   const blockers = [
     ...(args.profile != null && profileFilter.resolved == null ? [`unknown profile: ${args.profile}`] : []),
-    ...(!dashboardResult.ok
-      ? [`dashboard: ${dashboardResult.parse_error || dashboardResult.stderr.join("; ") || `exit=${dashboardResult.exit_code}`}`]
-      : [])
+    sourceBlocker("overview", overviewResult),
+    sourceBlocker("commands", commandsResult),
+    sourceBlocker("doctor", doctorResult)
+  ].filter(Boolean);
+  const pipelineSummaries = buildPipelineSummaries({
+    pipelines: overviewResult.body?.pipelines || [],
+    catalogCommands: commandsResult.body?.commands || []
+  });
+  const profileSummaries = buildProfileSummaries({
+    profiles: commandsResult.body?.filters?.profiles || [],
+    pipelineSummaries,
+    catalogCommands: commandsResult.body?.commands || []
+  });
+  const brandSiteOk =
+    doctorCheckOk(doctorResult.body, "brand_site_alignment") && doctorCheckOk(doctorResult.body, "brand_site_content_smoke");
+  const ecosystemReadiness = buildEcosystemReadiness({
+    catalogCommands: commandsResult.body?.commands || [],
+    brandSiteOk
+  });
+  const profiles = buildProfileCards({ profileSummaries, profileFilter });
+  const warnings = [
+    ...(overviewResult.body?.warnings || []),
+    ...(commandsResult.body?.warnings || []),
+    ...(doctorResult.body?.warnings || [])
   ];
-  const dashboard = dashboardResult.body || {};
-  const profiles = buildProfileCards({ dashboard, profileFilter });
 
   return {
     command: "deployability:profiles",
     mode: "profile_catalog",
     ok: blockers.length === 0,
-    current_bundle: dashboard.current_bundle || null,
-    ecosystem_readiness: dashboard.ecosystem_readiness || null,
+    current_bundle: commandsResult.body?.current_bundle || doctorResult.body?.checks?.[0]?.data?.current_bundle || null,
+    ecosystem_readiness: ecosystemReadiness,
     profile_filter: profileFilter,
     profiles,
     recommended_profile_keys: recommendedProfileKeys(profiles),
     blockers,
-    warnings: dashboard.warnings || [],
+    warnings: [...new Set(warnings)],
     source_status: {
-      dashboard: {
-        ok: dashboardResult.ok,
-        exit_code: dashboardResult.exit_code,
-        stderr: dashboardResult.stderr,
-        parse_error: dashboardResult.parse_error
+      overview: {
+        ok: overviewResult.ok,
+        exit_code: overviewResult.exit_code,
+        stderr: overviewResult.stderr,
+        parse_error: overviewResult.parse_error
+      },
+      commands: {
+        ok: commandsResult.ok,
+        exit_code: commandsResult.exit_code,
+        stderr: commandsResult.stderr,
+        parse_error: commandsResult.parse_error
+      },
+      doctor: {
+        ok: doctorResult.ok,
+        exit_code: doctorResult.exit_code,
+        stderr: doctorResult.stderr,
+        parse_error: doctorResult.parse_error
       }
     },
     safety_defaults: SAFETY_DEFAULTS,

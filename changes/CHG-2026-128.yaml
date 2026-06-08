@@ -1,0 +1,14 @@
+change_id: CHG-2026-128
+goal: add deployability operator checklist command
+protocol_sha: da3027100cfe9391f7f8d03be18a108ee2804cf6
+client_sha: f1d6a2d8c9b83517cdf6ca9803b223847f880e9a
+platform_sha: 5961309c6b0ca4e8df22dbb5be92ac0845bf8d25
+brand_site_sha: 90d7881fc1ca0a8b183b431151b800ccd8d7cc34
+owner: hejiajiudeeyu
+risk_level: low
+affected_scope:
+  - orchestration
+  - documentation
+contracts_check: passed
+integration_check: passed
+notes: "Adds deployability:operator-checklist as a top-level public-stack operator readiness checklist for management surfaces. The command aggregates existing menu, recipe, operator onboarding check, release candidate review, and backup-plan metadata into one JSON/text payload, separates script blockers from operator_blockers, does not start services, bind ports, probe endpoints, publish images or packages, or print secrets, and does not introduce protocol/client/platform runtime truth."

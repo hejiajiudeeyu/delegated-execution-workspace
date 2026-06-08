@@ -93,6 +93,38 @@ assert.equal(byCommand.get("corepack pnpm run deployability:release -- --image-t
 assert.equal(byCommand.get("corepack pnpm run deployability:release -- --image-tag <candidate-tag>").probes_network, false);
 assert.equal(byCommand.get("corepack pnpm run deployability:release -- --image-tag <candidate-tag>").public_exposure_gate, true);
 assert.equal(byCommand.get("corepack pnpm run deployability:release -- --image-tag <candidate-tag>").dashboard_safe, true);
+assert.equal(
+  byCommand.get("corepack pnpm run deployability:operator-checklist -- --profile public-stack --image-tag <candidate-tag>").category,
+  "top_level"
+);
+assert.equal(
+  byCommand.get("corepack pnpm run deployability:operator-checklist -- --profile public-stack --image-tag <candidate-tag>").posture,
+  "operator_readiness_gate"
+);
+assert.equal(
+  byCommand.get("corepack pnpm run deployability:operator-checklist -- --profile public-stack --image-tag <candidate-tag>").reads_env,
+  true
+);
+assert.equal(
+  byCommand.get("corepack pnpm run deployability:operator-checklist -- --profile public-stack --image-tag <candidate-tag>").starts_services,
+  false
+);
+assert.equal(
+  byCommand.get("corepack pnpm run deployability:operator-checklist -- --profile public-stack --image-tag <candidate-tag>").calls_docker,
+  true
+);
+assert.equal(
+  byCommand.get("corepack pnpm run deployability:operator-checklist -- --profile public-stack --image-tag <candidate-tag>").probes_network,
+  false
+);
+assert.equal(
+  byCommand.get("corepack pnpm run deployability:operator-checklist -- --profile public-stack --image-tag <candidate-tag>").public_exposure_gate,
+  true
+);
+assert.equal(
+  byCommand.get("corepack pnpm run deployability:operator-checklist -- --profile public-stack --image-tag <candidate-tag>").dashboard_safe,
+  true
+);
 assert.equal(byCommand.get("corepack pnpm run deployability:recipe").posture, "read_only");
 assert.equal(byCommand.get("corepack pnpm run deployability:recipe").reads_env, false);
 assert.equal(byCommand.get("corepack pnpm run deployability:recipe").calls_docker, false);
@@ -191,6 +223,11 @@ assert.ok(body.next_commands.includes("corepack pnpm run deployability:status"))
 assert.ok(body.next_commands.includes("corepack pnpm run deployability:gates"));
 assert.ok(body.next_commands.includes("corepack pnpm run deployability:exposure"));
 assert.ok(body.next_commands.includes("corepack pnpm run deployability:release -- --image-tag <candidate-tag>"));
+assert.ok(
+  body.next_commands.includes(
+    "corepack pnpm run deployability:operator-checklist -- --profile public-stack --image-tag <candidate-tag>"
+  )
+);
 assert.ok(body.next_commands.includes("corepack pnpm run deployability:recipe -- --profile public-stack"));
 assert.ok(body.notes.some((item) => /matrix is descriptive/i.test(item)));
 assert.ok(!json.stdout.includes("sk_safety_must_not_leak"));
@@ -207,6 +244,7 @@ assert.match(text.stdout, /deployability:status/);
 assert.match(text.stdout, /deployability:gates/);
 assert.match(text.stdout, /deployability:exposure/);
 assert.match(text.stdout, /deployability:release/);
+assert.match(text.stdout, /deployability:operator-checklist/);
 assert.match(text.stdout, /deployability:recipe/);
 assert.match(text.stdout, /selfhost:up/);
 assert.match(text.stdout, /starts-services/);

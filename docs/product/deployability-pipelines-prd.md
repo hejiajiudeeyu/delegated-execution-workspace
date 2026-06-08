@@ -35,6 +35,8 @@ Required commands:
 - `corepack pnpm --silent run deployability:exposure -- --json`
 - `corepack pnpm run deployability:release -- --image-tag <candidate-tag>`
 - `corepack pnpm --silent run deployability:release -- --image-tag <candidate-tag> --json`
+- `corepack pnpm run deployability:operator-checklist -- --profile public-stack --image-tag <candidate-tag>`
+- `corepack pnpm --silent run deployability:operator-checklist -- --profile public-stack --image-tag <candidate-tag> --json`
 - `corepack pnpm run deployability:doctor`
 - `corepack pnpm --silent run deployability:doctor -- --json`
 - `corepack pnpm run deployability:dashboard`
@@ -140,6 +142,11 @@ Acceptance:
   production hardening, public exposure, published-image plan, and dry-run
   smoke evidence without publishing images or packages, starting services,
   probing endpoints, or printing secret values
+- `deployability:operator-checklist -- --profile public-stack --image-tag <candidate-tag> --json`
+  emits `public_stack_operator_checklist`, a non-destructive operator readiness
+  checklist that groups menu, recipe, onboarding, public exposure gate, release
+  candidate gate, backup-plan, and handoff evidence into ready/blocked items
+  without executing lifecycle commands
 - doctor reports compatibility ledger, top-level scripts, documentation,
   brand-site file alignment, brand-site deployability content smoke, and
   safety-contract alignment as one read-only snapshot without executing Docker,

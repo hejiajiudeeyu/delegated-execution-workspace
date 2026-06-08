@@ -99,6 +99,7 @@ export const PIPELINES = [
       "corepack pnpm run selfhost:readiness -- --profile public-stack",
       "corepack pnpm run selfhost:ports -- --profile public-stack",
       "corepack pnpm run selfhost:security-review -- --profile public-stack",
+      "corepack pnpm run deployability:operator-checklist -- --profile public-stack --image-tag <candidate-tag>",
       "corepack pnpm run selfhost:up -- --profile public-stack",
       "corepack pnpm run selfhost:smoke -- --profile public-stack"
     ],
@@ -106,6 +107,7 @@ export const PIPELINES = [
       "corepack pnpm --silent run selfhost:readiness -- --profile public-stack --json",
       "corepack pnpm --silent run selfhost:ports -- --profile public-stack --json",
       "corepack pnpm --silent run selfhost:security-review -- --profile public-stack --json",
+      "corepack pnpm --silent run deployability:operator-checklist -- --profile public-stack --image-tag <candidate-tag> --json",
       "corepack pnpm --silent run selfhost:up -- --profile public-stack --json",
       "corepack pnpm --silent run selfhost:smoke -- --profile public-stack --json"
     ],

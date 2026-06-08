@@ -34,6 +34,8 @@ onboarding 或 release-image 路径前，先给出一个只读命令地图和一
 - `corepack pnpm --silent run deployability:exposure -- --json`
 - `corepack pnpm run deployability:release -- --image-tag <candidate-tag>`
 - `corepack pnpm --silent run deployability:release -- --image-tag <candidate-tag> --json`
+- `corepack pnpm run deployability:operator-checklist -- --profile public-stack --image-tag <candidate-tag>`
+- `corepack pnpm --silent run deployability:operator-checklist -- --profile public-stack --image-tag <candidate-tag> --json`
 - `corepack pnpm run deployability:doctor`
 - `corepack pnpm --silent run deployability:doctor -- --json`
 - `corepack pnpm run deployability:dashboard`
@@ -128,6 +130,11 @@ onboarding 或 release-image 路径前，先给出一个只读命令地图和一
   `release_candidate_review`，也就是非破坏性的 release gate；它聚合 production
   hardening、public exposure、published-image plan 和 dry-run smoke evidence，
   但不发布镜像或包、不启动服务、不探测 endpoint、不打印 secret 值
+- `deployability:operator-checklist -- --profile public-stack --image-tag <candidate-tag> --json`
+  输出 `public_stack_operator_checklist`，也就是非破坏性的 operator readiness
+  checklist；它把 menu、recipe、onboarding、public exposure gate、release
+  candidate gate、backup-plan 和 handoff evidence 分组成 ready / blocked items，
+  但不执行 lifecycle commands
 - doctor 把 compatibility ledger、顶层 scripts、文档、brand-site file alignment、
   brand-site deployability content smoke 和 safety-contract 对齐状态收成一个只读快照，
   不执行 Docker、不读取 `.env`、不探测网络、不打印 secrets

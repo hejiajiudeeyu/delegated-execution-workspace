@@ -53,7 +53,7 @@ assert.equal(body.sections.safety.command, "deployability:safety");
 assert.equal(body.sections.commands.command, "deployability:commands");
 assert.equal(body.sections.doctor.command, "deployability:doctor");
 assert.equal(body.sections.compatibility.command, "compat:status");
-assert.equal(body.current_bundle.change_id, "CHG-2026-127");
+assert.equal(body.current_bundle.change_id, "CHG-2026-128");
 assert.deepEqual(body.profile_selector, body.sections.commands.filters.profiles);
 assert.equal(body.profile_selector.length, 7);
 const dashboardProfilesByKey = new Map(body.profile_selector.map((item) => [item.key, item]));
@@ -69,7 +69,7 @@ assert.deepEqual(dashboardProfileSummariesByKey.get("public_stack").aliases, ["p
 assert.equal(dashboardProfileSummariesByKey.get("public_stack").pipeline_key, "public_stack");
 assert.equal(dashboardProfileSummariesByKey.get("public_stack").purpose, "Review public exposure gates before opening edge routes.");
 assert.equal(dashboardProfileSummariesByKey.get("public_stack").status, "ready_now_with_safety_gates");
-assert.equal(dashboardProfileSummariesByKey.get("public_stack").command_count, 5);
+assert.equal(dashboardProfileSummariesByKey.get("public_stack").command_count, 6);
 assert.equal(dashboardProfileSummariesByKey.get("public_stack").attention.level, "safety_gate");
 assert.equal(dashboardProfileSummariesByKey.get("public_stack").attention.primary_command, "corepack pnpm run selfhost:readiness -- --profile public-stack");
 assert.equal(dashboardProfileSummariesByKey.get("public_stack").attention.primary_json_command, "corepack pnpm --silent run selfhost:readiness -- --profile public-stack --json");
@@ -138,8 +138,8 @@ assert.ok(allInOne.next_commands.includes("corepack pnpm run selfhost:quickstart
 assert.ok(allInOne.next_json_commands.includes("corepack pnpm --silent run selfhost:quickstart -- --profile all-in-one --json"));
 const publicStack = body.pipeline_summaries.find((item) => item.key === "public_stack");
 assert.equal(publicStack.status, "ready_now_with_safety_gates");
-assert.equal(publicStack.command_count, 5);
-assert.equal(publicStack.json_command_count, 5);
+assert.equal(publicStack.command_count, 6);
+assert.equal(publicStack.json_command_count, 6);
 assert.ok(publicStack.dashboard_safe_command_count >= 3);
 assert.ok(publicStack.public_exposure_gate_count >= 2);
 assert.ok(
@@ -214,7 +214,7 @@ assert.equal(pipedJson.status, 0, pipedJson.stderr || pipedJson.stdout);
 assert.ok(pipedJson.stdout.length > 65536);
 const pipedBody = JSON.parse(pipedJson.stdout);
 assert.equal(pipedBody.command, "deployability:dashboard");
-assert.equal(pipedBody.current_bundle.change_id, "CHG-2026-127");
+assert.equal(pipedBody.current_bundle.change_id, "CHG-2026-128");
 assert.ok(!pipedJson.stdout.includes("sk_dashboard_must_not_leak"));
 
 const text = run([]);
@@ -231,7 +231,7 @@ assert.match(text.stdout, /recovery_evidence/);
 assert.match(text.stdout, /public_stack/);
 assert.match(text.stdout, /Profile selector/);
 assert.match(text.stdout, /public_stack -> public_stack/);
-assert.match(text.stdout, /CHG-2026-127/);
+assert.match(text.stdout, /CHG-2026-128/);
 assert.match(text.stdout, /corepack pnpm run deployability:action-plan/);
 assert.match(text.stdout, /corepack pnpm run deployability:handoff/);
 assert.ok(!text.stdout.includes("sk_dashboard_must_not_leak"));

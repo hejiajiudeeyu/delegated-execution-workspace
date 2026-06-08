@@ -133,6 +133,8 @@ corepack pnpm run deployability:exposure
 corepack pnpm --silent run deployability:exposure -- --json
 corepack pnpm run deployability:release -- --image-tag <candidate-tag>
 corepack pnpm --silent run deployability:release -- --image-tag <candidate-tag> --json
+corepack pnpm run deployability:operator-checklist -- --profile public-stack --image-tag <candidate-tag>
+corepack pnpm --silent run deployability:operator-checklist -- --profile public-stack --image-tag <candidate-tag> --json
 corepack pnpm run deployability:doctor
 corepack pnpm --silent run deployability:doctor -- --json
 corepack pnpm run deployability:dashboard
@@ -246,6 +248,15 @@ when a dashboard needs to combine production hardening, public exposure,
 published-image plan, and dry-run smoke evidence before a real release-owned
 smoke. It does not publish images or packages, start services, probe endpoints,
 or print secret values.
+
+`deployability:operator-checklist` is the non-destructive public-stack operator
+checklist. Use
+`corepack pnpm run deployability:operator-checklist -- --profile public-stack --image-tag <candidate-tag>`
+or
+`corepack pnpm --silent run deployability:operator-checklist -- --profile public-stack --image-tag <candidate-tag> --json`
+when a dashboard needs one ready/blocked checklist for menu, recipe,
+onboarding, exposure/release gates, backup-plan, and handoff evidence. It does
+not start services, probe endpoints, publish artifacts, or print secret values.
 
 `deployability:profiles` is the dedicated read-only profile catalog for
 operators, dashboards, CI, and management scripts. It derives profile cards

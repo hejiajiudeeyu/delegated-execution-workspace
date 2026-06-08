@@ -182,6 +182,14 @@ CHG-2026-105:
   it aggregates production hardening, public exposure, published-image plan,
   and dry-run smoke evidence without publishing images or packages, starting
   services, probing endpoints, or printing secret values
+- `deployability:operator-checklist` is available as a non-destructive
+  public-stack operator checklist, and supports
+  `corepack pnpm run deployability:operator-checklist -- --profile public-stack --image-tag <candidate-tag>`
+  and
+  `corepack pnpm --silent run deployability:operator-checklist -- --profile public-stack --image-tag <candidate-tag> --json`;
+  it aggregates menu, recipe, onboarding, release/exposure gate, backup-plan,
+  and handoff evidence into checklist groups without starting services,
+  probing endpoints, publishing artifacts, or printing secret values
 - `deployability:doctor` is available as a read-only deployability readiness
   snapshot for compatibility ledger, top-level scripts, documentation,
   brand-site file alignment, brand-site deployability content smoke, and

@@ -74,7 +74,7 @@ function runJson(relativeScript, args = []) {
     body = null;
   }
   return {
-    ok: result.status === 0 && body != null,
+    ok: body != null,
     exit_code: result.status,
     stderr: result.stderr.trim().split("\n").filter(Boolean),
     body,

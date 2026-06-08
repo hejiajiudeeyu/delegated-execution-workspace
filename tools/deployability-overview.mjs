@@ -20,6 +20,7 @@ const NEXT_COMMANDS = [
   "corepack pnpm run deployability:gates",
   "corepack pnpm run deployability:exposure",
   "corepack pnpm run deployability:release -- --image-tag <candidate-tag>",
+  "corepack pnpm run deployability:operator-checklist -- --profile public-stack --image-tag <candidate-tag>",
   "corepack pnpm run deployability:doctor",
   "corepack pnpm run deployability:menu",
   "corepack pnpm run deployability:recipe -- --profile public-stack",

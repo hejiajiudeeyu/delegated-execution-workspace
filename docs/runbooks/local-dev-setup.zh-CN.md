@@ -112,6 +112,8 @@ corepack pnpm run deployability:exposure
 corepack pnpm --silent run deployability:exposure -- --json
 corepack pnpm run deployability:release -- --image-tag <candidate-tag>
 corepack pnpm --silent run deployability:release -- --image-tag <candidate-tag> --json
+corepack pnpm run deployability:operator-checklist -- --profile public-stack --image-tag <candidate-tag>
+corepack pnpm --silent run deployability:operator-checklist -- --profile public-stack --image-tag <candidate-tag> --json
 corepack pnpm run deployability:doctor
 corepack pnpm --silent run deployability:doctor -- --json
 corepack pnpm run deployability:dashboard
@@ -213,6 +215,14 @@ published-image plan 和 dry-run smoke evidence 时，可以使用
 `corepack pnpm run deployability:release -- --image-tag <candidate-tag>` 或
 `corepack pnpm --silent run deployability:release -- --image-tag <candidate-tag> --json`；
 它不发布镜像或包、不启动服务、不探测 endpoint、不打印 secret 值。
+
+`deployability:operator-checklist` 是非破坏性的 public-stack operator checklist。
+当 dashboard 需要一张覆盖 menu、recipe、onboarding、exposure / release gates、
+backup-plan 和 handoff evidence 的 ready / blocked checklist 时，可以使用
+`corepack pnpm run deployability:operator-checklist -- --profile public-stack --image-tag <candidate-tag>`
+或
+`corepack pnpm --silent run deployability:operator-checklist -- --profile public-stack --image-tag <candidate-tag> --json`；
+它不启动服务、不探测 endpoint、不发布 artifacts、不打印 secret 值。
 
 `deployability:profiles` 是给 operator、dashboard、CI 和管理脚本使用的专用只读
 profile catalog。它从 dashboard `profile_summaries` 和共享第四仓 profile registry

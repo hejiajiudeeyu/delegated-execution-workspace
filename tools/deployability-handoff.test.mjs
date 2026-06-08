@@ -159,7 +159,7 @@ try {
   assert.ok(allInOne.next_commands.includes("corepack pnpm run selfhost:quickstart -- --profile all-in-one"));
   const publicStack = body.pipeline_summaries.find((item) => item.key === "public_stack");
   assert.equal(publicStack.status, "ready_now_with_safety_gates");
-  assert.equal(publicStack.public_exposure_gate_count, 2);
+  assert.equal(publicStack.public_exposure_gate_count, 3);
   assert.ok(publicStack.next_commands.includes("corepack pnpm run selfhost:security-review -- --profile public-stack"));
   const recoveryEvidence = body.pipeline_summaries.find((item) => item.key === "recovery_evidence");
   assert.equal(recoveryEvidence.status, "ready_now");

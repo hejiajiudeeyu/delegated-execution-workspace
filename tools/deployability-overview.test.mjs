@@ -77,6 +77,11 @@ assert.ok(body.next_commands.includes("corepack pnpm run deployability:status"))
 assert.ok(body.next_commands.includes("corepack pnpm run deployability:gates"));
 assert.ok(body.next_commands.includes("corepack pnpm run deployability:exposure"));
 assert.ok(body.next_commands.includes("corepack pnpm run deployability:release -- --image-tag <candidate-tag>"));
+assert.ok(
+  body.next_commands.includes(
+    "corepack pnpm run deployability:operator-checklist -- --profile public-stack --image-tag <candidate-tag>"
+  )
+);
 assert.ok(body.next_commands.includes("corepack pnpm run deployability:doctor"));
 assert.ok(body.next_commands.includes("corepack pnpm run deployability:recipe -- --profile public-stack"));
 assert.ok(body.next_commands.includes("corepack pnpm run deployability:action-plan"));
@@ -104,6 +109,7 @@ assert.match(text.stdout, /corepack pnpm run deployability:status/);
 assert.match(text.stdout, /corepack pnpm run deployability:gates/);
 assert.match(text.stdout, /corepack pnpm run deployability:exposure/);
 assert.match(text.stdout, /corepack pnpm run deployability:release -- --image-tag <candidate-tag>/);
+assert.match(text.stdout, /corepack pnpm run deployability:operator-checklist -- --profile public-stack --image-tag <candidate-tag>/);
 assert.match(text.stdout, /corepack pnpm run deployability:recipe -- --profile public-stack/);
 assert.match(text.stdout, /corepack pnpm run deployability:action-plan/);
 assert.match(text.stdout, /corepack pnpm run test:deployability/);

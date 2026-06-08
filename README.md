@@ -135,6 +135,8 @@ corepack pnpm run deployability:exposure
 corepack pnpm --silent run deployability:exposure -- --json
 corepack pnpm run deployability:release -- --image-tag <candidate-tag>
 corepack pnpm --silent run deployability:release -- --image-tag <candidate-tag> --json
+corepack pnpm run deployability:operator-checklist -- --profile public-stack --image-tag <candidate-tag>
+corepack pnpm --silent run deployability:operator-checklist -- --profile public-stack --image-tag <candidate-tag> --json
 corepack pnpm run deployability:doctor
 corepack pnpm --silent run deployability:doctor -- --json
 corepack pnpm run deployability:dashboard
@@ -346,6 +348,11 @@ Notes:
   production hardening, public exposure, published-image plan, and dry-run
   smoke evidence without publishing images or packages, starting services,
   probing endpoints, or printing secret values.
+- Use `corepack pnpm --silent run deployability:operator-checklist -- --profile public-stack --image-tag <candidate-tag> --json`
+  when an operator console needs one public-stack readiness checklist. It
+  groups menu, recipe, onboarding, exposure/release gate, backup-plan, and
+  handoff evidence into ready/blocked checklist items without starting
+  services, probing endpoints, publishing artifacts, or printing secret values.
 - Use `corepack pnpm --silent run deployability:menu -- --profile public-stack --json`
   when a management UI needs one public-stack first screen. The focused menu
   includes `selected_onboarding_plan` from the read-only
