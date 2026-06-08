@@ -53,7 +53,7 @@ assert.equal(body.sections.safety.command, "deployability:safety");
 assert.equal(body.sections.commands.command, "deployability:commands");
 assert.equal(body.sections.doctor.command, "deployability:doctor");
 assert.equal(body.sections.compatibility.command, "compat:status");
-assert.equal(body.current_bundle.change_id, "CHG-2026-110");
+assert.equal(body.current_bundle.change_id, "CHG-2026-111");
 assert.deepEqual(body.profile_selector, body.sections.commands.filters.profiles);
 assert.equal(body.profile_selector.length, 7);
 const dashboardProfilesByKey = new Map(body.profile_selector.map((item) => [item.key, item]));
@@ -146,6 +146,35 @@ assert.ok(body.safety_defaults.some((item) => /does not read \.env/i.test(item))
 assert.ok(!json.stdout.includes("[ok]"));
 assert.ok(!json.stdout.includes("sk_dashboard_must_not_leak"));
 
+const publicStackJson = run(["--json", "--profile", "public-stack"]);
+assert.equal(publicStackJson.status, 0, publicStackJson.stderr || publicStackJson.stdout);
+const publicStackBody = JSON.parse(publicStackJson.stdout);
+assert.equal(publicStackBody.profile_filter.requested, "public-stack");
+assert.equal(publicStackBody.profile_filter.resolved, "public_stack");
+assert.equal(publicStackBody.profile_filter.pipeline, "public_stack");
+assert.equal(publicStackBody.ecosystem_readiness.status, "daily_deployable_with_safety_gates");
+assert.deepEqual(publicStackBody.pipeline_summaries.map((item) => item.key), ["public_stack"]);
+assert.equal(publicStackBody.sections.commands.filters_applied.profile.resolved, "public_stack");
+assert.ok(
+  publicStackBody.sections.commands.commands.some(
+    (item) => item.command === "corepack pnpm run selfhost:security-review -- --profile public-stack"
+  )
+);
+assert.ok(
+  !publicStackBody.sections.commands.commands.some((item) => item.command === "corepack pnpm run dev:local:plan")
+);
+assert.deepEqual(publicStackBody.profile_selector, body.profile_selector);
+assert.ok(!publicStackJson.stdout.includes("sk_dashboard_must_not_leak"));
+
+const publicStackText = run(["--profile", "public-stack"]);
+assert.equal(publicStackText.status, 0, publicStackText.stderr || publicStackText.stdout);
+assert.match(publicStackText.stdout, /Profile filter/);
+assert.match(publicStackText.stdout, /requested=public-stack/);
+assert.match(publicStackText.stdout, /resolved=public_stack/);
+assert.match(publicStackText.stdout, /public_stack/);
+assert.doesNotMatch(publicStackText.stdout, /- local_agent_loop:/);
+assert.doesNotMatch(publicStackText.stdout, /status=blocked/);
+
 const pipedJson = spawnSync(process.execPath, [SCRIPT, "--json"], {
   cwd: REPO_ROOT,
   encoding: "utf8",
@@ -159,7 +188,7 @@ assert.equal(pipedJson.status, 0, pipedJson.stderr || pipedJson.stdout);
 assert.ok(pipedJson.stdout.length > 65536);
 const pipedBody = JSON.parse(pipedJson.stdout);
 assert.equal(pipedBody.command, "deployability:dashboard");
-assert.equal(pipedBody.current_bundle.change_id, "CHG-2026-110");
+assert.equal(pipedBody.current_bundle.change_id, "CHG-2026-111");
 assert.ok(!pipedJson.stdout.includes("sk_dashboard_must_not_leak"));
 
 const text = run([]);
@@ -176,7 +205,7 @@ assert.match(text.stdout, /recovery_evidence/);
 assert.match(text.stdout, /public_stack/);
 assert.match(text.stdout, /Profile selector/);
 assert.match(text.stdout, /public_stack -> public_stack/);
-assert.match(text.stdout, /CHG-2026-110/);
+assert.match(text.stdout, /CHG-2026-111/);
 assert.match(text.stdout, /corepack pnpm run deployability:action-plan/);
 assert.match(text.stdout, /corepack pnpm run deployability:handoff/);
 assert.ok(!text.stdout.includes("sk_dashboard_must_not_leak"));

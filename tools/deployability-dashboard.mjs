@@ -35,13 +35,27 @@ const NEXT_COMMANDS = [
 ];
 
 function parseArgs(argv) {
+  const values = argv.slice(2);
+  let profile = null;
+  for (let index = 0; index < values.length; index += 1) {
+    const value = values[index];
+    if (value === "--profile") {
+      profile = values[index + 1] || "";
+      index += 1;
+      continue;
+    }
+    if (value.startsWith("--profile=")) {
+      profile = value.slice("--profile=".length);
+    }
+  }
   return {
-    json: argv.slice(2).includes("--json")
+    json: values.includes("--json"),
+    profile
   };
 }
 
-function runJsonScript(relativeScript) {
-  const result = spawnSync(process.execPath, [path.join(ROOT, relativeScript), "--json"], {
+function runJsonScript(relativeScript, extraArgs = []) {
+  const result = spawnSync(process.execPath, [path.join(ROOT, relativeScript), "--json", ...extraArgs], {
     cwd: ROOT,
     encoding: "utf8",
     env: process.env
@@ -69,8 +83,11 @@ function doctorCheckOk(sections, key) {
   return sections.doctor?.checks?.some((item) => item.key === key && item.ok === true) || false;
 }
 
-function dashboardData() {
-  const sectionResults = SECTION_SCRIPTS.map(([key, script]) => [key, runJsonScript(script)]);
+function dashboardData(args = parseArgs(process.argv)) {
+  const sectionResults = SECTION_SCRIPTS.map(([key, script]) => {
+    const extraArgs = key === "commands" && args.profile != null ? ["--profile", args.profile] : [];
+    return [key, runJsonScript(script, extraArgs)];
+  });
   const sections = Object.fromEntries(sectionResults.map(([key, result]) => [key, result.body]));
   const sectionStatus = Object.fromEntries(
     sectionResults.map(([key, result]) => [
@@ -98,6 +115,18 @@ function dashboardData() {
   );
   const blockers = [...sectionFailures, ...sectionBlockers];
   const currentBundle = sections.compatibility?.current_bundle || sections.doctor?.checks?.[0]?.data?.current_bundle || null;
+  const profileFilter = sections.commands?.filters_applied?.profile || {
+    requested: args.profile,
+    resolved: null,
+    pipeline: null
+  };
+  const readinessCommandCatalog =
+    args.profile == null ? sectionResults.find(([key]) => key === "commands")?.[1] : runJsonScript("tools/deployability-commands.mjs");
+  const readinessCommands = readinessCommandCatalog?.body?.commands || [];
+  const pipelineSummaries = buildPipelineSummaries({
+    pipelines: sections.overview?.pipelines || [],
+    catalogCommands: sections.commands?.commands || []
+  }).filter((item) => profileFilter.pipeline == null || item.key === profileFilter.pipeline);
 
   return {
     command: "deployability:dashboard",
@@ -105,15 +134,13 @@ function dashboardData() {
     current_bundle: currentBundle,
     sections,
     section_status: sectionStatus,
+    profile_filter: profileFilter,
     profile_selector: sections.commands?.filters?.profiles || [],
     ecosystem_readiness: buildEcosystemReadiness({
-      catalogCommands: sections.commands?.commands || [],
+      catalogCommands: readinessCommands,
       brandSiteOk: doctorCheckOk(sections, "brand_site_alignment") && doctorCheckOk(sections, "brand_site_content_smoke")
     }),
-    pipeline_summaries: buildPipelineSummaries({
-      pipelines: sections.overview?.pipelines || [],
-      catalogCommands: sections.commands?.commands || []
-    }),
+    pipeline_summaries: pipelineSummaries,
     blockers,
     warnings,
     safety_defaults: SAFETY_DEFAULTS,
@@ -148,6 +175,13 @@ function printText(data) {
 
   for (const [key, status] of Object.entries(data.section_status)) {
     console.log(`${key}: ${status.ok ? "ok" : "blocked"} exit=${status.exit_code}`);
+  }
+
+  if (data.profile_filter.requested != null) {
+    console.log("\nProfile filter:");
+    console.log(`- requested=${data.profile_filter.requested}`);
+    console.log(`- resolved=${data.profile_filter.resolved || "unknown"}`);
+    console.log(`- pipeline=${data.profile_filter.pipeline || "unknown"}`);
   }
 
   if (data.pipeline_summaries.length) {
@@ -199,7 +233,7 @@ function printText(data) {
 }
 
 const args = parseArgs(process.argv);
-const data = dashboardData();
+const data = dashboardData(args);
 if (args.json) {
   printJson(data);
 } else {

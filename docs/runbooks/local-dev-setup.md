@@ -121,6 +121,8 @@ corepack pnpm run deployability:doctor
 corepack pnpm --silent run deployability:doctor -- --json
 corepack pnpm run deployability:dashboard
 corepack pnpm --silent run deployability:dashboard -- --json
+corepack pnpm run deployability:dashboard -- --profile public-stack
+corepack pnpm --silent run deployability:dashboard -- --profile public-stack --json
 corepack pnpm run deployability:action-plan
 corepack pnpm --silent run deployability:action-plan -- --json
 corepack pnpm run deployability:action-plan -- --list-profiles
@@ -135,6 +137,8 @@ corepack pnpm run compat:status
 corepack pnpm --silent run compat:status -- --json
 corepack pnpm run deployability:handoff
 corepack pnpm --silent run deployability:handoff -- --json
+corepack pnpm run deployability:handoff -- --profile public-stack
+corepack pnpm --silent run deployability:handoff -- --profile public-stack --json
 corepack pnpm run test:deployability
 corepack pnpm run test:deployability-operations
 corepack pnpm run dev:doctor
@@ -210,6 +214,12 @@ read `.env`, call Docker, bind ports, probe networks, or print secret values.
 also expose the same directory as top-level `profile_selector`, so dashboards,
 handoff tools, and management scripts can render profile choices without
 knowing the nested command-catalog section path.
+Both commands also accept `--profile <key-or-alias>` for focused management
+payloads. In focused mode, `profile_filter` records the requested and resolved
+profile, command catalog and pipeline summaries are limited to the owning
+pipeline, and `ecosystem_readiness` remains the global daily-deployable
+scorecard. The focused public-stack examples are discoverable from
+`deployability:quickstart` and `deployability:commands -- --track daily_dev`.
 
 `compat:status` is the read-only compatibility-ledger snapshot. It compares the
 current submodule gitlinks to the latest `changes/CHG-*.yaml`, reports dirty

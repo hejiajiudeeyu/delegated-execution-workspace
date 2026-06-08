@@ -95,11 +95,20 @@ function parseArgs(argv) {
   const args = argv.slice(2);
   const parsed = {
     json: args.includes("--json"),
-    output: null
+    output: null,
+    profile: null
   };
   const outputIndex = args.indexOf("--output");
   if (outputIndex !== -1) {
     parsed.output = args[outputIndex + 1] || null;
+  }
+  const profileIndex = args.indexOf("--profile");
+  if (profileIndex !== -1) {
+    parsed.profile = args[profileIndex + 1] || "";
+  }
+  const profileEquals = args.find((item) => item.startsWith("--profile="));
+  if (profileEquals) {
+    parsed.profile = profileEquals.slice("--profile=".length);
   }
   return parsed;
 }
@@ -111,8 +120,8 @@ function runGit(args, cwd = ROOT) {
   });
 }
 
-function runJsonScript(relativeScript) {
-  const result = spawnSync(process.execPath, [path.join(TOOL_ROOT, relativeScript), "--json"], {
+function runJsonScript(relativeScript, extraArgs = []) {
+  const result = spawnSync(process.execPath, [path.join(TOOL_ROOT, relativeScript), "--json", ...extraArgs], {
     cwd: SOURCE_ROOT,
     encoding: "utf8",
     maxBuffer: 1024 * 1024 * 10,
@@ -259,10 +268,12 @@ function resolveOutput(output) {
   return path.isAbsolute(output) ? output : path.join(ROOT, output);
 }
 
-function reportData(output) {
+function reportData(output, args = parseArgs(process.argv)) {
   const bundle = readLatestBundle();
   const compatibility = compatibilityData(bundle);
-  const commandCatalog = runJsonScript("deployability-commands.mjs");
+  const commandCatalogArgs = args.profile != null ? ["--profile", args.profile] : [];
+  const commandCatalog = runJsonScript("deployability-commands.mjs", commandCatalogArgs);
+  const readinessCommandCatalog = args.profile == null ? commandCatalog : runJsonScript("deployability-commands.mjs");
   const commandCatalogBlockers = commandCatalog.ok
     ? []
     : [
@@ -270,6 +281,16 @@ function reportData(output) {
           commandCatalog.parse_error || commandCatalog.stderr.join("; ") || `exit=${commandCatalog.exit_code}`
         }`
       ];
+  const profileFilter = commandCatalog.body?.filters_applied?.profile || {
+    requested: args.profile,
+    resolved: null,
+    pipeline: null
+  };
+  const pipelineSummaries = buildPipelineSummaries({
+    pipelines: PIPELINES,
+    catalogCommands: commandCatalog.body?.commands || []
+  }).filter((item) => profileFilter.pipeline == null || item.key === profileFilter.pipeline);
+
   return {
     command: "deployability:handoff",
     ok: compatibility.blockers.length === 0 && commandCatalogBlockers.length === 0,
@@ -290,18 +311,17 @@ function reportData(output) {
       ok: commandCatalog.ok,
       exit_code: commandCatalog.exit_code,
       stderr: commandCatalog.stderr,
-      parse_error: commandCatalog.parse_error
+      parse_error: commandCatalog.parse_error,
+      profile: profileFilter
     },
     command_map: COMMAND_MAP,
+    profile_filter: profileFilter,
     profile_selector: commandCatalog.body?.filters?.profiles || [],
     ecosystem_readiness: buildEcosystemReadiness({
-      catalogCommands: commandCatalog.body?.commands || [],
+      catalogCommands: readinessCommandCatalog.body?.commands || [],
       brandSiteOk: true
     }),
-    pipeline_summaries: buildPipelineSummaries({
-      pipelines: PIPELINES,
-      catalogCommands: commandCatalog.body?.commands || []
-    }),
+    pipeline_summaries: pipelineSummaries,
     blockers: commandCatalogBlockers,
     safety_notes: SAFETY_NOTES,
     next_commands: NEXT_COMMANDS,
@@ -367,6 +387,13 @@ function markdownReport(data) {
     lines.push(`  - Purpose: ${item.purpose}`);
   }
 
+  if (data.profile_filter.requested != null) {
+    lines.push("", "## Profile Filter", "");
+    lines.push(`- Requested: ${data.profile_filter.requested}`);
+    lines.push(`- Resolved: ${data.profile_filter.resolved || "unknown"}`);
+    lines.push(`- Pipeline: ${data.profile_filter.pipeline || "unknown"}`);
+  }
+
   if (data.profile_selector.length) {
     lines.push("", "## Profile Selector", "");
     for (const profile of data.profile_selector) {
@@ -430,6 +457,9 @@ function printText(data) {
   console.log(`ledger=${data.compatibility.ledger_matches_current ? "matches-current" : "mismatch"}`);
   console.log(`worktree=${data.compatibility.working_tree_clean ? "clean" : "dirty"}`);
   console.log(`output=${data.output}`);
+  if (data.profile_filter.requested != null) {
+    console.log(`profile=${data.profile_filter.requested} resolved=${data.profile_filter.resolved || "unknown"}`);
+  }
   console.log("\nCommand map:");
   for (const item of data.command_map) {
     console.log(`- ${item.command}`);
@@ -451,7 +481,7 @@ function printText(data) {
 try {
   const args = parseArgs(process.argv);
   const output = resolveOutput(args.output);
-  const data = reportData(output);
+  const data = reportData(output, args);
   writeReport(data);
   if (args.json) {
     printJson(data);

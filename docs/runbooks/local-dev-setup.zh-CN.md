@@ -100,6 +100,8 @@ corepack pnpm run deployability:doctor
 corepack pnpm --silent run deployability:doctor -- --json
 corepack pnpm run deployability:dashboard
 corepack pnpm --silent run deployability:dashboard -- --json
+corepack pnpm run deployability:dashboard -- --profile public-stack
+corepack pnpm --silent run deployability:dashboard -- --profile public-stack --json
 corepack pnpm run deployability:action-plan
 corepack pnpm --silent run deployability:action-plan -- --json
 corepack pnpm run deployability:action-plan -- --list-profiles
@@ -114,6 +116,8 @@ corepack pnpm run compat:status
 corepack pnpm --silent run compat:status -- --json
 corepack pnpm run deployability:handoff
 corepack pnpm --silent run deployability:handoff -- --json
+corepack pnpm run deployability:handoff -- --profile public-stack
+corepack pnpm --silent run deployability:handoff -- --profile public-stack --json
 corepack pnpm run test:deployability
 corepack pnpm run test:deployability-operations
 corepack pnpm run dev:doctor
@@ -180,6 +184,11 @@ secret 值。
 `deployability:dashboard -- --json` 和 `deployability:handoff -- --json` 也会把
 同一份目录作为顶层 `profile_selector` 输出，让 dashboard、交接工具和管理脚本不需要
 知道命令目录内部 section 路径，也能渲染 profile 选择器。
+两个命令也支持 `--profile <key-or-alias>` 聚焦管理 payload；聚焦模式会通过
+`profile_filter` 记录 requested / resolved profile，把命令目录和 pipeline summaries
+限制到所属 pipeline，同时让 `ecosystem_readiness` 继续表示全局 daily-deployable
+scorecard。focused public-stack 示例可从 `deployability:quickstart` 和
+`deployability:commands -- --track daily_dev` 发现。
 
 `compat:status` 是只读兼容台账快照。它会把当前 submodule gitlinks 和最新
 `changes/CHG-*.yaml` 对齐检查，把 dirty submodule worktree 报成 warnings，并把

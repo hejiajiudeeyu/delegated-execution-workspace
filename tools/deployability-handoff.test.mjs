@@ -167,6 +167,25 @@ try {
   assert.match(markdown, /repos\/client: dirty/);
   assert.ok(!markdown.includes("sk_handoff_must_not_leak"));
 
+  const focusedOutput = path.join(tmpRoot, "exports/deployability/focused-handoff.md");
+  const focused = run(tmpRoot, ["--json", "--profile", "public-stack", "--output", focusedOutput], env);
+  assert.equal(focused.status, 0, focused.stderr || focused.stdout);
+  const focusedBody = JSON.parse(focused.stdout);
+  assert.equal(focusedBody.profile_filter.requested, "public-stack");
+  assert.equal(focusedBody.profile_filter.resolved, "public_stack");
+  assert.equal(focusedBody.profile_filter.pipeline, "public_stack");
+  assert.equal(focusedBody.ecosystem_readiness.status, "daily_deployable_with_safety_gates");
+  assert.deepEqual(focusedBody.pipeline_summaries.map((item) => item.key), ["public_stack"]);
+  assert.equal(focusedBody.command_catalog_status.profile.resolved, "public_stack");
+  assert.deepEqual(focusedBody.profile_selector, body.profile_selector);
+  const focusedMarkdown = fs.readFileSync(focusedOutput, "utf8");
+  assert.match(focusedMarkdown, /## Profile Filter/);
+  assert.match(focusedMarkdown, /Requested: public-stack/);
+  assert.match(focusedMarkdown, /Resolved: public_stack/);
+  assert.match(focusedMarkdown, /public_stack: ready_now_with_safety_gates/);
+  assert.doesNotMatch(focusedMarkdown, /local_agent_loop: ready_now/);
+  assert.ok(!focused.stdout.includes("sk_handoff_must_not_leak"));
+
   const textOutput = path.join(tmpRoot, "exports/deployability/text-handoff.md");
   const text = run(tmpRoot, ["--output", textOutput], env);
   assert.equal(text.status, 0, text.stderr || text.stdout);

@@ -31,6 +31,11 @@ assert.ok(body.tracks.find((item) => item.key === "daily_dev").steps.some((step)
 assert.ok(body.tracks.find((item) => item.key === "daily_dev").steps.some((step) => step.command === "corepack pnpm run deployability:safety"));
 assert.ok(body.tracks.find((item) => item.key === "daily_dev").steps.some((step) => step.command === "corepack pnpm run deployability:doctor"));
 assert.ok(body.tracks.find((item) => item.key === "daily_dev").steps.some((step) => step.command === "corepack pnpm run deployability:dashboard"));
+assert.ok(
+  body.tracks
+    .find((item) => item.key === "daily_dev")
+    .steps.some((step) => step.command === "corepack pnpm run deployability:dashboard -- --profile public-stack")
+);
 assert.ok(body.tracks.find((item) => item.key === "daily_dev").steps.some((step) => step.command === "corepack pnpm run deployability:action-plan"));
 assert.ok(
   body.tracks
@@ -44,6 +49,11 @@ assert.ok(
 );
 assert.ok(body.tracks.find((item) => item.key === "daily_dev").steps.some((step) => step.command === "corepack pnpm run deployability:commands"));
 assert.ok(body.tracks.find((item) => item.key === "daily_dev").steps.some((step) => step.command === "corepack pnpm run deployability:handoff"));
+assert.ok(
+  body.tracks
+    .find((item) => item.key === "daily_dev")
+    .steps.some((step) => step.command === "corepack pnpm run deployability:handoff -- --profile public-stack")
+);
 assert.ok(body.tracks.find((item) => item.key === "selfhost_platform").steps.some((step) => step.command === "corepack pnpm run selfhost:quickstart"));
 assert.ok(
   body.tracks
@@ -78,10 +88,12 @@ assert.match(text.stdout, /Public Stack/);
 assert.match(text.stdout, /corepack pnpm run deployability:safety/);
 assert.match(text.stdout, /corepack pnpm run deployability:doctor/);
 assert.match(text.stdout, /corepack pnpm run deployability:dashboard/);
+assert.match(text.stdout, /corepack pnpm run deployability:dashboard -- --profile public-stack/);
 assert.match(text.stdout, /corepack pnpm run deployability:action-plan/);
 assert.match(text.stdout, /corepack pnpm run deployability:action-plan -- --list-profiles/);
 assert.match(text.stdout, /corepack pnpm run deployability:commands/);
 assert.match(text.stdout, /corepack pnpm run deployability:handoff/);
+assert.match(text.stdout, /corepack pnpm run deployability:handoff -- --profile public-stack/);
 assert.ok(!text.stdout.includes("sk_quickstart_must_not_leak"));
 
 console.log("[deployability-quickstart.test] ok");

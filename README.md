@@ -123,6 +123,8 @@ corepack pnpm run deployability:doctor
 corepack pnpm --silent run deployability:doctor -- --json
 corepack pnpm run deployability:dashboard
 corepack pnpm --silent run deployability:dashboard -- --json
+corepack pnpm run deployability:dashboard -- --profile public-stack
+corepack pnpm --silent run deployability:dashboard -- --profile public-stack --json
 corepack pnpm run deployability:action-plan
 corepack pnpm --silent run deployability:action-plan -- --json
 corepack pnpm run deployability:action-plan -- --list-profiles
@@ -137,6 +139,8 @@ corepack pnpm run compat:status
 corepack pnpm --silent run compat:status -- --json
 corepack pnpm run deployability:handoff
 corepack pnpm --silent run deployability:handoff -- --json
+corepack pnpm run deployability:handoff -- --profile public-stack
+corepack pnpm --silent run deployability:handoff -- --profile public-stack --json
 corepack pnpm run test:deployability
 corepack pnpm run test:deployability-operations
 corepack pnpm run dev:local:plan

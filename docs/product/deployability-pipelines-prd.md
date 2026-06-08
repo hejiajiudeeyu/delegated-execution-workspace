@@ -133,6 +133,13 @@ Acceptance:
   lift that same command-catalog profile directory to top-level
   `profile_selector`, so management surfaces can render profile choices
   without knowing the internal `sections.commands.filters.profiles` path
+- `deployability:dashboard -- --profile public-stack --json` and
+  `deployability:handoff -- --profile public-stack --json` reuse the same
+  profile resolver, emit `profile_filter`, filter command catalog and
+  pipeline summaries to the owning pipeline, and keep ecosystem_readiness as
+  the global daily-deployable scorecard
+- focused dashboard and handoff commands are included in the daily development
+  quickstart and searchable command catalog with inherited read-only posture
 - `deployability:commands -- --profile public-stack --json` resolves
   operator profile keys or aliases to the owning pipeline, emits the resolved
   `profile` filter metadata, filters the catalog to that pipeline, and reports
@@ -527,6 +534,9 @@ Acceptance:
 - Deployability Profiles explain that dashboard and handoff expose top-level
   `profile_selector` metadata sourced from the command catalog, so management
   surfaces do not need to parse prose or runtime commands
+- Deployability Profiles include focused dashboard and handoff examples for
+  `--profile public-stack`, explaining that profile focus filters management
+  metadata without changing the global ecosystem_readiness scorecard
 - Deployability Profiles explain that ready-now command catalog entries do not
   fall back to `unmapped`, including `runtime_diagnostic`,
   `runtime_acceptance`, and `delegated_smoke` posture examples

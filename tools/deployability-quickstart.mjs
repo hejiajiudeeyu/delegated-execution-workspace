@@ -32,6 +32,11 @@ const TRACKS = [
         json_command: "corepack pnpm --silent run deployability:dashboard -- --json"
       },
       {
+        label: "Emit a focused public-stack dashboard payload",
+        command: "corepack pnpm run deployability:dashboard -- --profile public-stack",
+        json_command: "corepack pnpm --silent run deployability:dashboard -- --profile public-stack --json"
+      },
+      {
         label: "List supported action-plan profiles",
         command: "corepack pnpm run deployability:action-plan -- --list-profiles",
         json_command: "corepack pnpm --silent run deployability:action-plan -- --list-profiles --json"
@@ -50,6 +55,11 @@ const TRACKS = [
         label: "Create a non-secret daily handoff",
         command: "corepack pnpm run deployability:handoff",
         json_command: "corepack pnpm --silent run deployability:handoff -- --json"
+      },
+      {
+        label: "Create a focused public-stack handoff",
+        command: "corepack pnpm run deployability:handoff -- --profile public-stack",
+        json_command: "corepack pnpm --silent run deployability:handoff -- --profile public-stack --json"
       },
       {
         label: "Inspect the local stack plan",
