@@ -1,6 +1,6 @@
 # Main Readiness
 
-Updated: 2026-06-07
+Updated: 2026-06-08
 
 ## Purpose
 
@@ -18,7 +18,7 @@ repositories.
 - `repos/protocol`: `da3027100cfe9391f7f8d03be18a108ee2804cf6`
 - `repos/client`: `f1d6a2d8c9b83517cdf6ca9803b223847f880e9a`
 - `repos/platform`: `5961309c6b0ca4e8df22dbb5be92ac0845bf8d25`
-- `repos/brand-site`: `91c38ed5f7848ce5b90e73a2774e8019f3f7e9e9`
+- `repos/brand-site`: `178d9dd7644a4463e39db6f94e9675b1022659f0`
 
 The current bundle is `changes/CHG-2026-096.yaml`.
 
@@ -104,7 +104,8 @@ CHG-2026-096:
 - brand-site now has bilingual Deployability Profiles docs that explain the
   deployment profiles, ready/planned boundaries, secret-safety defaults, and
   the operator-only Billing console slice, plus the new profiles/doctor/summary/security-review
-  and quickstart/readiness/audit-export/ports/ops-report/backup-validate/restore-plan/rotate-plan/rotate-json gates
+  and quickstart/readiness/audit-export/ports/ops-report/backup-validate/restore-plan/rotate-plan/rotate-json gates,
+  pipeline_summaries, and inherited safety posture for profile-specific command variants
 - one-command local stack bootstrap is available through managed
   `dev:local:*` commands, with `--json` metadata for plan/up/status/logs/down
   so dashboards and scripts can inspect and control the local loop without
