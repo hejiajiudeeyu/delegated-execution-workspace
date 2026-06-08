@@ -73,6 +73,9 @@ onboarding 或 release-image 路径前，先给出一个只读命令地图和一
 - `test:deployability-operations` 用一条命令运行面向 operator 的部署与管理回归套件，
   覆盖 daily local doctor、local-stack lifecycle metadata、self-host kit 行为、
   published-image smoke 编排和 operator onboarding contract tests
+- operations regression gate 能从第一张命令地图发现：`deployability:overview`
+  会在 next commands 列出它，`deployability:safety` 会给出 top-level
+  `contract_test` 姿态，`deployability:commands` 会把它纳入可搜索的顶层命令目录
 - `deployability:commands -- --json` 输出干净的命令目录，包含 category、posture、
   track 和 pipeline filters，并合并 overview、quickstart 和 safety metadata，
   同时让带 profile 参数的命令变体继承基础安全姿态，不读取 `.env`、不调用 Docker、

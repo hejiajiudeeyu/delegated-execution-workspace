@@ -84,6 +84,10 @@ Acceptance:
   management regression suite as one command, covering daily local doctor,
   local-stack lifecycle metadata, self-host kit behavior, published-image smoke
   orchestration, and operator onboarding contract tests
+- the operations regression gate is discoverable from the first command map:
+  `deployability:overview` lists it in next commands, `deployability:safety`
+  gives it an explicit top-level `contract_test` posture, and
+  `deployability:commands` includes it in the searchable top-level catalog
 - `deployability:commands -- --json` emits a clean command catalog with
   category, posture, track, and pipeline filters, merging overview,
   quickstart, and safety metadata, and inheriting base safety posture for
