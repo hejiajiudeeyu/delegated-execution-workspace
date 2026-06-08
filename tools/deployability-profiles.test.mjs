@@ -22,7 +22,7 @@ const body = JSON.parse(json.stdout);
 assert.equal(body.command, "deployability:profiles");
 assert.equal(body.ok, true);
 assert.equal(body.mode, "profile_catalog");
-assert.equal(body.current_bundle.change_id, "CHG-2026-128");
+assert.equal(body.current_bundle.change_id, "CHG-2026-129");
 assert.equal(body.ecosystem_readiness.status, "daily_deployable_with_safety_gates");
 assert.equal(body.profile_filter.requested, null);
 assert.equal(body.profile_filter.resolved, null);
@@ -59,6 +59,12 @@ assert.ok(publicStack.attention.rank < dailyDev.attention.rank);
 assert.ok(dailyDev.next_commands.includes("corepack pnpm run dev:local:plan"));
 assert.ok(dailyDev.next_json_commands.includes("corepack pnpm --silent run dev:doctor -- --json"));
 
+assert.deepEqual(Object.keys(body.source_status), ["overview", "commands", "doctor"]);
+assert.ok(body.source_status.overview.ok);
+assert.ok(body.source_status.commands.ok);
+assert.ok(body.source_status.doctor.ok);
+assert.equal(Object.prototype.hasOwnProperty.call(body.source_status, "dashboard"), false);
+assert.ok(body.safety_defaults.some((item) => /overview, command, and doctor metadata/i.test(item)));
 assert.equal(body.recommended_profile_keys[0], "public_stack");
 assert.deepEqual(
   body.recommended_profile_keys,

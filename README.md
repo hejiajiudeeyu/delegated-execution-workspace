@@ -198,6 +198,8 @@ corepack pnpm run published-image:smoke -- --dry-run --image-tag <candidate-tag>
 corepack pnpm --silent run published-image:smoke -- --dry-run --image-tag <candidate-tag> --json
 ```
 
+`deployability:profiles` derives its read-only profile cards from overview, command, and doctor metadata plus shared pipeline/profile summary helpers and the shared profile registry.
+
 Initialize and inspect a self-host profile:
 
 ```bash

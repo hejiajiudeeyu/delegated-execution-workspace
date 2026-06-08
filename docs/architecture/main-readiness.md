@@ -249,8 +249,9 @@ CHG-2026-105:
   metadata, and top-level `recommended_profile_keys` for management UI cards
 - `deployability:profiles` is available as a dedicated read-only profile-card
   catalog for operators, dashboards, CI, and management scripts. It derives
-  cards from dashboard `profile_summaries` and the shared fourth-repo profile
-  registry, emits labels, aliases, owning pipeline keys, status, counts, next
+  cards from overview, command, and doctor metadata plus shared pipeline/profile
+  summary helpers and the shared fourth-repo profile registry, emits labels,
+  aliases, owning pipeline keys, status, counts, next
   commands, next JSON commands, safety notes, shared `attention` metadata, and
   top-level `recommended_profile_keys`, and supports
   `corepack pnpm run deployability:profiles`,

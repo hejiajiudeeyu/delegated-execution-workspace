@@ -183,7 +183,8 @@ Acceptance:
   with current bundle, ecosystem readiness, aliases, labels, pipeline keys,
   status, counts, next commands, next JSON commands, safety notes, shared
   `attention` metadata, and top-level `recommended_profile_keys`, derived from
-  dashboard `profile_summaries` and the shared fourth-repo profile registry
+  overview, command, and doctor metadata plus shared pipeline/profile summary
+  helpers and the shared fourth-repo profile registry
   without reading `.env`, calling Docker, binding ports, probing networks, or
   printing secret values
 - `deployability:profiles -- --profile public-stack --json` emits the same

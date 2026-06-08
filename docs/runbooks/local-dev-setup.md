@@ -260,8 +260,9 @@ not start services, probe endpoints, publish artifacts, or print secret values.
 
 `deployability:profiles` is the dedicated read-only profile catalog for
 operators, dashboards, CI, and management scripts. It derives profile cards
-from dashboard `profile_summaries` and the shared fourth-repo profile registry,
-then emits aliases, labels, owning pipeline keys, status, counts, next commands,
+from overview, command, and doctor metadata plus shared pipeline/profile summary
+helpers and the shared fourth-repo profile registry, then emits aliases, labels,
+owning pipeline keys, status, counts, next commands,
 next JSON commands, safety notes, shared `attention` metadata, and top-level
 `recommended_profile_keys` without reading `.env`, calling Docker, binding
 ports, probing networks, or printing secrets. Use

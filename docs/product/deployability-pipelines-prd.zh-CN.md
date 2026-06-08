@@ -164,8 +164,8 @@ onboarding 或 release-image 路径前，先给出一个只读命令地图和一
 - `deployability:profiles -- --json` 输出干净的 `profile_catalog` payload，
   包含当前 bundle、ecosystem readiness、aliases、labels、pipeline keys、status、
   counts、next commands、next JSON commands、safety notes、共享 `attention`
-  metadata 和顶层 `recommended_profile_keys`；这些字段从 dashboard
-  `profile_summaries` 和共享第四仓 profile registry 派生，不读取 `.env`、
+  metadata 和顶层 `recommended_profile_keys`；这些字段从 overview, command, and doctor metadata、共享 pipeline/profile summary helpers 和共享第四仓
+  profile registry 派生，不读取 `.env`、
   不调用 Docker、不绑定端口、不探测网络、不打印 secret 值
 - `deployability:profiles -- --profile public-stack --json` 会以同一 schema
   聚焦到 `public_stack`，包含 `profile_filter`，并把未知 profile 名称作为干净

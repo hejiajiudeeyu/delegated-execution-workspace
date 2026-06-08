@@ -90,6 +90,7 @@ const DOCTOR_COMMANDS = [
   "corepack pnpm --silent run deployability:action-plan -- --json",
   "corepack pnpm run deployability:profiles",
   "corepack pnpm --silent run deployability:profiles -- --json",
+  "overview, command, and doctor metadata",
   "corepack pnpm run deployability:commands",
   "corepack pnpm --silent run deployability:commands -- --json",
   "corepack pnpm run deployability:runbook",

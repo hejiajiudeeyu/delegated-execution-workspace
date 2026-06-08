@@ -42,6 +42,8 @@ assert.ok(checksByKey.get("ecosystem_prd_alignment").data.required_strings.inclu
 assert.ok(checksByKey.get("ecosystem_prd_alignment").data.required_strings.includes("Sub2API"));
 assert.ok(checksByKey.get("ecosystem_prd_alignment").data.required_strings.includes("CLIProxyAPI"));
 assert.ok(checksByKey.get("ecosystem_prd_alignment").data.required_strings.includes("one obvious quick-start path"));
+assert.ok(checksByKey.get("documentation_alignment").data.required_strings.includes("overview, command, and doctor metadata"));
+assert.ok(checksByKey.get("brand_site_alignment").data.required_strings.includes("overview, command, and doctor metadata"));
 assert.ok(checksByKey.get("top_level_scripts").data.required_scripts.includes("test:deployability"));
 assert.ok(
   checksByKey.get("top_level_scripts").data.required_scripts.includes("test:deployability-pipeline-summaries")

@@ -177,7 +177,7 @@ function profilesData(args) {
     next_commands: NEXT_COMMANDS,
     notes: [
       "use this as the read-only profile catalog for management UIs, CI dashboards, and operator docs",
-      "profile cards are derived from deployability dashboard summaries and the shared profile registry"
+      "profile cards are derived from overview, command, and doctor metadata plus shared pipeline/profile summary helpers and the shared profile registry"
     ]
   };
 }
