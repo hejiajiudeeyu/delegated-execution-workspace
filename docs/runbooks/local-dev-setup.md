@@ -119,6 +119,8 @@ corepack pnpm run deployability:safety
 corepack pnpm --silent run deployability:safety -- --json
 corepack pnpm run deployability:doctor
 corepack pnpm --silent run deployability:doctor -- --json
+corepack pnpm run deployability:dashboard
+corepack pnpm --silent run deployability:dashboard -- --json
 corepack pnpm run compat:status
 corepack pnpm --silent run compat:status -- --json
 corepack pnpm run deployability:handoff
@@ -154,6 +156,12 @@ and safety contract before an operator continues to pipeline-specific
 diagnostics. Its JSON form reports checks, blockers, warnings, evidence, and
 next commands without reading `.env`, calling Docker, probing networks, or
 printing secret values.
+
+`deployability:dashboard` is the read-only aggregate payload for dashboards and
+CI. It combines overview, quickstart, safety, doctor, and compatibility JSON
+sections without reading `.env`, calling Docker, binding ports, probing
+networks, or printing secret values. Profile-specific readiness, preflight,
+status, smoke, and audit commands remain authoritative.
 
 `compat:status` is the read-only compatibility-ledger snapshot. It compares the
 current submodule gitlinks to the latest `changes/CHG-*.yaml`, reports dirty

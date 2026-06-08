@@ -3,7 +3,7 @@
 > 英文版：[./deployability-ecosystem-prd.md](./deployability-ecosystem-prd.md)
 > 说明：中文文档为准。
 
-更新日期：2026-06-07
+更新日期：2026-06-08
 
 ## 1. 背景
 
@@ -76,6 +76,7 @@ CALL ANYTHING 现在的仓库边界是正确的：
 | 可部署性 quickstart | 第四仓 | `corepack pnpm run deployability:quickstart`，以及作为 daily development、self-host、public-stack 和 release-review 路径只读首次使用指南的 `corepack pnpm --silent run deployability:quickstart -- --json` |
 | 可部署性安全矩阵 | 第四仓 | `corepack pnpm run deployability:safety`，以及作为部署命令 read/write/startup/network/logging 姿态说明矩阵的 `corepack pnpm --silent run deployability:safety -- --json` |
 | 可部署性 doctor | 第四仓 | `corepack pnpm run deployability:doctor`，以及作为 compatibility ledger、顶层 scripts、docs、brand-site 和 safety-contract 对齐状态只读快照的 `corepack pnpm --silent run deployability:doctor -- --json` |
+| 可部署性 dashboard | 第四仓 | `corepack pnpm run deployability:dashboard`，以及作为顶层 dashboard 和 CI 的只读聚合 payload 的 `corepack pnpm --silent run deployability:dashboard -- --json`，组合 overview、quickstart、safety、doctor 和 compatibility sections |
 | 可部署性交接报告 | 第四仓 | `corepack pnpm run deployability:handoff`，以及用于输出 `exports/deployability/` 下不含 secret 的生态交接报告 metadata 的 `corepack pnpm --silent run deployability:handoff -- --json` |
 | 日常本地 doctor | 第四仓 | `corepack pnpm run dev:doctor`，以及给 dashboard 和脚本使用的 `corepack pnpm --silent run dev:doctor -- --json` |
 | Local agent loop 管理 metadata | 第四仓 | `corepack pnpm run dev:local:plan`、`dev:local:up`、`dev:local:status`、`dev:local:logs` 和 `dev:local:down`，并提供 `--json` 供 dashboard 和脚本消费 |
@@ -151,6 +152,9 @@ CALL ANYTHING 现在的仓库边界是正确的：
 - 兼容状态 metadata 可以机器读取，输出当前 bundle、submodule SHAs、ledger matches、
   dirty submodules、blockers、warnings 和下一步命令，但不读取 `.env`、不调用 Docker、
   不探测网络、不打印 secret 值
+- 可部署性 dashboard metadata 可以机器读取，把 overview、quickstart、safety、
+  doctor 和 compatibility JSON sections 聚合成一个顶层 payload，但不读取 `.env`、
+  不调用 Docker、不绑定端口、不探测网络、不打印 secret 值
 - 可部署性交接 metadata 可以机器读取，并配套不含 secret 的 Markdown 报告，聚合
   当前 bundle、兼容 warnings、命令地图、安全说明和下一步验证命令，但不读取 `.env`、
   不调用 Docker、不探测网络、不打印 secret 值
@@ -161,7 +165,8 @@ CALL ANYTHING 现在的仓库边界是正确的：
   `deployability:overview -- --json`、`deployability:quickstart`、
   `deployability:quickstart -- --json`、`deployability:safety`、
   `deployability:safety -- --json`、`deployability:doctor`、
-  `deployability:doctor -- --json`、`compat:status`、`compat:status -- --json`、
+  `deployability:doctor -- --json`、`deployability:dashboard`、
+  `deployability:dashboard -- --json`、`compat:status`、`compat:status -- --json`、
   `deployability:handoff`、`deployability:handoff -- --json`、
   `dev:local:plan -- --json`、
   `dev:local:up -- --json`、`dev:local:status -- --json`、

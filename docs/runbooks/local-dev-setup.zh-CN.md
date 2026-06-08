@@ -98,6 +98,8 @@ corepack pnpm run deployability:safety
 corepack pnpm --silent run deployability:safety -- --json
 corepack pnpm run deployability:doctor
 corepack pnpm --silent run deployability:doctor -- --json
+corepack pnpm run deployability:dashboard
+corepack pnpm --silent run deployability:dashboard -- --json
 corepack pnpm run compat:status
 corepack pnpm --silent run compat:status -- --json
 corepack pnpm run deployability:handoff
@@ -128,6 +130,11 @@ secret 值。
 管线诊断前检查 compatibility ledger、顶层 scripts、文档、brand-site 和
 safety contract。JSON 形式输出 checks、blockers、warnings、evidence 和下一步命令，
 但不读取 `.env`、不调用 Docker、不探测网络、不打印 secret 值。
+
+`deployability:dashboard` 是给 dashboard 和 CI 使用的只读聚合 payload。它会组合
+overview、quickstart、safety、doctor 和 compatibility JSON sections，但不读取
+`.env`、不调用 Docker、不绑定端口、不探测网络、不打印 secret 值。各 profile 自己的
+readiness、preflight、status、smoke 和 audit 命令仍然是权威 gate。
 
 `compat:status` 是只读兼容台账快照。它会把当前 submodule gitlinks 和最新
 `changes/CHG-*.yaml` 对齐检查，把 dirty submodule worktree 报成 warnings，并把

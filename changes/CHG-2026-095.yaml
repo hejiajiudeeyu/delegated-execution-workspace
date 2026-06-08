@@ -1,0 +1,15 @@
+change_id: CHG-2026-095
+goal: add deployability dashboard payload
+protocol_sha: da3027100cfe9391f7f8d03be18a108ee2804cf6
+client_sha: f1d6a2d8c9b83517cdf6ca9803b223847f880e9a
+platform_sha: 5961309c6b0ca4e8df22dbb5be92ac0845bf8d25
+brand_site_sha: 7acd415c43f264ac129706694739485a75c03f79
+owner: hejiajiudeeyu
+risk_level: low
+affected_scope:
+  - orchestration
+  - brand-site
+  - documentation
+contracts_check: passed
+integration_check: passed
+notes: "Adds deployability:dashboard and deployability:dashboard -- --json as a fourth-repo, read-only aggregate payload for top-level dashboards and CI. The command combines deployability overview, quickstart, safety, doctor, and compatibility JSON sections, reports section status, blockers, warnings, safety defaults, and next commands, and does not read .env files, call Docker, bind ports, probe networks, or print secrets. Updates quickstart, safety, doctor, and handoff command maps; adds dashboard tests; updates README, deployability PRDs, local-dev runbooks, main readiness docs, and brand-site Deployability Profiles while keeping protocol/client/platform SHAs unchanged."

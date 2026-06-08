@@ -31,6 +31,9 @@ assert.equal(byCommand.get("corepack pnpm run deployability:quickstart").reads_e
 assert.equal(byCommand.get("corepack pnpm run deployability:doctor").posture, "read_only");
 assert.equal(byCommand.get("corepack pnpm run deployability:doctor").calls_docker, false);
 assert.equal(byCommand.get("corepack pnpm run deployability:doctor").probes_network, false);
+assert.equal(byCommand.get("corepack pnpm run deployability:dashboard").posture, "read_only");
+assert.equal(byCommand.get("corepack pnpm run deployability:dashboard").calls_docker, false);
+assert.equal(byCommand.get("corepack pnpm run deployability:dashboard").probes_network, false);
 assert.equal(byCommand.get("corepack pnpm run selfhost:init").writes_files, true);
 assert.equal(byCommand.get("corepack pnpm run selfhost:up").starts_services, true);
 assert.equal(byCommand.get("corepack pnpm run selfhost:up").calls_docker, true);

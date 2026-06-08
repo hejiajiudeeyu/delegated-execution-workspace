@@ -18,19 +18,23 @@ const REQUIRED_SCRIPTS = [
   "deployability:quickstart",
   "deployability:safety",
   "deployability:doctor",
+  "deployability:dashboard",
   "deployability:handoff",
   "compat:status",
   "test:deployability-overview",
   "test:deployability-quickstart",
   "test:deployability-safety",
   "test:deployability-doctor",
+  "test:deployability-dashboard",
   "test:deployability-handoff",
   "test:compat-status"
 ];
 
 const DOCTOR_COMMANDS = [
   "corepack pnpm run deployability:doctor",
-  "corepack pnpm --silent run deployability:doctor -- --json"
+  "corepack pnpm --silent run deployability:doctor -- --json",
+  "corepack pnpm run deployability:dashboard",
+  "corepack pnpm --silent run deployability:dashboard -- --json"
 ];
 
 const DOC_ALIGNMENT_FILES = [
@@ -61,6 +65,7 @@ const SAFETY_DEFAULTS = [
 const NEXT_COMMANDS = [
   "corepack pnpm run deployability:quickstart",
   "corepack pnpm run deployability:safety",
+  "corepack pnpm run deployability:dashboard",
   "corepack pnpm run compat:status",
   "corepack pnpm run deployability:handoff",
   "corepack pnpm run check:submodules",

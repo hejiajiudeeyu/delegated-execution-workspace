@@ -3,7 +3,7 @@
 > Chinese source: [./deployability-pipelines-prd.zh-CN.md](./deployability-pipelines-prd.zh-CN.md)
 > Note: the Chinese document is authoritative.
 
-Updated: 2026-06-07
+Updated: 2026-06-08
 
 ## Pipeline 0: Deployability Overview
 
@@ -21,6 +21,8 @@ Required commands:
 - `corepack pnpm --silent run deployability:safety -- --json`
 - `corepack pnpm run deployability:doctor`
 - `corepack pnpm --silent run deployability:doctor -- --json`
+- `corepack pnpm run deployability:dashboard`
+- `corepack pnpm --silent run deployability:dashboard -- --json`
 - `corepack pnpm run compat:status`
 - `corepack pnpm --silent run compat:status -- --json`
 - `corepack pnpm run deployability:handoff`
@@ -29,6 +31,7 @@ Required commands:
 - `corepack pnpm run test:deployability-quickstart`
 - `corepack pnpm run test:deployability-safety`
 - `corepack pnpm run test:deployability-doctor`
+- `corepack pnpm run test:deployability-dashboard`
 - `corepack pnpm run test:compat-status`
 - `corepack pnpm run test:deployability-handoff`
 
@@ -55,6 +58,11 @@ Acceptance:
   executing Docker, reading `.env`, probing networks, or printing secrets
 - `deployability:doctor -- --json` emits clean check, blocker, warning,
   evidence, safety-default, and next-command metadata without terminal prose or
+  secret values
+- `deployability:dashboard -- --json` emits one clean top-level payload with
+  overview, quickstart, safety, doctor, and compatibility sections, section
+  status, blockers, warnings, safety defaults, and next commands without
+  reading `.env`, calling Docker, binding ports, probing networks, or printing
   secret values
 - `deployability:overview -- --json` emits clean pipeline, safety-default, and
   next-command metadata without terminal `[ok]` / `[fail]` prose or secret

@@ -37,6 +37,7 @@ assert.ok(checksByKey.get("documentation_alignment").evidence.includes("README.m
 assert.ok(checksByKey.get("brand_site_alignment").evidence.some((item) => item.includes("DeployabilityProfiles.tsx")));
 assert.ok(body.next_commands.includes("corepack pnpm run deployability:quickstart"));
 assert.ok(body.next_commands.includes("corepack pnpm run deployability:safety"));
+assert.ok(body.next_commands.includes("corepack pnpm run deployability:dashboard"));
 assert.ok(body.next_commands.includes("corepack pnpm run deployability:handoff"));
 assert.ok(body.safety_defaults.some((item) => /does not read \.env/i.test(item)));
 assert.ok(!json.stdout.includes("[ok]"));
@@ -48,6 +49,7 @@ assert.match(text.stdout, /Deployability doctor/);
 assert.match(text.stdout, /compatibility ledger/);
 assert.match(text.stdout, /documentation alignment/);
 assert.match(text.stdout, /brand-site alignment/);
+assert.match(text.stdout, /corepack pnpm run deployability:dashboard/);
 assert.match(text.stdout, /corepack pnpm run deployability:handoff/);
 assert.ok(!text.stdout.includes("sk_doctor_must_not_leak"));
 

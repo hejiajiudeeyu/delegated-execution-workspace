@@ -3,7 +3,7 @@
 > 英文版：[./deployability-pipelines-prd.md](./deployability-pipelines-prd.md)
 > 说明：中文文档为准。
 
-更新日期：2026-06-07
+更新日期：2026-06-08
 
 ## 管线 0：Deployability Overview
 
@@ -20,6 +20,8 @@ onboarding 或 release-image 路径前，先给出一个只读命令地图和一
 - `corepack pnpm --silent run deployability:safety -- --json`
 - `corepack pnpm run deployability:doctor`
 - `corepack pnpm --silent run deployability:doctor -- --json`
+- `corepack pnpm run deployability:dashboard`
+- `corepack pnpm --silent run deployability:dashboard -- --json`
 - `corepack pnpm run compat:status`
 - `corepack pnpm --silent run compat:status -- --json`
 - `corepack pnpm run deployability:handoff`
@@ -28,6 +30,7 @@ onboarding 或 release-image 路径前，先给出一个只读命令地图和一
 - `corepack pnpm run test:deployability-quickstart`
 - `corepack pnpm run test:deployability-safety`
 - `corepack pnpm run test:deployability-doctor`
+- `corepack pnpm run test:deployability-dashboard`
 - `corepack pnpm run test:compat-status`
 - `corepack pnpm run test:deployability-handoff`
 
@@ -51,6 +54,10 @@ onboarding 或 release-image 路径前，先给出一个只读命令地图和一
   不探测网络、不打印 secrets
 - `deployability:doctor -- --json` 输出干净的 checks、blockers、warnings、
   evidence、安全默认值和下一步命令 metadata，不混入终端文本或 secret 值
+- `deployability:dashboard -- --json` 输出一个干净的顶层 payload，包含
+  overview、quickstart、safety、doctor 和 compatibility sections、section status、
+  blockers、warnings、安全默认值和下一步命令，不读取 `.env`、不调用 Docker、
+  不绑定端口、不探测网络、不打印 secret 值
 - `deployability:overview -- --json` 输出干净的 pipeline、安全默认值和下一步命令
   metadata，不混入终端 `[ok]` / `[fail]` 文本或 secret 值
 - docs 和 brand-site 把它描述成第一张命令地图，而不是替代各管线自己的
