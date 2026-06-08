@@ -148,6 +148,13 @@ CHG-2026-105:
   `.env`, calling Docker, binding ports, probing networks, or printing secrets;
   it aggregates readiness, roadmap, and public-stack recipe metadata without
   becoming a new runtime truth source
+- `deployability:gates` is available as a compact read-only public exposure and
+  production hardening gate checklist, and supports
+  `corepack pnpm run deployability:gates` and
+  `corepack pnpm --silent run deployability:gates -- --json` without reading
+  `.env`, calling Docker, binding ports, probing networks, or printing secrets;
+  it projects roadmap, command catalog, and status metadata into management
+  gate cards without executing the underlying gate commands
 - `deployability:doctor` is available as a read-only deployability readiness
   snapshot for compatibility ledger, top-level scripts, documentation,
   brand-site file alignment, brand-site deployability content smoke, and

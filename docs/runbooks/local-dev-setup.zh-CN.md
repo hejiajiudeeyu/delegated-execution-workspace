@@ -102,6 +102,8 @@ corepack pnpm run deployability:roadmap
 corepack pnpm --silent run deployability:roadmap -- --json
 corepack pnpm run deployability:status
 corepack pnpm --silent run deployability:status -- --json
+corepack pnpm run deployability:gates
+corepack pnpm --silent run deployability:gates -- --json
 corepack pnpm run deployability:doctor
 corepack pnpm --silent run deployability:doctor -- --json
 corepack pnpm run deployability:dashboard
@@ -173,6 +175,12 @@ summaries，但不读取 `.env`、不调用 Docker、不绑定端口、不探测
 状态，而不想解析更大的 dashboard payload 时，可以使用
 `corepack pnpm run deployability:status` 或
 `corepack pnpm --silent run deployability:status -- --json`。
+
+`deployability:gates` 是给 public exposure 和 production hardening 使用的
+compact read-only gate checklist。当 dashboard 需要展示 opening edge routes 或
+claiming production readiness 前必须通过哪些 gate，但不想执行 gate 命令时，可以使用
+`corepack pnpm run deployability:gates` 或
+`corepack pnpm --silent run deployability:gates -- --json`。
 
 `deployability:profiles` 是给 operator、dashboard、CI 和管理脚本使用的专用只读
 profile catalog。它从 dashboard `profile_summaries` 和共享第四仓 profile registry

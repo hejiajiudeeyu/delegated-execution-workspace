@@ -78,6 +78,7 @@ CALL ANYTHING 现在的仓库边界是正确的：
 | 可部署性 readiness scorecard | 第四仓 | `corepack pnpm run deployability:readiness`，以及作为人、CI 和管理 UI 使用的独立 daily-deployable scorecard 的 `corepack pnpm --silent run deployability:readiness -- --json`；它复用 command catalog 和 doctor metadata，输出检查证据、summary counts、blockers、warnings、安全说明和下一步命令，让调用方不用解析完整 dashboard 或 handoff payload |
 | 可部署性 roadmap | 第四仓 | `corepack pnpm run deployability:roadmap`，以及作为管理 UI 和规划评审使用的只读 PRD milestone view 的 `corepack pnpm --silent run deployability:roadmap -- --json`；它把已满足、受 gate 保护、阻塞和规划中的 deployability 工作分开呈现，让 daily deployability 可见，但不夸大 public production readiness |
 | 可部署性 operator status | 第四仓 | `corepack pnpm run deployability:status`，以及作为第一屏管理界面 compact operator status 的 `corepack pnpm --silent run deployability:status -- --json`；它把 readiness、roadmap 和 public-stack recipe 聚合成 status cards、primary next commands、source health 和 safety defaults，且不执行部署命令 |
+| 可部署性 gate checklist | 第四仓 | `corepack pnpm run deployability:gates`，以及作为管理 UI 使用的只读 public exposure / production hardening gate checklist 的 `corepack pnpm --silent run deployability:gates -- --json`；它把 roadmap、command catalog 和 status metadata 投影成明确的 gate cards，且不执行 security-review、Docker、网络或发布命令 |
 | 可部署性 doctor | 第四仓 | `corepack pnpm run deployability:doctor`，以及作为 compatibility ledger、顶层 scripts、docs、brand-site 和 safety-contract 对齐状态只读快照的 `corepack pnpm --silent run deployability:doctor -- --json` |
 | 可部署性 dashboard | 第四仓 | `corepack pnpm run deployability:dashboard`，以及作为顶层 dashboard 和 CI 的只读聚合 payload 的 `corepack pnpm --silent run deployability:dashboard -- --json`，组合 overview、quickstart、safety、doctor、compatibility、顶层 `profile_selector`、带共享 `attention` metadata 的派生 `profile_summaries`、顶层 `recommended_profile_keys`、ecosystem_readiness 和 per-pipeline summary sections；`--profile <key-or-alias>` 会输出聚焦 dashboard payload，包含 `profile_filter`、过滤后的命令目录、一个所属 pipeline summary 和一个 profile summary，同时让 ecosystem_readiness 保持全局 |
 | 可部署性 action plan | 第四仓 | `corepack pnpm run deployability:action-plan`，以及作为只读 operator 下一步动作选择器的 `corepack pnpm --silent run deployability:action-plan -- --json`，把 dashboard readiness 和 command catalog posture 合成 profile 级 recommended commands、dashboard-safe commands、public-exposure gates、service-touching command lists、profile `attention` metadata 和顶层 `recommended_profile_keys`；`--list-profiles` / `--profiles` 输出只读 profile selector 目录，包含 keys、aliases、pipeline keys 和 purposes，且不调用 dashboard/catalog metadata；`--profile <key-or-alias>` 会把输出聚焦到单个 operator 目标，并把未知 profile 作为 blockers 返回 |
@@ -281,6 +282,8 @@ CALL ANYTHING 现在的仓库边界是正确的：
   `corepack pnpm --silent run deployability:roadmap -- --json`、
   `corepack pnpm run deployability:status`、
   `corepack pnpm --silent run deployability:status -- --json`、
+  `corepack pnpm run deployability:gates`、
+  `corepack pnpm --silent run deployability:gates -- --json`、
   `test:agent-e2e`、`mcp:golden-four`、`published-image:plan -- --json`、
   `published-image:smoke -- --dry-run --json`、`published-image:smoke -- --image-tag <candidate-tag>`、
   `selfhost:security-review`、`selfhost:audit-export -- --json`、`selfhost:backup-plan`、

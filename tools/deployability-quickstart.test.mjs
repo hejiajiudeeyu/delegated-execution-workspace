@@ -31,6 +31,7 @@ assert.ok(body.tracks.find((item) => item.key === "daily_dev").steps.some((step)
 assert.ok(body.tracks.find((item) => item.key === "daily_dev").steps.some((step) => step.command === "corepack pnpm run deployability:safety"));
 assert.ok(body.tracks.find((item) => item.key === "daily_dev").steps.some((step) => step.command === "corepack pnpm run deployability:roadmap"));
 assert.ok(body.tracks.find((item) => item.key === "daily_dev").steps.some((step) => step.command === "corepack pnpm run deployability:status"));
+assert.ok(body.tracks.find((item) => item.key === "daily_dev").steps.some((step) => step.command === "corepack pnpm run deployability:gates"));
 assert.ok(body.tracks.find((item) => item.key === "daily_dev").steps.some((step) => step.command === "corepack pnpm run deployability:doctor"));
 assert.ok(body.tracks.find((item) => item.key === "daily_dev").steps.some((step) => step.command === "corepack pnpm run deployability:dashboard"));
 assert.ok(
@@ -78,6 +79,7 @@ assert.ok(body.next_commands.includes("corepack pnpm run deployability:handoff")
 assert.ok(body.next_commands.includes("corepack pnpm run deployability:safety"));
 assert.ok(body.next_commands.includes("corepack pnpm run deployability:roadmap"));
 assert.ok(body.next_commands.includes("corepack pnpm run deployability:status"));
+assert.ok(body.next_commands.includes("corepack pnpm run deployability:gates"));
 assert.ok(body.next_commands.includes("corepack pnpm run deployability:doctor"));
 assert.ok(body.next_commands.includes("corepack pnpm run deployability:dashboard"));
 assert.ok(body.next_commands.includes("corepack pnpm run deployability:recipe -- --profile public-stack"));
@@ -98,6 +100,7 @@ assert.match(text.stdout, /Public Stack/);
 assert.match(text.stdout, /corepack pnpm run deployability:safety/);
 assert.match(text.stdout, /corepack pnpm run deployability:roadmap/);
 assert.match(text.stdout, /corepack pnpm run deployability:status/);
+assert.match(text.stdout, /corepack pnpm run deployability:gates/);
 assert.match(text.stdout, /corepack pnpm run deployability:doctor/);
 assert.match(text.stdout, /corepack pnpm run deployability:dashboard/);
 assert.match(text.stdout, /corepack pnpm run deployability:dashboard -- --profile public-stack/);

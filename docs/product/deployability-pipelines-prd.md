@@ -25,6 +25,8 @@ Required commands:
 - `corepack pnpm --silent run deployability:roadmap -- --json`
 - `corepack pnpm run deployability:status`
 - `corepack pnpm --silent run deployability:status -- --json`
+- `corepack pnpm run deployability:gates`
+- `corepack pnpm --silent run deployability:gates -- --json`
 - `corepack pnpm run deployability:doctor`
 - `corepack pnpm --silent run deployability:doctor -- --json`
 - `corepack pnpm run deployability:dashboard`
@@ -108,6 +110,10 @@ Acceptance:
   first-glance management surfaces, aggregating readiness, roadmap, and the
   public-stack recipe into status cards, source health, primary next commands,
   and safety defaults without executing deployment commands
+- `deployability:gates -- --json` emits a public exposure and production
+  hardening gate checklist for management UIs, projecting roadmap, command
+  catalog, and status metadata into explicit gate cards without running
+  security-review, Docker, network, or release commands
 - doctor reports compatibility ledger, top-level scripts, documentation,
   brand-site file alignment, brand-site deployability content smoke, and
   safety-contract alignment as one read-only snapshot without executing Docker,

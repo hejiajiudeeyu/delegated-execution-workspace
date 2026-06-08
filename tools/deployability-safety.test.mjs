@@ -59,6 +59,11 @@ assert.equal(byCommand.get("corepack pnpm run deployability:status").reads_env, 
 assert.equal(byCommand.get("corepack pnpm run deployability:status").calls_docker, false);
 assert.equal(byCommand.get("corepack pnpm run deployability:status").probes_network, false);
 assert.equal(byCommand.get("corepack pnpm run deployability:status").dashboard_safe, true);
+assert.equal(byCommand.get("corepack pnpm run deployability:gates").posture, "read_only");
+assert.equal(byCommand.get("corepack pnpm run deployability:gates").reads_env, false);
+assert.equal(byCommand.get("corepack pnpm run deployability:gates").calls_docker, false);
+assert.equal(byCommand.get("corepack pnpm run deployability:gates").probes_network, false);
+assert.equal(byCommand.get("corepack pnpm run deployability:gates").dashboard_safe, true);
 assert.equal(byCommand.get("corepack pnpm run deployability:recipe").posture, "read_only");
 assert.equal(byCommand.get("corepack pnpm run deployability:recipe").reads_env, false);
 assert.equal(byCommand.get("corepack pnpm run deployability:recipe").calls_docker, false);
@@ -152,6 +157,7 @@ assert.ok(body.safety_defaults.some((item) => /does not read \.env/i.test(item))
 assert.ok(body.next_commands.includes("corepack pnpm run deployability:quickstart"));
 assert.ok(body.next_commands.includes("corepack pnpm run deployability:readiness"));
 assert.ok(body.next_commands.includes("corepack pnpm run deployability:status"));
+assert.ok(body.next_commands.includes("corepack pnpm run deployability:gates"));
 assert.ok(body.next_commands.includes("corepack pnpm run deployability:recipe -- --profile public-stack"));
 assert.ok(body.notes.some((item) => /matrix is descriptive/i.test(item)));
 assert.ok(!json.stdout.includes("sk_safety_must_not_leak"));
@@ -163,6 +169,7 @@ assert.match(text.stdout, /Deployability safety matrix/);
 assert.match(text.stdout, /deployability:readiness/);
 assert.match(text.stdout, /deployability:roadmap/);
 assert.match(text.stdout, /deployability:status/);
+assert.match(text.stdout, /deployability:gates/);
 assert.match(text.stdout, /deployability:recipe/);
 assert.match(text.stdout, /selfhost:up/);
 assert.match(text.stdout, /starts-services/);

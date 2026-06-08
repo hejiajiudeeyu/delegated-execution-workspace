@@ -125,6 +125,8 @@ corepack pnpm run deployability:roadmap
 corepack pnpm --silent run deployability:roadmap -- --json
 corepack pnpm run deployability:status
 corepack pnpm --silent run deployability:status -- --json
+corepack pnpm run deployability:gates
+corepack pnpm --silent run deployability:gates -- --json
 corepack pnpm run deployability:doctor
 corepack pnpm --silent run deployability:doctor -- --json
 corepack pnpm run deployability:dashboard
@@ -311,6 +313,11 @@ Notes:
   operator console needs one compact first-glance status. It aggregates
   readiness, roadmap, and the public-stack recipe into status cards without
   reading `.env`, calling Docker, probing networks, or printing secret values.
+- Use `corepack pnpm --silent run deployability:gates -- --json` when an
+  operator console needs the public exposure and production hardening gate
+  checklist. It keeps public-stack exposure gated and formal production
+  hardening planned without running security-review, Docker, network, or
+  release commands.
 - Use `corepack pnpm --silent run deployability:menu -- --profile public-stack --json`
   when a management UI needs one public-stack first screen. The focused menu
   includes `selected_onboarding_plan` from the read-only

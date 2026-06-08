@@ -123,6 +123,8 @@ corepack pnpm run deployability:roadmap
 corepack pnpm --silent run deployability:roadmap -- --json
 corepack pnpm run deployability:status
 corepack pnpm --silent run deployability:status -- --json
+corepack pnpm run deployability:gates
+corepack pnpm --silent run deployability:gates -- --json
 corepack pnpm run deployability:doctor
 corepack pnpm --silent run deployability:doctor -- --json
 corepack pnpm run deployability:dashboard
@@ -200,6 +202,13 @@ first screens. Use `corepack pnpm run deployability:status` or
 `corepack pnpm --silent run deployability:status -- --json` when a dashboard
 needs readiness, roadmap, public-stack gating, and production-hardening status
 without parsing the larger dashboard payload.
+
+`deployability:gates` is the compact read-only gate checklist for public
+exposure and production hardening. Use
+`corepack pnpm run deployability:gates` or
+`corepack pnpm --silent run deployability:gates -- --json` when a dashboard
+needs to show what must pass before opening edge routes or claiming production
+readiness without running the gate commands.
 
 `deployability:profiles` is the dedicated read-only profile catalog for
 operators, dashboards, CI, and management scripts. It derives profile cards
