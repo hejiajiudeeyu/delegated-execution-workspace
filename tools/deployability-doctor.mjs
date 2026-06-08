@@ -27,8 +27,10 @@ const REQUIRED_SCRIPTS = [
   "test:deployability-safety",
   "test:deployability-doctor",
   "test:deployability-dashboard",
+  "test:deployability-pipeline-summaries",
   "test:deployability-commands",
   "test:deployability-handoff",
+  "test:deployability",
   "test:compat-status"
 ];
 
@@ -75,6 +77,7 @@ const NEXT_COMMANDS = [
   "corepack pnpm run deployability:commands",
   "corepack pnpm run compat:status",
   "corepack pnpm run deployability:handoff",
+  "corepack pnpm run test:deployability",
   "corepack pnpm run check:submodules",
   "corepack pnpm run check:bundles"
 ];

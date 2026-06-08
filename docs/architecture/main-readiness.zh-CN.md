@@ -196,6 +196,9 @@ corepack pnpm run test:integration
   、per-pipeline summaries 和下一步命令，不混入终端文本或 secret 值
 - `test:deployability-pipeline-summaries`：通过，证明 dashboard 和 handoff 输出同一份
   shared `pipeline_summaries` payload
+- `test:deployability`：通过，用一条命令运行 overview、quickstart、safety、doctor、
+  dashboard、pipeline-summary 一致性、命令目录、handoff 和 compatibility status
+  顶层 deployability regression suite
 - `deployability:commands -- --json`：通过，输出命令目录及 category、posture、track
   和 pipeline filters，来源于 overview、quickstart 和 safety metadata，并让带
   profile 参数的命令变体继承基础安全姿态，不混入终端文本或 secret 值

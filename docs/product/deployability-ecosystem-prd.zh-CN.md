@@ -176,7 +176,7 @@ CALL ANYTHING 现在的仓库边界是正确的：
   `deployability:doctor -- --json`、`deployability:dashboard`、
   `deployability:dashboard -- --json`、`deployability:commands`、
   `deployability:commands -- --json`、`compat:status`、`compat:status -- --json`、
-  `deployability:handoff`、`deployability:handoff -- --json`、
+  `deployability:handoff`、`deployability:handoff -- --json`、`test:deployability`、
   `dev:local:plan -- --json`、
   `dev:local:up -- --json`、`dev:local:status -- --json`、
   `dev:local:logs -- --json`、`dev:local:down -- --json`、

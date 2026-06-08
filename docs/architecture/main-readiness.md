@@ -231,6 +231,9 @@ Observed results:
   terminal prose or secret values
 - `test:deployability-pipeline-summaries`: passed, proving dashboard and
   handoff expose the same shared `pipeline_summaries` payload
+- `test:deployability`: passed, running the top-level deployability regression
+  suite across overview, quickstart, safety, doctor, dashboard, pipeline-summary
+  consistency, command catalog, handoff, and compatibility status
 - `deployability:commands -- --json`: passed, reporting a command catalog with
   category, posture, track, and pipeline filters, sourced from overview,
   quickstart, and safety metadata, including inherited safety posture for

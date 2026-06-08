@@ -34,9 +34,11 @@ Required commands:
 - `corepack pnpm run test:deployability-safety`
 - `corepack pnpm run test:deployability-doctor`
 - `corepack pnpm run test:deployability-dashboard`
+- `corepack pnpm run test:deployability-pipeline-summaries`
 - `corepack pnpm run test:deployability-commands`
 - `corepack pnpm run test:compat-status`
 - `corepack pnpm run test:deployability-handoff`
+- `corepack pnpm run test:deployability`
 
 Acceptance:
 
@@ -73,6 +75,10 @@ Acceptance:
   source and consistency test for command counts, JSON counts, dashboard-safe
   counts, CI-safe counts, public exposure gate counts, next commands, and safety
   notes
+- `test:deployability` runs the top-level deployability regression suite as one
+  command, covering overview, quickstart, safety, doctor, dashboard,
+  pipeline-summary consistency, command catalog, handoff, and compatibility
+  status tests
 - `deployability:commands -- --json` emits a clean command catalog with
   category, posture, track, and pipeline filters, merging overview,
   quickstart, and safety metadata, and inheriting base safety posture for

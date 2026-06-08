@@ -35,6 +35,10 @@ assert.equal(checksByKey.get("brand_site_alignment").ok, true);
 assert.equal(checksByKey.get("brand_site_content_smoke").ok, true);
 assert.equal(checksByKey.get("safety_contract").ok, true);
 assert.ok(checksByKey.get("documentation_alignment").evidence.includes("README.md"));
+assert.ok(checksByKey.get("top_level_scripts").data.required_scripts.includes("test:deployability"));
+assert.ok(
+  checksByKey.get("top_level_scripts").data.required_scripts.includes("test:deployability-pipeline-summaries")
+);
 assert.ok(checksByKey.get("brand_site_alignment").evidence.some((item) => item.includes("DeployabilityProfiles.tsx")));
 assert.ok(checksByKey.get("brand_site_content_smoke").evidence.includes("npm run smoke:deployability-content"));
 assert.ok(body.next_commands.includes("corepack pnpm run deployability:quickstart"));
@@ -42,6 +46,7 @@ assert.ok(body.next_commands.includes("corepack pnpm run deployability:safety"))
 assert.ok(body.next_commands.includes("corepack pnpm run deployability:dashboard"));
 assert.ok(body.next_commands.includes("corepack pnpm run deployability:commands"));
 assert.ok(body.next_commands.includes("corepack pnpm run deployability:handoff"));
+assert.ok(body.next_commands.includes("corepack pnpm run test:deployability"));
 assert.ok(body.safety_defaults.some((item) => /does not read \.env/i.test(item)));
 assert.ok(!json.stdout.includes("[ok]"));
 assert.ok(!json.stdout.includes("sk_doctor_must_not_leak"));

@@ -33,9 +33,11 @@ onboarding 或 release-image 路径前，先给出一个只读命令地图和一
 - `corepack pnpm run test:deployability-safety`
 - `corepack pnpm run test:deployability-doctor`
 - `corepack pnpm run test:deployability-dashboard`
+- `corepack pnpm run test:deployability-pipeline-summaries`
 - `corepack pnpm run test:deployability-commands`
 - `corepack pnpm run test:compat-status`
 - `corepack pnpm run test:deployability-handoff`
+- `corepack pnpm run test:deployability`
 
 验收：
 
@@ -64,6 +66,9 @@ onboarding 或 release-image 路径前，先给出一个只读命令地图和一
 - `deployability:overview`、`deployability:dashboard` 和 `deployability:handoff`
   共用第四仓 pipeline summary metadata 和一致性测试，覆盖命令数、JSON 入口数、
   dashboard-safe 数、CI-safe 数、public exposure gate 数、下一步命令和安全说明
+- `test:deployability` 用一条命令运行顶层 deployability regression suite，覆盖
+  overview、quickstart、safety、doctor、dashboard、pipeline-summary 一致性、命令目录、
+  handoff 和 compatibility status tests
 - `deployability:commands -- --json` 输出干净的命令目录，包含 category、posture、
   track 和 pipeline filters，并合并 overview、quickstart 和 safety metadata，
   同时让带 profile 参数的命令变体继承基础安全姿态，不读取 `.env`、不调用 Docker、
