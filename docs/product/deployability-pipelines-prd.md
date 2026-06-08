@@ -44,7 +44,7 @@ Required commands:
 Acceptance:
 
 - overview lists Local Agent Loop, All-in-One Demo, Selfhost Platform, Public
-  Stack, Operator Onboarding, and Published Image paths
+  Stack, Recovery & Evidence, Operator Onboarding, and Published Image paths
 - overview includes the human commands and machine-readable JSON commands for
   each path
 - overview is read-only: it does not read `.env`, call Docker, bind ports, or
@@ -366,6 +366,42 @@ Acceptance:
   printing generated secret values
 - selfhost kit has automated coverage for env creation and secret rotation dry-run/confirm behavior
 - no command prints secret values
+
+## Pipeline B1: Recovery & Evidence
+
+Goal: make the operator handoff, audit evidence, backup validation, restore
+rehearsal, and secret rotation path visible as one top-level deployability
+pipeline before public exposure or handoff.
+
+Required commands:
+
+- `corepack pnpm run selfhost:ops-report`
+- `corepack pnpm --silent run selfhost:ops-report -- --json`
+- `corepack pnpm run selfhost:audit-export`
+- `corepack pnpm --silent run selfhost:audit-export -- --json`
+- `corepack pnpm run selfhost:backup-plan`
+- `corepack pnpm --silent run selfhost:backup-plan -- --json`
+- `corepack pnpm run selfhost:backup-validate`
+- `corepack pnpm --silent run selfhost:backup-validate -- --backup-dir <backup-dir> --json`
+- `corepack pnpm run selfhost:restore-plan`
+- `corepack pnpm --silent run selfhost:restore-plan -- --backup-dir <backup-dir> --json`
+- `corepack pnpm run selfhost:rotate-plan`
+- `corepack pnpm --silent run selfhost:rotate-plan -- --json`
+- `corepack pnpm --silent run selfhost:rotate -- --json`
+
+Acceptance:
+
+- deployability overview shows Recovery & Evidence as `ready_now`
+- deployability dashboard and handoff expose `recovery_evidence` through the
+  same shared pipeline summary metadata as overview
+- `deployability:commands -- --pipeline recovery_evidence` returns the handoff,
+  audit export, backup, restore, and rotation commands without `unmapped`
+  posture entries
+- safety matrix labels the commands as `writes_report`, `exports_evidence`,
+  `read_only`, or `writes_env` so dashboards can explain risk before services
+  start or public exposure is attempted
+- docs and brand-site present this as evidence and recovery readiness, not as a
+  destructive restore or automatic rotation workflow
 
 ## Pipeline C: Public Stack Profile
 

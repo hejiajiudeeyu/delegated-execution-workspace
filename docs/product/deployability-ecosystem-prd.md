@@ -75,6 +75,7 @@ The ecosystem is "daily-deployable" when a fresh operator can:
 | Deployability doctor | fourth repo | `corepack pnpm run deployability:doctor`, plus `corepack pnpm --silent run deployability:doctor -- --json` as the read-only readiness snapshot for compatibility ledger, top-level scripts, docs, brand-site, and safety-contract alignment |
 | Deployability dashboard | fourth repo | `corepack pnpm run deployability:dashboard`, plus `corepack pnpm --silent run deployability:dashboard -- --json` as the single read-only aggregate payload for top-level dashboards and CI, combining overview, quickstart, safety, doctor, compatibility, ecosystem_readiness, and per-pipeline summary sections |
 | Deployability commands catalog | fourth repo | `corepack pnpm run deployability:commands`, plus `corepack pnpm --silent run deployability:commands -- --json` as the read-only searchable command catalog with category, posture, first-use track, pipeline filters, and inherited safety posture for profile-specific command variants |
+| Deployability recovery evidence path | fourth repo | `deployability:overview`, `deployability:dashboard`, `deployability:handoff`, and `deployability:commands -- --pipeline recovery_evidence` expose ops-report, audit export, backup, restore, and rotation commands as one ready-now evidence and recovery pipeline |
 | Deployability handoff | fourth repo | `corepack pnpm run deployability:handoff`, plus `corepack pnpm --silent run deployability:handoff -- --json` for a non-secret ecosystem handoff report under `exports/deployability/`, including the same ecosystem_readiness scorecard used by the dashboard |
 | Daily local doctor | fourth repo | `corepack pnpm run dev:doctor`, plus `corepack pnpm --silent run dev:doctor -- --json` for dashboards and scripts |
 | Local agent loop management metadata | fourth repo | `corepack pnpm run dev:local:plan`, `dev:local:up`, `dev:local:status`, `dev:local:logs`, and `dev:local:down`, plus `--json` for dashboards and scripts |
@@ -191,6 +192,11 @@ Required baseline:
   command map, ecosystem_readiness, shared per-pipeline summaries, safety
   notes, and next validation commands without reading `.env`, calling Docker,
   probing networks, or printing secrets
+- machine-readable recovery evidence metadata that exposes the existing
+  ops-report, audit-export, backup-plan, backup-validate, restore-plan,
+  rotate-plan, and rotate commands as the `recovery_evidence` pipeline, with
+  explicit `writes_report`, `exports_evidence`, `read_only`, and `writes_env`
+  posture labels and no secret values in JSON output
 
 ## 8. Success Metrics
 
@@ -204,6 +210,7 @@ Required baseline:
   `compat:status -- --json`, `deployability:handoff`,
   `deployability:handoff -- --json`, `test:deployability`,
   `test:deployability-operations`,
+  `deployability:commands -- --pipeline recovery_evidence`,
   `dev:local:plan -- --json`,
   `dev:local:up -- --json`, `dev:local:status -- --json`,
   `dev:local:logs -- --json`, `dev:local:down -- --json`,
@@ -216,7 +223,8 @@ Required baseline:
   `dev:doctor -- --json`,
   `test:agent-e2e`, `published-image:plan -- --json`,
   `published-image:smoke -- --dry-run --json`, `selfhost:security-review`,
-  `selfhost:audit-export -- --json`, `operator:onboarding:check`, and
+  `selfhost:audit-export -- --json`, `selfhost:backup-plan`,
+  `selfhost:restore-plan`, `selfhost:rotate-plan`, `operator:onboarding:check`, and
   `operator:onboarding:check -- --json`.
 - Platform billing operators have an admin-only API and Platform Console page
   for tenant setup, balance inspection, manual recharge capture, and ledger
@@ -339,5 +347,9 @@ Required baseline:
   so dashboards, CI, and operator runbooks can inspect dry-run rotation intent
   and confirmed rotation artifacts without parsing terminal prose or printing
   rotated secret values.
+- Expose the existing ops-report, audit export, backup, restore, and rotation
+  controls as the first-class `recovery_evidence` deployability pipeline so
+  operators can filter and hand off recovery readiness from the top-level
+  command map.
 - Published-image smoke is first connected as a fourth-repo wrapper; formal
   image build, publish, and release gates remain owned by `repos/platform`.

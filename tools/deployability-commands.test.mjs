@@ -31,6 +31,7 @@ assert.ok(body.filters.tracks.includes("daily_dev"));
 assert.ok(body.filters.tracks.includes("all_in_one_demo"));
 assert.ok(body.filters.pipelines.includes("all_in_one_demo"));
 assert.ok(body.filters.pipelines.includes("selfhost_platform"));
+assert.ok(body.filters.pipelines.includes("recovery_evidence"));
 
 const byCommand = new Map(body.commands.map((item) => [item.command, item]));
 assert.equal(byCommand.get("corepack pnpm run deployability:dashboard").category, "top_level");
@@ -50,6 +51,18 @@ assert.equal(byCommand.get("corepack pnpm run dev:local:status").posture, "runti
 assert.equal(byCommand.get("corepack pnpm run dev:local:status").dashboard_safe, true);
 assert.equal(byCommand.get("corepack pnpm run selfhost:doctor").posture, "read_only");
 assert.equal(byCommand.get("corepack pnpm run selfhost:doctor").dashboard_safe, true);
+assert.equal(byCommand.get("corepack pnpm run selfhost:ops-report").posture, "writes_report");
+assert.equal(byCommand.get("corepack pnpm run selfhost:ops-report").dashboard_safe, true);
+assert.equal(byCommand.get("corepack pnpm run selfhost:backup-plan").posture, "read_only");
+assert.equal(byCommand.get("corepack pnpm run selfhost:backup-plan").dashboard_safe, true);
+assert.equal(byCommand.get("corepack pnpm run selfhost:backup-validate").posture, "read_only");
+assert.equal(byCommand.get("corepack pnpm run selfhost:backup-validate").dashboard_safe, true);
+assert.equal(byCommand.get("corepack pnpm run selfhost:restore-plan").posture, "read_only");
+assert.equal(byCommand.get("corepack pnpm run selfhost:restore-plan").dashboard_safe, true);
+assert.equal(byCommand.get("corepack pnpm run selfhost:rotate-plan").posture, "read_only");
+assert.equal(byCommand.get("corepack pnpm run selfhost:rotate-plan").dashboard_safe, true);
+assert.equal(byCommand.get("corepack pnpm run selfhost:rotate").posture, "writes_env");
+assert.equal(byCommand.get("corepack pnpm run selfhost:rotate").dashboard_safe, true);
 assert.equal(byCommand.get("corepack pnpm run selfhost:up").posture, "starts_services");
 assert.equal(byCommand.get("corepack pnpm run selfhost:up").calls_docker, true);
 assert.ok(body.next_commands.includes("corepack pnpm run deployability:dashboard"));
@@ -112,6 +125,20 @@ assert.equal(
   "starts_services"
 );
 assert.ok(!allInOnePipelineBody.commands.some((item) => item.posture === "unmapped"));
+
+const recoveryEvidencePipeline = run(["--json", "--pipeline", "recovery_evidence"]);
+assert.equal(recoveryEvidencePipeline.status, 0, recoveryEvidencePipeline.stderr || recoveryEvidencePipeline.stdout);
+const recoveryEvidencePipelineBody = JSON.parse(recoveryEvidencePipeline.stdout);
+const recoveryEvidenceCommands = new Map(recoveryEvidencePipelineBody.commands.map((item) => [item.command, item]));
+assert.equal(recoveryEvidenceCommands.get("corepack pnpm run selfhost:ops-report").posture, "writes_report");
+assert.equal(recoveryEvidenceCommands.get("corepack pnpm run selfhost:audit-export").posture, "exports_evidence");
+assert.equal(recoveryEvidenceCommands.get("corepack pnpm run selfhost:backup-plan").posture, "read_only");
+assert.equal(recoveryEvidenceCommands.get("corepack pnpm run selfhost:backup-validate").posture, "read_only");
+assert.equal(recoveryEvidenceCommands.get("corepack pnpm run selfhost:restore-plan").posture, "read_only");
+assert.equal(recoveryEvidenceCommands.get("corepack pnpm run selfhost:rotate-plan").posture, "read_only");
+assert.equal(recoveryEvidenceCommands.get("corepack pnpm run selfhost:rotate").posture, "writes_env");
+assert.ok(recoveryEvidencePipelineBody.commands.every((item) => item.pipeline_keys.includes("recovery_evidence")));
+assert.ok(!recoveryEvidencePipelineBody.commands.some((item) => item.posture === "unmapped"));
 
 const allInOneTrack = run(["--json", "--track", "all_in_one_demo"]);
 assert.equal(allInOneTrack.status, 0, allInOneTrack.stderr || allInOneTrack.stdout);

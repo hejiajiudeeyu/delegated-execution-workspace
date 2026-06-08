@@ -18,14 +18,14 @@ repositories.
 - `repos/protocol`: `da3027100cfe9391f7f8d03be18a108ee2804cf6`
 - `repos/client`: `f1d6a2d8c9b83517cdf6ca9803b223847f880e9a`
 - `repos/platform`: `5961309c6b0ca4e8df22dbb5be92ac0845bf8d25`
-- `repos/brand-site`: `13a8aebc984175e301b95b069678eaca1d0af28b`
+- `repos/brand-site`: `e6b8d934b16d41f8a85f8ed7e8cffe00474cd34e`
 
-The current bundle is `changes/CHG-2026-101.yaml`.
+The current bundle is `changes/CHG-2026-102.yaml`.
 
 ## Readiness Verdict
 
 The pinned combination is ready for daily fourth-repo development after
-CHG-2026-101:
+CHG-2026-102:
 
 - submodule SHA integrity is verified
 - boundary governance covers the new platform billing data package
@@ -105,7 +105,7 @@ CHG-2026-101:
   deployment profiles, ready/planned boundaries, secret-safety defaults, and
   the operator-only Billing console slice, plus the new profiles/doctor/summary/security-review
   and quickstart/readiness/audit-export/ports/ops-report/backup-validate/restore-plan/rotate-plan/rotate-json gates,
-  pipeline_summaries, and inherited safety posture for profile-specific command variants
+  `recovery_evidence` pipeline, pipeline_summaries, and inherited safety posture for profile-specific command variants
 - one-command local stack bootstrap is available through managed
   `dev:local:*` commands, with `--json` metadata for plan/up/status/logs/down
   so dashboards and scripts can inspect and control the local loop without
@@ -116,8 +116,8 @@ CHG-2026-101:
   caller-skill manifest/search checks, blockers, and next commands without raw
   logs or secret values
 - `deployability:overview` is available as the read-only first command map for
-  Local Agent Loop, All-in-One Demo, Selfhost Platform, Public Stack, Operator
-  Onboarding, and Published Image paths, and supports `--json` without reading
+  Local Agent Loop, All-in-One Demo, Selfhost Platform, Public Stack, Recovery
+  & Evidence, Operator Onboarding, and Published Image paths, and supports `--json` without reading
   `.env`, calling Docker, binding ports, probing networks, or printing secrets
 - `deployability:quickstart` is available as the read-only first-use guide for
   a fresh checkout, listing Daily Development, All-in-One Demo, Selfhost
@@ -202,7 +202,7 @@ Observed results:
 - `check:submodules`: passed
 - `check:boundaries`: passed after adding `@delexec/billing-store` to
   `platform/data`
-- `check:bundles`: passed with `CHG-2026-101`
+- `check:bundles`: passed with `CHG-2026-102`
 - `test:contracts`: passed, including `@delexec/billing-store` in platform
   package validation and the `@delexec/platform-api` dependency graph
 - `test:integration`: passed with a successful request/response path
@@ -522,10 +522,10 @@ marked admin-only and not production-default billing.
 
 The brand-site docs now expose `/docs/deployability-profiles` and
 `/en/docs/deployability-profiles` as bilingual public entry points for Local
-Agent Loop, All-in-One Demo, Selfhost Platform, Public Stack, and Management
+Agent Loop, All-in-One Demo, Selfhost Platform, Recovery & Evidence, Public Stack, and Management
 Console. The pages keep self-host messaging honest by labeling current paths as
 ready now: local loop, all-in-one demo, selfhost, public-stack safety checks,
-published-image smoke, and Operator Onboarding. Management Console copy now
+recovery evidence, published-image smoke, and Operator Onboarding. Management Console copy now
 also describes the admin-only Billing page as an operator surface, not as
 client-facing billing readiness, and the public-stack command examples include
 `selfhost:quickstart -- --profile all-in-one`,
@@ -533,6 +533,7 @@ client-facing billing readiness, and the public-stack command examples include
 `selfhost:security-review`,
 `selfhost:audit-export`, `selfhost:audit-export -- --json`, `selfhost:profiles`, `selfhost:quickstart`, `selfhost:readiness -- --all`, `selfhost:readiness`, `selfhost:readiness -- --json`, `selfhost:doctor`, `selfhost:init -- --json`, `selfhost:init -- --profile public-stack --json`, `selfhost:summary`, `selfhost:ports`,
 `selfhost:up -- --json`, `selfhost:smoke -- --json`, `selfhost:logs -- --json`, `selfhost:down -- --json`, `selfhost:ops-report`, `deployability:safety`, `deployability:safety -- --json`, `deployability:doctor`, `corepack pnpm run deployability:doctor`, `corepack pnpm --silent run deployability:doctor -- --json`, `deployability:dashboard`, `corepack pnpm run deployability:dashboard`, `corepack pnpm --silent run deployability:dashboard -- --json`, `deployability:commands`, `corepack pnpm run deployability:commands`, `corepack pnpm --silent run deployability:commands -- --json`, `deployability:handoff`, `operator:onboarding:check -- --json`,
+`deployability:commands -- --pipeline recovery_evidence`, `recovery_evidence`,
 `selfhost:plan`, `selfhost:plan -- --json`, `selfhost:backup-plan`, `selfhost:backup-validate`, `selfhost:restore-plan`, `selfhost:rotate-plan`, `selfhost:rotate -- --profile public-stack --json`, and `selfhost:rotate -- --profile public-stack --confirm --json` as pre-exposure safety,
 evidence, quickstart sequencing, human-readable and machine-readable readiness overview, selected-profile deployment maps, port visibility, safe startup/log/stop command metadata, handoff-report,
 machine-readable handoff, backup planning, backup-artifact validation, recovery-rehearsal, rotation-planning, and rotation-metadata commands. Capabilities that

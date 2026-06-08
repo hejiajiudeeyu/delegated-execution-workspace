@@ -53,7 +53,7 @@ assert.equal(body.sections.safety.command, "deployability:safety");
 assert.equal(body.sections.commands.command, "deployability:commands");
 assert.equal(body.sections.doctor.command, "deployability:doctor");
 assert.equal(body.sections.compatibility.command, "compat:status");
-assert.equal(body.current_bundle.change_id, "CHG-2026-101");
+assert.equal(body.current_bundle.change_id, "CHG-2026-102");
 assert.equal(body.ecosystem_readiness.status, "daily_deployable_with_safety_gates");
 assert.equal(body.ecosystem_readiness.goal, "daily-deployable");
 assert.deepEqual(
@@ -92,7 +92,15 @@ assert.ok(
 assert.ok(Array.isArray(body.pipeline_summaries));
 assert.deepEqual(
   body.pipeline_summaries.map((item) => item.key),
-  ["local_agent_loop", "all_in_one_demo", "selfhost_platform", "public_stack", "operator_onboarding", "published_image"]
+  [
+    "local_agent_loop",
+    "all_in_one_demo",
+    "selfhost_platform",
+    "public_stack",
+    "recovery_evidence",
+    "operator_onboarding",
+    "published_image"
+  ]
 );
 const allInOne = body.pipeline_summaries.find((item) => item.key === "all_in_one_demo");
 assert.equal(allInOne.status, "ready_now");
@@ -110,6 +118,13 @@ assert.ok(
   )
 );
 assert.ok(publicStack.safety_notes.some((item) => /unsafe public origins/i.test(item)));
+const recoveryEvidence = body.pipeline_summaries.find((item) => item.key === "recovery_evidence");
+assert.equal(recoveryEvidence.status, "ready_now");
+assert.ok(recoveryEvidence.next_commands.includes("corepack pnpm run selfhost:ops-report"));
+assert.ok(recoveryEvidence.next_commands.includes("corepack pnpm run selfhost:backup-plan"));
+assert.ok(recoveryEvidence.next_commands.includes("corepack pnpm run selfhost:restore-plan"));
+assert.ok(recoveryEvidence.next_commands.includes("corepack pnpm run selfhost:rotate-plan"));
+assert.ok(recoveryEvidence.dashboard_safe_command_count >= 4);
 const operatorOnboarding = body.pipeline_summaries.find((item) => item.key === "operator_onboarding");
 assert.ok(operatorOnboarding.dashboard_safe_command_count >= 2);
 const publishedImage = body.pipeline_summaries.find((item) => item.key === "published_image");
@@ -131,8 +146,9 @@ assert.match(text.stdout, /Ecosystem readiness/);
 assert.match(text.stdout, /daily_deployable_with_safety_gates/);
 assert.match(text.stdout, /Pipeline summaries/);
 assert.match(text.stdout, /all_in_one_demo/);
+assert.match(text.stdout, /recovery_evidence/);
 assert.match(text.stdout, /public_stack/);
-assert.match(text.stdout, /CHG-2026-101/);
+assert.match(text.stdout, /CHG-2026-102/);
 assert.match(text.stdout, /corepack pnpm run deployability:handoff/);
 assert.ok(!text.stdout.includes("sk_dashboard_must_not_leak"));
 

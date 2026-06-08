@@ -25,7 +25,15 @@ assert.ok(body.generated_at);
 assert.ok(Array.isArray(body.pipelines));
 assert.deepEqual(
   body.pipelines.map((item) => item.key),
-  ["local_agent_loop", "all_in_one_demo", "selfhost_platform", "public_stack", "operator_onboarding", "published_image"]
+  [
+    "local_agent_loop",
+    "all_in_one_demo",
+    "selfhost_platform",
+    "public_stack",
+    "recovery_evidence",
+    "operator_onboarding",
+    "published_image"
+  ]
 );
 assert.ok(body.pipelines.find((item) => item.key === "local_agent_loop").commands.includes("corepack pnpm run dev:doctor"));
 assert.ok(
@@ -48,6 +56,16 @@ assert.ok(
     .find((item) => item.key === "operator_onboarding")
     .json_commands.includes("corepack pnpm --silent run operator:onboarding:check -- --json")
 );
+assert.ok(
+  body.pipelines
+    .find((item) => item.key === "recovery_evidence")
+    .commands.includes("corepack pnpm run selfhost:backup-plan")
+);
+assert.ok(
+  body.pipelines
+    .find((item) => item.key === "recovery_evidence")
+    .json_commands.includes("corepack pnpm --silent run selfhost:rotate-plan -- --json")
+);
 assert.ok(body.next_commands.includes("corepack pnpm run selfhost:profiles"));
 assert.ok(body.next_commands.includes("corepack pnpm run deployability:quickstart"));
 assert.ok(body.next_commands.includes("corepack pnpm run deployability:safety"));
@@ -64,6 +82,8 @@ assert.equal(text.status, 0, text.stderr || text.stdout);
 assert.match(text.stdout, /Deployability overview/);
 assert.match(text.stdout, /Local Agent Loop/);
 assert.match(text.stdout, /All-in-One Demo/);
+assert.match(text.stdout, /Recovery & Evidence/);
+assert.match(text.stdout, /selfhost:backup-plan/);
 assert.match(text.stdout, /selfhost:quickstart -- --profile all-in-one/);
 assert.match(text.stdout, /corepack pnpm run selfhost:profiles/);
 assert.match(text.stdout, /corepack pnpm run test:deployability/);

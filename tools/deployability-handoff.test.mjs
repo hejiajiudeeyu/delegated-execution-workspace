@@ -116,7 +116,15 @@ try {
   assert.ok(Array.isArray(body.pipeline_summaries));
   assert.deepEqual(
     body.pipeline_summaries.map((item) => item.key),
-    ["local_agent_loop", "all_in_one_demo", "selfhost_platform", "public_stack", "operator_onboarding", "published_image"]
+    [
+      "local_agent_loop",
+      "all_in_one_demo",
+      "selfhost_platform",
+      "public_stack",
+      "recovery_evidence",
+      "operator_onboarding",
+      "published_image"
+    ]
   );
   const allInOne = body.pipeline_summaries.find((item) => item.key === "all_in_one_demo");
   assert.equal(allInOne.status, "ready_now");
@@ -125,6 +133,9 @@ try {
   assert.equal(publicStack.status, "ready_now_with_safety_gates");
   assert.equal(publicStack.public_exposure_gate_count, 2);
   assert.ok(publicStack.next_commands.includes("corepack pnpm run selfhost:security-review -- --profile public-stack"));
+  const recoveryEvidence = body.pipeline_summaries.find((item) => item.key === "recovery_evidence");
+  assert.equal(recoveryEvidence.status, "ready_now");
+  assert.ok(recoveryEvidence.next_commands.includes("corepack pnpm run selfhost:backup-plan"));
   assert.ok(body.next_commands.includes("corepack pnpm run check:submodules"));
   assert.ok(!json.stdout.includes("sk_handoff_must_not_leak"));
   assert.ok(!json.stdout.includes("[ok]"));

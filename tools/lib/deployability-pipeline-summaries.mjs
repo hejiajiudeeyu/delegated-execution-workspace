@@ -110,6 +110,34 @@ export const PIPELINES = [
     ]
   },
   {
+    key: "recovery_evidence",
+    label: "Recovery & Evidence",
+    status: "ready_now",
+    purpose: "Operator handoff, audit evidence, backup validation, restore rehearsal, and secret rotation planning.",
+    commands: [
+      "corepack pnpm run selfhost:ops-report",
+      "corepack pnpm run selfhost:audit-export",
+      "corepack pnpm run selfhost:backup-plan",
+      "corepack pnpm run selfhost:backup-validate",
+      "corepack pnpm run selfhost:restore-plan",
+      "corepack pnpm run selfhost:rotate-plan",
+      "corepack pnpm run selfhost:rotate"
+    ],
+    json_commands: [
+      "corepack pnpm --silent run selfhost:ops-report -- --json",
+      "corepack pnpm --silent run selfhost:audit-export -- --json",
+      "corepack pnpm --silent run selfhost:backup-plan -- --json",
+      "corepack pnpm --silent run selfhost:backup-validate -- --backup-dir <backup-dir> --json",
+      "corepack pnpm --silent run selfhost:restore-plan -- --backup-dir <backup-dir> --json",
+      "corepack pnpm --silent run selfhost:rotate-plan -- --json",
+      "corepack pnpm --silent run selfhost:rotate -- --json"
+    ],
+    safety_notes: [
+      "ops, audit, backup, restore, and rotation metadata avoid printing secret values",
+      "restore-plan and backup-validate keep recovery rehearsal read-only before any destructive restore"
+    ]
+  },
+  {
     key: "operator_onboarding",
     label: "Operator Onboarding",
     status: "ready_now",

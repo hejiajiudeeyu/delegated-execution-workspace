@@ -78,6 +78,7 @@ CALL ANYTHING 现在的仓库边界是正确的：
 | 可部署性 doctor | 第四仓 | `corepack pnpm run deployability:doctor`，以及作为 compatibility ledger、顶层 scripts、docs、brand-site 和 safety-contract 对齐状态只读快照的 `corepack pnpm --silent run deployability:doctor -- --json` |
 | 可部署性 dashboard | 第四仓 | `corepack pnpm run deployability:dashboard`，以及作为顶层 dashboard 和 CI 的只读聚合 payload 的 `corepack pnpm --silent run deployability:dashboard -- --json`，组合 overview、quickstart、safety、doctor、compatibility、ecosystem_readiness 和 per-pipeline summary sections |
 | 可部署性命令目录 | 第四仓 | `corepack pnpm run deployability:commands`，以及作为按 category、posture、首次使用 track 和 pipeline 过滤的只读命令目录的 `corepack pnpm --silent run deployability:commands -- --json`，并为带 profile 参数的命令变体继承基础安全姿态 |
+| 可部署性恢复证据路径 | 第四仓 | `deployability:overview`、`deployability:dashboard`、`deployability:handoff` 和 `deployability:commands -- --pipeline recovery_evidence` 把 ops-report、audit export、backup、restore 和 rotation 命令作为一条 ready-now 证据与恢复管线暴露 |
 | 可部署性交接报告 | 第四仓 | `corepack pnpm run deployability:handoff`，以及用于输出 `exports/deployability/` 下不含 secret 的生态交接报告 metadata 的 `corepack pnpm --silent run deployability:handoff -- --json`，包含与 dashboard 相同的 ecosystem_readiness scorecard |
 | 日常本地 doctor | 第四仓 | `corepack pnpm run dev:doctor`，以及给 dashboard 和脚本使用的 `corepack pnpm --silent run dev:doctor -- --json` |
 | Local agent loop 管理 metadata | 第四仓 | `corepack pnpm run dev:local:plan`、`dev:local:up`、`dev:local:status`、`dev:local:logs` 和 `dev:local:down`，并提供 `--json` 供 dashboard 和脚本消费 |
@@ -175,6 +176,10 @@ CALL ANYTHING 现在的仓库边界是正确的：
   当前 bundle、兼容 warnings、命令地图、ecosystem_readiness、shared per-pipeline
   summaries、安全说明和下一步验证命令，但不读取 `.env`、不调用 Docker、不探测网络、
   不打印 secret 值
+- recovery evidence metadata 可以机器读取，把现有 ops-report、audit-export、
+  backup-plan、backup-validate、restore-plan、rotate-plan 和 rotate 命令暴露成
+  `recovery_evidence` 管线，并给出 `writes_report`、`exports_evidence`、
+  `read_only` 和 `writes_env` 姿态标签，同时 JSON 不打印 secret 值
 
 ## 8. 成功指标
 
@@ -187,6 +192,7 @@ CALL ANYTHING 现在的仓库边界是正确的：
   `deployability:commands -- --json`、`compat:status`、`compat:status -- --json`、
   `deployability:handoff`、`deployability:handoff -- --json`、`test:deployability`、
   `test:deployability-operations`、
+  `deployability:commands -- --pipeline recovery_evidence`、
   `dev:local:plan -- --json`、
   `dev:local:up -- --json`、`dev:local:status -- --json`、
   `dev:local:logs -- --json`、`dev:local:down -- --json`、
@@ -199,7 +205,8 @@ CALL ANYTHING 现在的仓库边界是正确的：
   `dev:doctor -- --json`、
   `test:agent-e2e`、`published-image:plan -- --json`、
   `published-image:smoke -- --dry-run --json`、
-  `selfhost:security-review`、`selfhost:audit-export -- --json`、`operator:onboarding:check`
+  `selfhost:security-review`、`selfhost:audit-export -- --json`、`selfhost:backup-plan`、
+  `selfhost:restore-plan`、`selfhost:rotate-plan`、`operator:onboarding:check`
   和 `operator:onboarding:check -- --json`
 - platform billing operator 已有 admin-only API 和 Platform Console 页面，可做
   tenant setup、balance inspection、人工 recharge capture 和 ledger 浏览；终端用户
@@ -303,4 +310,7 @@ CALL ANYTHING 现在的仓库边界是正确的：
 - 增加 `selfhost:rotate -- --json` 和 `selfhost:rotate -- --confirm --json`，
   让 dashboard、CI 和 operator runbook 能消费 dry-run rotation intent 和
   confirmed rotation artifact metadata，同时不解析终端文本、不打印轮换后的 secret 值。
+- 把现有 ops-report、audit export、backup、restore 和 rotation controls 暴露为
+  一条一等 `recovery_evidence` deployability 管线，让 operator 能从顶层命令地图
+  过滤并交接恢复就绪状态。
 - 已发布镜像 smoke 先以第四仓 wrapper 形式接入，正式 image build/publish/release gate 仍归 `repos/platform`。

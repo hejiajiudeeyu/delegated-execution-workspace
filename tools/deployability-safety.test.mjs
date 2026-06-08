@@ -26,6 +26,16 @@ assert.ok(Array.isArray(body.matrix));
 assert.ok(body.matrix.length >= 12);
 
 const byCommand = new Map(body.matrix.map((item) => [item.command, item]));
+for (const command of [
+  "corepack pnpm run selfhost:ops-report",
+  "corepack pnpm run selfhost:backup-plan",
+  "corepack pnpm run selfhost:backup-validate",
+  "corepack pnpm run selfhost:restore-plan",
+  "corepack pnpm run selfhost:rotate-plan",
+  "corepack pnpm run selfhost:rotate"
+]) {
+  assert.ok(byCommand.has(command), `${command} should be in the safety matrix`);
+}
 assert.equal(byCommand.get("corepack pnpm run deployability:quickstart").posture, "read_only");
 assert.equal(byCommand.get("corepack pnpm run deployability:quickstart").reads_env, false);
 assert.equal(byCommand.get("corepack pnpm run deployability:safety").posture, "read_only");
@@ -43,6 +53,30 @@ assert.equal(byCommand.get("corepack pnpm run dev:local:status").posture, "runti
 assert.equal(byCommand.get("corepack pnpm run dev:local:status").dashboard_safe, true);
 assert.equal(byCommand.get("corepack pnpm run selfhost:doctor").posture, "read_only");
 assert.equal(byCommand.get("corepack pnpm run selfhost:doctor").dashboard_safe, true);
+assert.equal(byCommand.get("corepack pnpm run selfhost:ops-report").posture, "writes_report");
+assert.equal(byCommand.get("corepack pnpm run selfhost:ops-report").reads_env, true);
+assert.equal(byCommand.get("corepack pnpm run selfhost:ops-report").writes_files, true);
+assert.equal(byCommand.get("corepack pnpm run selfhost:ops-report").dashboard_safe, true);
+assert.equal(byCommand.get("corepack pnpm run selfhost:backup-plan").posture, "read_only");
+assert.equal(byCommand.get("corepack pnpm run selfhost:backup-plan").reads_env, false);
+assert.equal(byCommand.get("corepack pnpm run selfhost:backup-plan").writes_files, false);
+assert.equal(byCommand.get("corepack pnpm run selfhost:backup-plan").dashboard_safe, true);
+assert.equal(byCommand.get("corepack pnpm run selfhost:backup-validate").posture, "read_only");
+assert.equal(byCommand.get("corepack pnpm run selfhost:backup-validate").reads_env, false);
+assert.equal(byCommand.get("corepack pnpm run selfhost:backup-validate").writes_files, false);
+assert.equal(byCommand.get("corepack pnpm run selfhost:backup-validate").dashboard_safe, true);
+assert.equal(byCommand.get("corepack pnpm run selfhost:restore-plan").posture, "read_only");
+assert.equal(byCommand.get("corepack pnpm run selfhost:restore-plan").reads_env, false);
+assert.equal(byCommand.get("corepack pnpm run selfhost:restore-plan").writes_files, false);
+assert.equal(byCommand.get("corepack pnpm run selfhost:restore-plan").dashboard_safe, true);
+assert.equal(byCommand.get("corepack pnpm run selfhost:rotate-plan").posture, "read_only");
+assert.equal(byCommand.get("corepack pnpm run selfhost:rotate-plan").reads_env, false);
+assert.equal(byCommand.get("corepack pnpm run selfhost:rotate-plan").writes_files, false);
+assert.equal(byCommand.get("corepack pnpm run selfhost:rotate-plan").dashboard_safe, true);
+assert.equal(byCommand.get("corepack pnpm run selfhost:rotate").posture, "writes_env");
+assert.equal(byCommand.get("corepack pnpm run selfhost:rotate").reads_env, true);
+assert.equal(byCommand.get("corepack pnpm run selfhost:rotate").writes_files, true);
+assert.equal(byCommand.get("corepack pnpm run selfhost:rotate").dashboard_safe, true);
 assert.equal(byCommand.get("corepack pnpm run test:deployability").category, "top_level");
 assert.equal(byCommand.get("corepack pnpm run test:deployability").posture, "contract_test");
 assert.equal(byCommand.get("corepack pnpm run test:deployability").reads_env, false);
