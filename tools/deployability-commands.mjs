@@ -18,6 +18,44 @@ const SAFETY_DEFAULTS = [
   "JSON output contains command metadata and filters without printing secret values"
 ];
 
+const PROFILE_PIPELINES = [
+  {
+    key: "daily_dev",
+    aliases: ["daily-dev", "daily_dev", "local-agent-loop", "local_agent_loop"],
+    pipeline_key: "local_agent_loop"
+  },
+  {
+    key: "all_in_one_demo",
+    aliases: ["all-in-one", "all-in-one-demo", "all_in_one_demo"],
+    pipeline_key: "all_in_one_demo"
+  },
+  {
+    key: "selfhost_platform",
+    aliases: ["selfhost", "selfhost-platform", "selfhost_platform", "platform"],
+    pipeline_key: "selfhost_platform"
+  },
+  {
+    key: "public_stack",
+    aliases: ["public-stack", "public_stack"],
+    pipeline_key: "public_stack"
+  },
+  {
+    key: "recovery_evidence",
+    aliases: ["recovery", "recovery-evidence", "recovery_evidence"],
+    pipeline_key: "recovery_evidence"
+  },
+  {
+    key: "operator_onboarding",
+    aliases: ["operator-onboarding", "operator_onboarding", "onboarding"],
+    pipeline_key: "operator_onboarding"
+  },
+  {
+    key: "published_image",
+    aliases: ["published-image", "published_image", "release-review", "release_review"],
+    pipeline_key: "published_image"
+  }
+];
+
 const NEXT_COMMANDS = [
   "corepack pnpm run deployability:quickstart",
   "corepack pnpm run deployability:safety",
@@ -31,7 +69,8 @@ function parseArgs(argv) {
     category: null,
     posture: null,
     track: null,
-    pipeline: null
+    pipeline: null,
+    profile: null
   };
   const values = argv.slice(2);
   for (let index = 0; index < values.length; index += 1) {
@@ -74,6 +113,15 @@ function parseArgs(argv) {
     }
     if (value.startsWith("--pipeline=")) {
       args.pipeline = value.slice("--pipeline=".length);
+      continue;
+    }
+    if (value === "--profile") {
+      args.profile = values[index + 1] || "";
+      index += 1;
+      continue;
+    }
+    if (value.startsWith("--profile=")) {
+      args.profile = value.slice("--profile=".length);
     }
   }
   return args;
@@ -102,6 +150,32 @@ function runJsonScript(relativeScript) {
 
 function unique(items) {
   return [...new Set(items.filter(Boolean))].sort();
+}
+
+function normalizeProfile(value) {
+  return String(value || "")
+    .trim()
+    .toLowerCase()
+    .replace(/_/g, "-");
+}
+
+function resolveProfileFilter(requested) {
+  if (requested == null) {
+    return {
+      requested: null,
+      resolved: null,
+      pipeline: null
+    };
+  }
+  const normalized = normalizeProfile(requested);
+  const match = PROFILE_PIPELINES.find(
+    (item) => normalizeProfile(item.key) === normalized || (item.aliases || []).some((alias) => normalizeProfile(alias) === normalized)
+  );
+  return {
+    requested,
+    resolved: match?.key || null,
+    pipeline: match?.pipeline_key || null
+  };
 }
 
 function ensureCommand(commands, command) {
@@ -239,10 +313,18 @@ function applyFilters(commands, args) {
 }
 
 function commandData(args) {
+  const profileFilter = resolveProfileFilter(args.profile);
+  const effectivePipeline = args.pipeline || profileFilter.pipeline;
   const sourceResults = Object.fromEntries(SOURCES.map(([key, script]) => [key, runJsonScript(script)]));
-  const blockers = Object.entries(sourceResults)
+  const blockers = [
+    ...(args.profile != null && profileFilter.resolved == null ? [`unknown profile: ${args.profile}`] : []),
+    ...(args.pipeline && profileFilter.pipeline && args.pipeline !== profileFilter.pipeline
+      ? [`profile ${args.profile} maps to ${profileFilter.pipeline}, not requested pipeline ${args.pipeline}`]
+      : []),
+    ...Object.entries(sourceResults)
     .filter(([, result]) => !result.ok)
-    .map(([key, result]) => `${key}: ${result.parse_error || result.stderr.join("; ") || `exit=${result.exit_code}`}`);
+    .map(([key, result]) => `${key}: ${result.parse_error || result.stderr.join("; ") || `exit=${result.exit_code}`}`)
+  ];
 
   const commands = new Map();
   mergeSafety(commands, sourceResults.safety.body);
@@ -251,7 +333,13 @@ function commandData(args) {
   mergeInheritedSafety(commands);
 
   const allCommands = normalizeCommands(commands);
-  const filteredCommands = applyFilters(allCommands, args);
+  const filteredCommands =
+    args.profile != null && profileFilter.resolved == null
+      ? []
+      : applyFilters(allCommands, {
+          ...args,
+          pipeline: effectivePipeline
+        });
   const sourceStatus = Object.fromEntries(
     Object.entries(sourceResults).map(([key, result]) => [
       key,
@@ -271,7 +359,8 @@ function commandData(args) {
       category: args.category,
       posture: args.posture,
       track: args.track,
-      pipeline: args.pipeline
+      pipeline: effectivePipeline,
+      profile: profileFilter
     },
     filters: {
       categories: unique(allCommands.map((entry) => entry.category)),

@@ -31,6 +31,8 @@ Required commands:
 - `corepack pnpm --silent run deployability:action-plan -- --profile public-stack --json`
 - `corepack pnpm run deployability:commands`
 - `corepack pnpm --silent run deployability:commands -- --json`
+- `corepack pnpm run deployability:commands -- --profile public-stack`
+- `corepack pnpm --silent run deployability:commands -- --profile public-stack --json`
 - `corepack pnpm run compat:status`
 - `corepack pnpm --silent run compat:status -- --json`
 - `corepack pnpm run deployability:handoff`
@@ -123,6 +125,11 @@ Acceptance:
   quickstart, and safety metadata, and inheriting base safety posture for
   profile-specific command variants without reading `.env`, calling Docker,
   binding ports, probing networks, or printing secret values
+- `deployability:commands -- --profile public-stack --json` resolves
+  operator profile keys or aliases to the owning pipeline, emits the resolved
+  `profile` filter metadata, filters the catalog to that pipeline, and reports
+  unknown profile names as clean blockers instead of falling back to all
+  commands
 - `deployability:commands -- --track daily_dev --json` includes
   `deployability:action-plan -- --list-profiles` as a `top_level` /
   `read_only` / dashboard-safe command, sourced from quickstart and safety

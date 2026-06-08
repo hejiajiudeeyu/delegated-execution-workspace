@@ -75,7 +75,7 @@ The ecosystem is "daily-deployable" when a fresh operator can:
 | Deployability doctor | fourth repo | `corepack pnpm run deployability:doctor`, plus `corepack pnpm --silent run deployability:doctor -- --json` as the read-only readiness snapshot for compatibility ledger, top-level scripts, docs, brand-site, and safety-contract alignment |
 | Deployability dashboard | fourth repo | `corepack pnpm run deployability:dashboard`, plus `corepack pnpm --silent run deployability:dashboard -- --json` as the single read-only aggregate payload for top-level dashboards and CI, combining overview, quickstart, safety, doctor, compatibility, ecosystem_readiness, and per-pipeline summary sections |
 | Deployability action plan | fourth repo | `corepack pnpm run deployability:action-plan`, plus `corepack pnpm --silent run deployability:action-plan -- --json` as the read-only operator next-action selector that combines dashboard readiness and command catalog posture into profile-level recommended commands, dashboard-safe commands, public-exposure gates, and service-touching command lists; `--list-profiles` / `--profiles` prints the read-only profile selector directory with keys, aliases, pipeline keys, and purposes without calling dashboard/catalog metadata; `--profile <key-or-alias>` narrows the output to one operator target and reports unknown profiles as blockers |
-| Deployability commands catalog | fourth repo | `corepack pnpm run deployability:commands`, plus `corepack pnpm --silent run deployability:commands -- --json` as the read-only searchable command catalog with category, posture, first-use track, pipeline filters, inherited safety posture for profile-specific command variants, the action-plan profile selector surfaced under the `daily_dev` track, and no `unmapped` category/posture values for ready-now command paths |
+| Deployability commands catalog | fourth repo | `corepack pnpm run deployability:commands`, plus `corepack pnpm --silent run deployability:commands -- --json` as the read-only searchable command catalog with category, posture, first-use track, pipeline filters, `--profile <key-or-alias>` filtering that resolves operator profile names to their owning pipeline, inherited safety posture for profile-specific command variants, the action-plan profile selector surfaced under the `daily_dev` track, and no `unmapped` category/posture values for ready-now command paths |
 | Deployability recovery evidence path | fourth repo | `deployability:overview`, `deployability:dashboard`, `deployability:handoff`, and `deployability:commands -- --pipeline recovery_evidence` expose ops-report, audit export, backup, restore, and rotation commands as one ready-now evidence and recovery pipeline |
 | Deployability handoff | fourth repo | `corepack pnpm run deployability:handoff`, plus `corepack pnpm --silent run deployability:handoff -- --json` for a non-secret ecosystem handoff report under `exports/deployability/`, including the same ecosystem_readiness scorecard used by the dashboard |
 | Daily local doctor | fourth repo | `corepack pnpm run dev:doctor`, plus `corepack pnpm --silent run dev:doctor -- --json` for dashboards and scripts |
@@ -194,11 +194,13 @@ Required baseline:
   it as public exposure or formal production readiness
 - machine-readable deployability command catalog metadata that merges overview,
   quickstart, and safety metadata into a filterable command list, including
-  inherited posture for profile-specific command variants and explicit
-  `runtime_diagnostic`, `runtime_acceptance`, and `delegated_smoke` posture
-  labels for local doctor/acceptance and real published-image smoke commands,
-  without reading `.env`, calling Docker, binding ports, probing networks, or
-  printing secrets
+  `--profile <key-or-alias>` as an operator-friendly alias layer over pipeline
+  filters, inherited posture for profile-specific command variants, clean
+  unknown-profile blockers instead of falling back to every command, and
+  explicit `runtime_diagnostic`, `runtime_acceptance`, and `delegated_smoke`
+  posture labels for local doctor/acceptance and real published-image smoke
+  commands, without reading `.env`, calling Docker, binding ports, probing
+  networks, or printing secrets
 - machine-readable compatibility status metadata that reports the current
   bundle, submodule SHAs, ledger matches, dirty submodules, blockers, warnings,
   and next commands without reading `.env`, calling Docker, probing networks, or
@@ -227,7 +229,8 @@ Required baseline:
   `deployability:action-plan -- --list-profiles`,
   `deployability:action-plan -- --list-profiles --json`,
   `deployability:action-plan -- --profile public-stack --json`,
-  `deployability:commands -- --json`, `compat:status`,
+  `deployability:commands`, `deployability:commands -- --json`,
+  `deployability:commands -- --profile public-stack`, `compat:status`,
   `compat:status -- --json`, `deployability:handoff`,
   `deployability:handoff -- --json`, `test:deployability`,
   `test:deployability-operations`,

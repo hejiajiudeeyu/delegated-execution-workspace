@@ -168,10 +168,13 @@ CHG-2026-105:
 - `deployability:commands` is available as a read-only command catalog for
   humans, dashboards, and CI, merging overview, quickstart, and safety metadata
   into a list filterable by category, posture, first-use track, and pipeline,
-  including inherited safety posture for profile-specific command variants, and
-  supports `corepack pnpm run deployability:commands` and
-  `corepack pnpm --silent run deployability:commands -- --json` without reading
-  `.env`, calling Docker, binding ports, probing networks, or printing secrets
+  including `--profile <key-or-alias>` as an operator-friendly alias layer over
+  pipeline filters, inherited safety posture for profile-specific command
+  variants, and supports `corepack pnpm run deployability:commands`,
+  `corepack pnpm --silent run deployability:commands -- --json`, and
+  `corepack pnpm --silent run deployability:commands -- --profile public-stack --json`
+  without reading `.env`, calling Docker, binding ports, probing networks, or
+  printing secrets
 - ready-now command catalog entries now have explicit category/posture metadata
   instead of falling back to `unmapped`, including local `runtime_diagnostic`,
   local `runtime_acceptance`, and published-image `delegated_smoke` paths
@@ -282,6 +285,10 @@ Observed results:
   category, posture, track, and pipeline filters, sourced from overview,
   quickstart, and safety metadata, including inherited safety posture for
   profile-specific command variants, without terminal prose or secret values
+- `deployability:commands -- --profile public-stack --json`: passed, resolving
+  the operator profile alias to `public_stack`, returning only public-stack
+  pipeline commands, and reporting unknown profile names as blockers without
+  terminal prose or secret values
 - `deployability:commands -- --json`: passed with no `unmapped`
   category/posture entries for ready-now command paths
 - `compat:status -- --json`: passed, reporting the current bundle as matching

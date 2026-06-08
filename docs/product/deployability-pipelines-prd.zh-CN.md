@@ -30,6 +30,8 @@ onboarding 或 release-image 路径前，先给出一个只读命令地图和一
 - `corepack pnpm --silent run deployability:action-plan -- --profile public-stack --json`
 - `corepack pnpm run deployability:commands`
 - `corepack pnpm --silent run deployability:commands -- --json`
+- `corepack pnpm run deployability:commands -- --profile public-stack`
+- `corepack pnpm --silent run deployability:commands -- --profile public-stack --json`
 - `corepack pnpm run compat:status`
 - `corepack pnpm --silent run compat:status -- --json`
 - `corepack pnpm run deployability:handoff`
@@ -109,6 +111,10 @@ onboarding 或 release-image 路径前，先给出一个只读命令地图和一
   track 和 pipeline filters，并合并 overview、quickstart 和 safety metadata，
   同时让带 profile 参数的命令变体继承基础安全姿态，不读取 `.env`、不调用 Docker、
   不绑定端口、不探测网络、不打印 secret 值
+- `deployability:commands -- --profile public-stack --json` 会把 operator 输入的
+  profile key 或 alias 解析到所属 pipeline，输出已解析的 `profile` filter
+  metadata，只返回该 pipeline 的命令目录，并把未知 profile 名称作为干净 blocker
+  返回，而不是回退到全量命令
 - `deployability:commands -- --track daily_dev --json` 会包含
   `deployability:action-plan -- --list-profiles`，并把它标成 `top_level` /
   `read_only` / dashboard-safe 命令；该条目来自 quickstart 与 safety metadata
