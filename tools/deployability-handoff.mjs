@@ -94,23 +94,52 @@ const NEXT_COMMANDS = [
 ];
 
 function parseArgs(argv) {
-  const args = argv.slice(2);
   const parsed = {
-    json: args.includes("--json"),
+    json: false,
     output: null,
     profile: null
   };
-  const outputIndex = args.indexOf("--output");
-  if (outputIndex !== -1) {
-    parsed.output = args[outputIndex + 1] || null;
-  }
-  const profileIndex = args.indexOf("--profile");
-  if (profileIndex !== -1) {
-    parsed.profile = args[profileIndex + 1] || "";
-  }
-  const profileEquals = args.find((item) => item.startsWith("--profile="));
-  if (profileEquals) {
-    parsed.profile = profileEquals.slice("--profile=".length);
+  const args = argv.slice(2);
+  const readOptionValue = (index, option) => {
+    const next = args[index + 1];
+    if (!next || next.startsWith("--")) {
+      throw new Error(`missing value for ${option}`);
+    }
+    return next;
+  };
+  for (let index = 0; index < args.length; index += 1) {
+    const value = args[index];
+    if (value === "--") {
+      continue;
+    }
+    if (value === "--json") {
+      parsed.json = true;
+      continue;
+    }
+    if (value === "--output") {
+      parsed.output = readOptionValue(index, "--output");
+      index += 1;
+      continue;
+    }
+    if (value.startsWith("--output=")) {
+      parsed.output = value.slice("--output=".length);
+      if (!parsed.output) throw new Error("missing value for --output");
+      continue;
+    }
+    if (value === "--profile") {
+      parsed.profile = readOptionValue(index, "--profile");
+      index += 1;
+      continue;
+    }
+    if (value.startsWith("--profile=")) {
+      parsed.profile = value.slice("--profile=".length);
+      if (!parsed.profile) throw new Error("missing value for --profile");
+      continue;
+    }
+    if (value.startsWith("--")) {
+      throw new Error(`unknown option ${value}`);
+    }
+    throw new Error(`unexpected argument ${value}`);
   }
   return parsed;
 }

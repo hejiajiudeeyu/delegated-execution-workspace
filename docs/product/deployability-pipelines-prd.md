@@ -294,12 +294,15 @@ Acceptance:
   `exports/deployability/` unless `--output` is provided, and its JSON form
   returns the same bundle, compatibility, command-map, ecosystem_readiness,
   top-level profile selector, shared per-pipeline summary, safety-note, and
-  next-command metadata without terminal prose or secret values
+  next-command metadata without terminal prose or secret values. It accepts the
+  pnpm `--` separator and rejects unknown options before writing reports
 - `deployability:evidence` writes a non-secret evidence bundle directory through
   `corepack pnpm run deployability:evidence -- --profile public-stack` /
   `corepack pnpm --silent run deployability:evidence -- --profile public-stack --json`,
   collecting manifest, focused dashboard/menu/recipe/handoff/command-catalog JSON,
-  and handoff Markdown for operator review without calling Docker or probing networks
+  and handoff Markdown for operator review without calling Docker or probing networks.
+  It accepts the pnpm `--` separator and rejects unknown options before
+  generating a broader/all-profile artifact
 
 ## Pipeline A: Local Agent Loop
 

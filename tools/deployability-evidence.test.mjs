@@ -97,6 +97,21 @@ try {
   assert.match(text.stdout, /handoff\.md/);
   assert.ok(!text.stdout.includes("sk_evidence_must_not_leak"));
 
+  const separatorOutputDir = fs.mkdtempSync(path.join(os.tmpdir(), "delexec-deployability-evidence-separator-"));
+  const separator = run(["--", "--json", "--profile", "public-stack", "--output-dir", separatorOutputDir]);
+  assert.equal(separator.status, 0, separator.stderr || separator.stdout);
+  const separatorBody = JSON.parse(separator.stdout);
+  assert.equal(separatorBody.ok, true);
+  assert.equal(separatorBody.profile_filter.resolved, "public_stack");
+  assert.equal(separatorBody.output_dir, separatorOutputDir);
+  assert.ok(fs.existsSync(path.join(separatorOutputDir, "manifest.json")));
+  fs.rmSync(separatorOutputDir, { recursive: true, force: true });
+
+  const typo = run(["--json", "--profil", "public-stack", "--output-dir", outputDir]);
+  assert.equal(typo.status, 1, typo.stderr || typo.stdout);
+  assert.match(typo.stderr, /unknown option --profil/);
+  assert.ok(!typo.stdout.includes("sk_evidence_must_not_leak"));
+
   const unknown = run(["--json", "--profile", "not-a-profile", "--output-dir", outputDir]);
   assert.equal(unknown.status, 1, unknown.stderr || unknown.stdout);
   const unknownBody = JSON.parse(unknown.stdout);

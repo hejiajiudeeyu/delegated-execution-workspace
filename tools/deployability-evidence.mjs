@@ -21,29 +21,46 @@ function parseArgs(argv) {
     outputDir: null
   };
   const values = argv.slice(2);
+  const readOptionValue = (index, option) => {
+    const next = values[index + 1];
+    if (!next || next.startsWith("--")) {
+      throw new Error(`missing value for ${option}`);
+    }
+    return next;
+  };
   for (let index = 0; index < values.length; index += 1) {
     const value = values[index];
+    if (value === "--") {
+      continue;
+    }
     if (value === "--json") {
       args.json = true;
       continue;
     }
     if (value === "--profile") {
-      args.profile = values[index + 1] || "";
+      args.profile = readOptionValue(index, "--profile");
       index += 1;
       continue;
     }
     if (value.startsWith("--profile=")) {
       args.profile = value.slice("--profile=".length);
+      if (!args.profile) throw new Error("missing value for --profile");
       continue;
     }
     if (value === "--output-dir") {
-      args.outputDir = values[index + 1] || "";
+      args.outputDir = readOptionValue(index, "--output-dir");
       index += 1;
       continue;
     }
     if (value.startsWith("--output-dir=")) {
       args.outputDir = value.slice("--output-dir=".length);
+      if (!args.outputDir) throw new Error("missing value for --output-dir");
+      continue;
     }
+    if (value.startsWith("--")) {
+      throw new Error(`unknown option ${value}`);
+    }
+    throw new Error(`unexpected argument ${value}`);
   }
   return args;
 }
@@ -256,11 +273,16 @@ function printText(data) {
   for (const command of data.next_commands) console.log(`- ${command}`);
 }
 
-const args = parseArgs(process.argv);
-const data = evidenceData(args);
-if (args.json) {
-  printJson(data);
-} else {
-  printText(data);
+try {
+  const args = parseArgs(process.argv);
+  const data = evidenceData(args);
+  if (args.json) {
+    printJson(data);
+  } else {
+    printText(data);
+  }
+  process.exitCode = data.ok ? 0 : 1;
+} catch (error) {
+  console.error(error.message);
+  process.exitCode = 1;
 }
-process.exitCode = data.ok ? 0 : 1;

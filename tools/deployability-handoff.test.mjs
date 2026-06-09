@@ -210,6 +210,20 @@ try {
   assert.doesNotMatch(focusedMarkdown, /local_agent_loop: ready_now/);
   assert.ok(!focused.stdout.includes("sk_handoff_must_not_leak"));
 
+  const separatorOutput = path.join(tmpRoot, "exports/deployability/separator-handoff.md");
+  const separator = run(tmpRoot, ["--", "--json", "--profile", "public-stack", "--output", separatorOutput], env);
+  assert.equal(separator.status, 0, separator.stderr || separator.stdout);
+  const separatorBody = JSON.parse(separator.stdout);
+  assert.equal(separatorBody.profile_filter.requested, "public-stack");
+  assert.equal(separatorBody.profile_filter.resolved, "public_stack");
+  assert.deepEqual(separatorBody.pipeline_summaries.map((item) => item.key), ["public_stack"]);
+  assert.ok(fs.existsSync(separatorOutput));
+
+  const typo = run(tmpRoot, ["--json", "--profil", "public-stack", "--output", focusedOutput], env);
+  assert.equal(typo.status, 1, typo.stderr || typo.stdout);
+  assert.match(typo.stderr, /unknown option --profil/);
+  assert.ok(!typo.stdout.includes("sk_handoff_must_not_leak"));
+
   const textOutput = path.join(tmpRoot, "exports/deployability/text-handoff.md");
   const text = run(tmpRoot, ["--output", textOutput], env);
   assert.equal(text.status, 0, text.stderr || text.stdout);
