@@ -214,7 +214,8 @@ CALL ANYTHING 现在的仓库边界是正确的：
   而不是回退到全量命令；带 profile 参数的命令变体会继承基础安全姿态，并为本地
   doctor / acceptance 与真实 published-image smoke 命令给出 `runtime_diagnostic`、
   `runtime_acceptance` 和 `delegated_smoke` 明确姿态，但不读取 `.env`、
-  不调用 Docker、不绑定端口、不探测网络、不打印 secret 值
+  不调用 Docker、不绑定端口、不探测网络、不打印 secret 值；profile 和 filter
+  参数接受 pnpm `--` 分隔符，并会在输出更宽的命令目录前拒绝未知参数
 - dashboard 与 handoff profile selector metadata 可以机器读取，会把同一份命令目录
   `filters.profiles` 目录提升为顶层 `profile_selector` 字段，让管理面不需要知道
   内部 section 路径，也不需要调用 runtime 命令，就能渲染 profile 选择器
@@ -222,17 +223,24 @@ CALL ANYTHING 现在的仓库边界是正确的：
   `--profile <key-or-alias>`，复用命令目录 resolver，输出 `profile_filter`，
   把命令目录和 pipeline summary metadata 限制到所属 pipeline，把未知 profile
   报成 blockers，并让 ecosystem_readiness 继续表示全局 daily-deployable scorecard；
-  focused dashboard 与 handoff 命令可从 quickstart 和命令目录发现
+  focused dashboard 与 handoff 命令可从 quickstart 和命令目录发现；focused dashboard
+  参数接受 pnpm `--` 分隔符，并会在输出全 pipeline dashboard metadata 前拒绝未知参数
 - dashboard 与 handoff 的 `profile_summaries` metadata 可以机器读取，由
   `profile_selector`、`pipeline_summaries` 和 command-catalog posture 派生，让管理 UI
   可以渲染 profile cards、按共享 `attention.rank` 排序、突出
   `attention.level=safety_gate`，并消费顶层 `recommended_profile_keys`，不需要自己
   join 数组或重新推断风险；这是便利投影，不是新的 profile 真相来源
+- profile catalog、action-plan、operator menu、runbook、recipe、dashboard、
+  command catalog、operator checklist、handoff 和 evidence 这些 profile / operator
+  管理面共享同一个严格参数契约：接受文档化 pnpm `--` 分隔符；支持 profile filter
+  的命令里 `--profile=value` 和 `--profile value` 等价；缺失参数值会失败；`--profil`
+  这类未知参数会失败，而不是静默扩大成全 profile 或全 pipeline 输出
 - 可部署性 profile runbook metadata 可以机器读取，把单个选定 profile 投影成
   `profile_runbook`，按 inspect、gate、start、verify、operate、evidence 阶段组织
   命令。runbook 是 profile catalog 与 command catalog 的投影，不是 runner；它让
   public exposure gate 位于 start 之前，未知 profile 返回干净 blocker，同时不读取
-  `.env`、不调用 Docker、不绑定端口、不探测网络、不打印 secret 值
+  `.env`、不调用 Docker、不绑定端口、不探测网络、不打印 secret 值；profile 参数接受
+  pnpm `--` 分隔符并拒绝未知参数
 - 可部署性 operator menu metadata 可以机器读取，把 profile choices、attention level、
   primary command、runbook、action-plan、dashboard、handoff、command catalog 和
   public-stack operator-onboarding 入口汇成第一屏。menu 是现有 deployability
@@ -242,7 +250,8 @@ CALL ANYTHING 现在的仓库边界是正确的：
   `operator:onboarding:plan` 投影的 `selected_onboarding_plan`，让管理 UI 不需要第二次
   查找也能渲染 preflight、`/console/` setup、gateway credential setup、
   smoke/evidence 和 onboarding contract validation。未知 profile 返回干净 blocker，
-  并且不读取 `.env`、不调用 Docker、不绑定端口、不探测网络、不打印 secret 值
+  并且不读取 `.env`、不调用 Docker、不绑定端口、不探测网络、不打印 secret 值；
+  profile 参数接受 pnpm `--` 分隔符，并会在渲染全 profile menu 前拒绝未知参数
 - 可部署性交接 metadata 可以机器读取，并配套不含 secret 的 Markdown 报告，聚合
   当前 bundle、兼容 warnings、命令地图、profile selector、ecosystem_readiness、
   shared per-pipeline summaries、安全说明和下一步验证命令，但不读取 `.env`、

@@ -6,6 +6,7 @@ import { buildEcosystemReadiness } from "./lib/deployability-ecosystem-readiness
 import { buildPipelineSummaries } from "./lib/deployability-pipeline-summaries.mjs";
 import { buildProfileSummaries } from "./lib/deployability-profile-summaries.mjs";
 import { recommendedProfileKeys } from "./lib/deployability-profile-attention.mjs";
+import { parseStrictArgs } from "./lib/strict-args.mjs";
 
 const ROOT = process.cwd();
 
@@ -37,23 +38,14 @@ const NEXT_COMMANDS = [
 ];
 
 function parseArgs(argv) {
-  const values = argv.slice(2);
-  let profile = null;
-  for (let index = 0; index < values.length; index += 1) {
-    const value = values[index];
-    if (value === "--profile") {
-      profile = values[index + 1] || "";
-      index += 1;
-      continue;
-    }
-    if (value.startsWith("--profile=")) {
-      profile = value.slice("--profile=".length);
-    }
-  }
-  return {
-    json: values.includes("--json"),
-    profile
-  };
+  return parseStrictArgs(
+    argv,
+    [
+      { flag: "--json", name: "json", type: "boolean" },
+      { flag: "--profile", name: "profile", type: "string" }
+    ],
+    { json: false, profile: null }
+  );
 }
 
 function runJsonScript(relativeScript, extraArgs = []) {
@@ -241,11 +233,16 @@ function printText(data) {
   }
 }
 
-const args = parseArgs(process.argv);
-const data = dashboardData(args);
-if (args.json) {
-  printJson(data);
-} else {
-  printText(data);
+try {
+  const args = parseArgs(process.argv);
+  const data = dashboardData(args);
+  if (args.json) {
+    printJson(data);
+  } else {
+    printText(data);
+  }
+  process.exitCode = data.ok ? 0 : 1;
+} catch (error) {
+  console.error(error.message);
+  process.exitCode = 1;
 }
-process.exitCode = data.ok ? 0 : 1;

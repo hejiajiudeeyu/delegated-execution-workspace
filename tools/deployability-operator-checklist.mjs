@@ -2,6 +2,7 @@
 
 import path from "node:path";
 import { spawnSync } from "node:child_process";
+import { parseStrictArgs } from "./lib/strict-args.mjs";
 
 const ROOT = process.cwd();
 const DEFAULT_PROFILE = "public-stack";
@@ -68,41 +69,15 @@ const CHECKLIST_GROUPS = [
 ];
 
 function parseArgs(argv) {
-  const args = {
-    json: false,
-    profile: DEFAULT_PROFILE,
-    imageTag: process.env.IMAGE_TAG || DEFAULT_IMAGE_TAG
-  };
-  const values = argv.slice(2);
-  for (let index = 0; index < values.length; index += 1) {
-    const value = values[index];
-    if (value === "--") {
-      continue;
-    }
-    if (value === "--json") {
-      args.json = true;
-      continue;
-    }
-    if (value === "--profile") {
-      args.profile = values[index + 1] || "";
-      index += 1;
-      continue;
-    }
-    if (value.startsWith("--profile=")) {
-      args.profile = value.slice("--profile=".length);
-      continue;
-    }
-    if (value === "--image-tag") {
-      args.imageTag = values[index + 1] || "";
-      index += 1;
-      continue;
-    }
-    if (value.startsWith("--image-tag=")) {
-      args.imageTag = value.slice("--image-tag=".length);
-      continue;
-    }
-    throw new Error(`unknown option ${value}`);
-  }
+  const args = parseStrictArgs(
+    argv,
+    [
+      { flag: "--json", name: "json", type: "boolean" },
+      { flag: "--profile", name: "profile", type: "string" },
+      { flag: "--image-tag", name: "imageTag", type: "string" }
+    ],
+    { json: false, profile: DEFAULT_PROFILE, imageTag: process.env.IMAGE_TAG || DEFAULT_IMAGE_TAG }
+  );
   if (!args.profile) throw new Error("--profile must not be empty");
   if (!args.imageTag) throw new Error("--image-tag must not be empty");
   return args;

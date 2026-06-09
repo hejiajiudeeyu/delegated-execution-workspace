@@ -3,6 +3,7 @@
 import path from "node:path";
 import { spawnSync } from "node:child_process";
 import { profileDirectory, resolveProfileFilter } from "./lib/deployability-profiles-registry.mjs";
+import { parseStrictArgs } from "./lib/strict-args.mjs";
 
 const ROOT = process.cwd();
 
@@ -36,67 +37,18 @@ const NEXT_COMMANDS = [
 ];
 
 function parseArgs(argv) {
-  const args = {
-    json: false,
-    category: null,
-    posture: null,
-    track: null,
-    pipeline: null,
-    profile: null
-  };
-  const values = argv.slice(2);
-  for (let index = 0; index < values.length; index += 1) {
-    const value = values[index];
-    if (value === "--json") {
-      args.json = true;
-      continue;
-    }
-    if (value === "--category") {
-      args.category = values[index + 1] || null;
-      index += 1;
-      continue;
-    }
-    if (value.startsWith("--category=")) {
-      args.category = value.slice("--category=".length);
-      continue;
-    }
-    if (value === "--posture") {
-      args.posture = values[index + 1] || null;
-      index += 1;
-      continue;
-    }
-    if (value.startsWith("--posture=")) {
-      args.posture = value.slice("--posture=".length);
-      continue;
-    }
-    if (value === "--track") {
-      args.track = values[index + 1] || null;
-      index += 1;
-      continue;
-    }
-    if (value.startsWith("--track=")) {
-      args.track = value.slice("--track=".length);
-      continue;
-    }
-    if (value === "--pipeline") {
-      args.pipeline = values[index + 1] || null;
-      index += 1;
-      continue;
-    }
-    if (value.startsWith("--pipeline=")) {
-      args.pipeline = value.slice("--pipeline=".length);
-      continue;
-    }
-    if (value === "--profile") {
-      args.profile = values[index + 1] || "";
-      index += 1;
-      continue;
-    }
-    if (value.startsWith("--profile=")) {
-      args.profile = value.slice("--profile=".length);
-    }
-  }
-  return args;
+  return parseStrictArgs(
+    argv,
+    [
+      { flag: "--json", name: "json", type: "boolean" },
+      { flag: "--category", name: "category", type: "string" },
+      { flag: "--posture", name: "posture", type: "string" },
+      { flag: "--track", name: "track", type: "string" },
+      { flag: "--pipeline", name: "pipeline", type: "string" },
+      { flag: "--profile", name: "profile", type: "string" }
+    ],
+    { json: false, category: null, posture: null, track: null, pipeline: null, profile: null }
+  );
 }
 
 function runJsonScript(relativeScript) {
@@ -365,11 +317,16 @@ function printText(data) {
   }
 }
 
-const args = parseArgs(process.argv);
-const data = commandData(args);
-if (args.json) {
-  printJson(data);
-} else {
-  printText(data);
+try {
+  const args = parseArgs(process.argv);
+  const data = commandData(args);
+  if (args.json) {
+    printJson(data);
+  } else {
+    printText(data);
+  }
+  process.exitCode = data.ok ? 0 : 1;
+} catch (error) {
+  console.error(error.message);
+  process.exitCode = 1;
 }
-process.exitCode = data.ok ? 0 : 1;

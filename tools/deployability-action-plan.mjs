@@ -17,6 +17,7 @@ import {
   profileDirectory,
   resolveProfileFilter as resolveSharedProfileFilter
 } from "./lib/deployability-profiles-registry.mjs";
+import { parseStrictArgs } from "./lib/strict-args.mjs";
 
 const ROOT = process.cwd();
 
@@ -36,13 +37,16 @@ const NEXT_COMMANDS = [
 ];
 
 function parseArgs(argv) {
-  const args = argv.slice(2);
-  const profileIndex = args.indexOf("--profile");
-  return {
-    json: args.includes("--json"),
-    listProfiles: args.includes("--list-profiles") || args.includes("--profiles"),
-    profile: profileIndex === -1 ? null : args[profileIndex + 1] || ""
-  };
+  return parseStrictArgs(
+    argv,
+    [
+      { flag: "--json", name: "json", type: "boolean" },
+      { flag: "--list-profiles", name: "listProfiles", type: "boolean" },
+      { flag: "--profiles", name: "listProfiles", type: "boolean" },
+      { flag: "--profile", name: "profile", type: "string" }
+    ],
+    { json: false, listProfiles: false, profile: null }
+  );
 }
 
 function runJsonScript(relativeScript) {
@@ -284,11 +288,16 @@ function printText(data) {
   for (const command of data.next_commands) console.log(`- ${command}`);
 }
 
-const args = parseArgs(process.argv);
-const data = actionPlanData(args);
-if (args.json) {
-  printJson(data);
-} else {
-  printText(data);
+try {
+  const args = parseArgs(process.argv);
+  const data = actionPlanData(args);
+  if (args.json) {
+    printJson(data);
+  } else {
+    printText(data);
+  }
+  process.exitCode = data.ok ? 0 : 1;
+} catch (error) {
+  console.error(error.message);
+  process.exitCode = 1;
 }
-process.exitCode = data.ok ? 0 : 1;

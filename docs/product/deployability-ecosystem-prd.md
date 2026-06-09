@@ -232,13 +232,16 @@ Required baseline:
   command, and explicit `runtime_diagnostic`, `runtime_acceptance`, and
   `delegated_smoke` posture labels for local doctor/acceptance and real
   published-image smoke commands, without reading `.env`, calling Docker,
-  binding ports, probing networks, or printing secrets
+  binding ports, probing networks, or printing secrets; profile and filter
+  arguments tolerate the pnpm `--` separator and fail on unknown options before
+  emitting a broader catalog
 - machine-readable deployability profile runbook metadata that turns one
   selected profile into a staged `profile_runbook` with inspect, gate, start,
   verify, operate, and evidence phases. The runbook is a projection over the
   profile catalog and command catalog, not a runner; it keeps public exposure
   gates before startup, returns clean unknown-profile blockers, and does not
-  read `.env`, call Docker, bind ports, probe networks, or print secrets
+  read `.env`, call Docker, bind ports, probe networks, or print secrets; its
+  profile argument tolerates the pnpm `--` separator and rejects unknown options
 - machine-readable deployability operator menu metadata that presents profile
   choices, attention level, primary command, runbook, action-plan, dashboard,
   handoff, command-catalog, and public-stack operator-onboarding entry points
@@ -252,7 +255,8 @@ Required baseline:
   `/console/` setup, gateway credential setup, smoke/evidence, and onboarding
   contract validation without a second lookup. Unknown profiles return clean
   blockers, and the command does not read `.env`, call Docker, bind ports,
-  probe networks, or print secrets
+  probe networks, or print secrets. Profile arguments tolerate the pnpm `--`
+  separator and reject unknown options before rendering the all-profile menu
 - machine-readable dashboard and handoff profile selector metadata that lifts
   the same command-catalog `filters.profiles` directory to a top-level
   `profile_selector` field, so management surfaces can render profile choices
@@ -263,7 +267,8 @@ Required baseline:
   owning pipeline, reports unknown profiles as blockers, and keeps
   ecosystem_readiness as the global daily-deployable scorecard; focused
   dashboard and handoff commands are discoverable from quickstart and the
-  command catalog
+  command catalog. Focused dashboard arguments tolerate the pnpm `--` separator
+  and reject unknown options before emitting all-pipeline dashboard metadata
 - machine-readable `profile_summaries` metadata for dashboard and handoff,
   derived from `profile_selector`, `pipeline_summaries`, and command-catalog
   posture, so management UIs can render profile cards, sort them by shared
@@ -271,6 +276,12 @@ Required baseline:
   top-level `recommended_profile_keys` without joining arrays or re-deriving
   risk themselves; this is a convenience projection, not a new profile truth
   source
+- machine-readable profile catalog, action-plan, operator menu, runbook,
+  recipe, dashboard, command-catalog, operator-checklist, handoff, and evidence
+  surfaces share one strict option contract: documented pnpm `--` separators
+  are accepted, `--profile=value` and `--profile value` forms are equivalent
+  where profile filters are supported, missing option values fail, and unknown
+  options such as `--profil` fail instead of silently widening the result set
 - machine-readable compatibility status metadata that reports the current
   bundle, submodule SHAs, ledger matches, dirty submodules, blockers, warnings,
   and next commands without reading `.env`, calling Docker, probing networks, or
@@ -359,6 +370,9 @@ Required baseline:
 - Handoff and evidence commands accept documented pnpm `--` separators and
   reject unknown options such as `--profil`, preventing typoed profile filters
   from producing all-profile reports or bundles.
+- Profile/operator management commands share the same argument-safety contract,
+  so typoed filters cannot silently widen dashboard, menu, runbook, recipe,
+  action-plan, profile-catalog, command-catalog, or operator-checklist output.
 - Fourth-repo CI remains green after adding orchestration helpers.
 - Brand-site build remains green after messaging updates.
 

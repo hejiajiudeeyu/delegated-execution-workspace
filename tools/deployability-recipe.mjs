@@ -3,6 +3,7 @@
 import path from "node:path";
 import { spawnSync } from "node:child_process";
 import { resolveProfileFilter } from "./lib/deployability-profiles-registry.mjs";
+import { parseStrictArgs } from "./lib/strict-args.mjs";
 
 const ROOT = process.cwd();
 
@@ -47,27 +48,14 @@ const PHASES = [
 ];
 
 function parseArgs(argv) {
-  const args = {
-    json: false,
-    profile: "public-stack"
-  };
-  const values = argv.slice(2);
-  for (let index = 0; index < values.length; index += 1) {
-    const value = values[index];
-    if (value === "--json") {
-      args.json = true;
-      continue;
-    }
-    if (value === "--profile") {
-      args.profile = values[index + 1] || "";
-      index += 1;
-      continue;
-    }
-    if (value.startsWith("--profile=")) {
-      args.profile = value.slice("--profile=".length);
-    }
-  }
-  return args;
+  return parseStrictArgs(
+    argv,
+    [
+      { flag: "--json", name: "json", type: "boolean" },
+      { flag: "--profile", name: "profile", type: "string" }
+    ],
+    { json: false, profile: "public-stack" }
+  );
 }
 
 function runJsonScript(relativeScript, extraArgs = []) {
@@ -285,11 +273,16 @@ function printText(data) {
   for (const command of data.next_commands) console.log(`- ${command}`);
 }
 
-const args = parseArgs(process.argv);
-const data = recipeData(args);
-if (args.json) {
-  printJson(data);
-} else {
-  printText(data);
+try {
+  const args = parseArgs(process.argv);
+  const data = recipeData(args);
+  if (args.json) {
+    printJson(data);
+  } else {
+    printText(data);
+  }
+  process.exitCode = data.ok ? 0 : 1;
+} catch (error) {
+  console.error(error.message);
+  process.exitCode = 1;
 }
-process.exitCode = data.ok ? 0 : 1;

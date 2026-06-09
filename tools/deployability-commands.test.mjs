@@ -328,6 +328,17 @@ assert.ok(
 );
 assert.ok(!publicStackProfileBody.commands.some((item) => item.pipeline_keys.includes("all_in_one_demo")));
 
+const separatorProfile = run(["--", "--json", "--profile", "public-stack"]);
+assert.equal(separatorProfile.status, 0, separatorProfile.stderr || separatorProfile.stdout);
+const separatorProfileBody = JSON.parse(separatorProfile.stdout);
+assert.equal(separatorProfileBody.filters_applied.profile.resolved, "public_stack");
+assert.ok(separatorProfileBody.commands.every((item) => item.pipeline_keys.includes("public_stack")));
+
+const typo = run(["--json", "--profil", "public-stack"]);
+assert.equal(typo.status, 1, typo.stderr || typo.stdout);
+assert.match(typo.stderr, /unknown option --profil/);
+assert.ok(!typo.stdout.includes("sk_commands_must_not_leak"));
+
 const recoveryProfileAlias = run(["--json", "--profile", "recovery"]);
 assert.equal(recoveryProfileAlias.status, 0, recoveryProfileAlias.stderr || recoveryProfileAlias.stdout);
 const recoveryProfileAliasBody = JSON.parse(recoveryProfileAlias.stdout);

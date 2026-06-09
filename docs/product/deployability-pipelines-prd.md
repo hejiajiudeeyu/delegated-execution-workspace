@@ -270,6 +270,13 @@ Acceptance:
   `profile` filter metadata, filters the catalog to that pipeline, and reports
   unknown profile names as clean blockers instead of falling back to all
   commands
+- profile/operator management commands accept a literal pnpm `--` separator
+  before arguments, reject unknown options such as `--profil`, reject missing
+  option values, and treat `--profile=public-stack` consistently with
+  `--profile public-stack` where focused profiles are supported. This applies
+  to dashboard, action-plan, profiles, commands, runbook, menu, recipe,
+  operator-checklist, handoff, and evidence surfaces before they emit wider
+  all-profile or all-pipeline output
 - `deployability:commands -- --track daily_dev --json` includes
   `deployability:profiles` and
   `deployability:action-plan -- --list-profiles`, `deployability:menu`, plus the daily profile

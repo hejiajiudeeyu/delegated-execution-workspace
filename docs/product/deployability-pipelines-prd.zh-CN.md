@@ -235,6 +235,12 @@ onboarding 或 release-image 路径前，先给出一个只读命令地图和一
   profile key 或 alias 解析到所属 pipeline，输出已解析的 `profile` filter
   metadata，只返回该 pipeline 的命令目录，并把未知 profile 名称作为干净 blocker
   返回，而不是回退到全量命令
+- profile / operator 管理命令接受参数前的字面量 pnpm `--` 分隔符，拒绝 `--profil`
+  这类未知参数，拒绝缺失的 option value，并在支持 focused profile 的命令里让
+  `--profile=public-stack` 与 `--profile public-stack` 保持一致；这条规则覆盖
+  dashboard、action-plan、profiles、commands、runbook、menu、recipe、
+  operator-checklist、handoff 和 evidence，避免拼错 filter 时静默输出更宽的全
+  profile / 全 pipeline metadata
 - `deployability:commands -- --track daily_dev --json` 会包含
   `deployability:profiles`、`deployability:action-plan -- --list-profiles`、
   `deployability:menu` 和 daily profile runbook 入口，并把它们标成 `top_level` /

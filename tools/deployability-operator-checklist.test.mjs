@@ -91,6 +91,16 @@ assert.equal(pnpmSeparatedBody.command, "deployability:operator-checklist");
 assert.equal(pnpmSeparatedBody.profile.name, "public-stack");
 assert.equal(pnpmSeparatedBody.image_tag, "candidate-2026-06-09");
 
+const typo = run(["--json", "--profil", "public-stack", "--image-tag", "candidate-2026-06-09"]);
+assert.equal(typo.status, 1, typo.stderr || typo.stdout);
+assert.match(typo.stderr, /unknown option --profil/);
+assert.ok(!typo.stdout.includes("sk_operator_checklist_must_not_leak"));
+
+const missingProfile = run(["--json", "--profile", "--image-tag", "candidate-2026-06-09"]);
+assert.equal(missingProfile.status, 1, missingProfile.stderr || missingProfile.stdout);
+assert.match(missingProfile.stderr, /missing value for --profile/);
+assert.ok(!missingProfile.stdout.includes("sk_operator_checklist_must_not_leak"));
+
 const text = run(["--profile", "public-stack", "--image-tag", "candidate-2026-06-09"]);
 assert.equal(text.status, 0, text.stderr || text.stdout);
 assert.match(text.stdout, /Deployability operator checklist/);

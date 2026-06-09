@@ -196,6 +196,17 @@ assert.ok(
 assert.deepEqual(publicStackBody.profile_selector, body.profile_selector);
 assert.ok(!publicStackJson.stdout.includes("sk_dashboard_must_not_leak"));
 
+const separatorJson = run(["--", "--json", "--profile", "public-stack"]);
+assert.equal(separatorJson.status, 0, separatorJson.stderr || separatorJson.stdout);
+const separatorBody = JSON.parse(separatorJson.stdout);
+assert.equal(separatorBody.profile_filter.resolved, "public_stack");
+assert.deepEqual(separatorBody.pipeline_summaries.map((item) => item.key), ["public_stack"]);
+
+const typo = run(["--json", "--profil", "public-stack"]);
+assert.equal(typo.status, 1, typo.stderr || typo.stdout);
+assert.match(typo.stderr, /unknown option --profil/);
+assert.ok(!typo.stdout.includes("sk_dashboard_must_not_leak"));
+
 const publicStackText = run(["--profile", "public-stack"]);
 assert.equal(publicStackText.status, 0, publicStackText.stderr || publicStackText.stdout);
 assert.match(publicStackText.stdout, /Profile filter/);

@@ -90,6 +90,17 @@ assert.deepEqual(publicStackOnlyBody.profiles.map((item) => item.key), ["public_
 assert.deepEqual(publicStackOnlyBody.recommended_profile_keys, ["public_stack"]);
 assert.equal(publicStackOnlyBody.profiles[0].attention.level, "safety_gate");
 
+const separator = run(["--", "--json", "--profile", "public-stack"]);
+assert.equal(separator.status, 0, separator.stderr || separator.stdout);
+const separatorBody = JSON.parse(separator.stdout);
+assert.equal(separatorBody.profile_filter.resolved, "public_stack");
+assert.deepEqual(separatorBody.profiles.map((item) => item.key), ["public_stack"]);
+
+const typo = run(["--json", "--profil", "public-stack"]);
+assert.equal(typo.status, 1, typo.stderr || typo.stdout);
+assert.match(typo.stderr, /unknown option --profil/);
+assert.ok(!typo.stdout.includes("sk_profiles_must_not_leak"));
+
 const unknownProfile = run(["--json", "--profile", "mars"]);
 assert.equal(unknownProfile.status, 1, unknownProfile.stderr || unknownProfile.stdout);
 const unknownBody = JSON.parse(unknownProfile.stdout);

@@ -74,6 +74,17 @@ assert.ok(dailyDevBody.copy_paste_commands.includes("corepack pnpm run dev:local
 assert.ok(dailyDevBody.copy_paste_commands.includes("corepack pnpm run mcp:golden-four"));
 assert.ok(dailyDevBody.copy_paste_commands.includes("corepack pnpm run deployability:handoff -- --profile daily-dev"));
 
+const separator = run(["--", "--json", "--profile", "public-stack"]);
+assert.equal(separator.status, 0, separator.stderr || separator.stdout);
+const separatorBody = JSON.parse(separator.stdout);
+assert.equal(separatorBody.profile_filter.resolved, "public_stack");
+assert.equal(separatorBody.profile.key, "public_stack");
+
+const typo = run(["--json", "--profil", "public-stack"]);
+assert.equal(typo.status, 1, typo.stderr || typo.stdout);
+assert.match(typo.stderr, /unknown option --profil/);
+assert.ok(!typo.stdout.includes("sk_recipe_must_not_leak"));
+
 const unknown = run(["--json", "--profile", "not-a-profile"]);
 assert.equal(unknown.status, 1, unknown.stderr || unknown.stdout);
 const unknownBody = JSON.parse(unknown.stdout);
