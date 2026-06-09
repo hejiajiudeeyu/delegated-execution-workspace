@@ -22,7 +22,7 @@ const body = JSON.parse(json.stdout);
 assert.equal(body.command, "deployability:menu");
 assert.equal(body.mode, "operator_menu");
 assert.equal(body.ok, true);
-assert.equal(body.current_bundle.change_id, "CHG-2026-131");
+assert.equal(body.current_bundle.change_id, "CHG-2026-132");
 assert.equal(body.ecosystem_readiness.status, "daily_deployable_with_safety_gates");
 assert.ok(body.recommended_profile_keys.includes("public_stack"));
 assert.ok(Array.isArray(body.choices));

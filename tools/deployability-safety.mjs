@@ -106,6 +106,23 @@ const MATRIX = [
     notes: "read-only standalone daily-deployable scorecard for humans, CI, and management UIs"
   },
   {
+    command: "corepack pnpm run deployability:prd",
+    json_command: "corepack pnpm --silent run deployability:prd -- --json",
+    category: "top_level",
+    posture: "read_only",
+    reads_env: false,
+    writes_files: false,
+    starts_services: false,
+    stops_services: false,
+    calls_docker: false,
+    probes_network: false,
+    private_terminal_text: false,
+    public_exposure_gate: false,
+    ci_safe: true,
+    dashboard_safe: true,
+    notes: "read-only PRD document, audience, pipeline, and safety-boundary index for management surfaces"
+  },
+  {
     command: "corepack pnpm run deployability:roadmap",
     json_command: "corepack pnpm --silent run deployability:roadmap -- --json",
     category: "top_level",
@@ -1039,6 +1056,7 @@ const NEXT_COMMANDS = [
   "corepack pnpm run deployability:explain",
   "corepack pnpm run deployability:production",
   "corepack pnpm run deployability:readiness",
+  "corepack pnpm run deployability:prd",
   "corepack pnpm run deployability:status",
   "corepack pnpm run deployability:gates",
   "corepack pnpm run deployability:exposure",

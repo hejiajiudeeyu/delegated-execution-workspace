@@ -78,6 +78,7 @@ CALL ANYTHING 现在的仓库边界是正确的：
 | 可部署性 operator explainer | 第四仓 | `corepack pnpm run deployability:explain`，以及作为 operator 和管理 UI 使用的只读架构、truth-source 边界、profile、gate 和跨仓验证解释面的 `corepack pnpm --silent run deployability:explain -- --json` |
 | 可部署性 production hardening review | 第四仓 | `corepack pnpm run deployability:production`，以及作为只读 production hardening 边界视图的 `corepack pnpm --silent run deployability:production -- --json`；它把 daily deployability 与 public exposure / formal production readiness 分开，展示 billing、email、marketplace 和 formal release gates，且不执行部署命令 |
 | 可部署性 readiness scorecard | 第四仓 | `corepack pnpm run deployability:readiness`，以及作为人、CI 和管理 UI 使用的独立 daily-deployable scorecard 的 `corepack pnpm --silent run deployability:readiness -- --json`；它复用 command catalog 和 doctor metadata，输出检查证据、summary counts、blockers、warnings、安全说明和下一步命令，让调用方不用解析完整 dashboard 或 handoff payload |
+| 可部署性 PRD index | 第四仓 | `corepack pnpm run deployability:prd`，以及作为 planning review、dashboard 和 brand-site alignment 使用的只读 PRD 文档、受众、管线、管理面和 safety-boundary 索引的 `corepack pnpm --silent run deployability:prd -- --json`；它位于 roadmap 之前，不读取 `.env`、不调用 Docker、不探测网络、不打印 secret 值 |
 | 可部署性 roadmap | 第四仓 | `corepack pnpm run deployability:roadmap`，以及作为管理 UI 和规划评审使用的只读 PRD milestone view 的 `corepack pnpm --silent run deployability:roadmap -- --json`；它把已满足、受 gate 保护、阻塞和规划中的 deployability 工作分开呈现，让 daily deployability 可见，但不夸大 public production readiness |
 | 可部署性 operator status | 第四仓 | `corepack pnpm run deployability:status`，以及作为第一屏管理界面 compact operator status 的 `corepack pnpm --silent run deployability:status -- --json`；它把 readiness、roadmap 和 public-stack recipe 聚合成 status cards、primary next commands、source health 和 safety defaults，且不执行部署命令 |
 | 可部署性 gate checklist | 第四仓 | `corepack pnpm run deployability:gates`，以及作为管理 UI 使用的只读 public exposure / production hardening gate checklist 的 `corepack pnpm --silent run deployability:gates -- --json`；它把 roadmap、command catalog 和 status metadata 投影成明确的 gate cards，且不执行 security-review、Docker、网络或发布命令 |
@@ -305,6 +306,8 @@ CALL ANYTHING 现在的仓库边界是正确的：
   `corepack pnpm run deployability:production`、
   `corepack pnpm --silent run deployability:production -- --json`、
   `corepack pnpm --silent run deployability:readiness -- --json`、
+  `corepack pnpm run deployability:prd`、
+  `corepack pnpm --silent run deployability:prd -- --json`、
   `corepack pnpm run deployability:roadmap`、
   `corepack pnpm --silent run deployability:roadmap -- --json`、
   `corepack pnpm run deployability:status`、

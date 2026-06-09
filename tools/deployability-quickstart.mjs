@@ -39,6 +39,11 @@ const TRACKS = [
         json_command: "corepack pnpm --silent run deployability:readiness -- --json"
       },
       {
+        label: "Read the PRD index",
+        command: "corepack pnpm run deployability:prd",
+        json_command: "corepack pnpm --silent run deployability:prd -- --json"
+      },
+      {
         label: "Read the PRD-aligned roadmap",
         command: "corepack pnpm run deployability:roadmap",
         json_command: "corepack pnpm --silent run deployability:roadmap -- --json"
@@ -285,6 +290,7 @@ const NEXT_COMMANDS = [
   "corepack pnpm run deployability:explain",
   "corepack pnpm run deployability:production",
   "corepack pnpm run deployability:readiness",
+  "corepack pnpm run deployability:prd",
   "corepack pnpm run deployability:roadmap",
   "corepack pnpm run deployability:status",
   "corepack pnpm run deployability:gates",

@@ -96,6 +96,10 @@ assert.equal(byCommand.get("corepack pnpm run deployability:readiness").category
 assert.equal(byCommand.get("corepack pnpm run deployability:readiness").posture, "read_only");
 assert.equal(byCommand.get("corepack pnpm run deployability:readiness").dashboard_safe, true);
 assert.ok(byCommand.get("corepack pnpm run deployability:readiness").track_keys.includes("daily_dev"));
+assert.equal(byCommand.get("corepack pnpm run deployability:prd").category, "top_level");
+assert.equal(byCommand.get("corepack pnpm run deployability:prd").posture, "read_only");
+assert.equal(byCommand.get("corepack pnpm run deployability:prd").dashboard_safe, true);
+assert.ok(byCommand.get("corepack pnpm run deployability:prd").track_keys.includes("daily_dev"));
 assert.equal(byCommand.get("corepack pnpm run deployability:roadmap").category, "top_level");
 assert.equal(byCommand.get("corepack pnpm run deployability:roadmap").posture, "read_only");
 assert.equal(byCommand.get("corepack pnpm run deployability:roadmap").dashboard_safe, true);
@@ -203,6 +207,7 @@ assert.ok(topLevelBody.commands.some((item) => item.command === "corepack pnpm r
 assert.ok(topLevelBody.commands.some((item) => item.command === "corepack pnpm run deployability:explain"));
 assert.ok(topLevelBody.commands.some((item) => item.command === "corepack pnpm run deployability:production"));
 assert.ok(topLevelBody.commands.some((item) => item.command === "corepack pnpm run deployability:readiness"));
+assert.ok(topLevelBody.commands.some((item) => item.command === "corepack pnpm run deployability:prd"));
 assert.ok(topLevelBody.commands.some((item) => item.command === "corepack pnpm run deployability:roadmap"));
 assert.ok(topLevelBody.commands.some((item) => item.command === "corepack pnpm run deployability:status"));
 assert.ok(topLevelBody.commands.some((item) => item.command === "corepack pnpm run deployability:gates"));
@@ -235,6 +240,7 @@ assert.ok(readOnlyBody.commands.some((item) => item.command === "corepack pnpm r
 assert.ok(readOnlyBody.commands.some((item) => item.command === "corepack pnpm run deployability:explain"));
 assert.ok(readOnlyBody.commands.some((item) => item.command === "corepack pnpm run deployability:production"));
 assert.ok(readOnlyBody.commands.some((item) => item.command === "corepack pnpm run deployability:readiness"));
+assert.ok(readOnlyBody.commands.some((item) => item.command === "corepack pnpm run deployability:prd"));
 assert.ok(readOnlyBody.commands.some((item) => item.command === "corepack pnpm run deployability:roadmap"));
 assert.ok(readOnlyBody.commands.some((item) => item.command === "corepack pnpm run deployability:status"));
 assert.ok(readOnlyBody.commands.some((item) => item.command === "corepack pnpm run deployability:gates"));
@@ -256,6 +262,7 @@ assert.ok(dailyDevBody.commands.some((item) => item.command === "corepack pnpm r
 assert.ok(dailyDevBody.commands.some((item) => item.command === "corepack pnpm run deployability:explain"));
 assert.ok(dailyDevBody.commands.some((item) => item.command === "corepack pnpm run deployability:production"));
 assert.ok(dailyDevBody.commands.some((item) => item.command === "corepack pnpm run deployability:readiness"));
+assert.ok(dailyDevBody.commands.some((item) => item.command === "corepack pnpm run deployability:prd"));
 assert.ok(dailyDevBody.commands.some((item) => item.command === "corepack pnpm run deployability:roadmap"));
 assert.ok(dailyDevBody.commands.some((item) => item.command === "corepack pnpm run deployability:status"));
 assert.ok(dailyDevBody.commands.some((item) => item.command === "corepack pnpm run deployability:gates"));
@@ -417,6 +424,7 @@ assert.match(text.stdout, /top_level/);
 assert.match(text.stdout, /corepack pnpm run deployability:readiness/);
 assert.match(text.stdout, /corepack pnpm run deployability:explain/);
 assert.match(text.stdout, /corepack pnpm run deployability:production/);
+assert.match(text.stdout, /corepack pnpm run deployability:prd/);
 assert.match(text.stdout, /corepack pnpm run deployability:roadmap/);
 assert.match(text.stdout, /corepack pnpm run deployability:status/);
 assert.match(text.stdout, /corepack pnpm run deployability:gates/);

@@ -23,7 +23,7 @@ const body = JSON.parse(json.stdout);
 assert.equal(body.command, "deployability:production");
 assert.equal(body.mode, "production_hardening_review");
 assert.equal(body.ok, true);
-assert.equal(body.current_bundle.change_id, "CHG-2026-131");
+assert.equal(body.current_bundle.change_id, "CHG-2026-132");
 assert.deepEqual(body.summary, {
   status: "daily_deployable_production_planned",
   production_ready: false,

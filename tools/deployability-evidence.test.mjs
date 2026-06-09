@@ -29,7 +29,7 @@ try {
   assert.equal(body.command, "deployability:evidence");
   assert.equal(body.ok, true);
   assert.equal(body.mode, "evidence_bundle");
-  assert.equal(body.current_bundle.change_id, "CHG-2026-131");
+  assert.equal(body.current_bundle.change_id, "CHG-2026-132");
   assert.deepEqual(body.profile_filter, {
     requested: "public-stack",
     resolved: "public_stack",
@@ -50,7 +50,7 @@ try {
 
   const manifest = JSON.parse(fs.readFileSync(path.join(outputDir, "manifest.json"), "utf8"));
   assert.equal(manifest.command, "deployability:evidence");
-  assert.equal(manifest.current_bundle.change_id, "CHG-2026-131");
+  assert.equal(manifest.current_bundle.change_id, "CHG-2026-132");
   assert.equal(manifest.profile_filter.resolved, "public_stack");
   assert.deepEqual(
     manifest.artifacts.map((item) => item.key),

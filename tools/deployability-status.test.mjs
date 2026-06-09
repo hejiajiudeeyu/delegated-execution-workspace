@@ -23,7 +23,7 @@ const body = JSON.parse(json.stdout);
 assert.equal(body.command, "deployability:status");
 assert.equal(body.mode, "operator_status");
 assert.equal(body.ok, true);
-assert.equal(body.current_bundle.change_id, "CHG-2026-131");
+assert.equal(body.current_bundle.change_id, "CHG-2026-132");
 assert.deepEqual(body.summary, {
   status: "daily_deployable_with_planned_hardening",
   readiness_status: "daily_deployable_with_safety_gates",

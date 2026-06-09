@@ -60,6 +60,11 @@ assert.equal(byCommand.get("corepack pnpm run deployability:readiness").reads_en
 assert.equal(byCommand.get("corepack pnpm run deployability:readiness").calls_docker, false);
 assert.equal(byCommand.get("corepack pnpm run deployability:readiness").probes_network, false);
 assert.equal(byCommand.get("corepack pnpm run deployability:readiness").dashboard_safe, true);
+assert.equal(byCommand.get("corepack pnpm run deployability:prd").posture, "read_only");
+assert.equal(byCommand.get("corepack pnpm run deployability:prd").reads_env, false);
+assert.equal(byCommand.get("corepack pnpm run deployability:prd").calls_docker, false);
+assert.equal(byCommand.get("corepack pnpm run deployability:prd").probes_network, false);
+assert.equal(byCommand.get("corepack pnpm run deployability:prd").dashboard_safe, true);
 assert.equal(byCommand.get("corepack pnpm run deployability:roadmap").posture, "read_only");
 assert.equal(byCommand.get("corepack pnpm run deployability:roadmap").reads_env, false);
 assert.equal(byCommand.get("corepack pnpm run deployability:roadmap").calls_docker, false);
@@ -219,6 +224,7 @@ assert.ok(body.next_commands.includes("corepack pnpm run deployability:quickstar
 assert.ok(body.next_commands.includes("corepack pnpm run deployability:explain"));
 assert.ok(body.next_commands.includes("corepack pnpm run deployability:production"));
 assert.ok(body.next_commands.includes("corepack pnpm run deployability:readiness"));
+assert.ok(body.next_commands.includes("corepack pnpm run deployability:prd"));
 assert.ok(body.next_commands.includes("corepack pnpm run deployability:status"));
 assert.ok(body.next_commands.includes("corepack pnpm run deployability:gates"));
 assert.ok(body.next_commands.includes("corepack pnpm run deployability:exposure"));
@@ -237,6 +243,7 @@ const text = run([]);
 assert.equal(text.status, 0, text.stderr || text.stdout);
 assert.match(text.stdout, /Deployability safety matrix/);
 assert.match(text.stdout, /deployability:readiness/);
+assert.match(text.stdout, /deployability:prd/);
 assert.match(text.stdout, /deployability:explain/);
 assert.match(text.stdout, /deployability:production/);
 assert.match(text.stdout, /deployability:roadmap/);

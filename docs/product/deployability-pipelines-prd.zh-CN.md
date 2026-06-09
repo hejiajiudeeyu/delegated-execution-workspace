@@ -24,6 +24,8 @@ onboarding 或 release-image 路径前，先给出一个只读命令地图和一
 - `corepack pnpm --silent run deployability:production -- --json`
 - `corepack pnpm run deployability:readiness`
 - `corepack pnpm --silent run deployability:readiness -- --json`
+- `corepack pnpm run deployability:prd`
+- `corepack pnpm --silent run deployability:prd -- --json`
 - `corepack pnpm run deployability:roadmap`
 - `corepack pnpm --silent run deployability:roadmap -- --json`
 - `corepack pnpm run deployability:status`
@@ -71,6 +73,7 @@ onboarding 或 release-image 路径前，先给出一个只读命令地图和一
 - `corepack pnpm run test:deployability-overview`
 - `corepack pnpm run test:deployability-quickstart`
 - `corepack pnpm run test:deployability-safety`
+- `corepack pnpm run test:deployability-prd`
 - `corepack pnpm run test:deployability-roadmap`
 - `corepack pnpm run test:deployability-doctor`
 - `corepack pnpm run test:deployability-dashboard`
@@ -114,6 +117,10 @@ onboarding 或 release-image 路径前，先给出一个只读命令地图和一
 - `deployability:readiness -- --json` 输出独立 daily-deployable scorecard，
   给人、CI 和管理 UI 使用，包含检查证据、summary counts、blockers、warnings、
   safety notes 和 next commands，而不要求调用方解析完整 dashboard 或 handoff payload
+- `deployability:prd -- --json` 在 roadmap 前输出只读 PRD 文档、受众、管线、
+  管理面和 safety-boundary 索引，让 planning tool 和 brand-site 指向同一张
+  产品地图，同时不读取 `.env`、不调用 Docker、不绑定端口、不探测网络、不打印
+  secret 值
 - `deployability:roadmap -- --json` 输出只读 PRD milestone view，给管理 UI 和规划
   评审使用，包含 satisfied、gated、blocked、planned milestones、PRD sources、
   evidence commands、remaining work、source status 和 next commands，同时不读取

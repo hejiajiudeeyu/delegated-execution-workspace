@@ -42,7 +42,7 @@ assert.equal(json.status, 0, json.stderr || json.stdout);
 const body = JSON.parse(json.stdout);
 assert.equal(body.command, "deployability:action-plan");
 assert.equal(body.ok, true);
-assert.equal(body.current_bundle.change_id, "CHG-2026-131");
+assert.equal(body.current_bundle.change_id, "CHG-2026-132");
 assert.equal(body.ecosystem_readiness.status, "daily_deployable_with_safety_gates");
 assert.deepEqual(
   body.profiles.map((item) => item.key),
@@ -182,7 +182,7 @@ const pipedJson = spawnSync(process.execPath, [SCRIPT, "--json"], {
 assert.equal(pipedJson.status, 0, pipedJson.stderr || pipedJson.stdout);
 const pipedBody = JSON.parse(pipedJson.stdout);
 assert.equal(pipedBody.command, "deployability:action-plan");
-assert.equal(pipedBody.current_bundle.change_id, "CHG-2026-131");
+assert.equal(pipedBody.current_bundle.change_id, "CHG-2026-132");
 assert.ok(!pipedJson.stdout.includes("sk_action_plan_must_not_leak"));
 
 const text = run([]);

@@ -30,6 +30,10 @@ const COMMANDS = [
     command: "deployability:readiness"
   },
   {
+    script: "tools/deployability-prd.mjs",
+    command: "deployability:prd"
+  },
+  {
     script: "tools/deployability-roadmap.mjs",
     command: "deployability:roadmap"
   },
@@ -72,6 +76,10 @@ const LIGHT_JSON_COMMANDS = [
   {
     script: "tools/deployability-safety.mjs",
     command: "deployability:safety"
+  },
+  {
+    script: "tools/deployability-prd.mjs",
+    command: "deployability:prd"
   },
   {
     script: "tools/compat-status.mjs",

@@ -125,6 +125,8 @@ corepack pnpm run deployability:production
 corepack pnpm --silent run deployability:production -- --json
 corepack pnpm run deployability:readiness
 corepack pnpm --silent run deployability:readiness -- --json
+corepack pnpm run deployability:prd
+corepack pnpm --silent run deployability:prd -- --json
 corepack pnpm run deployability:roadmap
 corepack pnpm --silent run deployability:roadmap -- --json
 corepack pnpm run deployability:status
@@ -319,6 +321,11 @@ Notes:
   startup path, doctor path, runtime inspection, boundary understanding, and
   brand-site story evidence without reading `.env`, calling Docker, probing
   networks, or printing secret values.
+- Use `corepack pnpm --silent run deployability:prd -- --json` when a
+  management UI, planning review, or brand-site alignment check needs the PRD
+  document, audience, pipeline, and safety-boundary index before reading the
+  milestone roadmap. It is read-only and does not read `.env`, call Docker,
+  probe networks, or print secret values.
 - Use `corepack pnpm --silent run deployability:roadmap -- --json` when a
   management UI or planning review needs the PRD milestone view. It separates
   satisfied, gated, and planned work so daily deployability stays visible

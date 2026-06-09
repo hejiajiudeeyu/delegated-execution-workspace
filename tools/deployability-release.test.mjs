@@ -23,7 +23,7 @@ const body = JSON.parse(json.stdout);
 assert.equal(body.command, "deployability:release");
 assert.equal(body.mode, "release_candidate_review");
 assert.equal(body.ok, true);
-assert.equal(body.current_bundle.change_id, "CHG-2026-131");
+assert.equal(body.current_bundle.change_id, "CHG-2026-132");
 assert.equal(body.profile.name, "public-stack");
 assert.equal(body.image_tag, "candidate-2026-06-09");
 assert.deepEqual(body.summary, {

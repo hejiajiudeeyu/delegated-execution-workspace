@@ -25,6 +25,8 @@ Required commands:
 - `corepack pnpm --silent run deployability:production -- --json`
 - `corepack pnpm run deployability:readiness`
 - `corepack pnpm --silent run deployability:readiness -- --json`
+- `corepack pnpm run deployability:prd`
+- `corepack pnpm --silent run deployability:prd -- --json`
 - `corepack pnpm run deployability:roadmap`
 - `corepack pnpm --silent run deployability:roadmap -- --json`
 - `corepack pnpm run deployability:status`
@@ -72,6 +74,7 @@ Required commands:
 - `corepack pnpm run test:deployability-overview`
 - `corepack pnpm run test:deployability-quickstart`
 - `corepack pnpm run test:deployability-safety`
+- `corepack pnpm run test:deployability-prd`
 - `corepack pnpm run test:deployability-roadmap`
 - `corepack pnpm run test:deployability-doctor`
 - `corepack pnpm run test:deployability-dashboard`
@@ -121,6 +124,11 @@ Acceptance:
   scorecard for humans, CI, and management UIs, including check evidence,
   summary counts, blockers, warnings, safety notes, and next commands without
   requiring consumers to parse the full dashboard or handoff payload
+- `deployability:prd -- --json` emits the read-only PRD document, audience,
+  pipeline, management-surface, and safety-boundary index before the roadmap,
+  so planning tools and the brand-site can point at one product map without
+  reading `.env`, calling Docker, binding ports, probing networks, or printing
+  secret values
 - `deployability:roadmap -- --json` emits the read-only PRD milestone view for
   management UIs and planning reviews, including satisfied, gated, blocked, and
   planned milestones, PRD sources, evidence commands, remaining work, source

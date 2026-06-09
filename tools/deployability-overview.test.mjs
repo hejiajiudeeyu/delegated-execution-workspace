@@ -72,6 +72,7 @@ assert.ok(body.next_commands.includes("corepack pnpm run deployability:safety"))
 assert.ok(body.next_commands.includes("corepack pnpm run deployability:explain"));
 assert.ok(body.next_commands.includes("corepack pnpm run deployability:production"));
 assert.ok(body.next_commands.includes("corepack pnpm run deployability:readiness"));
+assert.ok(body.next_commands.includes("corepack pnpm run deployability:prd"));
 assert.ok(body.next_commands.includes("corepack pnpm run deployability:roadmap"));
 assert.ok(body.next_commands.includes("corepack pnpm run deployability:status"));
 assert.ok(body.next_commands.includes("corepack pnpm run deployability:gates"));
@@ -104,6 +105,7 @@ assert.match(text.stdout, /corepack pnpm run selfhost:profiles/);
 assert.match(text.stdout, /corepack pnpm run deployability:readiness/);
 assert.match(text.stdout, /corepack pnpm run deployability:explain/);
 assert.match(text.stdout, /corepack pnpm run deployability:production/);
+assert.match(text.stdout, /corepack pnpm run deployability:prd/);
 assert.match(text.stdout, /corepack pnpm run deployability:roadmap/);
 assert.match(text.stdout, /corepack pnpm run deployability:status/);
 assert.match(text.stdout, /corepack pnpm run deployability:gates/);
