@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 
+import { parseStrictArgs } from "./lib/strict-args.mjs";
+
 const TRACKS = [
   {
     key: "daily_dev",
@@ -305,9 +307,7 @@ const NEXT_COMMANDS = [
 ];
 
 function parseArgs(argv) {
-  return {
-    json: argv.slice(2).includes("--json")
-  };
+  return parseStrictArgs(argv, [{ flag: "--json", name: "json", type: "boolean" }], { json: false });
 }
 
 function quickstartData() {

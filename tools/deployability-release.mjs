@@ -2,6 +2,7 @@
 
 import path from "node:path";
 import { spawnSync } from "node:child_process";
+import { parseStrictArgs } from "./lib/strict-args.mjs";
 
 const ROOT = process.cwd();
 const DEFAULT_IMAGE_TAG = "latest";
@@ -32,31 +33,17 @@ const PRIMARY_NEXT_COMMANDS = [
 ];
 
 function parseArgs(argv) {
-  const args = {
-    json: false,
-    imageTag: process.env.IMAGE_TAG || DEFAULT_IMAGE_TAG
-  };
-  const values = argv.slice(2);
-  for (let index = 0; index < values.length; index += 1) {
-    const value = values[index];
-    if (value === "--") {
-      continue;
+  const args = parseStrictArgs(
+    argv,
+    [
+      { flag: "--json", name: "json", type: "boolean" },
+      { flag: "--image-tag", name: "imageTag", type: "string" }
+    ],
+    {
+      json: false,
+      imageTag: process.env.IMAGE_TAG || DEFAULT_IMAGE_TAG
     }
-    if (value === "--json") {
-      args.json = true;
-      continue;
-    }
-    if (value === "--image-tag") {
-      args.imageTag = values[index + 1] || "";
-      index += 1;
-      continue;
-    }
-    if (value.startsWith("--image-tag=")) {
-      args.imageTag = value.slice("--image-tag=".length);
-      continue;
-    }
-    throw new Error(`unknown option ${value}`);
-  }
+  );
   if (!args.imageTag) {
     throw new Error("--image-tag must not be empty");
   }

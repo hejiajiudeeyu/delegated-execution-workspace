@@ -235,6 +235,9 @@ CALL ANYTHING 现在的仓库边界是正确的：
   管理面共享同一个严格参数契约：接受文档化 pnpm `--` 分隔符；支持 profile filter
   的命令里 `--profile=value` 和 `--profile value` 等价；缺失参数值会失败；`--profil`
   这类未知参数会失败，而不是静默扩大成全 profile 或全 pipeline 输出
+- 顶层 deployability、compatibility、release review 和 daily dev doctor 命令也共享
+  strict option parsing：接受文档化 pnpm `--` 分隔符，`--json` 保持机器可读，
+  需要镜像 tag 的地方显式使用 `--image-tag`，未知参数会在任何嵌套检查执行前失败。
 - 可部署性 profile runbook metadata 可以机器读取，把单个选定 profile 投影成
   `profile_runbook`，按 inspect、gate、start、verify、operate、evidence 阶段组织
   命令。runbook 是 profile catalog 与 command catalog 的投影，不是 runner；它让

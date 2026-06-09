@@ -155,6 +155,9 @@ Acceptance:
   and
   `corepack pnpm --silent run deployability:operator-checklist -- --profile public-stack --image-tag <candidate-tag> --json`
   remain machine-readable JSON entry points instead of failing argument parsing
+- release review rejects unknown options before it aggregates production,
+  exposure, published-image plan, or dry-run smoke evidence, so typoed release
+  arguments cannot be mistaken for a validated candidate review
 - doctor reports compatibility ledger, top-level scripts, documentation,
   brand-site file alignment, brand-site deployability content smoke, and
   safety-contract alignment as one read-only snapshot without executing Docker,
@@ -277,6 +280,10 @@ Acceptance:
   to dashboard, action-plan, profiles, commands, runbook, menu, recipe,
   operator-checklist, handoff, and evidence surfaces before they emit wider
   all-profile or all-pipeline output
+- top-level deployability, compatibility, release review, and daily dev doctor
+  commands reject unknown options before running nested status, safety,
+  release, or local health checks, while preserving documented pnpm `--`
+  separator forms such as `-- --json`
 - `deployability:commands -- --track daily_dev --json` includes
   `deployability:profiles` and
   `deployability:action-plan -- --list-profiles`, `deployability:menu`, plus the daily profile

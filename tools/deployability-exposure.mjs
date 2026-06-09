@@ -2,6 +2,7 @@
 
 import path from "node:path";
 import { spawnSync } from "node:child_process";
+import { parseStrictArgs } from "./lib/strict-args.mjs";
 
 const ROOT = process.cwd();
 
@@ -27,9 +28,7 @@ const PRIMARY_NEXT_COMMANDS = [
 ];
 
 function parseArgs(argv) {
-  return {
-    json: argv.slice(2).includes("--json")
-  };
+  return parseStrictArgs(argv, [{ flag: "--json", name: "json", type: "boolean" }], { json: false });
 }
 
 function runNodeScript(relativeScript, args = []) {

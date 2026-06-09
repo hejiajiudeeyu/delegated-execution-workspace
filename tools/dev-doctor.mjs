@@ -1,6 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { spawnSync } from "node:child_process";
+import { parseStrictArgs } from "./lib/strict-args.mjs";
 
 const ROOT = process.cwd();
 const REQUIRED_ACTIONS = new Set([
@@ -24,9 +25,7 @@ const URLS = {
 };
 
 function parseArgs(argv) {
-  return {
-    json: argv.slice(2).includes("--json")
-  };
+  return parseStrictArgs(argv, [{ flag: "--json", name: "json", type: "boolean" }], { json: false });
 }
 
 function run(command, args, options = {}) {

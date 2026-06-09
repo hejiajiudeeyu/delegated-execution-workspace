@@ -282,6 +282,11 @@ Required baseline:
   are accepted, `--profile=value` and `--profile value` forms are equivalent
   where profile filters are supported, missing option values fail, and unknown
   options such as `--profil` fail instead of silently widening the result set
+- machine-readable top-level deployability status, gates, exposure, release,
+  doctor, overview, quickstart, safety, explanation, production, readiness,
+  roadmap, compatibility status, and daily dev doctor commands reject unknown
+  options before doing nested status or safety checks, while keeping documented
+  `-- --json` copy-paste forms valid
 - machine-readable compatibility status metadata that reports the current
   bundle, submodule SHAs, ledger matches, dirty submodules, blockers, warnings,
   and next commands without reading `.env`, calling Docker, probing networks, or
@@ -373,6 +378,10 @@ Required baseline:
 - Profile/operator management commands share the same argument-safety contract,
   so typoed filters cannot silently widen dashboard, menu, runbook, recipe,
   action-plan, profile-catalog, command-catalog, or operator-checklist output.
+- Top-level deployability, compatibility, release review, and daily dev doctor
+  commands also share strict option parsing: documented pnpm `--` separators
+  are accepted, `--json` remains machine-readable, `--image-tag` is explicit
+  where required, and unknown options fail before any nested checks run.
 - Fourth-repo CI remains green after adding orchestration helpers.
 - Brand-site build remains green after messaging updates.
 

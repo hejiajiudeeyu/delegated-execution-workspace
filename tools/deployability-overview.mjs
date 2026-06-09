@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import { PIPELINES } from "./lib/deployability-pipeline-summaries.mjs";
+import { parseStrictArgs } from "./lib/strict-args.mjs";
 
 const SAFETY_DEFAULTS = [
   "overview is read-only and does not read .env files",
@@ -39,9 +40,7 @@ const NEXT_COMMANDS = [
 ];
 
 function parseArgs(argv) {
-  return {
-    json: argv.slice(2).includes("--json")
-  };
+  return parseStrictArgs(argv, [{ flag: "--json", name: "json", type: "boolean" }], { json: false });
 }
 
 function overviewData() {

@@ -194,6 +194,12 @@ try {
   assert.ok(!failingJson.stdout.includes("[fail]"));
   assert.ok(!failingJson.stdout.includes("sk_admin_must_not_leak"));
 
+  const typo = await run(tmpRoot, ["--jsno"], env);
+  assert.notEqual(typo.status, 0, "dev:doctor should reject unknown options before probing services");
+  assert.match(typo.stderr, /unknown option --jsno/);
+  assert.ok(!typo.stdout.includes("sk_admin_must_not_leak"));
+  assert.ok(!typo.stderr.includes("sk_admin_must_not_leak"));
+
   console.log("[dev-doctor.test] ok");
 } finally {
   if (servers) {
