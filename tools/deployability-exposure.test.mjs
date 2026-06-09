@@ -23,7 +23,7 @@ const body = JSON.parse(json.stdout);
 assert.equal(body.command, "deployability:exposure");
 assert.equal(body.mode, "public_exposure_review");
 assert.equal(body.ok, true);
-assert.equal(body.current_bundle.change_id, "CHG-2026-130");
+assert.equal(body.current_bundle.change_id, "CHG-2026-131");
 assert.deepEqual(body.summary, {
   status: "public_exposure_blocked",
   public_exposure_ready: false,
