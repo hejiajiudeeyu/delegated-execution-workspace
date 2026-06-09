@@ -467,6 +467,9 @@ Acceptance:
 - quickstart prints the recommended copy-paste command sequence for the
   selected profile without executing Docker, mutating files, or printing
   secrets; `--json` returns the same ordered sequence for consoles and scripts
+- self-host helper commands tolerate the literal pnpm `--` argument separator
+  before command options, but unknown options must fail instead of silently
+  falling back to the default profile
 - readiness prints a read-only deployment overview for one profile, and
   `readiness --all` prints a built-in profile matrix; both combine profile file
   presence, `.env` status, secret hygiene, public-stack origin/route blockers,

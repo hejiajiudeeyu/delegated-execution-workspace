@@ -248,6 +248,16 @@ function writeFakeDocker(root) {
 
 const tmpRoot = fs.mkdtempSync(path.join(os.tmpdir(), "delexec-selfhost-kit-test-"));
 try {
+  const separatorQuickstartJson = run(tmpRoot, ["quickstart", "--", "--profile", "public-stack", "--json"]);
+  assert.equal(separatorQuickstartJson.status, 0, separatorQuickstartJson.stderr || separatorQuickstartJson.stdout);
+  const separatorQuickstartBody = JSON.parse(separatorQuickstartJson.stdout);
+  assert.equal(separatorQuickstartBody.command, "selfhost:quickstart");
+  assert.equal(separatorQuickstartBody.profile, "public-stack");
+
+  const unknownOption = run(tmpRoot, ["quickstart", "--profil", "public-stack", "--json"]);
+  assert.notEqual(unknownOption.status, 0, "unknown selfhost options must fail instead of falling back to default profile");
+  assert.match(unknownOption.stderr, /unknown option --profil/);
+
   const initJsonRoot = path.join(tmpRoot, "init-json");
   fs.mkdirSync(initJsonRoot, { recursive: true });
   const initJsonProfile = writeMinimalProfile(initJsonRoot);

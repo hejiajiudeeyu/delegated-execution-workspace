@@ -160,6 +160,9 @@ function parseArgs(argv) {
   };
   for (let index = 3; index < argv.length; index += 1) {
     const value = argv[index];
+    if (value === "--") {
+      continue;
+    }
     if (value === "--force") {
       args.force = true;
       continue;
@@ -239,6 +242,7 @@ function parseArgs(argv) {
       args.profile = value.slice("--profile=".length);
       continue;
     }
+    throw new Error(`unknown option ${value}`);
   }
   if (!PROFILES[args.profile]) {
     throw new Error(`unknown profile ${args.profile}; expected one of ${Object.keys(PROFILES).join(", ")}`);
