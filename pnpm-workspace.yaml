@@ -3,3 +3,6 @@ packages:
   - "repos/*/apps/*"
   - "repos/*/packages/*"
   - "repos/*/packages/transports/*"
+
+onlyBuiltDependencies:
+  - "better-sqlite3"

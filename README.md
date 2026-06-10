@@ -123,6 +123,8 @@ corepack pnpm run deployability:explain
 corepack pnpm --silent run deployability:explain -- --json
 corepack pnpm run deployability:production
 corepack pnpm --silent run deployability:production -- --json
+corepack pnpm run deployability:hardening-plan
+corepack pnpm --silent run deployability:hardening-plan -- --json
 corepack pnpm run deployability:readiness
 corepack pnpm --silent run deployability:readiness -- --json
 corepack pnpm run deployability:prd
@@ -145,6 +147,10 @@ corepack pnpm run deployability:dashboard
 corepack pnpm --silent run deployability:dashboard -- --json
 corepack pnpm run deployability:dashboard -- --profile public-stack
 corepack pnpm --silent run deployability:dashboard -- --profile public-stack --json
+corepack pnpm run deployability:next
+corepack pnpm --silent run deployability:next -- --json
+corepack pnpm run deployability:next -- --profile public-stack
+corepack pnpm --silent run deployability:next -- --profile public-stack --json
 corepack pnpm run deployability:profiles
 corepack pnpm --silent run deployability:profiles -- --json
 corepack pnpm run deployability:profiles -- --profile public-stack
@@ -165,6 +171,8 @@ corepack pnpm run deployability:menu -- --profile public-stack
 corepack pnpm --silent run deployability:menu -- --profile public-stack --json
 corepack pnpm run deployability:recipe -- --profile public-stack
 corepack pnpm --silent run deployability:recipe -- --profile public-stack --json
+corepack pnpm run deployability:console
+corepack pnpm --silent run deployability:console -- --json
 corepack pnpm run deployability:commands -- --profile public-stack
 corepack pnpm --silent run deployability:commands -- --profile public-stack --json
 corepack pnpm run compat:status
@@ -275,6 +283,9 @@ corepack pnpm run selfhost:urls -- --profile public-stack
 corepack pnpm --silent run selfhost:urls -- --profile public-stack --json
 corepack pnpm run selfhost:ports -- --profile public-stack
 corepack pnpm --silent run selfhost:ports -- --profile public-stack --json
+corepack pnpm run selfhost:public-origin -- --profile public-stack --origin <public-origin>
+corepack pnpm --silent run selfhost:public-origin -- --profile public-stack --origin <public-origin> --json
+corepack pnpm --silent run selfhost:public-origin -- --profile public-stack --origin <public-origin> --confirm --json
 corepack pnpm run selfhost:ops-report -- --profile public-stack
 corepack pnpm --silent run selfhost:ops-report -- --profile public-stack --json
 corepack pnpm run selfhost:preflight -- --profile public-stack
@@ -340,9 +351,15 @@ Notes:
   separates daily deployability from public exposure and formal production
   readiness, surfaces billing/email/marketplace/formal release gates, and does
   not execute deployment commands.
+- Use `corepack pnpm --silent run deployability:hardening-plan -- --json` when
+  an operator console needs an actionable production hardening plan. It
+  decomposes public exposure, billing, email transport, marketplace readiness,
+  and formal release into owner repo, stages, blockers, guardrails, and evidence
+  commands without treating the plan as production readiness.
 - Use `corepack pnpm --silent run deployability:status -- --json` when an
-  operator console needs one compact first-glance status. It aggregates
-  readiness, roadmap, and the public-stack recipe into status cards without
+  operator console needs one compact first-glance status. It projects readiness
+  and roadmap metadata into status cards, including the roadmap's console
+  management, hardening plan, and public-stack recipe milestones, without
   reading `.env`, calling Docker, probing networks, or printing secret values.
 - Use `corepack pnpm --silent run deployability:gates -- --json` when an
   operator console needs the public exposure and production hardening gate
@@ -353,7 +370,16 @@ Notes:
   operator console needs the actual public-stack exposure blocker snapshot.
   It runs the non-destructive public-stack security review, calls Docker only
   for compose config, does not start services or bind ports, and reports
-  findings such as localhost public origin under `exposure_blockers`.
+  findings such as localhost public origin under `exposure_blockers`. It also
+  emits `operator_next_action`; when `PUBLIC_SITE_ADDRESS` is still localhost,
+  that action points to `repos/platform/deploy/public-stack/.env`, names the
+  required `PUBLIC_SITE_ADDRESS` change, gives the `selfhost:public-origin`
+  dry-run/apply commands, and gives the security-review command to rerun before
+  any public exposure claim. The same payload includes
+  `pre_exposure_remediation_plan`, an ordered checklist for configuring the
+  public origin, rerunning security review, confirming route contract, running
+  onboarding check, running published-image dry-run, and exporting
+  public-stack evidence.
 - Use `corepack pnpm --silent run deployability:release -- --image-tag <candidate-tag> --json`
   when an operator console needs a release candidate gate. It aggregates
   production hardening, public exposure, published-image plan, and dry-run
@@ -364,11 +390,50 @@ Notes:
   groups menu, recipe, onboarding, exposure/release gate, backup-plan, and
   handoff evidence into ready/blocked checklist items without starting
   services, probing endpoints, publishing artifacts, or printing secret values.
+- Use `corepack pnpm --silent run deployability:next -- --json` when a human,
+  dashboard, or agent needs one safest next action instead of a full menu. It
+  combines read-only menu, action-plan, and gate metadata into a single
+  decision, defaults to the public-stack safety gate when public exposure is
+  still gated, supports `--profile <key-or-alias>`, and does not execute the
+  recommended command. For public-stack gate decisions it also includes
+  `detail_command` and `detail_json_command` pointing at `deployability:exposure`
+  so management surfaces can open the blocker-specific `operator_next_action`
+  without making `deployability:next` call Docker or read `.env`.
 - Use `corepack pnpm --silent run deployability:menu -- --profile public-stack --json`
   when a management UI needs one public-stack first screen. The focused menu
-  includes `selected_onboarding_plan` from the read-only
-  `operator:onboarding:plan` projection, alongside the selected runbook, without
-  reading `.env`, calling Docker, probing networks, or printing secret values.
+  includes `operator_status_summary` and `operator_status_cards` from
+  menu-local read-only profiles/commands/console inputs, plus
+  `operator_next_decision` from the selected profile and shared operator
+  decision helper, plus
+  `selected_onboarding_plan` from the read-only `operator:onboarding:plan`
+  projection alongside the selected runbook, without recursively calling the
+  `deployability:status` or `deployability:next` CLIs, reading `.env`, calling
+  Docker, probing networks, or printing secret values. The JSON marks
+  `source_status.operator_next_decision.avoids_recursive_next_cli=true`, and
+  public-stack decisions keep the same `detail_command` / `detail_json_command`
+  exposure-remediation links used by `deployability:next`.
+- Use `corepack pnpm --silent run deployability:console -- --json` when a
+  management UI needs the Management Console surface index. It returns
+  `console_management_index` for runtime status, settings, logs, billing
+  readiness, public-stack console, and gateway session surfaces; each surface
+  includes `next_action`, and the top-level `surface_next_actions` list makes
+  owner repo, primary command, evidence commands, and guardrails machine
+  readable without starting console services or turning the fourth repo into
+  runtime truth. The `runtime_status` surface now consumes the client-owned
+  `corepack pnpm --dir repos/client run check:ops-console-runtime-surface`
+  evidence command and reports `client_owned_evidence_available` when the
+  ops-console Runtime page is wired to `/status`, `/runtime/logs`, and
+  `/runtime/alerts` with secret-safety copy. The `settings_approval_policy`
+  surface also consumes the client-owned
+  `corepack pnpm --dir repos/client run check:ops-console-settings-surface`
+  evidence command and reports `client_owned_evidence_available` when
+  Preferences and Access Lists are wired to `/caller/global-policy`, approval
+  modes, whitelist/Blocklist lists, and `allow_all` safety copy. The
+  `logs_guidance` surface consumes
+  `corepack pnpm --dir repos/client run check:ops-console-logs-surface` and
+  reports `client_owned_evidence_available` when Runtime and Help expose
+  `/runtime/logs`, `/runtime/alerts`, caller/responder/relay log services,
+  log filtering metadata, `selfhost:logs`, and secret-safety copy.
 - Use `corepack pnpm --silent run deployability:recipe -- --profile public-stack --json`
   when a fresh operator or management UI needs one linear first-run recipe. It
   combines readiness, menu, runbook, and onboarding metadata into inspect, gate,

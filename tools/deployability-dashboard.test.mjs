@@ -45,7 +45,7 @@ assert.equal(body.ok, true);
 assert.ok(body.generated_at);
 assert.deepEqual(
   Object.keys(body.sections),
-  ["overview", "quickstart", "safety", "commands", "doctor", "compatibility"]
+  ["overview", "quickstart", "safety", "commands", "doctor", "compatibility", "console", "hardening_plan"]
 );
 assert.equal(body.sections.overview.command, "deployability:overview");
 assert.equal(body.sections.quickstart.command, "deployability:quickstart");
@@ -53,7 +53,20 @@ assert.equal(body.sections.safety.command, "deployability:safety");
 assert.equal(body.sections.commands.command, "deployability:commands");
 assert.equal(body.sections.doctor.command, "deployability:doctor");
 assert.equal(body.sections.compatibility.command, "compat:status");
-assert.equal(body.current_bundle.change_id, "CHG-2026-132");
+assert.equal(body.sections.console.command, "deployability:console");
+assert.equal(body.sections.console.mode, "console_management_index");
+assert.equal(body.sections.console.summary.status, "console_management_visible_with_client_surface_evidence");
+assert.ok(body.sections.console.console_surfaces.some((item) => item.key === "runtime_status"));
+assert.ok(body.sections.console.console_surfaces.some((item) => item.key === "gateway_session"));
+assert.equal(body.section_status.console.ok, true);
+assert.equal(body.sections.hardening_plan.command, "deployability:hardening-plan");
+assert.equal(body.sections.hardening_plan.mode, "production_hardening_plan");
+assert.equal(body.sections.hardening_plan.summary.status, "hardening_plan_visible");
+assert.equal(body.sections.hardening_plan.readiness_boundary.production_ready, false);
+assert.ok(body.sections.hardening_plan.hardening_plan.some((item) => item.key === "public_exposure"));
+assert.ok(body.sections.hardening_plan.hardening_plan.some((item) => item.key === "formal_release"));
+assert.equal(body.section_status.hardening_plan.ok, true);
+assert.equal(body.current_bundle.change_id, "CHG-2026-133");
 assert.deepEqual(body.profile_selector, body.sections.commands.filters.profiles);
 assert.equal(body.profile_selector.length, 7);
 const dashboardProfilesByKey = new Map(body.profile_selector.map((item) => [item.key, item]));
@@ -69,7 +82,7 @@ assert.deepEqual(dashboardProfileSummariesByKey.get("public_stack").aliases, ["p
 assert.equal(dashboardProfileSummariesByKey.get("public_stack").pipeline_key, "public_stack");
 assert.equal(dashboardProfileSummariesByKey.get("public_stack").purpose, "Review public exposure gates before opening edge routes.");
 assert.equal(dashboardProfileSummariesByKey.get("public_stack").status, "ready_now_with_safety_gates");
-assert.equal(dashboardProfileSummariesByKey.get("public_stack").command_count, 7);
+assert.equal(dashboardProfileSummariesByKey.get("public_stack").command_count, 8);
 assert.equal(dashboardProfileSummariesByKey.get("public_stack").attention.level, "safety_gate");
 assert.equal(dashboardProfileSummariesByKey.get("public_stack").attention.primary_command, "corepack pnpm run selfhost:readiness -- --profile public-stack");
 assert.equal(dashboardProfileSummariesByKey.get("public_stack").attention.primary_json_command, "corepack pnpm --silent run selfhost:readiness -- --profile public-stack --json");
@@ -138,8 +151,8 @@ assert.ok(allInOne.next_commands.includes("corepack pnpm run selfhost:quickstart
 assert.ok(allInOne.next_json_commands.includes("corepack pnpm --silent run selfhost:quickstart -- --profile all-in-one --json"));
 const publicStack = body.pipeline_summaries.find((item) => item.key === "public_stack");
 assert.equal(publicStack.status, "ready_now_with_safety_gates");
-assert.equal(publicStack.command_count, 7);
-assert.equal(publicStack.json_command_count, 7);
+assert.equal(publicStack.command_count, 8);
+assert.equal(publicStack.json_command_count, 8);
 assert.ok(publicStack.dashboard_safe_command_count >= 3);
 assert.ok(publicStack.public_exposure_gate_count >= 2);
 assert.ok(
@@ -163,7 +176,7 @@ const operatorOnboarding = body.pipeline_summaries.find((item) => item.key === "
 assert.ok(operatorOnboarding.dashboard_safe_command_count >= 2);
 const publishedImage = body.pipeline_summaries.find((item) => item.key === "published_image");
 assert.ok(publishedImage.dashboard_safe_command_count >= 2);
-assert.ok(body.warnings.includes("repos/client: uncommitted worktree changes"));
+assert.deepEqual(body.warnings, []);
 assert.ok(body.next_commands.includes("corepack pnpm run deployability:doctor"));
 assert.ok(body.next_commands.includes("corepack pnpm run deployability:action-plan"));
 assert.ok(body.next_commands.includes("corepack pnpm run deployability:handoff"));
@@ -229,7 +242,7 @@ assert.equal(pipedJson.status, 0, pipedJson.stderr || pipedJson.stdout);
 assert.ok(pipedJson.stdout.length > 65536);
 const pipedBody = JSON.parse(pipedJson.stdout);
 assert.equal(pipedBody.command, "deployability:dashboard");
-assert.equal(pipedBody.current_bundle.change_id, "CHG-2026-132");
+assert.equal(pipedBody.current_bundle.change_id, "CHG-2026-133");
 assert.ok(!pipedJson.stdout.includes("sk_dashboard_must_not_leak"));
 
 const text = run([]);
@@ -238,6 +251,8 @@ assert.match(text.stdout, /Deployability dashboard/);
 assert.match(text.stdout, /overview/);
 assert.match(text.stdout, /commands/);
 assert.match(text.stdout, /compatibility/);
+assert.match(text.stdout, /console/);
+assert.match(text.stdout, /hardening_plan/);
 assert.match(text.stdout, /Ecosystem readiness/);
 assert.match(text.stdout, /daily_deployable_with_safety_gates/);
 assert.match(text.stdout, /Pipeline summaries/);
@@ -246,7 +261,7 @@ assert.match(text.stdout, /recovery_evidence/);
 assert.match(text.stdout, /public_stack/);
 assert.match(text.stdout, /Profile selector/);
 assert.match(text.stdout, /public_stack -> public_stack/);
-assert.match(text.stdout, /CHG-2026-132/);
+assert.match(text.stdout, /CHG-2026-133/);
 assert.match(text.stdout, /corepack pnpm run deployability:action-plan/);
 assert.match(text.stdout, /corepack pnpm run deployability:handoff/);
 assert.ok(!text.stdout.includes("sk_dashboard_must_not_leak"));

@@ -53,6 +53,18 @@ assert.ok(
 );
 assert.ok(
   body.pipelines
+    .find((item) => item.key === "public_stack")
+    .commands.includes("corepack pnpm run selfhost:public-origin -- --profile public-stack --origin <public-origin>")
+);
+assert.ok(
+  body.pipelines
+    .find((item) => item.key === "public_stack")
+    .json_commands.includes(
+      "corepack pnpm --silent run selfhost:public-origin -- --profile public-stack --origin <public-origin> --json"
+    )
+);
+assert.ok(
+  body.pipelines
     .find((item) => item.key === "operator_onboarding")
     .json_commands.includes("corepack pnpm --silent run operator:onboarding:check -- --json")
 );
@@ -71,6 +83,7 @@ assert.ok(body.next_commands.includes("corepack pnpm run deployability:quickstar
 assert.ok(body.next_commands.includes("corepack pnpm run deployability:safety"));
 assert.ok(body.next_commands.includes("corepack pnpm run deployability:explain"));
 assert.ok(body.next_commands.includes("corepack pnpm run deployability:production"));
+assert.ok(body.next_commands.includes("corepack pnpm run deployability:hardening-plan"));
 assert.ok(body.next_commands.includes("corepack pnpm run deployability:readiness"));
 assert.ok(body.next_commands.includes("corepack pnpm run deployability:prd"));
 assert.ok(body.next_commands.includes("corepack pnpm run deployability:roadmap"));
@@ -85,6 +98,7 @@ assert.ok(
 );
 assert.ok(body.next_commands.includes("corepack pnpm run deployability:doctor"));
 assert.ok(body.next_commands.includes("corepack pnpm run deployability:recipe -- --profile public-stack"));
+assert.ok(body.next_commands.includes("corepack pnpm run deployability:console"));
 assert.ok(body.next_commands.includes("corepack pnpm run deployability:action-plan"));
 assert.ok(body.next_commands.includes("corepack pnpm run operator:onboarding:plan"));
 assert.ok(body.next_commands.includes("corepack pnpm run test:deployability"));
@@ -101,10 +115,12 @@ assert.match(text.stdout, /All-in-One Demo/);
 assert.match(text.stdout, /Recovery & Evidence/);
 assert.match(text.stdout, /selfhost:backup-plan/);
 assert.match(text.stdout, /selfhost:quickstart -- --profile all-in-one/);
+assert.match(text.stdout, /selfhost:public-origin -- --profile public-stack --origin <public-origin>/);
 assert.match(text.stdout, /corepack pnpm run selfhost:profiles/);
 assert.match(text.stdout, /corepack pnpm run deployability:readiness/);
 assert.match(text.stdout, /corepack pnpm run deployability:explain/);
 assert.match(text.stdout, /corepack pnpm run deployability:production/);
+assert.match(text.stdout, /corepack pnpm run deployability:hardening-plan/);
 assert.match(text.stdout, /corepack pnpm run deployability:prd/);
 assert.match(text.stdout, /corepack pnpm run deployability:roadmap/);
 assert.match(text.stdout, /corepack pnpm run deployability:status/);
@@ -113,6 +129,7 @@ assert.match(text.stdout, /corepack pnpm run deployability:exposure/);
 assert.match(text.stdout, /corepack pnpm run deployability:release -- --image-tag <candidate-tag>/);
 assert.match(text.stdout, /corepack pnpm run deployability:operator-checklist -- --profile public-stack --image-tag <candidate-tag>/);
 assert.match(text.stdout, /corepack pnpm run deployability:recipe -- --profile public-stack/);
+assert.match(text.stdout, /corepack pnpm run deployability:console/);
 assert.match(text.stdout, /corepack pnpm run deployability:action-plan/);
 assert.match(text.stdout, /corepack pnpm run test:deployability/);
 assert.match(text.stdout, /corepack pnpm run test:deployability-operations/);

@@ -142,7 +142,11 @@ CHG-2026-105:
   reading `.env`, calling Docker, binding ports, probing networks, or printing
   secrets; it separates daily deployability from public exposure and formal
   production readiness while surfacing billing, email, marketplace, and formal
-  release gates
+  release gates, and emits `production_readiness_remediation_plan` /
+  `formal_production_readiness_remediation` so dashboards and agents can render
+  the ordered public exposure, billing, email transport, marketplace, formal
+  release, and management-evidence steps without treating daily deployability as
+  production readiness
 - `deployability:readiness` is available as a standalone daily-deployable
   scorecard for humans, CI, and management UIs, and supports
   `corepack pnpm run deployability:readiness` and
@@ -166,7 +170,7 @@ CHG-2026-105:
   `corepack pnpm run deployability:gates` and
   `corepack pnpm --silent run deployability:gates -- --json` without reading
   `.env`, calling Docker, binding ports, probing networks, or printing secrets;
-  it projects roadmap, command catalog, and status metadata into management
+  it projects roadmap and command catalog metadata into management
   gate cards without executing the underlying gate commands
 - `deployability:exposure` is available as a non-destructive public-stack
   exposure blocker snapshot, and supports
@@ -174,7 +178,13 @@ CHG-2026-105:
   `corepack pnpm --silent run deployability:exposure -- --json`; it runs the
   existing public-stack security review, calls Docker only for compose config,
   does not start services or bind ports, and reports public exposure findings
-  under `exposure_blockers`
+  under `exposure_blockers`; when localhost `PUBLIC_SITE_ADDRESS` is the active
+  blocker, it also emits `operator_next_action` with the `.env` target, manual
+  origin-setting step, and security-review rerun command. It also emits
+  `pre_exposure_remediation_plan`, an ordered public-stack checklist for
+  configuring origin, rerunning security review, confirming route contract,
+  running onboarding check, running published-image dry-run, and exporting
+  evidence before any public exposure claim
 - `deployability:release` is available as a non-destructive release candidate
   gate, and supports
   `corepack pnpm run deployability:release -- --image-tag <candidate-tag>` and
@@ -204,6 +214,17 @@ CHG-2026-105:
   `corepack pnpm --silent run deployability:dashboard -- --json` without
   reading `.env`, calling Docker, binding ports, probing networks, or printing
   secrets
+- `deployability:next` is available as a read-only single next-action decision
+  for humans, dashboards, and agents that need one safe command instead of a
+  full menu. It combines menu, action-plan, and gate metadata, supports
+  `corepack pnpm run deployability:next`,
+  `corepack pnpm --silent run deployability:next -- --json`, and
+  `--profile <key-or-alias>`, defaults to the public-stack safety gate while
+  public exposure is gated, and does not execute the recommended command, read
+  `.env`, call Docker, bind ports, probe networks, or print secrets. Its
+  public-stack decision also links to `deployability:exposure` through
+  `detail_command` and `detail_json_command`, so management surfaces can fetch
+  blocker-specific `operator_next_action` remediation separately
 - `deployability:recipe` is available as a read-only linear first-run recipe for
   one selected profile, and supports
   `corepack pnpm run deployability:recipe -- --profile public-stack` and
@@ -289,7 +310,15 @@ CHG-2026-105:
   `selected_onboarding_plan` from the read-only `operator:onboarding:plan`
   projection, so a management UI can show the `/console/` onboarding flow,
   gateway credential setup, smoke/evidence steps, and onboarding check from the
-  same first screen. It presents attention, primary command, runbook,
+  same first screen. It also emits `operator_status_summary`,
+  `operator_status_cards`, and `operator_next_decision`. The status projection
+  is menu-local over profiles, commands, and console metadata and avoids
+  recursively calling the full `deployability:status` CLI; the next-decision
+  projection uses the selected profile and shared operator decision helper and
+  marks `source_status.operator_next_decision.avoids_recursive_next_cli=true`
+  instead of calling `deployability:next`. Public-stack decisions keep the same
+  `detail_command` and `detail_json_command` exposure-remediation links exposed
+  by `deployability:next`. It presents attention, primary command, runbook,
   action-plan, dashboard, handoff, command-catalog, and operator onboarding
   entry points without reading `.env`, calling Docker, binding ports, probing
   networks, or printing secrets
@@ -687,6 +716,21 @@ client-facing surfaces, enforcement, and end-user consent flows are complete.
 Runtime also renders supervisor
 status cards for `skill_adapter` and `mcp_adapter` while keeping log tabs scoped
 to caller/responder/relay.
+The fourth-repo `deployability:console -- --json` payload now consumes the
+client-owned `corepack pnpm --dir repos/client run check:ops-console-runtime-surface`
+evidence command and marks `runtime_status` as
+`client_owned_evidence_available` when that wiring is present.
+It also consumes
+`corepack pnpm --dir repos/client run check:ops-console-settings-surface` and
+marks `settings_approval_policy` as `client_owned_evidence_available` when
+Preferences and Access Lists prove approval modes, whitelist/Blocklist fields,
+and `allow_all` safety copy from the client-owned policy surface.
+It also consumes
+`corepack pnpm --dir repos/client run check:ops-console-logs-surface` and marks
+`logs_guidance` as `client_owned_evidence_available` when Runtime and Help prove
+`/runtime/logs`, `/runtime/alerts`, caller/responder/relay log services, log
+filtering metadata, `selfhost:logs`, and secret-safety copy from the
+client-owned console surface.
 
 The Preferences page now includes an approval-policy deployability summary that
 shows the active approval mode, whitelist and blocklist counts, local-mode

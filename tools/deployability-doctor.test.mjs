@@ -70,6 +70,8 @@ assert.ok(checksByKey.get("top_level_scripts").data.required_scripts.includes("d
 assert.ok(checksByKey.get("top_level_scripts").data.required_scripts.includes("test:deployability-gates"));
 assert.ok(checksByKey.get("top_level_scripts").data.required_scripts.includes("deployability:action-plan"));
 assert.ok(checksByKey.get("top_level_scripts").data.required_scripts.includes("test:deployability-action-plan"));
+assert.ok(checksByKey.get("top_level_scripts").data.required_scripts.includes("deployability:next"));
+assert.ok(checksByKey.get("top_level_scripts").data.required_scripts.includes("test:deployability-next"));
 assert.ok(checksByKey.get("top_level_scripts").data.required_scripts.includes("deployability:profiles"));
 assert.ok(checksByKey.get("top_level_scripts").data.required_scripts.includes("test:deployability-profiles"));
 assert.ok(checksByKey.get("top_level_scripts").data.required_scripts.includes("deployability:runbook"));
@@ -98,6 +100,7 @@ assert.ok(
 );
 assert.ok(body.next_commands.includes("corepack pnpm run deployability:evidence -- --profile public-stack"));
 assert.ok(body.next_commands.includes("corepack pnpm run deployability:dashboard"));
+assert.ok(body.next_commands.includes("corepack pnpm run deployability:next"));
 assert.ok(body.next_commands.includes("corepack pnpm run deployability:action-plan"));
 assert.ok(body.next_commands.includes("corepack pnpm run deployability:profiles"));
 assert.ok(body.next_commands.includes("corepack pnpm run deployability:commands"));

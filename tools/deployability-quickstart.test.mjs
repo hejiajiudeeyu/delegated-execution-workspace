@@ -31,10 +31,16 @@ assert.ok(body.tracks.find((item) => item.key === "daily_dev").steps.some((step)
 assert.ok(body.tracks.find((item) => item.key === "daily_dev").steps.some((step) => step.command === "corepack pnpm run deployability:safety"));
 assert.ok(body.tracks.find((item) => item.key === "daily_dev").steps.some((step) => step.command === "corepack pnpm run deployability:explain"));
 assert.ok(body.tracks.find((item) => item.key === "daily_dev").steps.some((step) => step.command === "corepack pnpm run deployability:production"));
+assert.ok(body.tracks.find((item) => item.key === "daily_dev").steps.some((step) => step.command === "corepack pnpm run deployability:hardening-plan"));
 assert.ok(
   body.tracks
     .find((item) => item.key === "daily_dev")
     .steps.some((step) => step.json_command === "corepack pnpm --silent run deployability:production -- --json")
+);
+assert.ok(
+  body.tracks
+    .find((item) => item.key === "daily_dev")
+    .steps.some((step) => step.json_command === "corepack pnpm --silent run deployability:hardening-plan -- --json")
 );
 assert.ok(body.tracks.find((item) => item.key === "daily_dev").steps.some((step) => step.command === "corepack pnpm run deployability:roadmap"));
 assert.ok(body.tracks.find((item) => item.key === "daily_dev").steps.some((step) => step.command === "corepack pnpm run deployability:prd"));
@@ -115,6 +121,22 @@ assert.ok(
     .find((item) => item.key === "all_in_one_demo")
     .steps.some((step) => step.command === "corepack pnpm run selfhost:readiness -- --profile all-in-one")
 );
+assert.ok(
+  body.tracks
+    .find((item) => item.key === "public_stack")
+    .steps.some(
+      (step) => step.command === "corepack pnpm run selfhost:public-origin -- --profile public-stack --origin <public-origin>"
+    )
+);
+assert.ok(
+  body.tracks
+    .find((item) => item.key === "public_stack")
+    .steps.some(
+      (step) =>
+        step.json_command ===
+        "corepack pnpm --silent run selfhost:public-origin -- --profile public-stack --origin <public-origin> --json"
+    )
+);
 assert.ok(body.tracks.find((item) => item.key === "public_stack").steps.some((step) => step.command === "corepack pnpm run selfhost:security-review -- --profile public-stack"));
 assert.ok(body.tracks.find((item) => item.key === "release_review").steps.some((step) => step.command === "corepack pnpm run published-image:plan"));
 assert.ok(
@@ -135,6 +157,7 @@ assert.ok(body.next_commands.includes("corepack pnpm run deployability:handoff")
 assert.ok(body.next_commands.includes("corepack pnpm run deployability:safety"));
 assert.ok(body.next_commands.includes("corepack pnpm run deployability:explain"));
 assert.ok(body.next_commands.includes("corepack pnpm run deployability:production"));
+assert.ok(body.next_commands.includes("corepack pnpm run deployability:hardening-plan"));
 assert.ok(body.next_commands.includes("corepack pnpm run deployability:prd"));
 assert.ok(body.next_commands.includes("corepack pnpm run deployability:roadmap"));
 assert.ok(body.next_commands.includes("corepack pnpm run deployability:status"));
@@ -163,9 +186,11 @@ assert.match(text.stdout, /All-in-One Demo/);
 assert.match(text.stdout, /selfhost:quickstart -- --profile all-in-one/);
 assert.match(text.stdout, /Selfhost Platform/);
 assert.match(text.stdout, /Public Stack/);
+assert.match(text.stdout, /selfhost:public-origin -- --profile public-stack --origin <public-origin>/);
 assert.match(text.stdout, /corepack pnpm run deployability:safety/);
 assert.match(text.stdout, /corepack pnpm run deployability:explain/);
 assert.match(text.stdout, /corepack pnpm run deployability:production/);
+assert.match(text.stdout, /corepack pnpm run deployability:hardening-plan/);
 assert.match(text.stdout, /corepack pnpm run deployability:prd/);
 assert.match(text.stdout, /corepack pnpm run deployability:roadmap/);
 assert.match(text.stdout, /corepack pnpm run deployability:status/);

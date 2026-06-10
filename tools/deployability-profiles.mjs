@@ -199,7 +199,7 @@ function printText(data) {
     console.log(`  pipeline: ${profile.pipeline_key}`);
     console.log(`  attention=${profile.attention?.level || "unknown"}; rank=${profile.attention?.rank ?? "unknown"}`);
     console.log(`  purpose: ${profile.purpose}`);
-    for (const command of profile.next_commands.slice(0, 3)) {
+    for (const command of profile.next_commands.slice(0, 4)) {
       console.log(`  next: ${command}`);
     }
   }

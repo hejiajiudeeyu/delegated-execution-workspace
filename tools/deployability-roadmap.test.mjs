@@ -23,10 +23,10 @@ const body = JSON.parse(json.stdout);
 assert.equal(body.command, "deployability:roadmap");
 assert.equal(body.mode, "prd_roadmap");
 assert.equal(body.ok, true);
-assert.equal(body.current_bundle.change_id, "CHG-2026-132");
+assert.equal(body.current_bundle.change_id, "CHG-2026-133");
 assert.equal(body.summary.status, "daily_deployable_with_planned_hardening");
-assert.equal(body.summary.total_milestones, 6);
-assert.equal(body.summary.satisfied_milestones, 4);
+assert.equal(body.summary.total_milestones, 8);
+assert.equal(body.summary.satisfied_milestones, 6);
 assert.equal(body.summary.gated_milestones, 1);
 assert.equal(body.summary.planned_milestones, 1);
 assert.deepEqual(
@@ -35,18 +35,37 @@ assert.deepEqual(
     "ecosystem_prd_alignment",
     "daily_deployable_scorecard",
     "profile_management_surface",
+    "console_management_surface",
+    "production_hardening_plan",
     "linear_first_run_recipe",
     "public_stack_safety_gate",
     "formal_production_hardening"
   ]
 );
 assert.equal(body.milestones.find((item) => item.key === "daily_deployable_scorecard").status, "satisfied");
+assert.equal(body.milestones.find((item) => item.key === "console_management_surface").status, "satisfied");
+assert.equal(body.milestones.find((item) => item.key === "production_hardening_plan").status, "satisfied");
 assert.equal(body.milestones.find((item) => item.key === "public_stack_safety_gate").status, "gated");
 assert.equal(body.milestones.find((item) => item.key === "formal_production_hardening").status, "planned");
 assert.ok(
   body.milestones
     .find((item) => item.key === "profile_management_surface")
     .evidence_commands.includes("corepack pnpm run deployability:profiles")
+);
+assert.ok(
+  body.milestones
+    .find((item) => item.key === "console_management_surface")
+    .evidence_commands.includes("corepack pnpm run deployability:console")
+);
+assert.ok(
+  body.milestones
+    .find((item) => item.key === "console_management_surface")
+    .evidence_commands.includes("corepack pnpm --silent run deployability:console -- --json")
+);
+assert.ok(
+  body.milestones
+    .find((item) => item.key === "production_hardening_plan")
+    .evidence_commands.includes("corepack pnpm run deployability:hardening-plan")
 );
 assert.ok(
   body.milestones
@@ -63,9 +82,13 @@ assert.ok(body.prd_sources.includes("docs/product/deployability-pipelines-prd.md
 assert.ok(body.next_commands.includes("corepack pnpm run deployability:recipe -- --profile public-stack"));
 assert.ok(body.next_commands.includes("corepack pnpm run selfhost:security-review -- --profile public-stack"));
 assert.ok(body.safety_defaults.some((item) => /read-only/i.test(item)));
+assert.ok(!body.safety_defaults.some((item) => /calls .*hardening-plan metadata/i.test(item)));
 assert.ok(body.source_status.commands.ok);
 assert.ok(body.source_status.readiness.ok);
 assert.ok(body.source_status.recipe.ok);
+assert.ok(body.source_status.console.ok);
+assert.equal(body.source_status.hardening_plan, undefined);
+assert.ok(body.notes.some((item) => /production_hardening_plan.*command catalog/i.test(item)));
 assert.ok(!json.stdout.includes("[ok]"));
 assert.ok(!json.stdout.includes("sk_roadmap_must_not_leak"));
 
@@ -73,6 +96,8 @@ const text = run([]);
 assert.equal(text.status, 0, text.stderr || text.stdout);
 assert.match(text.stdout, /Deployability roadmap/);
 assert.match(text.stdout, /daily_deployable_with_planned_hardening/);
+assert.match(text.stdout, /console_management_surface: satisfied/);
+assert.match(text.stdout, /production_hardening_plan: satisfied/);
 assert.match(text.stdout, /public_stack_safety_gate: gated/);
 assert.match(text.stdout, /formal_production_hardening: planned/);
 assert.match(text.stdout, /corepack pnpm run deployability:recipe -- --profile public-stack/);

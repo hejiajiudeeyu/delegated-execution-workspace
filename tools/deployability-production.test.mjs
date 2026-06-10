@@ -23,7 +23,7 @@ const body = JSON.parse(json.stdout);
 assert.equal(body.command, "deployability:production");
 assert.equal(body.mode, "production_hardening_review");
 assert.equal(body.ok, true);
-assert.equal(body.current_bundle.change_id, "CHG-2026-132");
+assert.equal(body.current_bundle.change_id, "CHG-2026-133");
 assert.deepEqual(body.summary, {
   status: "daily_deployable_production_planned",
   production_ready: false,
@@ -52,6 +52,45 @@ assert.deepEqual([...tracksByKey.keys()], [
   "marketplace_readiness",
   "formal_release"
 ]);
+
+assert.equal(body.production_readiness_remediation_plan.key, "formal_production_readiness_remediation");
+assert.equal(body.production_readiness_remediation_plan.status, "planned");
+assert.equal(body.production_readiness_remediation_plan.daily_deployable, true);
+assert.equal(body.production_readiness_remediation_plan.public_exposure_ready, false);
+assert.equal(body.production_readiness_remediation_plan.production_ready, false);
+assert.deepEqual(
+  body.production_readiness_remediation_plan.steps.map((item) => item.key),
+  [
+    "prove_public_exposure_gate",
+    "define_billing_production_gate",
+    "define_email_transport_gate",
+    "define_marketplace_readiness_gate",
+    "define_formal_release_gate",
+    "export_management_evidence"
+  ]
+);
+const productionSteps = new Map(body.production_readiness_remediation_plan.steps.map((item) => [item.key, item]));
+assert.equal(productionSteps.get("prove_public_exposure_gate").status, "gated");
+assert.equal(productionSteps.get("prove_public_exposure_gate").owner_scope, "fourth_repo_plus_formal_repos");
+assert.equal(productionSteps.get("define_billing_production_gate").owner_repo, "repos/platform");
+assert.equal(productionSteps.get("define_email_transport_gate").owner_repo, "repos/client");
+assert.equal(productionSteps.get("define_marketplace_readiness_gate").owner_scope, "formal_repos");
+assert.equal(productionSteps.get("define_formal_release_gate").owner_scope, "formal_repos");
+assert.ok(
+  productionSteps
+    .get("export_management_evidence")
+    .commands.includes("corepack pnpm run deployability:production")
+);
+assert.ok(
+  body.production_readiness_remediation_plan.machine_payloads.includes(
+    "corepack pnpm --silent run deployability:production -- --json"
+  )
+);
+assert.ok(
+  body.production_readiness_remediation_plan.guardrails.some((item) =>
+    /do not treat daily deployability as formal production readiness/i.test(item)
+  )
+);
 assert.equal(tracksByKey.get("public_exposure").status, "gated");
 assert.equal(tracksByKey.get("public_exposure").owner_scope, "fourth_repo_plus_formal_repos");
 assert.ok(tracksByKey.get("public_exposure").evidence_commands.includes("corepack pnpm run selfhost:security-review -- --profile public-stack"));
@@ -69,10 +108,12 @@ assert.ok(tracksByKey.get("formal_release").guardrails.some((item) => /owning re
 assert.ok(body.primary_next_commands.includes("corepack pnpm run deployability:production"));
 assert.ok(body.primary_next_commands.includes("corepack pnpm run published-image:plan"));
 assert.ok(body.machine_payloads.includes("corepack pnpm --silent run deployability:production -- --json"));
-assert.ok(body.machine_payloads.includes("corepack pnpm --silent run deployability:gates -- --json"));
+assert.ok(body.machine_payloads.includes("corepack pnpm --silent run deployability:roadmap -- --json"));
+assert.ok(!body.machine_payloads.includes("corepack pnpm --silent run deployability:gates -- --json"));
+assert.ok(!body.machine_payloads.includes("corepack pnpm --silent run deployability:status -- --json"));
 assert.ok(body.source_status.roadmap.ok);
-assert.ok(body.source_status.gates.ok);
-assert.ok(body.source_status.status.ok);
+assert.equal(body.source_status.gates, undefined);
+assert.equal(body.source_status.status, undefined);
 assert.deepEqual(body.blockers, []);
 assert.ok(body.safety_defaults.some((item) => /read-only/i.test(item)));
 assert.ok(!json.stdout.includes("[ok]"));
@@ -86,6 +127,8 @@ assert.match(text.stdout, /public_exposure: gated/);
 assert.match(text.stdout, /billing_production: planned/);
 assert.match(text.stdout, /email_transport: planned/);
 assert.match(text.stdout, /formal_release: planned/);
+assert.match(text.stdout, /Production readiness remediation plan/);
+assert.match(text.stdout, /define_billing_production_gate/);
 assert.match(text.stdout, /corepack pnpm run published-image:plan/);
 assert.ok(!text.stdout.includes("sk_production_must_not_leak"));
 

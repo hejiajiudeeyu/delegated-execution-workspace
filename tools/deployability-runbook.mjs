@@ -191,8 +191,8 @@ function profileData(profile) {
       `corepack pnpm run deployability:profiles -- --profile ${profile}`,
       `corepack pnpm run deployability:commands -- --profile ${profile}`,
       `corepack pnpm --silent run deployability:commands -- --profile ${profile} --json`,
-      "corepack pnpm run deployability:dashboard",
-      "corepack pnpm run deployability:handoff"
+      `corepack pnpm run deployability:dashboard -- --profile ${profile}`,
+      `corepack pnpm run deployability:handoff -- --profile ${profile}`
     ],
     notes: [
       "gate phases must be reviewed before start phases",

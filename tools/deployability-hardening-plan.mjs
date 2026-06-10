@@ -7,29 +7,23 @@ import { parseStrictArgs } from "./lib/strict-args.mjs";
 const ROOT = process.cwd();
 
 const SAFETY_DEFAULTS = [
-  "deployability production hardening review is read-only and does not read .env files directly",
-  "deployability production hardening review only calls read-only roadmap metadata",
-  "deployability production hardening review does not call Docker, bind ports, or probe network endpoints",
-  "JSON output separates daily deployability from public exposure and formal production readiness without printing secret values"
+  "deployability hardening plan is read-only and does not read .env files directly",
+  "deployability hardening plan only calls read-only roadmap metadata",
+  "deployability hardening plan does not call Docker, bind ports, or probe network endpoints",
+  "JSON output describes owner repos, stages, blockers, guardrails, and evidence commands without printing secret values"
 ];
 
 const MACHINE_PAYLOADS = [
-  "corepack pnpm --silent run deployability:production -- --json",
+  "corepack pnpm --silent run deployability:hardening-plan -- --json",
   "corepack pnpm --silent run deployability:roadmap -- --json"
 ];
 
-const PRODUCTION_REMEDIATION_MACHINE_PAYLOADS = [
-  "corepack pnpm --silent run deployability:production -- --json",
-  "corepack pnpm --silent run deployability:hardening-plan -- --json",
-  "corepack pnpm --silent run deployability:gates -- --json",
-  "corepack pnpm --silent run deployability:status -- --json"
-];
-
 const PRIMARY_NEXT_COMMANDS = [
+  "corepack pnpm run deployability:hardening-plan",
   "corepack pnpm run deployability:production",
   "corepack pnpm run deployability:gates",
+  "corepack pnpm run deployability:exposure",
   "corepack pnpm run published-image:plan",
-  "corepack pnpm run selfhost:security-review -- --profile public-stack",
   "corepack pnpm run test:deployability-operations"
 ];
 
@@ -77,11 +71,48 @@ function fallback(items, pattern, fallbackItem) {
   return matched.length ? matched : [fallbackItem];
 }
 
-function buildHardeningTracks({ roadmap }) {
+function stage(key, label, commands, done_when) {
+  return { key, label, commands, done_when };
+}
+
+function buildStages(track) {
+  if (track.key === "public_exposure") {
+    return [
+      stage(
+        "review",
+        "Review exposure blockers",
+        ["corepack pnpm run deployability:exposure", "corepack pnpm run selfhost:security-review -- --profile public-stack"],
+        "public exposure blockers are visible"
+      ),
+      stage("prove", "Prove public-stack safety gates", track.evidence_commands, "security review, onboarding, and smoke evidence are available"),
+      stage("operate", "Export operator evidence", ["corepack pnpm run deployability:evidence -- --profile public-stack"], "handoff/evidence payload is safe to share")
+    ];
+  }
+
+  if (track.key === "formal_release") {
+    return [
+      stage("define_gate", "Define owning-repo release gates", ["corepack pnpm run deployability:gates"], "formal npm/image release gate ownership is explicit"),
+      stage("prove_gate", "Prove package and image release candidates", track.evidence_commands, "published image plan and operation regression evidence are available"),
+      stage("wire_operator_surface", "Wire release evidence into management surfaces", ["corepack pnpm run deployability:status"], "operators can see the release gate without treating it as daily readiness")
+    ];
+  }
+
+  return [
+    stage("define_gate", `Define ${track.label.toLowerCase()} gate`, ["corepack pnpm run deployability:gates"], "owning repo and acceptance evidence are explicit"),
+    stage("prove_gate", `Prove ${track.label.toLowerCase()} evidence`, track.evidence_commands, "gate evidence is available from owning-repo checks"),
+    stage(
+      "wire_operator_surface",
+      `Wire ${track.label.toLowerCase()} into operator surfaces`,
+      ["corepack pnpm run deployability:status", "corepack pnpm run deployability:roadmap"],
+      "management surfaces can show the gate without claiming production readiness"
+    )
+  ];
+}
+
+function baseTracks(roadmap) {
   const publicStack = milestone(roadmap, "public_stack_safety_gate");
   const production = milestone(roadmap, "formal_production_hardening");
   const productionRemaining = production?.remaining_work || [];
-
   return [
     {
       key: "public_exposure",
@@ -157,147 +188,70 @@ function buildHardeningTracks({ roadmap }) {
   ];
 }
 
-function buildProductionReadinessRemediationPlan({ hardeningTracks, summary }) {
-  const tracksByKey = new Map(hardeningTracks.map((item) => [item.key, item]));
-  const publicExposure = tracksByKey.get("public_exposure");
-  const billing = tracksByKey.get("billing_production");
-  const email = tracksByKey.get("email_transport");
-  const marketplace = tracksByKey.get("marketplace_readiness");
-  const formalRelease = tracksByKey.get("formal_release");
-
-  const gateStep = (track, key, label, commands, doneWhen) => ({
-    key,
-    label,
-    status: track?.status || "planned",
-    owner_scope: track?.owner_scope || null,
-    owner_repo: track?.owner_repo || null,
-    blocked_by: track?.remaining_work || [],
-    guardrails: track?.guardrails || [],
-    commands,
-    done_when: doneWhen
+function buildPlan({ roadmap }) {
+  return baseTracks(roadmap).map((track) => {
+    const blockedBy =
+      track.key === "public_exposure"
+        ? track.remaining_work
+        : track.key === "billing_production"
+          ? track.remaining_work
+          : track.key === "email_transport"
+            ? track.remaining_work
+            : track.key === "marketplace_readiness"
+              ? track.remaining_work
+              : track.remaining_work;
+    return {
+      key: track.key,
+      label: track.label,
+      status: track.status,
+      owner_scope: track.owner_scope,
+      owner_repo: track.owner_repo,
+      blocked_by: unique(blockedBy),
+      guardrails: track.guardrails,
+      stages: buildStages(track),
+      next_commands:
+        track.key === "public_exposure"
+          ? ["corepack pnpm run deployability:exposure", ...track.evidence_commands]
+          : ["corepack pnpm run deployability:gates", ...track.evidence_commands]
+    };
   });
-
-  return {
-    key: "formal_production_readiness_remediation",
-    status: summary.production_ready ? "ready" : "planned",
-    daily_deployable: summary.daily_deployable,
-    public_exposure_ready: false,
-    production_ready: summary.production_ready,
-    steps: [
-      gateStep(
-        publicExposure,
-        "prove_public_exposure_gate",
-        "Prove public exposure gate",
-        [
-          "corepack pnpm run deployability:exposure",
-          ...(publicExposure?.evidence_commands || [
-            "corepack pnpm run selfhost:security-review -- --profile public-stack",
-            "corepack pnpm run operator:onboarding:check",
-            "corepack pnpm run published-image:smoke -- --dry-run --image-tag <candidate-tag>"
-          ])
-        ],
-        "public-stack security review, onboarding contract check, and published-image dry-run are all visible"
-      ),
-      gateStep(
-        billing,
-        "define_billing_production_gate",
-        "Define billing production gate",
-        ["corepack pnpm run deployability:gates", ...(billing?.evidence_commands || [])],
-        "billing production acceptance evidence is owned by repos/platform and visible without making billing default-ready"
-      ),
-      gateStep(
-        email,
-        "define_email_transport_gate",
-        "Define email transport production gate",
-        ["corepack pnpm run deployability:gates", ...(email?.evidence_commands || [])],
-        "email transport production acceptance evidence is owned by repos/client and remains separate from local deployability"
-      ),
-      gateStep(
-        marketplace,
-        "define_marketplace_readiness_gate",
-        "Define marketplace readiness gate",
-        ["corepack pnpm run deployability:gates", ...(marketplace?.evidence_commands || [])],
-        "marketplace readiness is proven in formal owning repositories before being shown as production-ready"
-      ),
-      gateStep(
-        formalRelease,
-        "define_formal_release_gate",
-        "Define formal release gate",
-        ["corepack pnpm run deployability:gates", ...(formalRelease?.evidence_commands || [])],
-        "npm package and image release gates remain in the owning repositories"
-      ),
-      {
-        key: "export_management_evidence",
-        label: "Export management evidence",
-        status: "ready",
-        owner_scope: "fourth_repo",
-        owner_repo: null,
-        blocked_by: [],
-        guardrails: [
-          "management evidence is read-only",
-          "do not print secret values",
-          "do not treat daily deployability as formal production readiness"
-        ],
-        commands: [
-          "corepack pnpm run deployability:production",
-          "corepack pnpm run deployability:hardening-plan",
-          "corepack pnpm run deployability:status",
-          "corepack pnpm run deployability:roadmap"
-        ],
-        done_when: "operator and dashboard surfaces can display production gaps, owners, guardrails, and next commands without claiming production readiness"
-      }
-    ],
-    guardrails: [
-      "do not treat daily deployability as formal production readiness",
-      "formal production gates belong in the owning repositories",
-      "the fourth repo may expose management metadata but must not define business runtime truth",
-      "keep public exposure, billing, email transport, marketplace, and release gates independently visible"
-    ],
-    machine_payloads: PRODUCTION_REMEDIATION_MACHINE_PAYLOADS
-  };
 }
 
-function summarize({ tracks, blockers, warnings, roadmap }) {
-  const countByStatus = (value) => tracks.filter((item) => item.status === value).length;
+function summarize({ plan, blockers, warnings }) {
+  const countByStatus = (status) => plan.filter((item) => item.status === status).length;
   return {
-    status: blockers.length ? "blocked" : "daily_deployable_production_planned",
+    status: blockers.length ? "blocked" : "hardening_plan_visible",
     production_ready: false,
-    daily_deployable: roadmap?.summary?.status === "daily_deployable_with_planned_hardening",
-    hardening_track_count: tracks.length,
-    planned_count: countByStatus("planned"),
-    gated_count: countByStatus("gated"),
-    blocked_count: blockers.length,
+    track_count: plan.length,
+    stage_count: plan.reduce((total, item) => total + item.stages.length, 0),
+    planned_track_count: countByStatus("planned"),
+    gated_track_count: countByStatus("gated"),
+    blocker_count: blockers.length,
     warning_count: warnings.length
   };
 }
 
-function productionData() {
+function hardeningPlanData() {
   const roadmapResult = runJsonScript("tools/deployability-roadmap.mjs");
-  const sourceBlockers = [sourceBlocker("roadmap", roadmapResult)].filter(Boolean);
   const roadmap = roadmapResult.body || null;
+  const sourceBlockers = [sourceBlocker("roadmap", roadmapResult)].filter(Boolean);
   const blockers = unique([...sourceBlockers, ...(roadmap?.blockers || [])]);
   const warnings = unique([...(roadmap?.warnings || [])]);
-  const hardeningTracks = buildHardeningTracks({ roadmap });
-  const summary = summarize({ tracks: hardeningTracks, blockers, warnings, roadmap });
-  const productionReadinessRemediationPlan = buildProductionReadinessRemediationPlan({
-    hardeningTracks,
-    summary
-  });
+  const hardeningPlan = buildPlan({ roadmap });
 
   return {
-    command: "deployability:production",
-    mode: "production_hardening_review",
+    command: "deployability:hardening-plan",
+    mode: "production_hardening_plan",
     ok: blockers.length === 0,
     current_bundle: roadmap?.current_bundle || null,
-    summary,
+    summary: summarize({ plan: hardeningPlan, blockers, warnings }),
     readiness_boundary: {
-      daily_deployable: summary.daily_deployable,
+      daily_deployable: roadmap?.summary?.status === "daily_deployable_with_planned_hardening",
       public_exposure_ready: false,
       production_ready: false,
-      reason: "daily deployability is available, while public exposure and formal production hardening remain gated or planned"
+      reason: "hardening plan is actionable management metadata, not evidence that public production readiness has passed"
     },
-    hardening_tracks: hardeningTracks,
-    production_readiness_remediation_plan: productionReadinessRemediationPlan,
+    hardening_plan: hardeningPlan,
     blockers,
     warnings,
     primary_next_commands: PRIMARY_NEXT_COMMANDS,
@@ -312,8 +266,8 @@ function productionData() {
     },
     safety_defaults: SAFETY_DEFAULTS,
     notes: [
-      "use this when a management surface needs to explain why daily deployability is not production readiness",
-      "hardening tracks are convenience projections over existing roadmap metadata; they do not execute commands"
+      "use this when a management surface needs an actionable production-hardening plan without claiming production readiness",
+      "direct input is roadmap metadata; production, gates, and status commands are stage guidance only and are not executed"
     ]
   };
 }
@@ -332,30 +286,25 @@ function printJson(data) {
 }
 
 function printText(data) {
-  console.log("Deployability production hardening");
-  console.log("==================================");
-  console.log("Read-only boundary between daily deployability, public exposure, and formal production readiness.\n");
+  console.log("Deployability hardening plan");
+  console.log("============================");
+  console.log("Read-only production hardening plan for owners, stages, blockers, evidence, and guardrails.\n");
   console.log(`bundle=${data.current_bundle?.change_id || "unknown"}`);
   console.log(`status=${data.summary.status}`);
-  console.log(`daily_deployable=${data.summary.daily_deployable}`);
   console.log(`production_ready=${data.summary.production_ready}\n`);
 
-  for (const track of data.hardening_tracks) {
+  for (const track of data.hardening_plan) {
     console.log(`${track.key}: ${track.status}`);
     console.log(`  ${track.label}`);
     console.log(`  owner_scope: ${track.owner_scope}`);
     if (track.owner_repo) console.log(`  owner_repo: ${track.owner_repo}`);
-    for (const command of track.evidence_commands) console.log(`  - ${command}`);
+    for (const blocker of track.blocked_by) console.log(`  blocked_by: ${blocker}`);
     for (const guardrail of track.guardrails) console.log(`  guardrail: ${guardrail}`);
-    for (const item of track.remaining_work) console.log(`  remaining: ${item}`);
-  }
-
-  console.log("\nProduction readiness remediation plan:");
-  console.log(`status=${data.production_readiness_remediation_plan.status}`);
-  for (const step of data.production_readiness_remediation_plan.steps) {
-    console.log(`- ${step.key}: ${step.status}`);
-    if (step.owner_repo) console.log(`  owner_repo: ${step.owner_repo}`);
-    for (const command of step.commands) console.log(`  command: ${command}`);
+    for (const stageItem of track.stages) {
+      console.log(`  stage ${stageItem.key}: ${stageItem.label}`);
+      for (const command of stageItem.commands) console.log(`    - ${command}`);
+      console.log(`    done_when: ${stageItem.done_when}`);
+    }
   }
 
   if (data.blockers.length) {
@@ -373,7 +322,7 @@ function printText(data) {
 }
 
 const args = parseArgs(process.argv);
-const data = productionData();
+const data = hardeningPlanData();
 if (args.json) {
   printJson(data);
 } else {

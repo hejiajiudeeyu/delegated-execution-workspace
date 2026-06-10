@@ -23,7 +23,7 @@ const body = JSON.parse(json.stdout);
 assert.equal(body.command, "deployability:gates");
 assert.equal(body.mode, "gate_checklist");
 assert.equal(body.ok, true);
-assert.equal(body.current_bundle.change_id, "CHG-2026-132");
+assert.equal(body.current_bundle.change_id, "CHG-2026-133");
 assert.deepEqual(body.summary, {
   status: "public_exposure_gated_production_planned",
   gate_count: 2,
@@ -62,9 +62,11 @@ assert.ok(body.primary_next_commands.includes("corepack pnpm run deployability:g
 assert.ok(body.primary_next_commands.includes("corepack pnpm run selfhost:security-review -- --profile public-stack"));
 assert.ok(body.machine_payloads.includes("corepack pnpm --silent run deployability:gates -- --json"));
 assert.ok(body.machine_payloads.includes("corepack pnpm --silent run deployability:roadmap -- --json"));
+assert.ok(body.machine_payloads.includes("corepack pnpm --silent run deployability:commands -- --json"));
+assert.ok(!body.machine_payloads.includes("corepack pnpm --silent run deployability:status -- --json"));
 assert.ok(body.source_status.roadmap.ok);
 assert.ok(body.source_status.commands.ok);
-assert.ok(body.source_status.status.ok);
+assert.equal(body.source_status.status, undefined);
 assert.deepEqual(body.blockers, []);
 assert.ok(body.safety_defaults.some((item) => /read-only/i.test(item)));
 assert.ok(!json.stdout.includes("[ok]"));

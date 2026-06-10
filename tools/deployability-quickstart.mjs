@@ -34,6 +34,11 @@ const TRACKS = [
         json_command: "corepack pnpm --silent run deployability:production -- --json"
       },
       {
+        label: "Read the production hardening plan",
+        command: "corepack pnpm run deployability:hardening-plan",
+        json_command: "corepack pnpm --silent run deployability:hardening-plan -- --json"
+      },
+      {
         label: "Read the daily-deployable scorecard",
         command: "corepack pnpm run deployability:readiness",
         json_command: "corepack pnpm --silent run deployability:readiness -- --json"
@@ -98,6 +103,11 @@ const TRACKS = [
         label: "Read the focused public-stack recipe",
         command: "corepack pnpm run deployability:recipe -- --profile public-stack",
         json_command: "corepack pnpm --silent run deployability:recipe -- --profile public-stack --json"
+      },
+      {
+        label: "Read the console management index",
+        command: "corepack pnpm run deployability:console",
+        json_command: "corepack pnpm --silent run deployability:console -- --json"
       },
       {
         label: "Emit a focused public-stack dashboard payload",
@@ -231,6 +241,12 @@ const TRACKS = [
         json_command: "corepack pnpm --silent run selfhost:ports -- --profile public-stack --json"
       },
       {
+        label: "Plan public origin update",
+        command: "corepack pnpm run selfhost:public-origin -- --profile public-stack --origin <public-origin>",
+        json_command:
+          "corepack pnpm --silent run selfhost:public-origin -- --profile public-stack --origin <public-origin> --json"
+      },
+      {
         label: "Run public exposure review",
         command: "corepack pnpm run selfhost:security-review -- --profile public-stack",
         json_command: "corepack pnpm --silent run selfhost:security-review -- --profile public-stack --json"
@@ -289,6 +305,7 @@ const NEXT_COMMANDS = [
   "corepack pnpm run deployability:safety",
   "corepack pnpm run deployability:explain",
   "corepack pnpm run deployability:production",
+  "corepack pnpm run deployability:hardening-plan",
   "corepack pnpm run deployability:readiness",
   "corepack pnpm run deployability:prd",
   "corepack pnpm run deployability:roadmap",
@@ -302,6 +319,7 @@ const NEXT_COMMANDS = [
   "corepack pnpm run deployability:profiles",
   "corepack pnpm run deployability:menu",
   "corepack pnpm run deployability:recipe -- --profile public-stack",
+  "corepack pnpm run deployability:console",
   "corepack pnpm run deployability:action-plan -- --list-profiles",
   "corepack pnpm run deployability:action-plan",
   "corepack pnpm run deployability:commands",

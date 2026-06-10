@@ -42,7 +42,7 @@ assert.equal(json.status, 0, json.stderr || json.stdout);
 const body = JSON.parse(json.stdout);
 assert.equal(body.command, "deployability:action-plan");
 assert.equal(body.ok, true);
-assert.equal(body.current_bundle.change_id, "CHG-2026-132");
+assert.equal(body.current_bundle.change_id, "CHG-2026-133");
 assert.equal(body.ecosystem_readiness.status, "daily_deployable_with_safety_gates");
 assert.deepEqual(
   body.profiles.map((item) => item.key),
@@ -95,6 +95,22 @@ assert.ok(
     "corepack pnpm run selfhost:security-review -- --profile public-stack"
   )
 );
+
+const allInOneOnly = run(["--json", "--profile", "all-in-one"]);
+assert.equal(allInOneOnly.status, 0, allInOneOnly.stderr || allInOneOnly.stdout);
+const allInOneOnlyBody = JSON.parse(allInOneOnly.stdout);
+assert.equal(allInOneOnlyBody.ok, true);
+assert.equal(allInOneOnlyBody.profile_filter.requested, "all-in-one");
+assert.equal(allInOneOnlyBody.profile_filter.resolved, "all_in_one_demo");
+assert.deepEqual(allInOneOnlyBody.profiles.map((item) => item.key), ["all_in_one_demo"]);
+assert.deepEqual(allInOneOnlyBody.recommended_profile_keys, ["all_in_one_demo"]);
+assert.ok(allInOneOnlyBody.next_commands.includes("corepack pnpm run deployability:dashboard -- --profile all-in-one"));
+assert.ok(allInOneOnlyBody.next_commands.includes("corepack pnpm run deployability:commands -- --profile all-in-one"));
+assert.ok(allInOneOnlyBody.next_commands.includes("corepack pnpm run deployability:handoff -- --profile all-in-one"));
+assert.ok(!allInOneOnlyBody.next_commands.includes("corepack pnpm run deployability:dashboard"));
+assert.ok(!allInOneOnlyBody.next_commands.includes("corepack pnpm run deployability:commands"));
+assert.ok(!allInOneOnlyBody.next_commands.includes("corepack pnpm run deployability:handoff"));
+assert.ok(!allInOneOnly.stdout.includes("sk_action_plan_must_not_leak"));
 
 const equalsProfile = run(["--json", "--profile=public-stack"]);
 assert.equal(equalsProfile.status, 0, equalsProfile.stderr || equalsProfile.stdout);
@@ -182,7 +198,7 @@ const pipedJson = spawnSync(process.execPath, [SCRIPT, "--json"], {
 assert.equal(pipedJson.status, 0, pipedJson.stderr || pipedJson.stdout);
 const pipedBody = JSON.parse(pipedJson.stdout);
 assert.equal(pipedBody.command, "deployability:action-plan");
-assert.equal(pipedBody.current_bundle.change_id, "CHG-2026-132");
+assert.equal(pipedBody.current_bundle.change_id, "CHG-2026-133");
 assert.ok(!pipedJson.stdout.includes("sk_action_plan_must_not_leak"));
 
 const text = run([]);

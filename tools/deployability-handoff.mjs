@@ -79,7 +79,7 @@ const COMMAND_MAP = [
 ];
 
 const SAFETY_NOTES = [
-  "handoff is read-only and does not read .env files",
+  "handoff writes a non-secret Markdown handoff report and does not read .env files",
   "handoff does not call Docker, bind ports, or probe network endpoints",
   "Markdown and JSON output include command metadata, pipeline summaries, bundle metadata, compatibility status, and safety notes only",
   "business protocol, client runtime, and platform runtime truth remain in the three formal repositories"

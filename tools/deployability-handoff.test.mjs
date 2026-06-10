@@ -159,14 +159,24 @@ try {
   assert.ok(allInOne.next_commands.includes("corepack pnpm run selfhost:quickstart -- --profile all-in-one"));
   const publicStack = body.pipeline_summaries.find((item) => item.key === "public_stack");
   assert.equal(publicStack.status, "ready_now_with_safety_gates");
-  assert.equal(publicStack.public_exposure_gate_count, 3);
+  assert.equal(publicStack.public_exposure_gate_count, 4);
   assert.ok(publicStack.next_commands.includes("corepack pnpm run selfhost:security-review -- --profile public-stack"));
-  assert.equal(publicStack.command_count, 7);
+  assert.equal(publicStack.command_count, 8);
   assert.ok(publicStack.next_commands.includes("corepack pnpm run deployability:evidence -- --profile public-stack"));
   const recoveryEvidence = body.pipeline_summaries.find((item) => item.key === "recovery_evidence");
   assert.equal(recoveryEvidence.status, "ready_now");
   assert.ok(recoveryEvidence.next_commands.includes("corepack pnpm run selfhost:backup-plan"));
   assert.ok(body.next_commands.includes("corepack pnpm run check:submodules"));
+  assert.ok(
+    body.safety_notes.some((note) => note.includes("writes a non-secret Markdown handoff report")),
+    "handoff safety notes must disclose report-file writes"
+  );
+  assert.ok(
+    !body.safety_notes.some((note) => note.includes("read-only")),
+    "handoff safety notes must not claim read-only posture because the command writes a report"
+  );
+  assert.ok(body.safety_notes.some((note) => note.includes("does not read .env files")));
+  assert.ok(body.safety_notes.some((note) => note.includes("does not call Docker, bind ports, or probe network endpoints")));
   assert.ok(!json.stdout.includes("sk_handoff_must_not_leak"));
   assert.ok(!json.stdout.includes("[ok]"));
 

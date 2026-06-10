@@ -14,14 +14,6 @@ const SAFETY_DEFAULTS = [
   "JSON output separates script blockers from release blockers so dashboards can render blocked candidates"
 ];
 
-const MACHINE_PAYLOADS = [
-  "corepack pnpm --silent run deployability:release -- --image-tag <candidate-tag> --json",
-  "corepack pnpm --silent run deployability:production -- --json",
-  "corepack pnpm --silent run deployability:exposure -- --json",
-  "corepack pnpm --silent run published-image:plan -- --image-tag <candidate-tag> --json",
-  "corepack pnpm --silent run published-image:smoke -- --dry-run --image-tag <candidate-tag> --json"
-];
-
 const PRIMARY_NEXT_COMMANDS = [
   "corepack pnpm run deployability:release -- --image-tag <candidate-tag>",
   "corepack pnpm run deployability:production",
@@ -79,6 +71,16 @@ function sourceBlocker(label, result) {
 
 function unique(items) {
   return [...new Set(items.filter(Boolean))];
+}
+
+function machinePayloads(imageTag) {
+  return [
+    `corepack pnpm --silent run deployability:release -- --image-tag ${imageTag} --json`,
+    "corepack pnpm --silent run deployability:production -- --json",
+    "corepack pnpm --silent run deployability:exposure -- --json",
+    `corepack pnpm --silent run published-image:plan -- --image-tag ${imageTag} --json`,
+    `corepack pnpm --silent run published-image:smoke -- --dry-run --image-tag ${imageTag} --json`
+  ];
 }
 
 function releaseBlockers({ production, exposure, plan, dryRun }) {
@@ -190,7 +192,7 @@ function releaseData(args) {
     published_image_plan: plan,
     published_image_dry_run: dryRun,
     primary_next_commands: PRIMARY_NEXT_COMMANDS,
-    machine_payloads: MACHINE_PAYLOADS,
+    machine_payloads: machinePayloads(args.imageTag),
     source_status: {
       production: {
         ok: productionResult.ok,

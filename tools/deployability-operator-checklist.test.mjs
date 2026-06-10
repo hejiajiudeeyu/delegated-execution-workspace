@@ -23,7 +23,7 @@ const body = JSON.parse(json.stdout);
 assert.equal(body.command, "deployability:operator-checklist");
 assert.equal(body.mode, "public_stack_operator_checklist");
 assert.equal(body.ok, true);
-assert.equal(body.current_bundle.change_id, "CHG-2026-132");
+assert.equal(body.current_bundle.change_id, "CHG-2026-133");
 assert.deepEqual(body.profile, {
   key: "public_stack",
   name: "public-stack"
@@ -65,7 +65,7 @@ assert.ok(itemsByKey.get("handoff_report").commands.includes("corepack pnpm run 
 assert.deepEqual(body.blockers, []);
 assert.ok(body.operator_blockers.some((item) => /public_exposure_gate/.test(item)));
 assert.ok(body.operator_blockers.some((item) => /release_candidate_gate/.test(item)));
-assert.ok(body.warnings.includes("repos/client: uncommitted worktree changes"));
+assert.deepEqual(body.warnings, []);
 assert.equal(body.menu.command, "deployability:menu");
 assert.equal(body.recipe.command, "deployability:recipe");
 assert.equal(body.onboarding_check.command, "operator:onboarding:check");
@@ -79,7 +79,17 @@ assert.ok(body.source_status.backup_plan.ok);
 assert.ok(body.primary_next_commands.includes("corepack pnpm run deployability:operator-checklist -- --profile public-stack --image-tag <candidate-tag>"));
 assert.ok(body.primary_next_commands.includes("corepack pnpm run deployability:release -- --image-tag <candidate-tag>"));
 assert.ok(body.primary_next_commands.includes("corepack pnpm run selfhost:security-review -- --profile public-stack"));
-assert.ok(body.machine_payloads.includes("corepack pnpm --silent run deployability:operator-checklist -- --profile public-stack --image-tag <candidate-tag> --json"));
+assert.ok(
+  body.machine_payloads.includes(
+    "corepack pnpm --silent run deployability:operator-checklist -- --profile public-stack --image-tag candidate-2026-06-09 --json"
+  )
+);
+assert.ok(
+  body.machine_payloads.includes(
+    "corepack pnpm --silent run deployability:release -- --image-tag candidate-2026-06-09 --json"
+  )
+);
+assert.ok(!body.machine_payloads.some((item) => item.includes("<candidate-tag>")));
 assert.ok(body.safety_defaults.some((item) => /does not start services/i.test(item)));
 assert.ok(!json.stdout.includes("[ok]"));
 assert.ok(!json.stdout.includes("sk_operator_checklist_must_not_leak"));
@@ -90,6 +100,23 @@ const pnpmSeparatedBody = JSON.parse(pnpmSeparatedJson.stdout);
 assert.equal(pnpmSeparatedBody.command, "deployability:operator-checklist");
 assert.equal(pnpmSeparatedBody.profile.name, "public-stack");
 assert.equal(pnpmSeparatedBody.image_tag, "candidate-2026-06-09");
+
+const unsupportedProfile = run(["--json", "--profile", "all-in-one", "--image-tag", "candidate-2026-06-09"]);
+assert.equal(unsupportedProfile.status, 1, unsupportedProfile.stderr || unsupportedProfile.stdout);
+const unsupportedProfileBody = JSON.parse(unsupportedProfile.stdout);
+assert.equal(unsupportedProfileBody.command, "deployability:operator-checklist");
+assert.equal(unsupportedProfileBody.mode, "public_stack_operator_checklist");
+assert.equal(unsupportedProfileBody.ok, false);
+assert.deepEqual(unsupportedProfileBody.profile_filter, {
+  requested: "all-in-one",
+  resolved: "all_in_one_demo",
+  pipeline: "all_in_one_demo"
+});
+assert.ok(unsupportedProfileBody.blockers.some((item) => /only supports public-stack/i.test(item)));
+assert.deepEqual(unsupportedProfileBody.source_status, {});
+assert.deepEqual(unsupportedProfileBody.checklist_items, []);
+assert.deepEqual(unsupportedProfileBody.machine_payloads, []);
+assert.ok(!unsupportedProfile.stdout.includes("sk_operator_checklist_must_not_leak"));
 
 const typo = run(["--json", "--profil", "public-stack", "--image-tag", "candidate-2026-06-09"]);
 assert.equal(typo.status, 1, typo.stderr || typo.stdout);

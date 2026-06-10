@@ -29,7 +29,7 @@ try {
   assert.equal(body.command, "deployability:evidence");
   assert.equal(body.ok, true);
   assert.equal(body.mode, "evidence_bundle");
-  assert.equal(body.current_bundle.change_id, "CHG-2026-132");
+  assert.equal(body.current_bundle.change_id, "CHG-2026-133");
   assert.deepEqual(body.profile_filter, {
     requested: "public-stack",
     resolved: "public_stack",
@@ -50,7 +50,7 @@ try {
 
   const manifest = JSON.parse(fs.readFileSync(path.join(outputDir, "manifest.json"), "utf8"));
   assert.equal(manifest.command, "deployability:evidence");
-  assert.equal(manifest.current_bundle.change_id, "CHG-2026-132");
+  assert.equal(manifest.current_bundle.change_id, "CHG-2026-133");
   assert.equal(manifest.profile_filter.resolved, "public_stack");
   assert.deepEqual(
     manifest.artifacts.map((item) => item.key),
@@ -106,6 +106,30 @@ try {
   assert.equal(separatorBody.output_dir, separatorOutputDir);
   assert.ok(fs.existsSync(path.join(separatorOutputDir, "manifest.json")));
   fs.rmSync(separatorOutputDir, { recursive: true, force: true });
+
+  const allInOneOutputDir = fs.mkdtempSync(path.join(os.tmpdir(), "delexec-deployability-evidence-all-in-one-"));
+  const allInOneJson = run(["--json", "--profile", "all-in-one", "--output-dir", allInOneOutputDir]);
+  assert.equal(allInOneJson.status, 0, allInOneJson.stderr || allInOneJson.stdout);
+  const allInOneBody = JSON.parse(allInOneJson.stdout);
+  assert.deepEqual(allInOneBody.profile_filter, {
+    requested: "all-in-one",
+    resolved: "all_in_one_demo",
+    pipeline: "all_in_one_demo"
+  });
+  assert.ok(
+    allInOneBody.next_commands.includes(
+      `corepack pnpm run deployability:evidence -- --profile all-in-one --output-dir ${allInOneOutputDir}`
+    )
+  );
+  assert.ok(allInOneBody.next_commands.includes("corepack pnpm run deployability:handoff -- --profile all-in-one"));
+  assert.ok(!allInOneBody.next_commands.some((item) => item.includes("--profile public-stack")));
+  const allInOneDashboard = JSON.parse(fs.readFileSync(path.join(allInOneOutputDir, "dashboard.json"), "utf8"));
+  assert.deepEqual(allInOneDashboard.pipeline_summaries.map((item) => item.key), ["all_in_one_demo"]);
+  const allInOneText = run(["--profile", "all-in-one", "--output-dir", allInOneOutputDir]);
+  assert.equal(allInOneText.status, 0, allInOneText.stderr || allInOneText.stdout);
+  assert.match(allInOneText.stdout, /--profile all-in-one/);
+  assert.ok(!allInOneText.stdout.includes("--profile public-stack"));
+  fs.rmSync(allInOneOutputDir, { recursive: true, force: true });
 
   const typo = run(["--json", "--profil", "public-stack", "--output-dir", outputDir]);
   assert.equal(typo.status, 1, typo.stderr || typo.stdout);

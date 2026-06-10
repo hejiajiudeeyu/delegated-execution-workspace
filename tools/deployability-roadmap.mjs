@@ -15,13 +15,15 @@ const PRD_SOURCES = [
 
 const SAFETY_DEFAULTS = [
   "deployability roadmap is read-only and does not read .env files directly",
-  "deployability roadmap only calls read-only command catalog, readiness, and recipe metadata",
+  "deployability roadmap only calls read-only command catalog, readiness, recipe, and console metadata",
   "deployability roadmap does not call Docker, bind ports, or probe network endpoints",
   "JSON output contains PRD milestone evidence and remaining work without printing secret values"
 ];
 
 const NEXT_COMMANDS = [
   "corepack pnpm run deployability:readiness",
+  "corepack pnpm run deployability:console",
+  "corepack pnpm run deployability:hardening-plan",
   "corepack pnpm run deployability:menu -- --profile public-stack",
   "corepack pnpm run deployability:recipe -- --profile public-stack",
   "corepack pnpm run selfhost:security-review -- --profile public-stack",
@@ -73,7 +75,7 @@ function readinessCheck(readiness, key) {
   return readiness?.checks?.find((item) => item.key === key);
 }
 
-function buildMilestones({ commands, readiness, recipe }) {
+function buildMilestones({ commands, readiness, recipe, consoleIndex }) {
   const readinessOk = readiness?.ecosystem_readiness?.status === "daily_deployable_with_safety_gates";
   const profileManagementOk =
     hasCommand(commands, "corepack pnpm run deployability:profiles") &&
@@ -85,6 +87,13 @@ function buildMilestones({ commands, readiness, recipe }) {
     recipe?.profile_filter?.resolved === "public_stack" &&
     recipe?.recipe_steps?.some((item) => item.key === "gate") &&
     recipe?.copy_paste_commands?.includes("corepack pnpm run selfhost:security-review -- --profile public-stack");
+  const consoleOk =
+    consoleIndex?.mode === "console_management_index" &&
+    consoleIndex?.summary?.status === "console_management_visible_with_client_surface_evidence" &&
+    consoleIndex?.console_surfaces?.some((item) => item.key === "runtime_status") &&
+    consoleIndex?.console_surfaces?.some((item) => item.key === "public_stack_console") &&
+    consoleIndex?.console_surfaces?.some((item) => item.key === "gateway_session");
+  const hardeningPlanOk = hasCommand(commands, "corepack pnpm run deployability:hardening-plan");
 
   return [
     {
@@ -129,6 +138,26 @@ function buildMilestones({ commands, readiness, recipe }) {
         "corepack pnpm run deployability:commands"
       ],
       remaining_work: profileManagementOk ? [] : ["restore profile catalog, action-plan, menu, and command catalog discovery"]
+    },
+    {
+      key: "console_management_surface",
+      label: "Management Console surfaces are visible as a read-only operator index",
+      status: consoleOk ? "satisfied" : "blocked",
+      evidence_commands: [
+        "corepack pnpm run deployability:console",
+        "corepack pnpm --silent run deployability:console -- --json"
+      ],
+      remaining_work: consoleOk ? [] : ["restore console_management_index runtime, public-stack console, and gateway session surface metadata"]
+    },
+    {
+      key: "production_hardening_plan",
+      label: "Production hardening plan is visible as owner, stage, blocker, and evidence metadata",
+      status: hardeningPlanOk ? "satisfied" : "blocked",
+      evidence_commands: [
+        "corepack pnpm run deployability:hardening-plan",
+        "corepack pnpm --silent run deployability:hardening-plan -- --json"
+      ],
+      remaining_work: hardeningPlanOk ? [] : ["restore production_hardening_plan billing, email, marketplace, release, and public exposure tracks"]
     },
     {
       key: "linear_first_run_recipe",
@@ -192,15 +221,18 @@ function roadmapData() {
   const commandsResult = runJsonScript("tools/deployability-commands.mjs");
   const readinessResult = runJsonScript("tools/deployability-readiness.mjs");
   const recipeResult = runJsonScript("tools/deployability-recipe.mjs", ["--profile", "public-stack"]);
+  const consoleResult = runJsonScript("tools/deployability-console.mjs");
   const sourceBlockers = [
     sourceBlocker("commands", commandsResult),
     sourceBlocker("readiness", readinessResult),
-    sourceBlocker("recipe", recipeResult)
+    sourceBlocker("recipe", recipeResult),
+    sourceBlocker("console", consoleResult)
   ].filter(Boolean);
   const milestones = buildMilestones({
     commands: commandsResult.body?.commands || [],
     readiness: readinessResult.body || null,
-    recipe: recipeResult.body || null
+    recipe: recipeResult.body || null,
+    consoleIndex: consoleResult.body || null
   });
   const milestoneBlockers = milestones
     .filter((item) => item.status === "blocked")
@@ -235,12 +267,19 @@ function roadmapData() {
         exit_code: recipeResult.exit_code,
         stderr: recipeResult.stderr,
         parse_error: recipeResult.parse_error
+      },
+      console: {
+        ok: consoleResult.ok,
+        exit_code: consoleResult.exit_code,
+        stderr: consoleResult.stderr,
+        parse_error: consoleResult.parse_error
       }
     },
     safety_defaults: SAFETY_DEFAULTS,
     next_commands: NEXT_COMMANDS,
     notes: [
       "use this as the PRD-aligned management roadmap after the command map and readiness scorecard",
+      "production_hardening_plan is satisfied from command catalog evidence; run deployability:hardening-plan for the detailed management plan",
       "planned hardening items are intentionally not treated as daily-deployable blockers"
     ]
   };

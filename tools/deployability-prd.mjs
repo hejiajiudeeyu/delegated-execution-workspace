@@ -104,6 +104,16 @@ const MANAGEMENT_SURFACES = [
     command: "corepack pnpm run deployability:gates",
     json_command: "corepack pnpm --silent run deployability:gates -- --json",
     purpose: "Public exposure and production hardening gates."
+  },
+  {
+    command: "corepack pnpm run deployability:hardening-plan",
+    json_command: "corepack pnpm --silent run deployability:hardening-plan -- --json",
+    purpose: "Actionable production hardening plan for owners, stages, blockers, guardrails, and evidence commands."
+  },
+  {
+    command: "corepack pnpm run deployability:console",
+    json_command: "corepack pnpm --silent run deployability:console -- --json",
+    purpose: "Console management surface index for runtime, settings, logs, billing, public-stack console, and gateway session readiness."
   }
 ];
 
@@ -120,6 +130,8 @@ const NEXT_COMMANDS = [
   "corepack pnpm run deployability:dashboard",
   "corepack pnpm run deployability:commands",
   "corepack pnpm run deployability:menu -- --profile public-stack",
+  "corepack pnpm run deployability:console",
+  "corepack pnpm run deployability:hardening-plan",
   "corepack pnpm run test:deployability"
 ];
 

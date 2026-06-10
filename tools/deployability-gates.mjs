@@ -8,7 +8,7 @@ const ROOT = process.cwd();
 
 const SAFETY_DEFAULTS = [
   "deployability gates is read-only and does not read .env files directly",
-  "deployability gates only calls read-only roadmap, command catalog, and status metadata",
+  "deployability gates only calls read-only roadmap and command catalog metadata",
   "deployability gates does not call Docker, bind ports, or probe network endpoints",
   "JSON output contains public exposure and production hardening gates without printing secret values"
 ];
@@ -16,7 +16,6 @@ const SAFETY_DEFAULTS = [
 const MACHINE_PAYLOADS = [
   "corepack pnpm --silent run deployability:gates -- --json",
   "corepack pnpm --silent run deployability:roadmap -- --json",
-  "corepack pnpm --silent run deployability:status -- --json",
   "corepack pnpm --silent run deployability:commands -- --json"
 ];
 
@@ -155,11 +154,9 @@ function summarize({ gates, blockers, warnings }) {
 function gatesData() {
   const roadmapResult = runJsonScript("tools/deployability-roadmap.mjs");
   const commandsResult = runJsonScript("tools/deployability-commands.mjs");
-  const statusResult = runJsonScript("tools/deployability-status.mjs");
   const sourceBlockers = [
     sourceBlocker("roadmap", roadmapResult),
-    sourceBlocker("commands", commandsResult),
-    sourceBlocker("status", statusResult)
+    sourceBlocker("commands", commandsResult)
   ].filter(Boolean);
   const roadmap = roadmapResult.body || null;
   const commands = commandsResult.body?.commands || [];
@@ -167,16 +164,15 @@ function gatesData() {
   const blockers = unique([
     ...sourceBlockers,
     ...(roadmap?.blockers || []),
-    ...(commandsResult.body?.blockers || []),
-    ...(statusResult.body?.blockers || [])
+    ...(commandsResult.body?.blockers || [])
   ]);
-  const warnings = unique([...(roadmap?.warnings || []), ...(commandsResult.body?.warnings || []), ...(statusResult.body?.warnings || [])]);
+  const warnings = unique([...(roadmap?.warnings || []), ...(commandsResult.body?.warnings || [])]);
 
   return {
     command: "deployability:gates",
     mode: "gate_checklist",
     ok: blockers.length === 0,
-    current_bundle: roadmap?.current_bundle || statusResult.body?.current_bundle || null,
+    current_bundle: roadmap?.current_bundle || null,
     summary: summarize({ gates, blockers, warnings }),
     gates,
     blockers,
@@ -195,18 +191,12 @@ function gatesData() {
         exit_code: commandsResult.exit_code,
         stderr: commandsResult.stderr,
         parse_error: commandsResult.parse_error
-      },
-      status: {
-        ok: statusResult.ok,
-        exit_code: statusResult.exit_code,
-        stderr: statusResult.stderr,
-        parse_error: statusResult.parse_error
       }
     },
     safety_defaults: SAFETY_DEFAULTS,
     notes: [
       "use this before opening public routes or presenting production readiness",
-      "gate checklist entries are convenience projections over roadmap, command catalog, and status metadata; they do not execute commands"
+      "gate checklist entries are convenience projections over roadmap and command catalog metadata; they do not execute commands"
     ]
   };
 }

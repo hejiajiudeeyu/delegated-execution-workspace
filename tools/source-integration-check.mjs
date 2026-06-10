@@ -9,6 +9,8 @@ const clientRoot = path.join(ROOT, "repos/client");
 const relayDbPath = path.join(os.tmpdir(), "fourth-repo-relay.sqlite");
 const platformEnvPath = path.join(platformRoot, "deploy/platform/.env");
 const platformEnvExample = path.join(platformRoot, "deploy/platform/.env.example");
+const integrationPorts = [8079, 8081, 8082, 8090, 8091, 8092];
+const opsHome = fs.mkdtempSync(path.join(os.tmpdir(), "fourth-repo-delexec-home-"));
 
 function run(cwd, command, args, extraEnv = {}, options = {}) {
   const result = spawnSync(command, args, {
@@ -77,21 +79,21 @@ function cleanupOpsProcesses() {
   for (const pattern of [
     "node src/cli.js start",
     "apps/ops/src/cli.js start",
-    "apps/buyer-controller/src/server.js",
-    "buyer-controller/src/server.js",
     "apps/caller-controller/src/server.js",
     "caller-controller/src/server.js",
-    "apps/seller-controller/src/server.js",
-    "seller-controller/src/server.js",
     "apps/responder-controller/src/server.js",
     "responder-controller/src/server.js",
+    "apps/caller-skill-adapter/src/server.js",
+    "caller-skill-adapter/src/server.js",
+    "apps/caller-skill-mcp-adapter/src/server.js",
+    "caller-skill-mcp-adapter/src/server.js",
     "apps/transport-relay/src/server.js",
     "transport-relay/src/server.js"
   ]) {
     spawnSync("pkill", ["-f", pattern], { stdio: "ignore" });
   }
 
-  for (const port of [8079, 8081, 8082, 8090]) {
+  for (const port of integrationPorts) {
     const listeners = spawnSync("lsof", ["-ti", `tcp:${port}`], { encoding: "utf8" });
     if (listeners.status !== 0 || !listeners.stdout.trim()) {
       continue;
@@ -105,95 +107,153 @@ function cleanupOpsProcesses() {
   }
 }
 
-if (!fs.existsSync(platformEnvPath)) {
-  fs.copyFileSync(platformEnvExample, platformEnvPath);
+async function stopBackground(processInfo) {
+  const child = processInfo?.child;
+  if (!child || child.exitCode !== null || child.killed) {
+    return;
+  }
+  await new Promise((resolve) => {
+    let done = false;
+    const finish = () => {
+      if (!done) {
+        done = true;
+        resolve();
+      }
+    };
+    child.once("exit", finish);
+    child.kill("SIGTERM");
+    setTimeout(() => {
+      if (child.exitCode === null) {
+        child.kill("SIGKILL");
+      }
+      finish();
+    }, 3000);
+  });
 }
-let envText = fs.readFileSync(platformEnvPath, "utf8");
-envText = envText.replace(/^TOKEN_SECRET=.*$/m, "TOKEN_SECRET=fourth-repo-local-dev-secret");
-envText = envText.replace(/^PLATFORM_ADMIN_API_KEY=.*$/m, "PLATFORM_ADMIN_API_KEY=sk_admin_local_dev");
-fs.writeFileSync(platformEnvPath, envText, "utf8");
 
-run(clientRoot, "npm", ["install"]);
-run(platformRoot, "npm", ["install"]);
-run(ROOT, "node", ["tools/sync-local-contracts.mjs"]);
+async function cleanupIntegration(relay) {
+  await stopBackground(relay);
+  cleanupOpsProcesses();
+  await sleep(500);
+  for (const port of integrationPorts) {
+    const listeners = spawnSync("lsof", ["-ti", `tcp:${port}`], { encoding: "utf8" });
+    if (listeners.status !== 0 || !listeners.stdout.trim()) {
+      continue;
+    }
+    for (const pid of listeners.stdout.trim().split(/\s+/)) {
+      if (pid) {
+        spawnSync("kill", ["-KILL", pid], { stdio: "ignore" });
+      }
+    }
+  }
 
-cleanupOpsProcesses();
-spawnSync("rm", ["-rf", path.join(os.homedir(), ".delexec")], { stdio: "ignore" });
+  try {
+    run(platformRoot, "docker", [
+      "compose",
+      "-f",
+      "deploy/platform/docker-compose.yml",
+      "--env-file",
+      "deploy/platform/.env",
+      "down",
+      "-v"
+    ]);
+  } catch {}
 
-const relay = spawnBackground(platformRoot, "node", ["apps/transport-relay/src/server.js"], {
-  PORT: "8090",
-  SERVICE_NAME: "transport-relay",
-  RELAY_SQLITE_PATH: relayDbPath
-});
+  fs.rmSync(opsHome, { recursive: true, force: true });
+  fs.rmSync(relayDbPath, { force: true });
+}
 
 try {
+  if (!fs.existsSync(platformEnvPath)) {
+    fs.copyFileSync(platformEnvExample, platformEnvPath);
+  }
+  let envText = fs.readFileSync(platformEnvPath, "utf8");
+  envText = envText.replace(/^TOKEN_SECRET=.*$/m, "TOKEN_SECRET=fourth-repo-local-dev-secret");
+  envText = envText.replace(/^PLATFORM_ADMIN_API_KEY=.*$/m, "PLATFORM_ADMIN_API_KEY=sk_admin_local_dev");
+  fs.writeFileSync(platformEnvPath, envText, "utf8");
+
+  run(ROOT, "corepack", ["pnpm", "install", "--frozen-lockfile"]);
+  run(ROOT, "corepack", ["pnpm", "rebuild", "--pending"]);
+  run(ROOT, "node", ["tools/sync-local-contracts.mjs"]);
+
+  cleanupOpsProcesses();
+
+  var relay = spawnBackground(platformRoot, "node", ["apps/transport-relay/src/server.js"], {
+    PORT: "8090",
+    SERVICE_NAME: "transport-relay",
+    RELAY_SQLITE_PATH: relayDbPath
+  });
+
+  try {
+    run(platformRoot, "docker", [
+      "compose",
+      "-f",
+      "deploy/platform/docker-compose.yml",
+      "--env-file",
+      "deploy/platform/.env",
+      "down",
+      "-v"
+    ]);
+  } catch {}
+
   run(platformRoot, "docker", [
     "compose",
     "-f",
     "deploy/platform/docker-compose.yml",
     "--env-file",
     "deploy/platform/.env",
-    "down",
-    "-v"
+    "up",
+    "-d",
+    "--build"
   ]);
-} catch {}
 
-run(platformRoot, "docker", [
-  "compose",
-  "-f",
-  "deploy/platform/docker-compose.yml",
-  "--env-file",
-  "deploy/platform/.env",
-  "up",
-  "-d",
-  "--build"
-]);
+  await waitFor("http://127.0.0.1:8080/healthz");
+  await waitFor("http://127.0.0.1:8090/healthz").catch((error) => {
+    if (relay.child.exitCode !== null) {
+      process.stderr.write(relay.readOutput());
+    }
+    throw error;
+  });
 
-await waitFor("http://127.0.0.1:8080/healthz");
-await waitFor("http://127.0.0.1:8090/healthz").catch((error) => {
-  if (relay.child.exitCode !== null) {
-    process.stderr.write(relay.readOutput());
+  const opsEnv = {
+    DELEXEC_HOME: opsHome,
+    TRANSPORT_TYPE: "relay_http",
+    TRANSPORT_BASE_URL: "http://127.0.0.1:8090",
+    PLATFORM_ADMIN_API_KEY: "sk_admin_local_dev",
+    ADMIN_API_KEY: "sk_admin_local_dev"
+  };
+
+  run(clientRoot, "node", ["apps/ops/src/cli.js", "setup"], opsEnv);
+  run(clientRoot, "node", ["apps/ops/src/cli.js", "auth", "register", "--email", "integration@example.com", "--platform", "http://127.0.0.1:8080"], opsEnv);
+  run(clientRoot, "node", ["apps/ops/src/cli.js", "add-example-hotline"], opsEnv);
+  run(clientRoot, "node", ["apps/ops/src/cli.js", "submit-review"], opsEnv);
+  run(clientRoot, "node", ["apps/ops/src/cli.js", "enable-responder"], opsEnv);
+
+  const setupState = JSON.parse(fs.readFileSync(path.join(opsHome, "ops.config.json"), "utf8"));
+  const responderId = setupState.responder.responder_id;
+
+  run(ROOT, "node", ["tools/approve-example.mjs", responderId], {
+    PLATFORM_API_KEY: "sk_admin_local_dev",
+    PLATFORM_ADMIN_API_KEY: "sk_admin_local_dev"
+  });
+
+  const bootstrapOutput = run(clientRoot, "node", [
+    "apps/ops/src/cli.js",
+    "bootstrap",
+    "--email",
+    "integration@example.com",
+    "--platform",
+    "http://127.0.0.1:8080",
+    "--text",
+    "Summarize this request in one sentence."
+  ], opsEnv);
+
+  if (!bootstrapOutput.includes("\"status\": \"SUCCEEDED\"")) {
+    process.stderr.write(bootstrapOutput);
+    throw new Error("source integration request did not succeed");
   }
-  throw error;
-});
 
-const opsEnv = {
-  TRANSPORT_TYPE: "relay_http",
-  TRANSPORT_BASE_URL: "http://127.0.0.1:8090",
-  PLATFORM_ADMIN_API_KEY: "sk_admin_local_dev",
-  ADMIN_API_KEY: "sk_admin_local_dev"
-};
-
-run(clientRoot, "node", ["apps/ops/src/cli.js", "setup"], opsEnv);
-run(clientRoot, "node", ["apps/ops/src/cli.js", "auth", "register", "--email", "integration@example.com", "--platform", "http://127.0.0.1:8080"], opsEnv);
-run(clientRoot, "node", ["apps/ops/src/cli.js", "add-example-hotline"], opsEnv);
-run(clientRoot, "node", ["apps/ops/src/cli.js", "submit-review"], opsEnv);
-run(clientRoot, "node", ["apps/ops/src/cli.js", "enable-responder"], opsEnv);
-
-const setupState = JSON.parse(fs.readFileSync(path.join(os.homedir(), ".delexec/ops.config.json"), "utf8"));
-const responderId = setupState.responder.responder_id;
-
-run(ROOT, "node", ["tools/approve-example.mjs", responderId], {
-  PLATFORM_API_KEY: "sk_admin_local_dev",
-  PLATFORM_ADMIN_API_KEY: "sk_admin_local_dev"
-});
-
-const bootstrapOutput = run(clientRoot, "node", [
-  "apps/ops/src/cli.js",
-  "bootstrap",
-  "--email",
-  "integration@example.com",
-  "--platform",
-  "http://127.0.0.1:8080",
-  "--text",
-  "Summarize this request in one sentence."
-], opsEnv);
-
-if (!bootstrapOutput.includes("\"status\": \"SUCCEEDED\"")) {
-  process.stderr.write(bootstrapOutput);
-  throw new Error("source integration request did not succeed");
+  console.log("[source-integration-check] ok");
+} finally {
+  await cleanupIntegration(relay);
 }
-
-console.log("[source-integration-check] ok");
-
-relay.child.kill("SIGTERM");

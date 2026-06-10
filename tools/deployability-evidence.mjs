@@ -116,6 +116,23 @@ function artifact(key, label, filePath, format) {
   };
 }
 
+function commandProfileAlias(profileFilter) {
+  return profileFilter.requested || "public-stack";
+}
+
+function nextCommands({ profileFilter, outputDir }) {
+  const alias = commandProfileAlias(profileFilter);
+  return [
+    `corepack pnpm run deployability:evidence -- --profile ${alias} --output-dir ${outputDir}`,
+    `corepack pnpm --silent run deployability:evidence -- --profile ${alias} --output-dir ${outputDir} --json`,
+    profileFilter.resolved === "public_stack"
+      ? "corepack pnpm run deployability:operator-checklist -- --profile public-stack --image-tag <candidate-tag>"
+      : `corepack pnpm run deployability:dashboard -- --profile ${alias}`,
+    `corepack pnpm run deployability:handoff -- --profile ${alias}`,
+    "corepack pnpm run test:deployability"
+  ];
+}
+
 function evidenceData(args) {
   const profileFilter = resolveProfileFilter(args.profile);
   const outputDir = resolveOutputDir(args.outputDir);
@@ -214,13 +231,7 @@ function evidenceData(args) {
     ].filter(Boolean),
     source_status: sourceStatus,
     safety_defaults: SAFETY_DEFAULTS,
-    next_commands: [
-      `corepack pnpm run deployability:evidence -- --profile public-stack --output-dir ${outputDir}`,
-      `corepack pnpm --silent run deployability:evidence -- --profile public-stack --output-dir ${outputDir} --json`,
-      "corepack pnpm run deployability:operator-checklist -- --profile public-stack --image-tag <candidate-tag>",
-      "corepack pnpm run deployability:handoff -- --profile public-stack",
-      "corepack pnpm run test:deployability"
-    ],
+    next_commands: nextCommands({ profileFilter, outputDir }),
     notes: [
       "use this bundle when an operator or management UI needs one directory of non-secret deployability evidence",
       "the bundle reuses dashboard, menu, recipe, handoff, and command catalog metadata instead of creating a new business truth source"

@@ -241,7 +241,9 @@ snapshot. Use `corepack pnpm run deployability:exposure` or
 needs the actual public exposure review result, including `exposure_blockers`
 such as localhost public origin. It calls Docker only for compose config and
 does not start services, bind ports, probe network endpoints, or print secret
-values.
+values. When the blocker is `PUBLIC_SITE_ADDRESS`, the JSON payload includes
+`selfhost:public-origin` dry-run/apply commands so operators can update only
+the public origin and then rerun `selfhost:security-review`.
 
 `deployability:release` is the non-destructive release candidate gate. Use
 `corepack pnpm run deployability:release -- --image-tag <candidate-tag>` or
@@ -429,6 +431,9 @@ corepack pnpm run selfhost:urls -- --profile public-stack
 corepack pnpm --silent run selfhost:urls -- --profile public-stack --json
 corepack pnpm run selfhost:ports -- --profile public-stack
 corepack pnpm --silent run selfhost:ports -- --profile public-stack --json
+corepack pnpm run selfhost:public-origin -- --profile public-stack --origin <public-origin>
+corepack pnpm --silent run selfhost:public-origin -- --profile public-stack --origin <public-origin> --json
+corepack pnpm --silent run selfhost:public-origin -- --profile public-stack --origin <public-origin> --confirm --json
 corepack pnpm run selfhost:preflight -- --profile public-stack
 corepack pnpm --silent run selfhost:preflight -- --profile public-stack --json
 corepack pnpm run selfhost:up -- --profile public-stack
@@ -607,6 +612,9 @@ corepack pnpm run selfhost:urls -- --profile public-stack
 corepack pnpm --silent run selfhost:urls -- --profile public-stack --json
 corepack pnpm run selfhost:ports -- --profile public-stack
 corepack pnpm --silent run selfhost:ports -- --profile public-stack --json
+corepack pnpm run selfhost:public-origin -- --profile public-stack --origin <public-origin>
+corepack pnpm --silent run selfhost:public-origin -- --profile public-stack --origin <public-origin> --json
+corepack pnpm --silent run selfhost:public-origin -- --profile public-stack --origin <public-origin> --confirm --json
 corepack pnpm run selfhost:ops-report -- --profile public-stack
 corepack pnpm --silent run selfhost:ops-report -- --profile public-stack --json
 corepack pnpm run selfhost:security-review -- --profile public-stack

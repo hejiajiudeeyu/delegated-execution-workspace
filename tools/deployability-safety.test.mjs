@@ -33,6 +33,7 @@ for (const command of [
   "corepack pnpm run selfhost:restore-plan",
   "corepack pnpm run selfhost:rotate-plan",
   "corepack pnpm run selfhost:rotate",
+  "corepack pnpm run selfhost:public-origin -- --profile public-stack --origin <public-origin>",
   "corepack pnpm run dev:doctor",
   "corepack pnpm run test:agent-e2e",
   "corepack pnpm run mcp:golden-four",
@@ -55,6 +56,12 @@ assert.equal(byCommand.get("corepack pnpm run deployability:production").writes_
 assert.equal(byCommand.get("corepack pnpm run deployability:production").calls_docker, false);
 assert.equal(byCommand.get("corepack pnpm run deployability:production").probes_network, false);
 assert.equal(byCommand.get("corepack pnpm run deployability:production").dashboard_safe, true);
+assert.equal(byCommand.get("corepack pnpm run deployability:hardening-plan").posture, "read_only");
+assert.equal(byCommand.get("corepack pnpm run deployability:hardening-plan").reads_env, false);
+assert.equal(byCommand.get("corepack pnpm run deployability:hardening-plan").writes_files, false);
+assert.equal(byCommand.get("corepack pnpm run deployability:hardening-plan").calls_docker, false);
+assert.equal(byCommand.get("corepack pnpm run deployability:hardening-plan").probes_network, false);
+assert.equal(byCommand.get("corepack pnpm run deployability:hardening-plan").dashboard_safe, true);
 assert.equal(byCommand.get("corepack pnpm run deployability:readiness").posture, "read_only");
 assert.equal(byCommand.get("corepack pnpm run deployability:readiness").reads_env, false);
 assert.equal(byCommand.get("corepack pnpm run deployability:readiness").calls_docker, false);
@@ -154,6 +161,11 @@ assert.equal(byCommand.get("corepack pnpm run deployability:action-plan -- --lis
 assert.equal(byCommand.get("corepack pnpm run deployability:commands").posture, "read_only");
 assert.equal(byCommand.get("corepack pnpm run deployability:commands").calls_docker, false);
 assert.equal(byCommand.get("corepack pnpm run deployability:commands").probes_network, false);
+assert.equal(byCommand.get("corepack pnpm run deployability:console").posture, "read_only");
+assert.equal(byCommand.get("corepack pnpm run deployability:console").reads_env, false);
+assert.equal(byCommand.get("corepack pnpm run deployability:console").calls_docker, false);
+assert.equal(byCommand.get("corepack pnpm run deployability:console").probes_network, false);
+assert.equal(byCommand.get("corepack pnpm run deployability:console").dashboard_safe, true);
 assert.equal(byCommand.get("corepack pnpm run dev:local:status").posture, "runtime_snapshot");
 assert.equal(byCommand.get("corepack pnpm run dev:local:status").dashboard_safe, true);
 assert.equal(byCommand.get("corepack pnpm run dev:doctor").category, "local_agent_loop");
@@ -195,6 +207,30 @@ assert.equal(byCommand.get("corepack pnpm run selfhost:rotate").posture, "writes
 assert.equal(byCommand.get("corepack pnpm run selfhost:rotate").reads_env, true);
 assert.equal(byCommand.get("corepack pnpm run selfhost:rotate").writes_files, true);
 assert.equal(byCommand.get("corepack pnpm run selfhost:rotate").dashboard_safe, true);
+assert.equal(
+  byCommand.get("corepack pnpm run selfhost:public-origin -- --profile public-stack --origin <public-origin>").category,
+  "public_stack"
+);
+assert.equal(
+  byCommand.get("corepack pnpm run selfhost:public-origin -- --profile public-stack --origin <public-origin>").posture,
+  "writes_env"
+);
+assert.equal(
+  byCommand.get("corepack pnpm run selfhost:public-origin -- --profile public-stack --origin <public-origin>").reads_env,
+  true
+);
+assert.equal(
+  byCommand.get("corepack pnpm run selfhost:public-origin -- --profile public-stack --origin <public-origin>").writes_files,
+  true
+);
+assert.equal(
+  byCommand.get("corepack pnpm run selfhost:public-origin -- --profile public-stack --origin <public-origin>").public_exposure_gate,
+  true
+);
+assert.equal(
+  byCommand.get("corepack pnpm run selfhost:public-origin -- --profile public-stack --origin <public-origin>").dashboard_safe,
+  true
+);
 assert.equal(byCommand.get("corepack pnpm run test:deployability").category, "top_level");
 assert.equal(byCommand.get("corepack pnpm run test:deployability").posture, "contract_test");
 assert.equal(byCommand.get("corepack pnpm run test:deployability").reads_env, false);

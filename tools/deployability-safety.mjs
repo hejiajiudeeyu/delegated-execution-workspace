@@ -89,6 +89,23 @@ const MATRIX = [
     notes: "read-only production hardening boundary review for daily deployability, public exposure, and formal release gates"
   },
   {
+    command: "corepack pnpm run deployability:hardening-plan",
+    json_command: "corepack pnpm --silent run deployability:hardening-plan -- --json",
+    category: "top_level",
+    posture: "read_only",
+    reads_env: false,
+    writes_files: false,
+    starts_services: false,
+    stops_services: false,
+    calls_docker: false,
+    probes_network: false,
+    private_terminal_text: false,
+    public_exposure_gate: false,
+    ci_safe: true,
+    dashboard_safe: true,
+    notes: "read-only actionable production hardening plan for owners, stages, blockers, and evidence commands"
+  },
+  {
     command: "corepack pnpm run deployability:readiness",
     json_command: "corepack pnpm --silent run deployability:readiness -- --json",
     category: "top_level",
@@ -377,6 +394,23 @@ const MATRIX = [
     ci_safe: true,
     dashboard_safe: true,
     notes: "read-only linear first-run recipe for one selected deployability profile"
+  },
+  {
+    command: "corepack pnpm run deployability:console",
+    json_command: "corepack pnpm --silent run deployability:console -- --json",
+    category: "top_level",
+    posture: "read_only",
+    reads_env: false,
+    writes_files: false,
+    starts_services: false,
+    stops_services: false,
+    calls_docker: false,
+    probes_network: false,
+    private_terminal_text: false,
+    public_exposure_gate: false,
+    ci_safe: true,
+    dashboard_safe: true,
+    notes: "read-only console management index for runtime, settings, logs, billing, public-stack console, and gateway session surfaces"
   },
   {
     command: "corepack pnpm run compat:status",
@@ -838,6 +872,25 @@ const MATRIX = [
     notes: "non-destructive review before public exposure"
   },
   {
+    command: "corepack pnpm run selfhost:public-origin -- --profile public-stack --origin <public-origin>",
+    json_command:
+      "corepack pnpm --silent run selfhost:public-origin -- --profile public-stack --origin <public-origin> --json",
+    category: "public_stack",
+    posture: "writes_env",
+    reads_env: true,
+    writes_files: true,
+    starts_services: false,
+    stops_services: false,
+    calls_docker: false,
+    probes_network: false,
+    private_terminal_text: false,
+    public_exposure_gate: true,
+    ci_safe: false,
+    dashboard_safe: true,
+    notes:
+      "dry-run reports public origin update metadata; confirmed mode writes only PUBLIC_SITE_ADDRESS and a .env backup without printing secret values"
+  },
+  {
     command: "corepack pnpm run selfhost:audit-export",
     json_command: "corepack pnpm --silent run selfhost:audit-export -- --json",
     category: "selfhost",
@@ -1064,6 +1117,7 @@ const NEXT_COMMANDS = [
   "corepack pnpm run deployability:operator-checklist -- --profile public-stack --image-tag <candidate-tag>",
   "corepack pnpm run deployability:dashboard",
   "corepack pnpm run deployability:recipe -- --profile public-stack",
+  "corepack pnpm run deployability:console",
   "corepack pnpm run deployability:evidence -- --profile public-stack",
   "corepack pnpm run deployability:commands",
   "corepack pnpm run selfhost:security-review -- --profile public-stack",

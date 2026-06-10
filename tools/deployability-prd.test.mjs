@@ -24,7 +24,7 @@ assert.equal(body.command, "deployability:prd");
 assert.equal(body.mode, "prd_index");
 assert.equal(body.ok, true);
 assert.equal(body.goal, "daily-deployable with explicit safety gates");
-assert.equal(body.current_bundle.change_id, "CHG-2026-132");
+assert.equal(body.current_bundle.change_id, "CHG-2026-133");
 assert.deepEqual(
   body.documents.map((item) => item.key),
   ["ecosystem", "pipelines"]
@@ -55,7 +55,11 @@ assert.ok(publicStack.evidence_commands.includes("corepack pnpm run deployabilit
 assert.ok(publicStack.safety_notes.some((item) => /public exposure/i.test(item)));
 assert.ok(body.management_surfaces.some((item) => item.command === "corepack pnpm run deployability:dashboard"));
 assert.ok(body.management_surfaces.some((item) => item.command === "corepack pnpm run deployability:prd"));
+assert.ok(body.management_surfaces.some((item) => item.command === "corepack pnpm run deployability:console"));
+assert.ok(body.management_surfaces.some((item) => item.command === "corepack pnpm run deployability:hardening-plan"));
 assert.ok(body.next_commands.includes("corepack pnpm run deployability:roadmap"));
+assert.ok(body.next_commands.includes("corepack pnpm run deployability:console"));
+assert.ok(body.next_commands.includes("corepack pnpm run deployability:hardening-plan"));
 assert.ok(body.safety_defaults.some((item) => /does not read \.env/i.test(item)));
 assert.ok(!json.stdout.includes("[ok]"));
 assert.ok(!json.stdout.includes("sk_prd_index_must_not_leak"));
@@ -66,6 +70,8 @@ assert.match(text.stdout, /Deployability PRD index/);
 assert.match(text.stdout, /daily-deployable with explicit safety gates/);
 assert.match(text.stdout, /public_stack: ready-now behind public exposure gates/);
 assert.match(text.stdout, /corepack pnpm run deployability:prd -- --json/);
+assert.match(text.stdout, /corepack pnpm run deployability:console/);
+assert.match(text.stdout, /corepack pnpm run deployability:hardening-plan/);
 assert.ok(!text.stdout.includes("sk_prd_index_must_not_leak"));
 
 const typo = run(["--jsno"]);

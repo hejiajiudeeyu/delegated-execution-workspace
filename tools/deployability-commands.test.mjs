@@ -75,6 +75,10 @@ assert.ok(byCommand.get("corepack pnpm run deployability:menu").track_keys.inclu
 assert.equal(byCommand.get("corepack pnpm run deployability:recipe").category, "top_level");
 assert.equal(byCommand.get("corepack pnpm run deployability:recipe").posture, "read_only");
 assert.equal(byCommand.get("corepack pnpm run deployability:recipe").dashboard_safe, true);
+assert.equal(byCommand.get("corepack pnpm run deployability:console").category, "top_level");
+assert.equal(byCommand.get("corepack pnpm run deployability:console").posture, "read_only");
+assert.equal(byCommand.get("corepack pnpm run deployability:console").dashboard_safe, true);
+assert.ok(byCommand.get("corepack pnpm run deployability:console").track_keys.includes("daily_dev"));
 assert.equal(byCommand.get("corepack pnpm run deployability:recipe -- --profile public-stack").category, "top_level");
 assert.equal(byCommand.get("corepack pnpm run deployability:recipe -- --profile public-stack").posture, "read_only");
 assert.ok(byCommand.get("corepack pnpm run deployability:recipe -- --profile public-stack").track_keys.includes("daily_dev"));
@@ -92,6 +96,10 @@ assert.equal(byCommand.get("corepack pnpm run deployability:production").categor
 assert.equal(byCommand.get("corepack pnpm run deployability:production").posture, "read_only");
 assert.equal(byCommand.get("corepack pnpm run deployability:production").dashboard_safe, true);
 assert.ok(byCommand.get("corepack pnpm run deployability:production").track_keys.includes("daily_dev"));
+assert.equal(byCommand.get("corepack pnpm run deployability:hardening-plan").category, "top_level");
+assert.equal(byCommand.get("corepack pnpm run deployability:hardening-plan").posture, "read_only");
+assert.equal(byCommand.get("corepack pnpm run deployability:hardening-plan").dashboard_safe, true);
+assert.ok(byCommand.get("corepack pnpm run deployability:hardening-plan").track_keys.includes("daily_dev"));
 assert.equal(byCommand.get("corepack pnpm run deployability:readiness").category, "top_level");
 assert.equal(byCommand.get("corepack pnpm run deployability:readiness").posture, "read_only");
 assert.equal(byCommand.get("corepack pnpm run deployability:readiness").dashboard_safe, true);
@@ -183,9 +191,11 @@ assert.equal(byCommand.get("corepack pnpm run selfhost:up").calls_docker, true);
 assert.ok(body.next_commands.includes("corepack pnpm run deployability:dashboard"));
 assert.ok(body.next_commands.includes("corepack pnpm run deployability:explain"));
 assert.ok(body.next_commands.includes("corepack pnpm run deployability:production"));
+assert.ok(body.next_commands.includes("corepack pnpm run deployability:hardening-plan"));
 assert.ok(body.next_commands.includes("corepack pnpm run deployability:readiness"));
 assert.ok(body.next_commands.includes("corepack pnpm run deployability:status"));
 assert.ok(body.next_commands.includes("corepack pnpm run deployability:gates"));
+assert.ok(body.next_commands.includes("corepack pnpm run deployability:console"));
 assert.ok(body.next_commands.includes("corepack pnpm run deployability:exposure"));
 assert.ok(body.next_commands.includes("corepack pnpm run deployability:release -- --image-tag <candidate-tag>"));
 assert.ok(
@@ -206,6 +216,7 @@ assert.ok(topLevelBody.commands.every((item) => item.category === "top_level"));
 assert.ok(topLevelBody.commands.some((item) => item.command === "corepack pnpm run deployability:dashboard"));
 assert.ok(topLevelBody.commands.some((item) => item.command === "corepack pnpm run deployability:explain"));
 assert.ok(topLevelBody.commands.some((item) => item.command === "corepack pnpm run deployability:production"));
+assert.ok(topLevelBody.commands.some((item) => item.command === "corepack pnpm run deployability:hardening-plan"));
 assert.ok(topLevelBody.commands.some((item) => item.command === "corepack pnpm run deployability:readiness"));
 assert.ok(topLevelBody.commands.some((item) => item.command === "corepack pnpm run deployability:prd"));
 assert.ok(topLevelBody.commands.some((item) => item.command === "corepack pnpm run deployability:roadmap"));
@@ -226,6 +237,7 @@ assert.ok(topLevelBody.commands.some((item) => item.command === "corepack pnpm r
 assert.ok(topLevelBody.commands.some((item) => item.command === "corepack pnpm run deployability:runbook -- --profile daily-dev"));
 assert.ok(topLevelBody.commands.some((item) => item.command === "corepack pnpm run deployability:menu"));
 assert.ok(topLevelBody.commands.some((item) => item.command === "corepack pnpm run deployability:recipe"));
+assert.ok(topLevelBody.commands.some((item) => item.command === "corepack pnpm run deployability:console"));
 assert.ok(topLevelBody.commands.some((item) => item.command === "corepack pnpm run deployability:recipe -- --profile public-stack"));
 assert.ok(topLevelBody.commands.some((item) => item.command === "corepack pnpm run deployability:action-plan -- --list-profiles"));
 assert.ok(topLevelBody.commands.some((item) => item.command === "corepack pnpm run test:deployability"));
@@ -239,11 +251,13 @@ assert.ok(readOnlyBody.commands.every((item) => item.posture === "read_only"));
 assert.ok(readOnlyBody.commands.some((item) => item.command === "corepack pnpm run deployability:quickstart"));
 assert.ok(readOnlyBody.commands.some((item) => item.command === "corepack pnpm run deployability:explain"));
 assert.ok(readOnlyBody.commands.some((item) => item.command === "corepack pnpm run deployability:production"));
+assert.ok(readOnlyBody.commands.some((item) => item.command === "corepack pnpm run deployability:hardening-plan"));
 assert.ok(readOnlyBody.commands.some((item) => item.command === "corepack pnpm run deployability:readiness"));
 assert.ok(readOnlyBody.commands.some((item) => item.command === "corepack pnpm run deployability:prd"));
 assert.ok(readOnlyBody.commands.some((item) => item.command === "corepack pnpm run deployability:roadmap"));
 assert.ok(readOnlyBody.commands.some((item) => item.command === "corepack pnpm run deployability:status"));
 assert.ok(readOnlyBody.commands.some((item) => item.command === "corepack pnpm run deployability:gates"));
+assert.ok(readOnlyBody.commands.some((item) => item.command === "corepack pnpm run deployability:console"));
 assert.ok(!readOnlyBody.commands.some((item) => item.command === "corepack pnpm run deployability:exposure"));
 assert.ok(!readOnlyBody.commands.some((item) => item.command === "corepack pnpm run deployability:release -- --image-tag <candidate-tag>"));
 assert.ok(
@@ -297,6 +311,16 @@ assert.equal(
   true
 );
 assert.equal(
+  publicStackCommands.get("corepack pnpm run selfhost:public-origin -- --profile public-stack --origin <public-origin>")
+    .posture,
+  "writes_env"
+);
+assert.equal(
+  publicStackCommands.get("corepack pnpm run selfhost:public-origin -- --profile public-stack --origin <public-origin>")
+    .dashboard_safe,
+  true
+);
+assert.equal(
   publicStackCommands.get("corepack pnpm run deployability:operator-checklist -- --profile public-stack --image-tag <candidate-tag>")
     .posture,
   "operator_readiness_gate"
@@ -326,6 +350,11 @@ assert.ok(publicStackProfileBody.commands.every((item) => item.pipeline_keys.inc
 assert.ok(
   publicStackProfileBody.commands.some(
     (item) => item.command === "corepack pnpm run selfhost:security-review -- --profile public-stack"
+  )
+);
+assert.ok(
+  publicStackProfileBody.commands.some(
+    (item) => item.command === "corepack pnpm run selfhost:public-origin -- --profile public-stack --origin <public-origin>"
   )
 );
 assert.ok(

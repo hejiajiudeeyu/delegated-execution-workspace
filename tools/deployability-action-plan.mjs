@@ -112,6 +112,16 @@ function profileListData() {
   };
 }
 
+function focusedNextCommands(profile) {
+  return [
+    `corepack pnpm run deployability:dashboard -- --profile ${profile}`,
+    `corepack pnpm run deployability:commands -- --profile ${profile}`,
+    `corepack pnpm run deployability:handoff -- --profile ${profile}`,
+    "corepack pnpm run test:deployability",
+    "corepack pnpm run test:deployability-operations"
+  ];
+}
+
 function buildProfiles({ dashboard, commandCatalog, profileFilter }) {
   const profiles = profileFilter.resolved
     ? PROFILE_PIPELINES.filter((profile) => profile.key === profileFilter.resolved)
@@ -213,7 +223,7 @@ function actionPlanData(args) {
     blockers,
     warnings: unique(dashboard.warnings || []),
     safety_defaults: SAFETY_DEFAULTS,
-    next_commands: NEXT_COMMANDS,
+    next_commands: args.profile != null && blockers.length === 0 ? focusedNextCommands(args.profile) : NEXT_COMMANDS,
     notes: [
       "use this as the operator-facing action plan for choosing the next deployability command",
       "profile-specific doctor, readiness, preflight, status, smoke, audit, backup, and rotation commands remain authoritative"

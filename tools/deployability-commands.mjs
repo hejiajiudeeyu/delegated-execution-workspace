@@ -27,6 +27,7 @@ const NEXT_COMMANDS = [
   "corepack pnpm run deployability:readiness",
   "corepack pnpm run deployability:prd",
   "corepack pnpm run deployability:production",
+  "corepack pnpm run deployability:hardening-plan",
   "corepack pnpm run deployability:status",
   "corepack pnpm run deployability:gates",
   "corepack pnpm run deployability:exposure",
@@ -34,6 +35,7 @@ const NEXT_COMMANDS = [
   "corepack pnpm run deployability:operator-checklist -- --profile public-stack --image-tag <candidate-tag>",
   "corepack pnpm run deployability:evidence -- --profile public-stack",
   "corepack pnpm run deployability:dashboard",
+  "corepack pnpm run deployability:console",
   "corepack pnpm run deployability:handoff"
 ];
 

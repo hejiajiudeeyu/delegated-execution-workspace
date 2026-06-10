@@ -8,7 +8,7 @@ const ROOT = process.cwd();
 
 const SAFETY_DEFAULTS = [
   "deployability status is read-only and does not read .env files directly",
-  "deployability status only calls read-only readiness, roadmap, and recipe metadata",
+  "deployability status only calls read-only readiness and roadmap metadata",
   "deployability status does not call Docker, bind ports, or probe network endpoints",
   "JSON output contains operator status cards without printing secret values"
 ];
@@ -16,11 +16,12 @@ const SAFETY_DEFAULTS = [
 const MACHINE_PAYLOADS = [
   "corepack pnpm --silent run deployability:status -- --json",
   "corepack pnpm --silent run deployability:readiness -- --json",
-  "corepack pnpm --silent run deployability:roadmap -- --json",
-  "corepack pnpm --silent run deployability:recipe -- --profile public-stack --json"
+  "corepack pnpm --silent run deployability:roadmap -- --json"
 ];
 
 const PRIMARY_NEXT_COMMANDS = [
+  "corepack pnpm run deployability:console",
+  "corepack pnpm run deployability:hardening-plan",
   "corepack pnpm run deployability:recipe -- --profile public-stack",
   "corepack pnpm run selfhost:security-review -- --profile public-stack",
   "corepack pnpm run deployability:handoff -- --profile public-stack",
@@ -75,6 +76,8 @@ function cardStatus(milestoneStatus) {
 function statusCards({ readiness, roadmap }) {
   const daily = milestone(roadmap, "daily_deployable_scorecard");
   const profileManagement = milestone(roadmap, "profile_management_surface");
+  const consoleManagement = milestone(roadmap, "console_management_surface");
+  const hardeningPlan = milestone(roadmap, "production_hardening_plan");
   const publicStack = milestone(roadmap, "public_stack_safety_gate");
   const production = milestone(roadmap, "formal_production_hardening");
   return [
@@ -91,6 +94,20 @@ function statusCards({ readiness, roadmap }) {
       status: cardStatus(profileManagement?.status),
       detail: "operators and management UIs can choose, sort, inspect, and continue from named deployment profiles",
       next_commands: profileManagement?.evidence_commands || ["corepack pnpm run deployability:profiles"]
+    },
+    {
+      key: "console_management",
+      label: "Management Console",
+      status: cardStatus(consoleManagement?.status),
+      detail: "runtime, settings, logs, billing readiness, public-stack console, and gateway session surfaces are visible before starting console services",
+      next_commands: consoleManagement?.evidence_commands || ["corepack pnpm run deployability:console"]
+    },
+    {
+      key: "hardening_plan",
+      label: "Production hardening plan",
+      status: cardStatus(hardeningPlan?.status),
+      detail: "owners, stages, blockers, guardrails, and evidence commands are visible without claiming production readiness",
+      next_commands: hardeningPlan?.evidence_commands || ["corepack pnpm run deployability:hardening-plan"]
     },
     {
       key: "public_stack_gate",
@@ -111,10 +128,14 @@ function statusCards({ readiness, roadmap }) {
 
 function summarize({ readiness, roadmap, cards, blockers, warnings }) {
   const publicGate = cards.find((item) => item.key === "public_stack_gate");
+  const consoleManagement = cards.find((item) => item.key === "console_management");
+  const hardeningPlan = cards.find((item) => item.key === "hardening_plan");
   const production = cards.find((item) => item.key === "production_hardening");
   return {
     status: roadmap?.summary?.status || (blockers.length ? "blocked" : "unknown"),
     readiness_status: readiness?.ecosystem_readiness?.status || "unknown",
+    console_management_status: consoleManagement?.status || "unknown",
+    hardening_plan_status: hardeningPlan?.status || "unknown",
     public_exposure_status: publicGate?.status || "unknown",
     production_hardening_status: production?.status || "unknown",
     blocked_count: blockers.length,
@@ -125,24 +146,21 @@ function summarize({ readiness, roadmap, cards, blockers, warnings }) {
 function statusData() {
   const readinessResult = runJsonScript("tools/deployability-readiness.mjs");
   const roadmapResult = runJsonScript("tools/deployability-roadmap.mjs");
-  const recipeResult = runJsonScript("tools/deployability-recipe.mjs", ["--profile", "public-stack"]);
   const sourceBlockers = [
     sourceBlocker("readiness", readinessResult),
-    sourceBlocker("roadmap", roadmapResult),
-    sourceBlocker("recipe", recipeResult)
+    sourceBlocker("roadmap", roadmapResult)
   ].filter(Boolean);
   const readiness = readinessResult.body || null;
   const roadmap = roadmapResult.body || null;
-  const recipe = recipeResult.body || null;
-  const blockers = unique([...sourceBlockers, ...(readiness?.blockers || []), ...(roadmap?.blockers || []), ...(recipe?.blockers || [])]);
-  const warnings = unique([...(readiness?.warnings || []), ...(roadmap?.warnings || []), ...(recipe?.warnings || [])]);
+  const blockers = unique([...sourceBlockers, ...(readiness?.blockers || []), ...(roadmap?.blockers || [])]);
+  const warnings = unique([...(readiness?.warnings || []), ...(roadmap?.warnings || [])]);
   const cards = statusCards({ readiness, roadmap });
 
   return {
     command: "deployability:status",
     mode: "operator_status",
     ok: blockers.length === 0,
-    current_bundle: roadmap?.current_bundle || readiness?.current_bundle || recipe?.current_bundle || null,
+    current_bundle: roadmap?.current_bundle || readiness?.current_bundle || null,
     summary: summarize({ readiness, roadmap, cards, blockers, warnings }),
     status_cards: cards,
     blockers,
@@ -161,18 +179,12 @@ function statusData() {
         exit_code: roadmapResult.exit_code,
         stderr: roadmapResult.stderr,
         parse_error: roadmapResult.parse_error
-      },
-      recipe: {
-        ok: recipeResult.ok,
-        exit_code: recipeResult.exit_code,
-        stderr: recipeResult.stderr,
-        parse_error: recipeResult.parse_error
       }
     },
     safety_defaults: SAFETY_DEFAULTS,
     notes: [
       "use this as the compact operator status before choosing a profile-specific command",
-      "status cards are convenience projections over readiness, roadmap, and recipe metadata; they do not execute commands"
+      "status cards are convenience projections over readiness and roadmap metadata; they do not execute commands"
     ]
   };
 }

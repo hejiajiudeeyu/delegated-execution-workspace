@@ -23,7 +23,7 @@ const body = JSON.parse(json.stdout);
 assert.equal(body.command, "deployability:release");
 assert.equal(body.mode, "release_candidate_review");
 assert.equal(body.ok, true);
-assert.equal(body.current_bundle.change_id, "CHG-2026-132");
+assert.equal(body.current_bundle.change_id, "CHG-2026-133");
 assert.equal(body.profile.name, "public-stack");
 assert.equal(body.image_tag, "candidate-2026-06-09");
 assert.deepEqual(body.summary, {
@@ -41,7 +41,7 @@ assert.ok(body.release_blockers.some((item) => /public exposure/i.test(item)));
 assert.ok(body.release_blockers.some((item) => /production hardening/i.test(item)));
 assert.ok(body.release_blockers.some((item) => /formal release ownership/i.test(item)));
 assert.deepEqual(body.blockers, []);
-assert.ok(body.warnings.includes("repos/client: uncommitted worktree changes"));
+assert.deepEqual(body.warnings, []);
 
 assert.equal(body.production_review.command, "deployability:production");
 assert.equal(body.production_review.summary.production_ready, false);
@@ -60,7 +60,17 @@ assert.equal(body.published_image_dry_run.result.dry_run, true);
 assert.ok(body.primary_next_commands.includes("corepack pnpm run deployability:release -- --image-tag <candidate-tag>"));
 assert.ok(body.primary_next_commands.includes("corepack pnpm run published-image:smoke -- --dry-run --image-tag <candidate-tag>"));
 assert.ok(body.primary_next_commands.includes("corepack pnpm run deployability:exposure"));
-assert.ok(body.machine_payloads.includes("corepack pnpm --silent run deployability:release -- --image-tag <candidate-tag> --json"));
+assert.ok(
+  body.machine_payloads.includes(
+    "corepack pnpm --silent run deployability:release -- --image-tag candidate-2026-06-09 --json"
+  )
+);
+assert.ok(
+  body.machine_payloads.includes(
+    "corepack pnpm --silent run published-image:smoke -- --dry-run --image-tag candidate-2026-06-09 --json"
+  )
+);
+assert.ok(!body.machine_payloads.some((item) => item.includes("<candidate-tag>")));
 assert.ok(body.safety_defaults.some((item) => /does not publish/i.test(item)));
 assert.ok(body.safety_defaults.some((item) => /does not start services/i.test(item)));
 assert.ok(!json.stdout.includes("[ok]"));

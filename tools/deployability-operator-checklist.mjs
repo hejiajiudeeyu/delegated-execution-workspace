@@ -3,6 +3,7 @@
 import path from "node:path";
 import { spawnSync } from "node:child_process";
 import { parseStrictArgs } from "./lib/strict-args.mjs";
+import { resolveProfileFilter } from "./lib/deployability-profiles-registry.mjs";
 
 const ROOT = process.cwd();
 const DEFAULT_PROFILE = "public-stack";
@@ -13,15 +14,6 @@ const SAFETY_DEFAULTS = [
   "deployability operator checklist does not bind ports, probe endpoints, publish images, or print secret values",
   "deployability operator checklist calls Docker only through existing public exposure and release review metadata",
   "JSON output separates script blockers from operator blockers so dashboards can render blocked readiness"
-];
-
-const MACHINE_PAYLOADS = [
-  "corepack pnpm --silent run deployability:operator-checklist -- --profile public-stack --image-tag <candidate-tag> --json",
-  "corepack pnpm --silent run deployability:menu -- --profile public-stack --json",
-  "corepack pnpm --silent run deployability:recipe -- --profile public-stack --json",
-  "corepack pnpm --silent run operator:onboarding:check -- --json",
-  "corepack pnpm --silent run deployability:release -- --image-tag <candidate-tag> --json",
-  "corepack pnpm --silent run selfhost:backup-plan -- --profile public-stack --json"
 ];
 
 const PRIMARY_NEXT_COMMANDS = [
@@ -114,8 +106,69 @@ function unique(items) {
   return [...new Set(items.filter(Boolean))];
 }
 
+function machinePayloads({ profile, imageTag }) {
+  return [
+    `corepack pnpm --silent run deployability:operator-checklist -- --profile ${profile} --image-tag ${imageTag} --json`,
+    `corepack pnpm --silent run deployability:menu -- --profile ${profile} --json`,
+    `corepack pnpm --silent run deployability:recipe -- --profile ${profile} --json`,
+    "corepack pnpm --silent run operator:onboarding:check -- --json",
+    `corepack pnpm --silent run deployability:release -- --image-tag ${imageTag} --json`,
+    `corepack pnpm --silent run selfhost:backup-plan -- --profile ${profile} --json`
+  ];
+}
+
 function profileKey(profile) {
   return profile === "public-stack" || profile === "public_stack" ? "public_stack" : profile.replace(/-/g, "_");
+}
+
+function unsupportedProfileData(args, profileFilter) {
+  const resolved = profileFilter.resolved || profileKey(args.profile);
+  const blocker =
+    profileFilter.resolved == null
+      ? `unknown profile: ${args.profile}`
+      : `deployability:operator-checklist only supports public-stack; use deployability:evidence, deployability:dashboard, or deployability:handoff for ${args.profile}`;
+  return {
+    command: "deployability:operator-checklist",
+    mode: "public_stack_operator_checklist",
+    ok: false,
+    current_bundle: null,
+    profile_filter: profileFilter,
+    profile: {
+      key: resolved,
+      name: args.profile
+    },
+    image_tag: args.imageTag,
+    summary: {
+      status: "unsupported_profile",
+      operator_ready: false,
+      public_exposure_ready: false,
+      release_candidate_ready: false,
+      onboarding_contract_ready: false,
+      recovery_plan_ready: false,
+      checklist_group_count: CHECKLIST_GROUPS.length,
+      blocked_item_count: 0,
+      script_blocker_count: 0,
+      warning_count: 0
+    },
+    checklist_groups: CHECKLIST_GROUPS,
+    checklist_items: [],
+    operator_blockers: [blocker],
+    blockers: [blocker],
+    warnings: [],
+    menu: null,
+    recipe: null,
+    onboarding_check: null,
+    release_review: null,
+    recovery_plan: null,
+    primary_next_commands: PRIMARY_NEXT_COMMANDS,
+    machine_payloads: [],
+    source_status: {},
+    safety_defaults: SAFETY_DEFAULTS,
+    notes: [
+      "deployability:operator-checklist is intentionally scoped to the public-stack exposure and release checklist",
+      "use profile-aware evidence, dashboard, handoff, menu, or recipe commands for non-public-stack profiles"
+    ]
+  };
 }
 
 function item({ key, group, label, status, commands, blockers = [], evidence = [] }) {
@@ -227,6 +280,10 @@ function summarize({ checklistItems, blockers, warnings, release, onboarding, ba
 }
 
 function operatorChecklistData(args) {
+  const profileFilter = resolveProfileFilter(args.profile);
+  if (profileFilter.resolved !== "public_stack") {
+    return unsupportedProfileData(args, profileFilter);
+  }
   const profile = profileKey(args.profile);
   const profileArgs = ["--profile", args.profile];
   const menuResult = runJson("tools/deployability-menu.mjs", profileArgs);
@@ -298,7 +355,7 @@ function operatorChecklistData(args) {
     release_review: release,
     recovery_plan: backupPlan,
     primary_next_commands: PRIMARY_NEXT_COMMANDS,
-    machine_payloads: MACHINE_PAYLOADS,
+    machine_payloads: machinePayloads({ profile: args.profile, imageTag: args.imageTag }),
     source_status: {
       menu: {
         ok: menuResult.ok,

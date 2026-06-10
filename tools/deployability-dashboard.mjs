@@ -16,7 +16,9 @@ const SECTION_SCRIPTS = [
   ["safety", "tools/deployability-safety.mjs"],
   ["commands", "tools/deployability-commands.mjs"],
   ["doctor", "tools/deployability-doctor.mjs"],
-  ["compatibility", "tools/compat-status.mjs"]
+  ["compatibility", "tools/compat-status.mjs"],
+  ["console", "tools/deployability-console.mjs"],
+  ["hardening_plan", "tools/deployability-hardening-plan.mjs"]
 ];
 
 const SAFETY_DEFAULTS = [
