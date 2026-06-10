@@ -1,0 +1,406 @@
+{
+  "generated_at": "2026-06-10T15:55:48.635Z",
+  "command": "deployability:exposure",
+  "mode": "public_exposure_review",
+  "ok": true,
+  "current_bundle": {
+    "file": "changes/CHG-2026-133.yaml",
+    "change_id": "CHG-2026-133",
+    "goal": "add deployability management safety surfaces",
+    "protocol_sha": "da3027100cfe9391f7f8d03be18a108ee2804cf6",
+    "client_sha": "135546f7510167d99a31475515708553106c0545",
+    "platform_sha": "5961309c6b0ca4e8df22dbb5be92ac0845bf8d25",
+    "brand_site_sha": "c39953c4fdb523ab4de511f9e60c408f6c1f8918",
+    "contracts_check": "passed",
+    "integration_check": "passed"
+  },
+  "profile": {
+    "key": "public_stack",
+    "name": "public-stack"
+  },
+  "summary": {
+    "status": "public_exposure_blocked",
+    "public_exposure_ready": false,
+    "exposure_blocker_count": 1,
+    "gate_count": 1,
+    "route_count": 5,
+    "route_ready_count": 5,
+    "secret_hygiene_check_count": 5,
+    "secret_hygiene_ready_count": 4,
+    "warning_count": 0
+  },
+  "exposure_blockers": [
+    "PUBLIC_SITE_ADDRESS: localhost; set public origin before exposure"
+  ],
+  "operator_next_action": {
+    "key": "configure_public_stack_public_origin",
+    "status": "blocked_by_public_origin",
+    "profile": "public-stack",
+    "target_file": "repos/platform/deploy/public-stack/.env",
+    "env_key": "PUBLIC_SITE_ADDRESS",
+    "current_value_class": "localhost",
+    "required_value": "real public https origin, for example https://callanything.example",
+    "manual_step": "Set PUBLIC_SITE_ADDRESS in repos/platform/deploy/public-stack/.env to the real public HTTPS origin before exposing public-stack.",
+    "plan_command": "corepack pnpm run selfhost:public-origin -- --profile public-stack --origin <public-origin>",
+    "plan_json_command": "corepack pnpm --silent run selfhost:public-origin -- --profile public-stack --origin <public-origin> --json",
+    "apply_command": "corepack pnpm run selfhost:public-origin -- --profile public-stack --origin <public-origin> --confirm",
+    "apply_json_command": "corepack pnpm --silent run selfhost:public-origin -- --profile public-stack --origin <public-origin> --confirm --json",
+    "verify_command": "corepack pnpm run selfhost:security-review -- --profile public-stack",
+    "verify_json_command": "corepack pnpm --silent run selfhost:security-review -- --profile public-stack --json",
+    "follow_up_commands": [
+      "corepack pnpm run deployability:exposure",
+      "corepack pnpm run operator:onboarding:check",
+      "corepack pnpm run published-image:smoke -- --dry-run --image-tag <candidate-tag>",
+      "corepack pnpm run deployability:handoff -- --profile public-stack"
+    ],
+    "guardrails": [
+      "do not open edge routes while PUBLIC_SITE_ADDRESS is localhost",
+      "use HTTPS for public exposure unless this is a private lab profile",
+      "rerun the public-stack security review before any startup or exposure claim"
+    ]
+  },
+  "pre_exposure_remediation_plan": {
+    "key": "public_stack_pre_exposure_remediation",
+    "status": "blocked_by_public_origin",
+    "profile": "public-stack",
+    "public_exposure_ready": false,
+    "steps": [
+      {
+        "key": "configure_public_origin",
+        "label": "Configure public origin",
+        "status": "blocked",
+        "owner_repo": "repos/platform",
+        "target_file": "repos/platform/deploy/public-stack/.env",
+        "env_key": "PUBLIC_SITE_ADDRESS",
+        "current_value_class": "localhost",
+        "manual_step": "Set PUBLIC_SITE_ADDRESS in repos/platform/deploy/public-stack/.env to the real public HTTPS origin before exposing public-stack.",
+        "commands": [
+          "corepack pnpm run selfhost:public-origin -- --profile public-stack --origin <public-origin>",
+          "corepack pnpm --silent run selfhost:public-origin -- --profile public-stack --origin <public-origin> --json",
+          "corepack pnpm run selfhost:public-origin -- --profile public-stack --origin <public-origin> --confirm",
+          "corepack pnpm --silent run selfhost:public-origin -- --profile public-stack --origin <public-origin> --confirm --json"
+        ]
+      },
+      {
+        "key": "rerun_security_review",
+        "label": "Rerun public-stack security review",
+        "status": "next_after_blocker",
+        "owner_repo": null,
+        "commands": [
+          "corepack pnpm run selfhost:security-review -- --profile public-stack",
+          "corepack pnpm --silent run selfhost:security-review -- --profile public-stack --json"
+        ],
+        "done_when": "secret hygiene, compose config, and public route contract are all green"
+      },
+      {
+        "key": "confirm_route_contract",
+        "label": "Confirm public route contract",
+        "status": "ready",
+        "owner_repo": "repos/platform",
+        "route_count": 5,
+        "route_ready_count": 5,
+        "origin": "http://localhost",
+        "routes": [
+          {
+            "label": "public edge health",
+            "path": "/healthz",
+            "url": "http://localhost/healthz",
+            "caddy_route": "/healthz",
+            "caddy_pattern": "handle /healthz",
+            "ok": true
+          },
+          {
+            "label": "platform API health",
+            "path": "/platform/healthz",
+            "url": "http://localhost/platform/healthz",
+            "caddy_route": "/platform/*",
+            "caddy_pattern": "handle_path /platform/*",
+            "ok": true
+          },
+          {
+            "label": "relay health",
+            "path": "/relay/healthz",
+            "url": "http://localhost/relay/healthz",
+            "caddy_route": "/relay/*",
+            "caddy_pattern": "handle_path /relay/*",
+            "ok": true
+          },
+          {
+            "label": "gateway health",
+            "path": "/gateway/healthz",
+            "url": "http://localhost/gateway/healthz",
+            "caddy_route": "/gateway/*",
+            "caddy_pattern": "handle_path /gateway/*",
+            "ok": true
+          },
+          {
+            "label": "operator console",
+            "path": "/console/",
+            "url": "http://localhost/console/",
+            "caddy_route": "/console/*",
+            "caddy_pattern": "handle_path /console/*",
+            "ok": true
+          }
+        ],
+        "commands": [
+          "corepack pnpm run deployability:exposure"
+        ],
+        "done_when": "/healthz, /platform/healthz, /relay/healthz, /gateway/healthz, and /console/ routes are present"
+      },
+      {
+        "key": "run_operator_onboarding_check",
+        "label": "Run operator onboarding check",
+        "status": "pending_after_security_review",
+        "owner_repo": "repos/platform",
+        "commands": [
+          "corepack pnpm run operator:onboarding:check",
+          "corepack pnpm --silent run operator:onboarding:check -- --json"
+        ],
+        "done_when": "console and gateway onboarding contract checks pass"
+      },
+      {
+        "key": "run_published_image_dry_run",
+        "label": "Run published-image dry-run smoke",
+        "status": "pending_after_onboarding",
+        "owner_repo": null,
+        "commands": [
+          "corepack pnpm run published-image:smoke -- --dry-run --image-tag <candidate-tag>",
+          "corepack pnpm --silent run published-image:smoke -- --dry-run --image-tag <candidate-tag> --json"
+        ],
+        "done_when": "release candidate image wiring is reviewed without publishing or starting services"
+      },
+      {
+        "key": "export_public_stack_evidence",
+        "label": "Export public-stack evidence",
+        "status": "pending_after_gate_evidence",
+        "owner_repo": null,
+        "commands": [
+          "corepack pnpm run deployability:operator-checklist -- --profile public-stack --image-tag <candidate-tag>",
+          "corepack pnpm run deployability:evidence -- --profile public-stack"
+        ],
+        "done_when": "handoff/evidence bundle is safe to share without secrets"
+      }
+    ],
+    "guardrails": [
+      "do not start or expose public-stack while PUBLIC_SITE_ADDRESS is localhost or any exposure blocker remains",
+      "rerun the public-stack security review after changing public-stack .env",
+      "keep onboarding check, published-image dry-run, and evidence export visible before any public exposure claim",
+      "do not print secret values in remediation JSON"
+    ],
+    "machine_payloads": [
+      "corepack pnpm --silent run selfhost:public-origin -- --profile public-stack --origin <public-origin> --json",
+      "corepack pnpm --silent run selfhost:public-origin -- --profile public-stack --origin <public-origin> --confirm --json",
+      "corepack pnpm --silent run selfhost:security-review -- --profile public-stack --json",
+      "corepack pnpm --silent run operator:onboarding:check -- --json",
+      "corepack pnpm --silent run published-image:smoke -- --dry-run --image-tag <candidate-tag> --json",
+      "corepack pnpm --silent run deployability:operator-checklist -- --profile public-stack --image-tag <candidate-tag> --json",
+      "corepack pnpm --silent run deployability:evidence -- --profile public-stack --json"
+    ]
+  },
+  "gate": {
+    "key": "public_stack_exposure",
+    "label": "Public-stack exposure gate",
+    "status": "gated",
+    "profile_key": "public_stack",
+    "risk": "public_exposure",
+    "required_before": "opening edge routes, publishing console access, or treating public-stack as internet-ready",
+    "commands": [
+      "corepack pnpm run selfhost:security-review -- --profile public-stack",
+      "corepack pnpm run operator:onboarding:check",
+      "corepack pnpm run published-image:smoke -- --dry-run --image-tag <candidate-tag>"
+    ],
+    "command_metadata": [
+      {
+        "command": "corepack pnpm run selfhost:security-review -- --profile public-stack",
+        "posture": "public_exposure_gate",
+        "category": "public_stack",
+        "dashboard_safe": true,
+        "ci_safe": true,
+        "calls_docker": true,
+        "probes_network": false,
+        "starts_services": false,
+        "public_exposure_gate": true
+      },
+      {
+        "command": "corepack pnpm run operator:onboarding:check",
+        "posture": "contract_check",
+        "category": "operator_onboarding",
+        "dashboard_safe": true,
+        "ci_safe": true,
+        "calls_docker": false,
+        "probes_network": false,
+        "starts_services": false,
+        "public_exposure_gate": false
+      },
+      {
+        "command": "corepack pnpm run published-image:smoke -- --dry-run --image-tag <candidate-tag>",
+        "posture": "read_only",
+        "category": "release_review",
+        "dashboard_safe": true,
+        "ci_safe": true,
+        "calls_docker": false,
+        "probes_network": false,
+        "starts_services": false,
+        "public_exposure_gate": false
+      }
+    ],
+    "guardrails": [
+      "localhost public origin remains a blocker for public exposure",
+      "placeholder secrets remain blockers for public exposure",
+      "security review, onboarding check, and published-image dry-run must be visible before real exposure"
+    ],
+    "remaining_work": [
+      "run public-stack security review before opening edge routes",
+      "keep localhost public origin and placeholder secrets as blockers"
+    ]
+  },
+  "security_review": {
+    "command": "selfhost:security-review",
+    "profile": "public-stack",
+    "ok": false,
+    "secret_hygiene": [
+      {
+        "key": "TOKEN_SECRET",
+        "ok": true,
+        "status": "set"
+      },
+      {
+        "key": "PLATFORM_ADMIN_API_KEY",
+        "ok": true,
+        "status": "set"
+      },
+      {
+        "key": "PLATFORM_CONSOLE_BOOTSTRAP_SECRET",
+        "ok": true,
+        "status": "set"
+      },
+      {
+        "key": "POSTGRES_PASSWORD",
+        "ok": true,
+        "status": "set"
+      },
+      {
+        "key": "PUBLIC_SITE_ADDRESS",
+        "ok": false,
+        "status": "localhost; set public origin before exposure"
+      }
+    ],
+    "compose_config": {
+      "ok": true,
+      "status": "ok",
+      "exit_code": 0
+    },
+    "public_route_contract": {
+      "ok": true,
+      "status": "ok",
+      "origin": "http://localhost",
+      "caddyfile": {
+        "ok": true,
+        "path": "repos/platform/deploy/public-stack/Caddyfile",
+        "status": "present"
+      },
+      "routes": [
+        {
+          "label": "public edge health",
+          "path": "/healthz",
+          "url": "http://localhost/healthz",
+          "caddy_route": "/healthz",
+          "caddy_pattern": "handle /healthz",
+          "ok": true
+        },
+        {
+          "label": "platform API health",
+          "path": "/platform/healthz",
+          "url": "http://localhost/platform/healthz",
+          "caddy_route": "/platform/*",
+          "caddy_pattern": "handle_path /platform/*",
+          "ok": true
+        },
+        {
+          "label": "relay health",
+          "path": "/relay/healthz",
+          "url": "http://localhost/relay/healthz",
+          "caddy_route": "/relay/*",
+          "caddy_pattern": "handle_path /relay/*",
+          "ok": true
+        },
+        {
+          "label": "gateway health",
+          "path": "/gateway/healthz",
+          "url": "http://localhost/gateway/healthz",
+          "caddy_route": "/gateway/*",
+          "caddy_pattern": "handle_path /gateway/*",
+          "ok": true
+        },
+        {
+          "label": "operator console",
+          "path": "/console/",
+          "url": "http://localhost/console/",
+          "caddy_route": "/console/*",
+          "caddy_pattern": "handle_path /console/*",
+          "ok": true
+        }
+      ]
+    },
+    "operational_prerequisites": [
+      {
+        "label": "backup-plan",
+        "command": "corepack pnpm run selfhost:backup-plan -- --profile public-stack"
+      },
+      {
+        "label": "rotate-plan",
+        "command": "corepack pnpm run selfhost:rotate-plan -- --profile public-stack"
+      },
+      {
+        "label": "smoke",
+        "command": "corepack pnpm run selfhost:smoke -- --profile public-stack"
+      }
+    ],
+    "notes": [
+      "non-destructive",
+      "runs docker compose config",
+      "does not start services",
+      "does not bind ports",
+      "does not print secret values",
+      "logs/status/health output must stay secret-redacted"
+    ]
+  },
+  "blockers": [],
+  "warnings": [],
+  "primary_next_commands": [
+    "corepack pnpm run deployability:exposure",
+    "corepack pnpm run selfhost:security-review -- --profile public-stack",
+    "corepack pnpm run operator:onboarding:check",
+    "corepack pnpm run published-image:smoke -- --dry-run --image-tag <candidate-tag>",
+    "corepack pnpm run deployability:handoff -- --profile public-stack"
+  ],
+  "machine_payloads": [
+    "corepack pnpm --silent run deployability:exposure -- --json",
+    "corepack pnpm --silent run selfhost:security-review -- --profile public-stack --json",
+    "corepack pnpm --silent run deployability:gates -- --json"
+  ],
+  "source_status": {
+    "gates": {
+      "ok": true,
+      "exit_code": 0,
+      "stderr": [],
+      "parse_error": null
+    },
+    "security_review": {
+      "ok": true,
+      "exit_code": 1,
+      "stderr": [],
+      "parse_error": null
+    }
+  },
+  "safety_defaults": [
+    "deployability exposure review is non-destructive and does not start services",
+    "deployability exposure review does not bind ports, probe network endpoints, or print secret values",
+    "deployability exposure review calls docker compose config through selfhost:security-review",
+    "JSON output separates script blockers from exposure blockers so dashboards can render blocked public exposure"
+  ],
+  "notes": [
+    "use this when a management surface needs to explain why public-stack should or should not be exposed",
+    "exposure blockers are expected gate findings and do not prevent this review payload from being emitted"
+  ]
+}

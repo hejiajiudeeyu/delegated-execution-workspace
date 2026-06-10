@@ -110,6 +110,32 @@ corepack pnpm run test:contracts
 corepack pnpm run test:integration
 ```
 
+Use layered test entrypoints during daily work:
+
+```bash
+# Fast local loop: pure JSON, fixture-backed aggregate, and lightweight CLI tests.
+corepack pnpm run test:fast
+
+# Full deployability tool coverage, including fixture-backed aggregate tests plus real aggregate smoke.
+corepack pnpm run test:deployability
+
+# Submit/merge gate: deployability tests, operations tests, and the AGENTS.md five-command validation chain.
+corepack pnpm run test:release-gate
+```
+
+`test:release-gate` intentionally keeps the normal origin-reachability checks in
+`check:submodules` and `check:bundles`. For local-only commits that have not yet
+been pushed to the owning submodule remotes, run the same gate as
+`SKIP_ORIGIN_REACHABILITY=1 corepack pnpm run test:release-gate` and record that
+it was a no-push local validation.
+
+Recent local timing baseline on this Mac:
+
+- before this split: `corepack pnpm run test:deployability` passed in `1084.02s`
+- after this split: `corepack pnpm run test:fast` passed in `14.54s`
+- after this split: `corepack pnpm run test:deployability` passed in `295.34s`
+- after this split: `SKIP_ORIGIN_REACHABILITY=1 corepack pnpm run test:release-gate` passed in `379.05s`
+
 Check whether the local daily agent/caller-skill development stack is ready:
 
 ```bash
@@ -183,8 +209,10 @@ corepack pnpm run deployability:handoff -- --profile public-stack
 corepack pnpm --silent run deployability:handoff -- --profile public-stack --json
 corepack pnpm run deployability:evidence -- --profile public-stack
 corepack pnpm --silent run deployability:evidence -- --profile public-stack --json
+corepack pnpm run test:fast
 corepack pnpm run test:deployability
 corepack pnpm run test:deployability-operations
+corepack pnpm run test:release-gate
 corepack pnpm run dev:local:plan
 corepack pnpm --silent run dev:local:plan -- --json
 corepack pnpm run dev:local:up

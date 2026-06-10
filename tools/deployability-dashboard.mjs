@@ -1,11 +1,11 @@
 #!/usr/bin/env node
 
 import path from "node:path";
-import { spawnSync } from "node:child_process";
 import { buildEcosystemReadiness } from "./lib/deployability-ecosystem-readiness.mjs";
 import { buildPipelineSummaries } from "./lib/deployability-pipeline-summaries.mjs";
 import { buildProfileSummaries } from "./lib/deployability-profile-summaries.mjs";
 import { recommendedProfileKeys } from "./lib/deployability-profile-attention.mjs";
+import { runJsonSource } from "./lib/json-source-runner.mjs";
 import { parseStrictArgs } from "./lib/strict-args.mjs";
 
 const ROOT = process.cwd();
@@ -51,24 +51,12 @@ function parseArgs(argv) {
 }
 
 function runJsonScript(relativeScript, extraArgs = []) {
-  const result = spawnSync(process.execPath, [path.join(ROOT, relativeScript), "--json", ...extraArgs], {
-    cwd: ROOT,
-    encoding: "utf8",
-    env: process.env
+  return runJsonSource({
+    root: ROOT,
+    relativeScript,
+    args: ["--json", ...extraArgs],
+    okMode: "not_false"
   });
-  let body = null;
-  try {
-    body = result.stdout.trim() ? JSON.parse(result.stdout) : null;
-  } catch (error) {
-    body = null;
-  }
-  return {
-    ok: result.status === 0 && body != null && body.ok !== false,
-    exit_code: result.status,
-    stderr: result.stderr.trim().split("\n").filter(Boolean),
-    body,
-    parse_error: body == null ? "section did not emit valid JSON" : null
-  };
 }
 
 function unique(items) {

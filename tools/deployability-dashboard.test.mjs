@@ -6,6 +6,7 @@ import { spawnSync } from "node:child_process";
 
 const REPO_ROOT = path.resolve(new URL("..", import.meta.url).pathname);
 const SCRIPT = path.join(REPO_ROOT, "tools/deployability-dashboard.mjs");
+const FIXTURE_DIR = path.join(REPO_ROOT, "tools/fixtures/deployability-sources");
 
 function run(args) {
   if (args.includes("--json")) {
@@ -18,6 +19,7 @@ function run(args) {
       stdio: ["ignore", stdoutFd, "pipe"],
       env: {
         ...process.env,
+        DELEXEC_JSON_SOURCE_FIXTURE_DIR: FIXTURE_DIR,
         PLATFORM_ADMIN_API_KEY: "sk_dashboard_must_not_leak"
       }
     });
@@ -32,6 +34,7 @@ function run(args) {
     encoding: "utf8",
     env: {
       ...process.env,
+      DELEXEC_JSON_SOURCE_FIXTURE_DIR: FIXTURE_DIR,
       PLATFORM_ADMIN_API_KEY: "sk_dashboard_must_not_leak"
     }
   });
@@ -235,6 +238,7 @@ const pipedJson = spawnSync(process.execPath, [SCRIPT, "--json"], {
   maxBuffer: 20 * 1024 * 1024,
   env: {
     ...process.env,
+    DELEXEC_JSON_SOURCE_FIXTURE_DIR: FIXTURE_DIR,
     PLATFORM_ADMIN_API_KEY: "sk_dashboard_must_not_leak"
   }
 });

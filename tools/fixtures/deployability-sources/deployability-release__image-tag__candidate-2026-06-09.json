@@ -1,0 +1,380 @@
+{
+  "generated_at": "2026-06-10T15:56:46.802Z",
+  "command": "deployability:release",
+  "mode": "release_candidate_review",
+  "ok": true,
+  "current_bundle": {
+    "file": "changes/CHG-2026-133.yaml",
+    "change_id": "CHG-2026-133",
+    "goal": "add deployability management safety surfaces",
+    "protocol_sha": "da3027100cfe9391f7f8d03be18a108ee2804cf6",
+    "client_sha": "135546f7510167d99a31475515708553106c0545",
+    "platform_sha": "5961309c6b0ca4e8df22dbb5be92ac0845bf8d25",
+    "brand_site_sha": "c39953c4fdb523ab4de511f9e60c408f6c1f8918",
+    "contracts_check": "passed",
+    "integration_check": "passed"
+  },
+  "profile": {
+    "key": "public_stack",
+    "name": "public-stack"
+  },
+  "image_tag": "candidate-2026-06-09",
+  "summary": {
+    "status": "release_candidate_blocked",
+    "release_candidate_ready": false,
+    "production_ready": false,
+    "public_exposure_ready": false,
+    "published_image_plan_ready": true,
+    "dry_run_ready": true,
+    "release_blocker_count": 3,
+    "script_blocker_count": 0,
+    "warning_count": 0
+  },
+  "release_blockers": [
+    "production hardening is not complete; keep formal release ownership in the owning repositories",
+    "public exposure is blocked: PUBLIC_SITE_ADDRESS: localhost; set public origin before exposure",
+    "formal release ownership remains in repos/protocol, repos/client, and repos/platform"
+  ],
+  "blockers": [],
+  "warnings": [],
+  "production_review": {
+    "command": "deployability:production",
+    "mode": "production_hardening_review",
+    "ok": true,
+    "summary": {
+      "status": "daily_deployable_production_planned",
+      "production_ready": false,
+      "daily_deployable": true,
+      "hardening_track_count": 5,
+      "planned_count": 4,
+      "gated_count": 1,
+      "blocked_count": 0,
+      "warning_count": 0
+    },
+    "readiness_boundary": {
+      "daily_deployable": true,
+      "public_exposure_ready": false,
+      "production_ready": false,
+      "reason": "daily deployability is available, while public exposure and formal production hardening remain gated or planned"
+    },
+    "hardening_tracks": [
+      {
+        "key": "public_exposure",
+        "label": "Public exposure",
+        "status": "gated",
+        "owner_scope": "fourth_repo_plus_formal_repos",
+        "owner_repo": null,
+        "evidence_commands": [
+          "corepack pnpm run selfhost:security-review -- --profile public-stack",
+          "corepack pnpm run operator:onboarding:check",
+          "corepack pnpm run published-image:smoke -- --dry-run --image-tag <candidate-tag>"
+        ],
+        "guardrails": [
+          "localhost public origin remains a blocker for public exposure",
+          "placeholder secrets remain blockers for public exposure",
+          "security review, onboarding check, and published-image dry-run must be visible before real exposure"
+        ],
+        "remaining_work": [
+          "run public-stack security review before opening edge routes",
+          "keep localhost public origin and placeholder secrets as blockers"
+        ]
+      },
+      {
+        "key": "billing_production",
+        "label": "Billing production readiness",
+        "status": "planned",
+        "owner_scope": "formal_repo",
+        "owner_repo": "repos/platform",
+        "evidence_commands": [
+          "corepack pnpm run published-image:plan",
+          "corepack pnpm run test:deployability-operations"
+        ],
+        "guardrails": [
+          "billing can be visible to operators without being presented as default production-ready",
+          "billing production gates belong in the platform owning repository"
+        ],
+        "remaining_work": [
+          "finish billing production gates before presenting billing as a default-ready surface"
+        ]
+      },
+      {
+        "key": "email_transport",
+        "label": "Email transport production readiness",
+        "status": "planned",
+        "owner_scope": "formal_repo",
+        "owner_repo": "repos/client",
+        "evidence_commands": [
+          "corepack pnpm run test:deployability-operations"
+        ],
+        "guardrails": [
+          "email transport readiness must remain separate from daily local deployability",
+          "email transport gates belong in the owning client repository"
+        ],
+        "remaining_work": [
+          "finish email transport and marketplace production gates before claiming public production readiness"
+        ]
+      },
+      {
+        "key": "marketplace_readiness",
+        "label": "Marketplace production readiness",
+        "status": "planned",
+        "owner_scope": "formal_repos",
+        "owner_repo": null,
+        "evidence_commands": [
+          "corepack pnpm run published-image:plan",
+          "corepack pnpm run test:deployability-operations"
+        ],
+        "guardrails": [
+          "marketplace readiness is not implied by local daily deployability",
+          "marketplace gates must be proven in the owning formal repositories"
+        ],
+        "remaining_work": [
+          "finish email transport and marketplace production gates before claiming public production readiness"
+        ]
+      },
+      {
+        "key": "formal_release",
+        "label": "Formal package and image release",
+        "status": "planned",
+        "owner_scope": "formal_repos",
+        "owner_repo": null,
+        "evidence_commands": [
+          "corepack pnpm run published-image:plan",
+          "corepack pnpm run test:deployability-operations"
+        ],
+        "guardrails": [
+          "formal npm and image release gates stay in the owning repositories",
+          "the fourth repo certifies compatible source combinations, not formal package or image releases"
+        ],
+        "remaining_work": [
+          "keep formal npm/image release gates in the owning repositories"
+        ]
+      }
+    ]
+  },
+  "exposure_review": {
+    "command": "deployability:exposure",
+    "mode": "public_exposure_review",
+    "ok": true,
+    "summary": {
+      "status": "public_exposure_blocked",
+      "public_exposure_ready": false,
+      "exposure_blocker_count": 1,
+      "gate_count": 1,
+      "route_count": 5,
+      "route_ready_count": 5,
+      "secret_hygiene_check_count": 5,
+      "secret_hygiene_ready_count": 4,
+      "warning_count": 0
+    },
+    "exposure_blockers": [
+      "PUBLIC_SITE_ADDRESS: localhost; set public origin before exposure"
+    ],
+    "gate": {
+      "key": "public_stack_exposure",
+      "label": "Public-stack exposure gate",
+      "status": "gated",
+      "profile_key": "public_stack",
+      "risk": "public_exposure",
+      "required_before": "opening edge routes, publishing console access, or treating public-stack as internet-ready",
+      "commands": [
+        "corepack pnpm run selfhost:security-review -- --profile public-stack",
+        "corepack pnpm run operator:onboarding:check",
+        "corepack pnpm run published-image:smoke -- --dry-run --image-tag <candidate-tag>"
+      ],
+      "command_metadata": [
+        {
+          "command": "corepack pnpm run selfhost:security-review -- --profile public-stack",
+          "posture": "public_exposure_gate",
+          "category": "public_stack",
+          "dashboard_safe": true,
+          "ci_safe": true,
+          "calls_docker": true,
+          "probes_network": false,
+          "starts_services": false,
+          "public_exposure_gate": true
+        },
+        {
+          "command": "corepack pnpm run operator:onboarding:check",
+          "posture": "contract_check",
+          "category": "operator_onboarding",
+          "dashboard_safe": true,
+          "ci_safe": true,
+          "calls_docker": false,
+          "probes_network": false,
+          "starts_services": false,
+          "public_exposure_gate": false
+        },
+        {
+          "command": "corepack pnpm run published-image:smoke -- --dry-run --image-tag <candidate-tag>",
+          "posture": "read_only",
+          "category": "release_review",
+          "dashboard_safe": true,
+          "ci_safe": true,
+          "calls_docker": false,
+          "probes_network": false,
+          "starts_services": false,
+          "public_exposure_gate": false
+        }
+      ],
+      "guardrails": [
+        "localhost public origin remains a blocker for public exposure",
+        "placeholder secrets remain blockers for public exposure",
+        "security review, onboarding check, and published-image dry-run must be visible before real exposure"
+      ],
+      "remaining_work": [
+        "run public-stack security review before opening edge routes",
+        "keep localhost public origin and placeholder secrets as blockers"
+      ]
+    }
+  },
+  "published_image_plan": {
+    "generated_at": "2026-06-10T15:56:46.672Z",
+    "command": "published-image:plan",
+    "ok": true,
+    "profile": "public-stack",
+    "compose": "repos/platform/deploy/public-stack/docker-compose.yml",
+    "platform_smoke": "repos/platform#test:public-stack-smoke",
+    "images": [
+      {
+        "service": "platform-api",
+        "image": "rsp-platform",
+        "role": "control-plane API image",
+        "template": "${IMAGE_REGISTRY:-ghcr.io/hejiajiudeeyu}/rsp-platform:${IMAGE_TAG:-latest}",
+        "ref": "ghcr.io/hejiajiudeeyu/rsp-platform:candidate-2026-06-09"
+      },
+      {
+        "service": "relay",
+        "image": "rsp-relay",
+        "role": "transport relay image",
+        "template": "${IMAGE_REGISTRY:-ghcr.io/hejiajiudeeyu}/rsp-relay:${IMAGE_TAG:-latest}",
+        "ref": "ghcr.io/hejiajiudeeyu/rsp-relay:candidate-2026-06-09"
+      },
+      {
+        "service": "platform-console-gateway",
+        "image": "rsp-gateway",
+        "role": "operator console gateway and static UI image",
+        "template": "${IMAGE_REGISTRY:-ghcr.io/hejiajiudeeyu}/rsp-gateway:${IMAGE_TAG:-latest}",
+        "ref": "ghcr.io/hejiajiudeeyu/rsp-gateway:candidate-2026-06-09"
+      }
+    ],
+    "env": {
+      "COMPOSE_NO_BUILD": "true",
+      "IMAGE_REGISTRY": "ghcr.io/hejiajiudeeyu",
+      "IMAGE_TAG": "candidate-2026-06-09",
+      "STRICT_COMPOSE_SMOKE": "true"
+    },
+    "delegated_command": "COMPOSE_NO_BUILD=true IMAGE_REGISTRY=ghcr.io/hejiajiudeeyu IMAGE_TAG=candidate-2026-06-09 STRICT_COMPOSE_SMOKE=true corepack pnpm --dir repos/platform run test:public-stack-smoke",
+    "notes": [
+      "validates public-stack image templates before running smoke",
+      "uses COMPOSE_NO_BUILD=true so platform smoke pulls published images",
+      "uses strict Docker smoke by default; pass --allow-skip only for local plan-style probes",
+      "does not print secret env values"
+    ]
+  },
+  "published_image_dry_run": {
+    "generated_at": "2026-06-10T15:56:46.796Z",
+    "command": "published-image:smoke",
+    "ok": true,
+    "dry_run": true,
+    "profile": "public-stack",
+    "compose": "repos/platform/deploy/public-stack/docker-compose.yml",
+    "platform_smoke": "repos/platform#test:public-stack-smoke",
+    "images": [
+      {
+        "service": "platform-api",
+        "image": "rsp-platform",
+        "role": "control-plane API image",
+        "template": "${IMAGE_REGISTRY:-ghcr.io/hejiajiudeeyu}/rsp-platform:${IMAGE_TAG:-latest}",
+        "ref": "ghcr.io/hejiajiudeeyu/rsp-platform:candidate-2026-06-09"
+      },
+      {
+        "service": "relay",
+        "image": "rsp-relay",
+        "role": "transport relay image",
+        "template": "${IMAGE_REGISTRY:-ghcr.io/hejiajiudeeyu}/rsp-relay:${IMAGE_TAG:-latest}",
+        "ref": "ghcr.io/hejiajiudeeyu/rsp-relay:candidate-2026-06-09"
+      },
+      {
+        "service": "platform-console-gateway",
+        "image": "rsp-gateway",
+        "role": "operator console gateway and static UI image",
+        "template": "${IMAGE_REGISTRY:-ghcr.io/hejiajiudeeyu}/rsp-gateway:${IMAGE_TAG:-latest}",
+        "ref": "ghcr.io/hejiajiudeeyu/rsp-gateway:candidate-2026-06-09"
+      }
+    ],
+    "env": {
+      "COMPOSE_NO_BUILD": "true",
+      "IMAGE_REGISTRY": "ghcr.io/hejiajiudeeyu",
+      "IMAGE_TAG": "candidate-2026-06-09",
+      "STRICT_COMPOSE_SMOKE": "true"
+    },
+    "delegated_command": "COMPOSE_NO_BUILD=true IMAGE_REGISTRY=ghcr.io/hejiajiudeeyu IMAGE_TAG=candidate-2026-06-09 STRICT_COMPOSE_SMOKE=true corepack pnpm --dir repos/platform run test:public-stack-smoke",
+    "result": {
+      "status": 0,
+      "signal": null,
+      "dry_run": true,
+      "stdout_omitted": true,
+      "stderr_lines": []
+    },
+    "notes": [
+      "validates public-stack image templates before smoke",
+      "uses COMPOSE_NO_BUILD=true so platform smoke pulls published images",
+      "uses strict Docker smoke by default; pass --allow-skip only for local probe-style skipping",
+      "does not print platform smoke stdout because delegated smoke output can contain environment-specific runtime details",
+      "does not print secret env values"
+    ]
+  },
+  "primary_next_commands": [
+    "corepack pnpm run deployability:release -- --image-tag <candidate-tag>",
+    "corepack pnpm run deployability:production",
+    "corepack pnpm run deployability:exposure",
+    "corepack pnpm run published-image:plan",
+    "corepack pnpm run published-image:smoke -- --dry-run --image-tag <candidate-tag>",
+    "corepack pnpm run published-image:smoke -- --image-tag <candidate-tag>",
+    "corepack pnpm run test:deployability-operations"
+  ],
+  "machine_payloads": [
+    "corepack pnpm --silent run deployability:release -- --image-tag candidate-2026-06-09 --json",
+    "corepack pnpm --silent run deployability:production -- --json",
+    "corepack pnpm --silent run deployability:exposure -- --json",
+    "corepack pnpm --silent run published-image:plan -- --image-tag candidate-2026-06-09 --json",
+    "corepack pnpm --silent run published-image:smoke -- --dry-run --image-tag candidate-2026-06-09 --json"
+  ],
+  "source_status": {
+    "production": {
+      "ok": true,
+      "exit_code": 0,
+      "stderr": [],
+      "parse_error": null
+    },
+    "exposure": {
+      "ok": true,
+      "exit_code": 0,
+      "stderr": [],
+      "parse_error": null
+    },
+    "published_image_plan": {
+      "ok": true,
+      "exit_code": 0,
+      "stderr": [],
+      "parse_error": null
+    },
+    "published_image_dry_run": {
+      "ok": true,
+      "exit_code": 0,
+      "stderr": [],
+      "parse_error": null
+    }
+  },
+  "safety_defaults": [
+    "deployability release review is non-destructive and does not publish images or packages",
+    "deployability release review runs published-image smoke only in dry-run mode",
+    "deployability release review does not start services, bind ports, probe network endpoints, or print secret values",
+    "JSON output separates script blockers from release blockers so dashboards can render blocked candidates"
+  ],
+  "notes": [
+    "use this before treating a candidate image tag as deployable release evidence",
+    "this command is a fourth-repo orchestration view; formal package and image release gates stay in the owning repositories"
+  ]
+}

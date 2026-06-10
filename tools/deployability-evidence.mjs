@@ -2,8 +2,8 @@
 
 import fs from "node:fs";
 import path from "node:path";
-import { spawnSync } from "node:child_process";
 import { resolveProfileFilter } from "./lib/deployability-profiles-registry.mjs";
+import { runJsonSource } from "./lib/json-source-runner.mjs";
 
 const ROOT = process.cwd();
 
@@ -76,25 +76,13 @@ function resolveOutputDir(outputDir) {
 }
 
 function runJsonScript(script, extraArgs = []) {
-  const result = spawnSync(process.execPath, [path.join(ROOT, "tools", script), "--json", ...extraArgs], {
-    cwd: ROOT,
-    encoding: "utf8",
-    env: process.env,
-    maxBuffer: 30 * 1024 * 1024
+  return runJsonSource({
+    root: ROOT,
+    relativeScript: path.join("tools", script),
+    args: ["--json", ...extraArgs],
+    maxBuffer: 30 * 1024 * 1024,
+    okMode: "not_false"
   });
-  let body = null;
-  try {
-    body = result.stdout.trim() ? JSON.parse(result.stdout) : null;
-  } catch (error) {
-    body = null;
-  }
-  return {
-    ok: result.status === 0 && body != null && body.ok !== false,
-    exit_code: result.status,
-    stderr: result.stderr.trim().split("\n").filter(Boolean),
-    body,
-    parse_error: body == null ? "source did not emit valid JSON" : null
-  };
 }
 
 function sourceBlocker(label, result) {

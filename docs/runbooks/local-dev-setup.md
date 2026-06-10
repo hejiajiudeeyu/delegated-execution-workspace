@@ -165,8 +165,10 @@ corepack pnpm run deployability:handoff -- --profile public-stack
 corepack pnpm --silent run deployability:handoff -- --profile public-stack --json
 corepack pnpm run deployability:evidence -- --profile public-stack
 corepack pnpm --silent run deployability:evidence -- --profile public-stack --json
+corepack pnpm run test:fast
 corepack pnpm run test:deployability
 corepack pnpm run test:deployability-operations
+corepack pnpm run test:release-gate
 corepack pnpm run dev:doctor
 corepack pnpm --silent run dev:doctor -- --json
 corepack pnpm run test:agent-e2e
@@ -174,6 +176,21 @@ corepack pnpm run mcp:golden-four
 corepack pnpm run test:local-stack
 corepack pnpm run test:selfhost-kit
 ```
+
+Use `test:fast` for the normal edit/run loop. It runs lightweight deployability
+tests and fixture-backed aggregate tests for dashboard, release,
+operator-checklist, and evidence payloads. Use `test:deployability` when changing
+deployability scripts or their JSON contracts; it includes the full tool test
+suite plus real aggregate smoke coverage. Before submitting or merging, use
+`test:release-gate`, which runs deployability tests, operations tests, and the
+AGENTS.md validation chain: `check:submodules`, `check:boundaries`,
+`check:bundles`, `test:contracts`, and `test:integration`.
+
+If the only failing part of the release gate is origin reachability for local
+submodule commits that intentionally have not been pushed yet, rerun locally with
+`SKIP_ORIGIN_REACHABILITY=1 corepack pnpm run test:release-gate` and mention the
+no-push mode in the handoff. Do not use that environment variable for merge
+readiness after the owning repo commits should be reachable from origin.
 
 `deployability:overview` is the read-only command map for the local,
 self-host, public-stack, onboarding, and published-image paths. Its JSON form

@@ -6,6 +6,7 @@ import { spawnSync } from "node:child_process";
 
 const REPO_ROOT = path.resolve(new URL("..", import.meta.url).pathname);
 const SCRIPT = path.join(REPO_ROOT, "tools/deployability-evidence.mjs");
+const FIXTURE_DIR = path.join(REPO_ROOT, "tools/fixtures/deployability-sources");
 
 function run(args) {
   return spawnSync(process.execPath, [SCRIPT, ...args], {
@@ -13,6 +14,7 @@ function run(args) {
     encoding: "utf8",
     env: {
       ...process.env,
+      DELEXEC_JSON_SOURCE_FIXTURE_DIR: FIXTURE_DIR,
       PLATFORM_ADMIN_API_KEY: "sk_evidence_must_not_leak"
     },
     maxBuffer: 30 * 1024 * 1024

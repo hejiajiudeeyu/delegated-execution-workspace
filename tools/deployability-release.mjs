@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import path from "node:path";
-import { spawnSync } from "node:child_process";
+import { runJsonSource } from "./lib/json-source-runner.mjs";
 import { parseStrictArgs } from "./lib/strict-args.mjs";
 
 const ROOT = process.cwd();
@@ -43,25 +43,12 @@ function parseArgs(argv) {
 }
 
 function runJson(relativeScript, args = []) {
-  const result = spawnSync(process.execPath, [path.join(ROOT, relativeScript), ...args, "--json"], {
-    cwd: ROOT,
-    encoding: "utf8",
-    env: process.env,
+  return runJsonSource({
+    root: ROOT,
+    relativeScript,
+    args: [...args, "--json"],
     maxBuffer: 20 * 1024 * 1024
   });
-  let body = null;
-  try {
-    body = result.stdout.trim() ? JSON.parse(result.stdout) : null;
-  } catch (error) {
-    body = null;
-  }
-  return {
-    ok: body != null,
-    exit_code: result.status,
-    stderr: result.stderr.trim().split("\n").filter(Boolean),
-    body,
-    parse_error: body == null ? "source did not emit valid JSON" : null
-  };
 }
 
 function sourceBlocker(label, result) {
