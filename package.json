@@ -135,6 +135,8 @@
     "test:compat-status": "node tools/compat-status.test.mjs",
     "test:mcp-golden-four": "node tools/mcp-golden-four.test.mjs",
     "test:agent-e2e": "AUTO_APPROVE=true python3 tools/agent-e2e/agent-e2e-test.py",
+    "test:paid-call-e2e": "node tools/paid-call-e2e.mjs",
+    "test:paid-call-e2e:unit": "node tools/paid-call-e2e.test.mjs",
     "ci": "corepack pnpm run test:release-gate",
     "test:deployability-aggregate-smoke": "node tools/deployability-aggregate-smoke.test.mjs",
     "test:fast": "node tools/run-tests.mjs --concurrency 8 tools/workspace-pnpm-policy.test.mjs tools/deployability-overview.test.mjs tools/deployability-quickstart.test.mjs tools/deployability-safety.test.mjs tools/deployability-release.test.mjs tools/deployability-operator-checklist.test.mjs tools/deployability-readiness.test.mjs tools/deployability-prd.test.mjs tools/deployability-doctor.test.mjs tools/deployability-dashboard.test.mjs tools/deployability-profiles.test.mjs tools/deployability-commands.test.mjs tools/deployability-console.test.mjs tools/deployability-handoff.test.mjs tools/deployability-evidence.test.mjs tools/compat-status.test.mjs tools/deployability-strict-args.test.mjs",

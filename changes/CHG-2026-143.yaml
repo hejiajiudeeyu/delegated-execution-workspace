@@ -1,0 +1,16 @@
+change_id: CHG-2026-143
+goal: certify first paid call end-to-end regression
+protocol_sha: 889dd94bb4a0447b68bd84f43f57b0adcaf67273
+client_sha: c23f754d562cdb4a4ecc2f834e6f06ebb2648b8a
+platform_sha: 3bcd88476303cfa18f8b703ae0e916661c4ddcab
+brand_site_sha: 5ce3da4bc3b0cce8936f15bd2afe7d4e8ea66349
+owner: hejiajiudeeyu
+risk_level: medium
+affected_scope:
+  - platform
+  - billing
+  - integration
+  - fourth-repo-tools
+contracts_check: passed
+integration_check: passed
+notes: "Implements first-real-call T-304. Platform commit 3bcd88476303cfa18f8b703ae0e916661c4ddcab preserves and validates submitted hotline pricing_hint values so a paid hotline can be created through public onboarding plus admin approval instead of test-only state mutation. The fourth repo adds tools/paid-call-e2e.mjs and test:paid-call-e2e, covering tenant creation, insufficient prepaid rejection, manual recharge, successful paid token issuance/completion, final balance reconciliation, failed-call refund, and ledger kind assertions. The real paid-call e2e passed with 20/20 assertions. Fourth-repo validation used SKIP_ORIGIN_REACHABILITY=1 because the protocol/client/platform/brand-site commits are local-only."
