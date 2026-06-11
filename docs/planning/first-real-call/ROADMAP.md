@@ -8,19 +8,19 @@ This roadmap tracks execution against `docs/planning/first-real-call/README.md`.
 
 ## Current execution slice
 
-Status: brand-site honesty slice locally verified
+Status: Wave 3 T-301 protocol billing contract unblock locally verified
 
 Scope for this slice:
 
-- T-201 Responder Quick Start correctness and Platform-honesty wording.
-- T-202 Caller Quick Start correctness for session setup and caller registration payloads.
-- T-204 Marketplace fallback/demo honesty and empty-catalog behavior.
+- T-301 protocol-owned billing/pricing contract surface.
+- Add `@delexec/contracts` pricing/trust/billing constants and validators for hotline `pricing_hint`, token `billing`, and billing-aware result `usage`.
+- Add authored catalog template pricing hints and package-smoke coverage so the npm artifact carries the new protocol surface.
 
 Why this slice first:
 
-- These tasks are owning-repo brand-site changes and do not require npm publish, GHCR, VPS, DNS, or production secrets.
-- They prevent the public first-call docs from sending users down stale CLI/API paths.
-- They keep demo Marketplace content clearly labeled until real public hotlines exist.
+- T-301 is the prerequisite for Wave 3 paid-call work.
+- The Stage A design note found that platform enforcement was blocked by missing runtime protocol fields.
+- Landing the protocol-owned surface first preserves the owning-repo boundary and gives platform T-301 implementation a real contract to consume.
 
 ## Progress tracker
 
@@ -34,7 +34,7 @@ Why this slice first:
 | T-202 caller quick-start honesty | `repos/brand-site` | local verified | Caller docs now create a passphrase-backed session, read `.token`, and use `contact_email` for HTTP caller registration. |
 | T-203 golden path unification | `repos/brand-site` + `repos/client` | blocked | Depends on T-101 npm package actually being published. |
 | T-204 marketplace mock honesty | `repos/brand-site` | local verified | Fallback Marketplace entries are DEMO previews, no longer claim healthy/reviewed status, point users to Caller Quick Start, and successful empty API catalogs render an honest empty state. |
-| T-301 billing enforcement | `repos/platform` | pending | Requires protocol/RFC check and a design note before code. |
+| T-301 billing enforcement | `repos/platform` + `repos/protocol` | protocol unblock local verified; platform enforcement pending | `T-301-design-notes.md` maps the call path and billing timing. Protocol commit `889dd94bb4a0447b68bd84f43f57b0adcaf67273` adds `pricing_hint`, token `billing`, billing-aware result `usage` validators, billing constants, template pricing hints, and package-smoke coverage. Next slice is platform enforcement using this protocol surface. |
 | T-302 caller balance API | `repos/platform` | blocked | Depends on T-301. |
 | T-303 billing console route | `repos/platform` | blocked | Depends on T-301. |
 | T-304 paid-call e2e | fourth repo | blocked | Depends on T-301 and T-302. |
@@ -51,6 +51,7 @@ Latest local verification for the current slice:
 - Fourth repo local-only validation: `SKIP_ORIGIN_REACHABILITY=1 corepack pnpm run check:submodules`, `check:boundaries`, `check:bundles`, `test:contracts`, and `test:integration` passed.
 - `repos/platform` T-104 docs prep: `npm test`, `npm run test:service:packages`, `npm run test:deploy:config`, and `npm run test:public-stack-smoke` passed.
 - `repos/brand-site` T-201/T-202/T-204 docs prep: `npm run smoke:first-real-call-content`, targeted `npx eslint` on touched files, `npm run build`, and prerendered HTML grep for DEMO/correct command markers passed. Full `npm run lint` remains blocked by pre-existing shared UI lint errors in `carousel.tsx` and `use-mobile.ts`.
+- `repos/protocol` T-301 protocol unblock: RED `npm run test:unit -- tests/unit/billing-contracts.test.js` failed on missing billing exports as expected; after implementation, `npm test` passed, including unit tests, contracts package integration, and `check-contracts-package` with packaged `pricing_hint` validation. Extra `npx vitest run --config tests/config/vitest.unit.config.mjs tests/unit/error-registry-coverage.test.js` passed after making the old monorepo coverage harness tolerate the split protocol repo shape.
 
 Before claiming cross-repo completion, run:
 

@@ -1,0 +1,15 @@
+change_id: CHG-2026-139
+goal: add protocol billing pricing contract surface for first paid call
+protocol_sha: 889dd94bb4a0447b68bd84f43f57b0adcaf67273
+client_sha: c23f754d562cdb4a4ecc2f834e6f06ebb2648b8a
+platform_sha: bb21acf28d67706d50ba8f166a781fda4771692f
+brand_site_sha: 5ce3da4bc3b0cce8936f15bd2afe7d4e8ea66349
+owner: hejiajiudeeyu
+risk_level: medium
+affected_scope:
+  - protocol
+  - contracts
+  - templates
+contracts_check: passed
+integration_check: passed
+notes: "Implements the protocol-owned unblock for first-real-call T-301 before platform billing enforcement. The contracts package now exports pricing model, trust tier, billing error, and billing event constants plus validators for hotline pricing_hint, caller token billing claims, and billing-aware result usage. Catalog templates now carry pricing_hint examples, and the contracts package smoke validates that the packed npm artifact includes both the new exports and the staged pricing hint. Protocol verification passed npm test and the extra error-registry coverage check after making the old monorepo coverage harness tolerate the split protocol repo shape. Fourth-repo validation used SKIP_ORIGIN_REACHABILITY=1 because the new protocol/client/platform/brand-site commits are local-only."
