@@ -1,0 +1,15 @@
+change_id: CHG-2026-142
+goal: certify billing console route for first paid call preparation
+protocol_sha: 889dd94bb4a0447b68bd84f43f57b0adcaf67273
+client_sha: c23f754d562cdb4a4ecc2f834e6f06ebb2648b8a
+platform_sha: 25cafc477cd71aa0c67e12b13303c38ae35c19e4
+brand_site_sha: 5ce3da4bc3b0cce8936f15bd2afe7d4e8ea66349
+owner: hejiajiudeeyu
+risk_level: medium
+affected_scope:
+  - platform
+  - billing
+  - console
+contracts_check: passed
+integration_check: passed
+notes: "Implements first-real-call T-303 billing console access in repos/platform. Platform commit 25cafc477cd71aa0c67e12b13303c38ae35c19e4 adds legacy console Billing section registration, admin-only tenant balance and ledger mount points, manual tenant creation/recharge controls using existing admin billing APIs through the gateway proxy, local tenant history, and unit coverage for the legacy billing section registry. Platform verification passed targeted RED/GREEN view-model unit test, node --check for the touched console modules, npm test, npm run test:service:packages, npm run test:deploy:config, and npm run test:public-stack-smoke. Fourth-repo validation used SKIP_ORIGIN_REACHABILITY=1 because the protocol/client/platform/brand-site commits are local-only."
