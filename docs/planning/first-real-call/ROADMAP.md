@@ -8,19 +8,19 @@ This roadmap tracks execution against `docs/planning/first-real-call/README.md`.
 
 ## Current execution slice
 
-Status: local client slice verified
+Status: brand-site honesty slice locally verified
 
 Scope for this slice:
 
-- T-101 client package/global-install hardening up to the local tarball smoke.
-- T-102 client ops-console proxy port environment support.
-- T-103 client bootstrap behavior when `PLATFORM_API_BASE_URL` is left in the shell.
+- T-201 Responder Quick Start correctness and Platform-honesty wording.
+- T-202 Caller Quick Start correctness for session setup and caller registration payloads.
+- T-204 Marketplace fallback/demo honesty and empty-catalog behavior.
 
 Why this slice first:
 
-- These tasks are owning-repo client changes and do not require npm, GHCR, VPS, DNS, or production secrets.
-- They unblock a real local first-run path and reduce false platform-mode failures.
-- They can be verified with focused client tests and fourth-repo integration gates.
+- These tasks are owning-repo brand-site changes and do not require npm publish, GHCR, VPS, DNS, or production secrets.
+- They prevent the public first-call docs from sending users down stale CLI/API paths.
+- They keep demo Marketplace content clearly labeled until real public hotlines exist.
 
 ## Progress tracker
 
@@ -30,10 +30,10 @@ Why this slice first:
 | T-102 ops-console proxy port | `repos/client` | local verified | Vite proxy follows `OPS_PORT_SUPERVISOR`, defaulting to 8079; integration test verifies `/status` through a non-default supervisor port. |
 | T-103 bootstrap env pollution | `repos/client` | local verified | Bootstrap only enters platform mode with explicit `--platform`; leftover `PLATFORM_API_BASE_URL` warns and stays local-only. |
 | T-104 GHCR images public | `repos/platform` | local verified; manual GHCR/tag steps pending | Images workflow already covers public-stack images: `rsp-platform`, `rsp-relay`, `rsp-gateway`. Platform docs now require a concrete release tag for first public pulls and state the GHCR public-visibility requirement. |
-| T-201 responder quick-start honesty | `repos/brand-site` | pending | Can be automated after client flags are verified. |
-| T-202 caller quick-start honesty | `repos/brand-site` | pending | Can be automated with local supervisor command replay. |
+| T-201 responder quick-start honesty | `repos/brand-site` | local verified | Responder docs now obtain `OPS_SESSION` before HTTP calls, use `--cmd` / `--url`, and mark Marketplace review as an optional advanced step requiring a hosted or self-hosted Platform. |
+| T-202 caller quick-start honesty | `repos/brand-site` | local verified | Caller docs now create a passphrase-backed session, read `.token`, and use `contact_email` for HTTP caller registration. |
 | T-203 golden path unification | `repos/brand-site` + `repos/client` | blocked | Depends on T-101 npm package actually being published. |
-| T-204 marketplace mock honesty | `repos/brand-site` | pending | Can be automated independently. |
+| T-204 marketplace mock honesty | `repos/brand-site` | local verified | Fallback Marketplace entries are DEMO previews, no longer claim healthy/reviewed status, point users to Caller Quick Start, and successful empty API catalogs render an honest empty state. |
 | T-301 billing enforcement | `repos/platform` | pending | Requires protocol/RFC check and a design note before code. |
 | T-302 caller balance API | `repos/platform` | blocked | Depends on T-301. |
 | T-303 billing console route | `repos/platform` | blocked | Depends on T-301. |
@@ -50,6 +50,7 @@ Latest local verification for the current slice:
 - `repos/client` tarball smoke: clean-room install, `bootstrap` reached `SUCCEEDED`, `status` reported running, `mcp spec` resolved a packaged adapter entry, and non-source `ui start` returned the friendly source-checkout error.
 - Fourth repo local-only validation: `SKIP_ORIGIN_REACHABILITY=1 corepack pnpm run check:submodules`, `check:boundaries`, `check:bundles`, `test:contracts`, and `test:integration` passed.
 - `repos/platform` T-104 docs prep: `npm test`, `npm run test:service:packages`, `npm run test:deploy:config`, and `npm run test:public-stack-smoke` passed.
+- `repos/brand-site` T-201/T-202/T-204 docs prep: `npm run smoke:first-real-call-content`, targeted `npx eslint` on touched files, `npm run build`, and prerendered HTML grep for DEMO/correct command markers passed. Full `npm run lint` remains blocked by pre-existing shared UI lint errors in `carousel.tsx` and `use-mobile.ts`.
 
 Before claiming cross-repo completion, run:
 
