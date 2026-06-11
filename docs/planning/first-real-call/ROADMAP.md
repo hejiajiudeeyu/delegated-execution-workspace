@@ -8,20 +8,20 @@ This roadmap tracks execution against `docs/planning/first-real-call/README.md`.
 
 ## Current execution slice
 
-Status: Wave 3 T-304 paid-call e2e locally verified
+Status: Wave 4 T-401 agent preparation complete; public deployment manual-blocked
 
 Scope for this slice:
 
-- T-304 fourth-repo paid-call end-to-end regression.
-- Add a single command that proves tenant creation, insufficient prepaid rejection, manual recharge, successful paid call settlement, failed-call refund, and ledger reconciliation.
-- Preserve the owning-repo boundary by first fixing `repos/platform` to accept validated submitted `pricing_hint` values through existing onboarding APIs.
-- Keep the e2e script as orchestration only; billing decisions remain in platform/protocol code.
+- T-401 public-stack deployment preparation.
+- Run read-only exposure/recipe/operator-onboarding checks.
+- Make public-stack `.env.example` explicit enough for first paid-call production deployment.
+- Add a manual deployment runbook without touching real VPS, DNS, GHCR visibility, or secrets.
 
 Why this slice first:
 
-- T-304 is the Wave 3 acceptance gate before any public-stack deployment claim.
-- It verifies the first real paid-call loop with externally visible API surfaces instead of direct test state mutation.
-- Wave 4 public exposure now has a concrete local paid-call regression to run before VPS/DNS work.
+- T-401 is the public exposure bridge after Wave 3's paid-call regression.
+- The current blocker is no longer local code; it is the external public origin and deployment environment.
+- T-402 and T-403 remain blocked until a real public platform exists.
 
 ## Progress tracker
 
@@ -39,7 +39,7 @@ Why this slice first:
 | T-302 caller balance API | `repos/platform` | local verified | Platform commit `ef444c420bbfeb1aee10b976ed40252f9c0a4b6a` adds caller-authenticated `/v1/tenants/me/balance` and `/v1/tenants/me/ledger`, scopes reads to `auth.user_id`, maps missing tenants to `ERR_BILLING_NOT_ENABLED`, and covers self-read, isolation, and missing-tenant cases. |
 | T-303 billing console route | `repos/platform` | local verified | Platform commit `25cafc477cd71aa0c67e12b13303c38ae35c19e4` registers Billing in the legacy console section list, renders admin-only balance/ledger/tenant/recharge mount points, wires them through the gateway proxy to existing admin billing APIs, and keeps the React `/billing` route untouched. |
 | T-304 paid-call e2e | fourth repo + `repos/platform` | local verified | Platform commit `3bcd88476303cfa18f8b703ae0e916661c4ddcab` preserves submitted `pricing_hint` for paid hotlines. `corepack pnpm run test:paid-call-e2e` passed with 20 assertions: unpaid call rejected with 402, recharge recorded, paid call settled to 700 cents, failed paid call refunded back to 700 cents, and ledger contained recharge/hold/debit/refund rows. |
-| T-401 public-stack deploy | `repos/platform` + manual | next | Unblocked by local paid-call regression, but still requires public image/tag/GHCR visibility and real VPS/DNS/secrets work. |
+| T-401 public-stack deploy | `repos/platform` + manual | agent-prepared; manual blocked | Platform commit `c315f00aa5ca005cd8f4d66615c68abddf1650f0` documents public-stack env requirements and passes `BILLING_ENFORCEMENT` into platform-api. `T-401-deploy-runbook.md` summarizes VPS/DNS/secrets/image-tag/startup/smoke/security-review steps. Manual blockers remain: real HTTPS origin, GHCR/public fixed image tag, VPS, DNS, and secrets. |
 | T-402 marketplace live API | `repos/brand-site` | blocked | Depends on public platform and T-204. |
 | T-403 OPC #0 dry run | manual + findings doc | blocked | Final production rehearsal after T-401/T-402. |
 
@@ -58,6 +58,7 @@ Latest local verification for the current slice:
 - `repos/platform` T-303 billing console route: RED `npx vitest run --config tests/config/vitest.unit.config.mjs tests/unit/platform-console-view-models.test.js` failed on missing `LEGACY_CONSOLE_SECTIONS`/Billing legacy mount exports as expected; after implementation, the targeted unit test passed with 3 tests. Extra `node --check apps/platform-console/src/main.js` and `node --check apps/platform-console/src/view-model.js` passed. Final platform verification passed `npm test`, `npm run test:service:packages`, `npm run test:deploy:config`, and `npm run test:public-stack-smoke`; the smoke fetched `/console/`, set up the gateway session, stored admin credentials, and verified gateway proxy access.
 - `repos/platform` T-304 unblock: RED `npx vitest run --config tests/config/vitest.integration.config.mjs tests/integration/platform-api-billing.integration.test.js` first failed because submitted hotlines did not preserve `pricing_hint`; after implementation, the targeted billing integration passed with 10 tests. Final platform verification passed `npm test`, `npm run test:service:packages`, `npm run test:deploy:config`, and `npm run test:public-stack-smoke`.
 - Fourth-repo T-304 paid-call e2e: RED `node tools/paid-call-e2e.test.mjs` failed on missing script; after implementation, `corepack pnpm run test:paid-call-e2e:unit` passed and real `corepack pnpm run test:paid-call-e2e` passed with 20 assertions covering insufficient balance, successful settlement, refund, and ledger reconciliation.
+- T-401 public-stack preparation: `corepack pnpm --silent run deployability:exposure -- --json` emitted `public_exposure_blocked` with one blocker, `PUBLIC_SITE_ADDRESS` still localhost; public route contract was present for `/healthz`, `/platform/healthz`, `/relay/healthz`, `/gateway/healthz`, and `/console/`. `corepack pnpm --silent run deployability:recipe -- --profile public-stack --json` emitted the public-stack command recipe. `corepack pnpm run operator:onboarding:check` passed all six checks. Platform verification for the env/compose update passed `npm test`, `npm run test:service:packages`, `npm run test:deploy:config`, and `npm run test:public-stack-smoke`.
 
 Before claiming cross-repo completion, run:
 
