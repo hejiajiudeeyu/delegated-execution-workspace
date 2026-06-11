@@ -9,6 +9,8 @@ const clientRoot = path.join(ROOT, "repos/client");
 const relayDbPath = path.join(os.tmpdir(), "fourth-repo-relay.sqlite");
 const platformEnvPath = path.join(platformRoot, "deploy/platform/.env");
 const platformEnvExample = path.join(platformRoot, "deploy/platform/.env.example");
+const localDockerPackagesDir = path.join(platformRoot, ".docker-local-packages");
+const localProtocolContractsDir = path.join(ROOT, "repos/protocol/packages/contracts");
 const integrationPorts = [8079, 8081, 8082, 8090, 8091, 8092];
 const opsHome = fs.mkdtempSync(path.join(os.tmpdir(), "fourth-repo-delexec-home-"));
 
@@ -107,6 +109,37 @@ function cleanupOpsProcesses() {
   }
 }
 
+function cleanupLocalDockerPackages() {
+  if (!fs.existsSync(localDockerPackagesDir)) {
+    return;
+  }
+  for (const entry of fs.readdirSync(localDockerPackagesDir)) {
+    if (entry.endsWith(".tgz")) {
+      fs.rmSync(path.join(localDockerPackagesDir, entry), { force: true });
+    }
+  }
+}
+
+function stageLocalDockerPackages() {
+  cleanupLocalDockerPackages();
+  fs.mkdirSync(localDockerPackagesDir, { recursive: true });
+
+  const manifestPath = path.join(localProtocolContractsDir, "package.json");
+  if (!fs.existsSync(manifestPath)) {
+    return;
+  }
+  const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
+  if (manifest.name !== "@delexec/contracts") {
+    throw new Error(`local_contracts_package_name_mismatch:${manifest.name || "missing"}`);
+  }
+  const output = run(ROOT, "npm", ["pack", localProtocolContractsDir, "--pack-destination", localDockerPackagesDir]);
+  const tarballName = output.trim().split("\n").filter(Boolean).at(-1);
+  if (!tarballName) {
+    throw new Error("local_contracts_pack_missing_tarball");
+  }
+  console.log(`[source-integration-check] staged local package @delexec/contracts ${tarballName}`);
+}
+
 async function stopBackground(processInfo) {
   const child = processInfo?.child;
   if (!child || child.exitCode !== null || child.killed) {
@@ -161,6 +194,7 @@ async function cleanupIntegration(relay) {
 
   fs.rmSync(opsHome, { recursive: true, force: true });
   fs.rmSync(relayDbPath, { force: true });
+  cleanupLocalDockerPackages();
 }
 
 try {
@@ -196,6 +230,7 @@ try {
     ]);
   } catch {}
 
+  stageLocalDockerPackages();
   run(platformRoot, "docker", [
     "compose",
     "-f",

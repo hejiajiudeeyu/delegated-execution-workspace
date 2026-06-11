@@ -539,7 +539,7 @@ importers:
         specifier: 0.1.0
         version: link:../../packages/billing-store
       '@delexec/contracts':
-        specifier: ^0.1.0
+        specifier: ^0.1.1
         version: link:../../../protocol/packages/contracts
       '@delexec/postgres-store':
         specifier: 0.1.0

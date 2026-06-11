@@ -1,0 +1,17 @@
+change_id: CHG-2026-140
+goal: certify first paid call platform billing enforcement
+protocol_sha: 889dd94bb4a0447b68bd84f43f57b0adcaf67273
+client_sha: c23f754d562cdb4a4ecc2f834e6f06ebb2648b8a
+platform_sha: 373c183778f5cd0eb2bae98c820bef6f1e97c6d3
+brand_site_sha: 5ce3da4bc3b0cce8936f15bd2afe7d4e8ea66349
+owner: hejiajiudeeyu
+risk_level: medium
+affected_scope:
+  - platform
+  - billing
+  - contracts
+  - public-stack
+  - integration
+contracts_check: passed
+integration_check: passed
+notes: "Implements first-real-call T-301 platform enforcement on top of protocol commit 889dd94. BILLING_ENFORCEMENT remains disabled by default; enforced paid calls now validate caller billing consent, check prepaid balance before task-token issuance, write a hold ledger row, include billing claims in token claims, settle successful terminal events, and refund failed terminal events. Platform package checks, public-stack source-build checks, and fourth-repo source integration now stage the local sibling @delexec/contracts tarball so local-only protocol billing exports are used before formal npm publication; formal release still requires publishing @delexec/contracts first. Platform verification passed npm test, npm run test:service:packages, npm run test:deploy:config, and npm run test:public-stack-smoke. Fourth-repo validation used SKIP_ORIGIN_REACHABILITY=1 because the protocol/client/platform/brand-site commits are local-only."
