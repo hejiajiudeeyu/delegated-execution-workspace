@@ -1,0 +1,13 @@
+change_id: CHG-2026-137
+goal: clarify public-stack GHCR image release and anonymous pull path
+protocol_sha: da3027100cfe9391f7f8d03be18a108ee2804cf6
+client_sha: c23f754d562cdb4a4ecc2f834e6f06ebb2648b8a
+platform_sha: bb21acf28d67706d50ba8f166a781fda4771692f
+brand_site_sha: c39953c4fdb523ab4de511f9e60c408f6c1f8918
+owner: hejiajiudeeyu
+risk_level: low
+affected_scope:
+  - platform
+contracts_check: passed
+integration_check: passed
+notes: "Implements T-104 platform-side preparation without changing runtime topology. The Images workflow already builds the public-stack image set: rsp-platform, rsp-relay, and rsp-gateway. Documentation now tells operators to use a concrete v* release tag for first public pulls, explains that latest is only published from release tags, provides a GHCR tag query command, and states that the three public-stack GHCR packages must be public for anonymous pulls. Caller/responder images are documented as legacy/internal profile images, not public-stack requirements. Platform verification passed npm test, npm run test:service:packages, npm run test:deploy:config, and npm run test:public-stack-smoke. Fourth-repo local verification used SKIP_ORIGIN_REACHABILITY=1 because the platform commit had not been pushed: check:submodules, check:boundaries, check:bundles, test:contracts, and test:integration all passed. Manual steps remain: make GHCR packages public, push a v0.1.x tag, and verify anonymous docker pull."
