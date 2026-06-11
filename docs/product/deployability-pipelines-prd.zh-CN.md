@@ -18,30 +18,97 @@ onboarding 或 release-image 路径前，先给出一个只读命令地图和一
 - `corepack pnpm --silent run deployability:quickstart -- --json`
 - `corepack pnpm run deployability:safety`
 - `corepack pnpm --silent run deployability:safety -- --json`
+- `corepack pnpm run deployability:explain`
+- `corepack pnpm --silent run deployability:explain -- --json`
+- `corepack pnpm run deployability:production`
+- `corepack pnpm --silent run deployability:production -- --json`
+- `corepack pnpm run deployability:hardening-plan`
+- `corepack pnpm --silent run deployability:hardening-plan -- --json`
+- `corepack pnpm run deployability:readiness`
+- `corepack pnpm --silent run deployability:readiness -- --json`
+- `corepack pnpm run deployability:prd`
+- `corepack pnpm --silent run deployability:prd -- --json`
+- `corepack pnpm run deployability:roadmap`
+- `corepack pnpm --silent run deployability:roadmap -- --json`
+- `corepack pnpm run deployability:status`
+- `corepack pnpm --silent run deployability:status -- --json`
+- `corepack pnpm run deployability:gates`
+- `corepack pnpm --silent run deployability:gates -- --json`
+- `corepack pnpm run deployability:exposure`
+- `corepack pnpm --silent run deployability:exposure -- --json`
+- `corepack pnpm run deployability:release -- --image-tag <candidate-tag>`
+- `corepack pnpm --silent run deployability:release -- --image-tag <candidate-tag> --json`
+- `corepack pnpm run deployability:operator-checklist -- --profile public-stack --image-tag <candidate-tag>`
+- `corepack pnpm --silent run deployability:operator-checklist -- --profile public-stack --image-tag <candidate-tag> --json`
 - `corepack pnpm run deployability:doctor`
 - `corepack pnpm --silent run deployability:doctor -- --json`
 - `corepack pnpm run deployability:dashboard`
 - `corepack pnpm --silent run deployability:dashboard -- --json`
+- `corepack pnpm run deployability:next`
+- `corepack pnpm --silent run deployability:next -- --json`
+- `corepack pnpm run deployability:next -- --profile public-stack`
+- `corepack pnpm --silent run deployability:next -- --profile public-stack --json`
+- `corepack pnpm run deployability:recipe -- --profile public-stack`
+- `corepack pnpm --silent run deployability:recipe -- --profile public-stack --json`
+- `corepack pnpm run deployability:console`
+- `corepack pnpm --silent run deployability:console -- --json`
+- `corepack pnpm run deployability:profiles`
+- `corepack pnpm --silent run deployability:profiles -- --json`
+- `corepack pnpm run deployability:profiles -- --profile public-stack`
+- `corepack pnpm --silent run deployability:profiles -- --profile public-stack --json`
+- `corepack pnpm run deployability:action-plan`
+- `corepack pnpm --silent run deployability:action-plan -- --json`
+- `corepack pnpm run deployability:action-plan -- --list-profiles`
+- `corepack pnpm --silent run deployability:action-plan -- --list-profiles --json`
+- `corepack pnpm run deployability:action-plan -- --profile public-stack`
+- `corepack pnpm --silent run deployability:action-plan -- --profile public-stack --json`
+- `corepack pnpm run deployability:commands`
+- `corepack pnpm --silent run deployability:commands -- --json`
+- `corepack pnpm run deployability:runbook`
+- `corepack pnpm --silent run deployability:runbook -- --json`
+- `corepack pnpm run deployability:menu`
+- `corepack pnpm --silent run deployability:menu -- --json`
+- `corepack pnpm run deployability:menu -- --profile public-stack`
+- `corepack pnpm --silent run deployability:menu -- --profile public-stack --json`
+- `corepack pnpm run deployability:commands -- --profile public-stack`
+- `corepack pnpm --silent run deployability:commands -- --profile public-stack --json`
 - `corepack pnpm run compat:status`
 - `corepack pnpm --silent run compat:status -- --json`
 - `corepack pnpm run deployability:handoff`
 - `corepack pnpm --silent run deployability:handoff -- --json`
+- `corepack pnpm run deployability:evidence -- --profile public-stack`
+- `corepack pnpm --silent run deployability:evidence -- --profile public-stack --json`
 - `corepack pnpm run test:deployability-overview`
 - `corepack pnpm run test:deployability-quickstart`
 - `corepack pnpm run test:deployability-safety`
+- `corepack pnpm run test:deployability-prd`
+- `corepack pnpm run test:deployability-roadmap`
 - `corepack pnpm run test:deployability-doctor`
 - `corepack pnpm run test:deployability-dashboard`
+- `corepack pnpm run test:deployability-action-plan`
+- `corepack pnpm run test:deployability-profiles`
+- `corepack pnpm run test:deployability-pipeline-summaries`
+- `corepack pnpm run test:deployability-commands`
+- `corepack pnpm run test:deployability-console`
 - `corepack pnpm run test:compat-status`
 - `corepack pnpm run test:deployability-handoff`
+- `corepack pnpm run test:deployability`
+- `corepack pnpm run test:deployability-operations`
 
 验收：
 
-- overview 列出 Local Agent Loop、Selfhost Platform、Public Stack、
-  Operator Onboarding 和 Published Image 路径
+- overview 列出 Local Agent Loop、All-in-One Demo、Selfhost Platform、
+  Public Stack、Recovery & Evidence、Operator Onboarding 和 Published Image 路径
 - overview 为每条路径列出人工命令和机器可读 JSON 命令
 - overview 是只读的：不读取 `.env`、不调用 Docker、不绑定端口、不探测网络 endpoint
-- quickstart 列出 Daily Development、Selfhost Platform、Public Stack 和
-  Release Review 四条首次使用路径，按顺序给出命令，但不执行命令
+- quickstart 列出 Daily Development、All-in-One Demo、Selfhost Platform、
+  Public Stack 和 Release Review 五条首次使用路径，按顺序给出命令，但不执行命令
+- quickstart 会在 Daily Development track 里把
+  `deployability:action-plan -- --list-profiles` 放在完整 action plan 前，让
+  operator 和 dashboard 可以先渲染 profile selector
+- quickstart 会在 Daily Development track 里暴露 `deployability:profiles`，
+  让 operator 和 dashboard 不必先调用 action-plan 模式，也能渲染完整
+  profile-card catalog
 - `deployability:quickstart -- --json` 输出干净的 track、step、安全默认值和下一步命令
   metadata，不混入终端文本或 secret 值
 - safety matrix 会列出 top-level、local-loop、self-host、public-stack 和
@@ -49,15 +116,215 @@ onboarding 或 release-image 路径前，先给出一个只读命令地图和一
   但不执行命令
 - `deployability:safety -- --json` 输出干净的命令姿态、CI / dashboard 适用性、
   安全默认值和下一步命令 metadata，不混入终端文本或 secret 值
-- doctor 把 compatibility ledger、顶层 scripts、文档、brand-site 和
-  safety-contract 对齐状态收成一个只读快照，不执行 Docker、不读取 `.env`、
-  不探测网络、不打印 secrets
+- `deployability:explain -- --json` 输出只读 operator explainer，用于解释架构、
+  truth-source 边界、profile 选择、public exposure gates、production hardening
+  和跨仓验证顺序，不执行命令、不打印 secret 值
+- `deployability:production -- --json` 输出 `production_hardening_review`，
+  也就是只读 production hardening 边界视图，把 daily deployability 与 public
+  exposure / formal production readiness 分开，并展示 billing、email、
+  marketplace 和 formal release gates，且不执行命令
+- 同一个 production JSON 输出 `production_readiness_remediation_plan` /
+  `formal_production_readiness_remediation`，把
+  `prove_public_exposure_gate`、`define_billing_production_gate`、
+  `define_email_transport_gate`、`define_marketplace_readiness_gate`、
+  `define_formal_release_gate` 和 `export_management_evidence` 排成管理面可消费的
+  有序队列
+- `deployability:hardening-plan -- --json` 输出 `production_hardening_plan`，
+  也就是 `hardening_plan_visible` 的只读行动计划，给 public exposure、billing、
+  email transport、marketplace readiness 和 formal release 标出 owner repo、
+  stages、blockers、guardrails、next commands 和 evidence commands；它是管理
+  metadata，不是 production readiness 证据
+- `deployability:readiness -- --json` 输出独立 daily-deployable scorecard，
+  给人、CI 和管理 UI 使用，包含检查证据、summary counts、blockers、warnings、
+  safety notes 和 next commands，而不要求调用方解析完整 dashboard 或 handoff payload
+- `deployability:prd -- --json` 在 roadmap 前输出只读 PRD 文档、受众、管线、
+  管理面和 safety-boundary 索引，让 planning tool 和 brand-site 指向同一张
+  产品地图，同时不读取 `.env`、不调用 Docker、不绑定端口、不探测网络、不打印
+  secret 值
+- `deployability:roadmap -- --json` 输出只读 PRD milestone view，给管理 UI 和规划
+  评审使用，包含 satisfied、gated、blocked、planned milestones、
+  `console_management_surface`、`production_hardening_plan`、PRD sources、
+  evidence commands、remaining work、source status 和 next commands，同时不读取 `.env`、不调用 Docker、不绑定端口、
+  不探测网络、不打印 secret 值
+- `deployability:status -- --json` 输出面向第一屏管理界面的 compact operator
+  status payload，把 readiness 和 roadmap metadata 投影为 status cards，并展示
+  roadmap 里的 console management、hardening plan 和 public-stack recipe 里程碑、
+  `console_management_status`、`hardening_plan_status`、source health、primary
+  next commands 和 safety defaults，且不执行部署命令
+- `deployability:gates -- --json` 输出给管理 UI 使用的 public exposure /
+  production hardening gate checklist，把 roadmap 和 command catalog metadata
+  投影成明确的 gate cards，且不执行 security-review、Docker、网络或发布命令
+- `deployability:exposure -- --json` 输出 `public_exposure_review`，也就是
+  非破坏性的 public-stack exposure blocker snapshot；它运行现有 security review，
+  只为 compose config 调用 Docker，不启动服务、不绑定端口，并把脚本 blocker 与
+  `exposure_blockers` 分开
+- `deployability:release -- --image-tag <candidate-tag> --json` 输出
+  `release_candidate_review`，也就是非破坏性的 release gate；它聚合 production
+  hardening、public exposure、published-image plan 和 dry-run smoke evidence，
+  但不发布镜像或包、不启动服务、不探测 endpoint、不打印 secret 值
+- `deployability:operator-checklist -- --profile public-stack --image-tag <candidate-tag> --json`
+  输出 `public_stack_operator_checklist`，也就是非破坏性的 operator readiness
+  checklist；它把 menu、recipe、onboarding、public exposure gate、release
+  candidate gate、backup-plan 和 handoff evidence 分组成 ready / blocked items，
+  但不执行 lifecycle commands。它刻意只支持 public-stack profile；其它 profile
+  会返回 unsupported-profile blocker，应改用 profile-aware 的 evidence、dashboard、
+  handoff、menu 或 recipe 命令
+- release 和 operator checklist 的文档化 pnpm copy-paste 形式必须兼容命令参数前的
+  字面量 `--` 分隔符；因此
+  `corepack pnpm --silent run deployability:release -- --image-tag <candidate-tag> --json`
+  和
+  `corepack pnpm --silent run deployability:operator-checklist -- --profile public-stack --image-tag <candidate-tag> --json`
+  应保持机器可读 JSON 入口，而不是在参数解析阶段失败
+- release 和 operator-checklist 的 `machine_payloads` 必须使用当前 candidate
+  已解析出的真实 `--image-tag` 值；`primary_next_commands` 可以继续保留
+  `<candidate-tag>` 作为给人类复制粘贴的模板
+- release review 会在聚合 production、exposure、published-image plan 或 dry-run
+  smoke evidence 前拒绝未知参数，避免拼错 release 参数时被误认为已验证的 candidate
+  review。
+- doctor 把 compatibility ledger、顶层 scripts、文档、brand-site file alignment、
+  brand-site deployability content smoke 和 safety-contract 对齐状态收成一个只读快照，
+  不执行 Docker、不读取 `.env`、不探测网络、不打印 secrets
 - `deployability:doctor -- --json` 输出干净的 checks、blockers、warnings、
   evidence、安全默认值和下一步命令 metadata，不混入终端文本或 secret 值
 - `deployability:dashboard -- --json` 输出一个干净的顶层 payload，包含
-  overview、quickstart、safety、doctor 和 compatibility sections、section status、
-  blockers、warnings、安全默认值和下一步命令，不读取 `.env`、不调用 Docker、
+  overview、quickstart、safety、doctor、compatibility、`console_management_index`
+  和 `production_hardening_plan` sections、section status、ecosystem_readiness
+  scorecard、per-pipeline summaries、blockers、warnings、安全默认值和下一步命令，
+  不读取 `.env`、不调用 Docker、不绑定端口、不探测网络、不打印 secret 值。
+  聚焦 profile 的 payload 会让 console 和 hardening-plan sections 保持全局，
+  因为它们是管理上下文，不是 profile-specific runtime truth。
+- `deployability:recipe -- --profile public-stack --json` 输出干净的线性首次运行配方，
+  包含 inspect、gate、start、verify、operate、evidence 阶段、readiness summary
+  和 selected onboarding metadata，不执行命令，也不要求调用方解析 dashboard sections
+- `deployability:console -- --json` 输出干净的 `console_management_index`，
+  覆盖 Management Console surfaces，包括 runtime、settings、logs、billing
+  readiness、public-stack console 和 gateway session metadata，不启动 console 服务，
+  也不成为 runtime truth
+- `deployability:action-plan -- --json` 输出干净的 profile 级 operator action
+  plan，包含当前 bundle、ecosystem readiness、recommended commands、
+  dashboard-safe commands、public-exposure gate commands、service-touching
+  commands、safety notes、next JSON commands、profile `attention` level / rank
+  metadata、primary next commands 和顶层 `recommended_profile_keys`，不读取 `.env`、
+  不调用 Docker、不绑定端口、不探测网络、不打印 secret 值
+- `deployability:action-plan -- --profile public-stack --json` 会以同一 schema
+  聚焦到 `public_stack`，包含 `profile_filter`，让 dashboard/commands/handoff
+  `next_commands` 留在当前选定 profile，并把未知 profile 名称作为干净 blockers
+  返回，而不是回退为全部 profiles
+- `deployability:action-plan -- --list-profiles --json` 输出干净的
+  `profile_list` payload，包含支持的 keys、aliases、pipeline keys、purposes、
+  safety defaults 和下一步 profile 命令；该模式不调用 dashboard/catalog
+  metadata、不读取 `.env`、不调用 Docker、不绑定端口、不探测网络、不打印 secret 值
+- `deployability:profiles -- --json` 输出干净的 `profile_catalog` payload，
+  包含当前 bundle、ecosystem readiness、aliases、labels、pipeline keys、status、
+  counts、next commands、next JSON commands、safety notes、共享 `attention`
+  metadata 和顶层 `recommended_profile_keys`；这些字段从 overview, command, and doctor metadata、共享 pipeline/profile summary helpers 和共享第四仓
+  profile registry 派生，不读取 `.env`、
+  不调用 Docker、不绑定端口、不探测网络、不打印 secret 值
+- `deployability:profiles -- --profile public-stack --json` 会以同一 schema
+  聚焦到 `public_stack`，包含 `profile_filter`，并把未知 profile 名称作为干净
+  blockers 返回，而不是回退为全部 profiles
+- dashboard 和 handoff 的 ecosystem_readiness scorecard 把 daily-deployable 定义映射为
+  profile choice、generated secrets、startup path、doctor path、runtime inspection、
+  boundary understanding 和 brand-site story；全部通过时报告
+  `daily_deployable_with_safety_gates`
+- `deployability:overview`、`deployability:dashboard` 和 `deployability:handoff`
+  共用第四仓 metadata source 和一致性测试，覆盖 ecosystem_readiness、命令数、
+  JSON 入口数、dashboard-safe 数、CI-safe 数、public exposure gate 数、下一步命令
+  和安全说明
+- `test:deployability` 用一条命令运行顶层 deployability regression suite，覆盖
+  overview、quickstart、safety、readiness、roadmap、doctor、dashboard、profile catalog、
+  pipeline-summary 一致性、命令目录、handoff 和 compatibility status tests
+- `test:deployability-operations` 用一条命令运行面向 operator 的部署与管理回归套件，
+  覆盖 daily local doctor、local-stack lifecycle metadata、self-host kit 行为、
+  published-image smoke 编排和 operator onboarding contract tests
+- aggregate regression gate 和 operations regression gate 都能从第一张命令地图发现：
+  `deployability:overview` 会在 next commands 列出两者，`deployability:safety`
+  会给两者 top-level `contract_test` 姿态，`deployability:commands` 会把两者
+  纳入可搜索的顶层命令目录
+- `deployability:commands -- --json` 输出干净的命令目录，包含 category、posture、
+  track 和 pipeline filters，并合并 overview、quickstart 和 safety metadata，
+  同时让带 profile 参数的命令变体继承基础安全姿态，不读取 `.env`、不调用 Docker、
   不绑定端口、不探测网络、不打印 secret 值
+- `deployability:runbook -- --json` 输出干净的 `profile_runbook_index` payload；
+  `deployability:runbook -- --profile public-stack --json` 输出干净的
+  `profile_runbook` payload，并按 inspect、gate、start、verify、operate、evidence
+  阶段组织命令。gate 必须位于 start 之前，阶段命令必须保留 command catalog 的
+  safety posture metadata，未知 profile 必须返回 blocker，而不是回退到全部 profiles
+- `deployability:menu -- --json` 输出干净的 `operator_menu` payload，包含当前 bundle、
+  ecosystem readiness、recommended profile keys、profile choices、attention metadata、
+  `operator_status_summary`、`operator_status_cards`、`operator_next_decision`、
+  `source_status.operator_status.avoids_recursive_status_cli=true` 和
+  `source_status.operator_next_decision.avoids_recursive_next_cli=true`、primary
+  commands、runbook、action-plan、dashboard、handoff 和 command catalog 入口。
+  状态投影必须使用 menu-local profiles、commands 和 console 输入，而不是递归调用完整
+  `deployability:status` CLI；下一步决策投影必须使用当前选中的 profile 和共享 operator
+  decision helper，而不是递归调用完整 `deployability:next` CLI。默认输出必须推荐第一条
+  `recommended_profile_keys` profile。public-stack decision 必须包含与
+  `deployability:next` 相同的 `detail_command`、`detail_json_command`、
+  `detail_payload` 和 `expected_operator_next_action` 修复入口。
+  聚焦的 `corepack pnpm run deployability:menu -- --profile public-stack` /
+  `corepack pnpm --silent run deployability:menu -- --profile public-stack --json` 必须包含
+  `profile_filter`、一条 menu choice、selected profile metadata、selected runbook
+  phases，以及来自只读 `operator:onboarding:plan` 投影的
+  `selected_onboarding_plan`。onboarding plan 必须保留 preflight、operator surface、
+  smoke/evidence 和 contract-validation phases，同时不读取 `.env`、不调用 Docker、
+  不绑定端口、不探测网络、不打印 secret 值
+- 同一个 `deployability:commands -- --json` payload 会包含 `filters.profiles`，
+  输出支持的 profile keys、aliases、所属 pipeline keys 和 purposes，让 dashboard
+  不解析 prose、不调用 runtime 命令也能渲染命令目录的 profile selector
+- `deployability:dashboard -- --json` 和 `deployability:handoff -- --json`
+  会把同一份命令目录 profile 目录提升为顶层 `profile_selector`，让管理面不需要知道
+  内部 `sections.commands.filters.profiles` 路径也能渲染 profile 选择器
+- `deployability:dashboard -- --profile public-stack --json` 和
+  `deployability:handoff -- --profile public-stack --json` 会复用同一个 profile
+  resolver，输出 `profile_filter`，把命令目录和 pipeline summaries 过滤到所属
+  pipeline，并让 ecosystem_readiness 继续表示全局 daily-deployable scorecard
+- `deployability:next -- --json` 输出单个 `operator_next_decision` payload，包含
+  `decision`、`selected_profile`、`operator_status_summary` 和
+  `source_status.direct_inputs=["menu","action_plan","gates"]`。默认输出必须在
+  public exposure 仍为 gated 时推荐 public-stack safety gate；聚焦
+  `--profile all-in-one` 的输出必须让 dashboard、commands 和 handoff 的 next
+  commands 留在 all-in-one。该命令不得执行推荐命令、读取 `.env`、调用 Docker、
+  绑定端口、探测网络或打印 secret 值。public-stack 决策还必须包含
+  `detail_command="corepack pnpm run deployability:exposure"`、
+  `detail_json_command="corepack pnpm --silent run deployability:exposure -- --json"`、
+  `detail_payload="public_exposure_review"` 和
+  `expected_operator_next_action="configure_public_stack_public_origin"`，让管理面能从
+  安全下一步跳到 blocker-specific exposure remediation payload，而不是让
+  `deployability:next` 自己执行它
+- `deployability:exposure -- --json` 会在 `exposure_blockers` 旁输出
+  `operator_next_action`。当当前 blocker 是 localhost `PUBLIC_SITE_ADDRESS`
+  时，action key 必须是 `configure_public_stack_public_origin`，target file
+  必须是 `repos/platform/deploy/public-stack/.env`，复验命令必须是
+  `corepack pnpm run selfhost:security-review -- --profile public-stack`。该
+  action 只用于建议，不得自动修改 `.env`、启动服务、绑定端口或打印 secret 值
+- focused dashboard 与 handoff 命令已进入 daily development quickstart 和可搜索命令目录，
+  并继承只读安全姿态
+- dashboard 与 handoff JSON 包含由 `profile_selector` 与 `pipeline_summaries`
+  派生出的 `profile_summaries`，让 UI card 可以从一个数组展示 aliases、purpose、
+  status、command counts、exposure gates、next commands、safety notes 和共享
+  `attention` metadata；两个 payload 也会输出顶层 `recommended_profile_keys`
+- `deployability:commands -- --profile public-stack --json` 会把 operator 输入的
+  profile key 或 alias 解析到所属 pipeline，输出已解析的 `profile` filter
+  metadata，只返回该 pipeline 的命令目录，并把未知 profile 名称作为干净 blocker
+  返回，而不是回退到全量命令
+- profile / operator 管理命令接受参数前的字面量 pnpm `--` 分隔符，拒绝 `--profil`
+  这类未知参数，拒绝缺失的 option value，并在支持 focused profile 的命令里让
+  `--profile=public-stack` 与 `--profile public-stack` 保持一致；这条规则覆盖
+  dashboard、action-plan、profiles、commands、runbook、menu、recipe、
+  operator-checklist、handoff 和 evidence，避免拼错 filter 时静默输出更宽的全
+  profile / 全 pipeline metadata
+- 顶层 deployability、compatibility、release review 和 daily dev doctor 命令会在执行
+  嵌套 status、safety、release 或本地健康检查前拒绝未知参数，同时保留
+  `-- --json` 这类文档化 pnpm 分隔符形式。
+- `deployability:commands -- --track daily_dev --json` 会包含
+  `deployability:profiles`、`deployability:action-plan -- --list-profiles`、
+  `deployability:menu` 和 daily profile runbook 入口，并把它们标成 `top_level` /
+  `read_only` / dashboard-safe 命令；这些条目来自 quickstart 与 safety metadata
+- `deployability:commands -- --json` 不会让 ready-now 命令路径暴露 `unmapped`
+  category 或 posture；本地 doctor / acceptance 命令和真实 published-image smoke
+  会使用明确的 `runtime_diagnostic`、`runtime_acceptance` 和 `delegated_smoke`
+  姿态标签
 - `deployability:overview -- --json` 输出干净的 pipeline、安全默认值和下一步命令
   metadata，不混入终端 `[ok]` / `[fail]` 文本或 secret 值
 - docs 和 brand-site 把它描述成第一张命令地图，而不是替代各管线自己的
@@ -69,8 +336,17 @@ onboarding 或 release-image 路径前，先给出一个只读命令地图和一
   marker 仍然是 blockers
 - `deployability:handoff` 会把不含 secret 的 Markdown 报告写入
   `exports/deployability/`，也可以用 `--output` 指定路径；JSON 形式输出同一组
-  bundle、compatibility、command-map、安全说明和下一步命令 metadata，不混入终端
-  文本或 secret 值
+  bundle、compatibility、command-map、ecosystem_readiness、顶层 profile selector、
+  shared per-pipeline summaries、安全说明和下一步命令 metadata，不混入终端文本或
+  secret 值；它接受 pnpm `--` 分隔符，并会在写 report 前拒绝未知参数
+- `deployability:evidence` 会通过
+  `corepack pnpm run deployability:evidence -- --profile public-stack` /
+  `corepack pnpm --silent run deployability:evidence -- --profile public-stack --json`
+  写出不含 secret 的 evidence bundle directory，包含 manifest、聚焦 dashboard/menu/recipe/handoff/command-catalog
+  JSON 和 handoff Markdown，不调用 Docker、不探测网络；聚焦 evidence bundle 会让
+  `next_commands` 跟随当前已解析 profile，所以 `--profile all-in-one` 的后续
+  dashboard / handoff / evidence 命令仍指向 `all-in-one`，不会跳回 `public-stack`；它接受 pnpm `--` 分隔符，并会在
+  生成更宽泛 / 全 profile artifact 前拒绝未知参数
 
 ## 管线 A：Local Agent Loop
 
@@ -115,11 +391,51 @@ onboarding 或 release-image 路径前，先给出一个只读命令地图和一
   raw log lines，因为本地 relay / supervisor 日志可能包含敏感 runtime 输出
 - `dev:local:down -- --json` 输出停止步骤状态和 safety notes，但不打印 child command
   stdout；`--keep-platform` 会让 platform profile 不进入停止步骤
+- 命令目录把 `dev:doctor` 标为 `runtime_diagnostic`，把 `test:agent-e2e` /
+  `mcp:golden-four` 标为 `runtime_acceptance`，并让 Local Agent Loop 的
+  human / JSON 命令 summary 在 status、logs、down、doctor 和 acceptance 命令上
+  保持位置对齐
 - 六个 caller-skill actions 可见
 - 内置 workspace-summary Hotline 能端到端跑通
 - 可执行 MCP golden-four smoke 能验证 tool discovery、hotline search、
   request prepare、签名结果交付和 report recovery
 - docs 和 brand-site 都把这条路描述成最快本地路径
+
+## 管线 A1：All-in-One Demo Profile
+
+目标：给 fresh operator 一个单机产品评估路径，让他们先看懂 caller、
+responder、relay 和 platform 如何一起工作，再决定是否拆分组件职责。
+
+必备命令：
+
+- `corepack pnpm run selfhost:quickstart -- --profile all-in-one`
+- `corepack pnpm --silent run selfhost:quickstart -- --profile all-in-one --json`
+- `corepack pnpm run selfhost:readiness -- --profile all-in-one`
+- `corepack pnpm --silent run selfhost:readiness -- --profile all-in-one --json`
+- `corepack pnpm run selfhost:init -- --profile all-in-one`
+- `corepack pnpm --silent run selfhost:init -- --profile all-in-one --json`
+- `corepack pnpm run selfhost:preflight -- --profile all-in-one`
+- `corepack pnpm --silent run selfhost:preflight -- --profile all-in-one --json`
+- `corepack pnpm run selfhost:up -- --profile all-in-one`
+- `corepack pnpm --silent run selfhost:up -- --profile all-in-one --json`
+- `corepack pnpm run selfhost:status -- --profile all-in-one`
+- `corepack pnpm --silent run selfhost:status -- --profile all-in-one --json`
+- `corepack pnpm run selfhost:smoke -- --profile all-in-one`
+- `corepack pnpm --silent run selfhost:smoke -- --profile all-in-one --json`
+
+验收：
+
+- deployability overview 在 Local Agent Loop 和 Selfhost Platform 之间展示
+  `ready_now` 的 All-in-One Demo
+- deployability quickstart 把 `all_in_one_demo` 暴露为独立 first-use track
+- deployability commands 可以通过 `--pipeline all_in_one_demo` 和
+  `--track all_in_one_demo` 过滤
+- all-in-one profile-specific command variants 继承基础 selfhost safety
+  posture，而不是显示 `unmapped`
+- dashboard 和 handoff pipeline summaries 通过同一 shared metadata source
+  包含 All-in-One Demo
+- docs 和 brand-site 把 all-in-one 描述为本地评估 profile，而不是公网暴露或正式
+  production readiness
 
 ## 管线 B：Self-host Platform Profile
 
@@ -191,6 +507,8 @@ onboarding 或 release-image 路径前，先给出一个只读命令地图和一
   profile selector 数据，供 console、dashboard 和脚本消费
 - quickstart 打印选定 profile 的推荐复制粘贴命令序列，但不执行 Docker、不修改文件、
   不打印 secrets；`--json` 返回同一组有序序列，供 console 和脚本消费
+- self-host helper commands 必须兼容命令参数前的字面量 pnpm `--` 分隔符；
+  但未知参数必须失败，而不是静默回退到默认 profile
 - readiness 打印单个 profile 的只读部署总览，`readiness --all` 打印内置 profiles
   矩阵；两者都会合并 profile 文件存在性、`.env` 状态、secret hygiene、public-stack
   origin / route 阻断项、URLs、声明 host ports 和下一步命令，但不执行 Docker、不修改文件、
@@ -256,6 +574,39 @@ onboarding 或 release-image 路径前，先给出一个只读命令地图和一
 - selfhost kit 对 env 创建、secret rotation dry-run / confirm 行为有自动化覆盖
 - 命令不打印 secret 值
 
+## 管线 B1：Recovery & Evidence
+
+目标：把 operator 交接、审计证据、备份校验、恢复演练和 secret rotation
+路径作为一条顶层 deployability 管线暴露，供公网暴露或交接前检查。
+
+必备命令：
+
+- `corepack pnpm run selfhost:ops-report`
+- `corepack pnpm --silent run selfhost:ops-report -- --json`
+- `corepack pnpm run selfhost:audit-export`
+- `corepack pnpm --silent run selfhost:audit-export -- --json`
+- `corepack pnpm run selfhost:backup-plan`
+- `corepack pnpm --silent run selfhost:backup-plan -- --json`
+- `corepack pnpm run selfhost:backup-validate`
+- `corepack pnpm --silent run selfhost:backup-validate -- --backup-dir <backup-dir> --json`
+- `corepack pnpm run selfhost:restore-plan`
+- `corepack pnpm --silent run selfhost:restore-plan -- --backup-dir <backup-dir> --json`
+- `corepack pnpm run selfhost:rotate-plan`
+- `corepack pnpm --silent run selfhost:rotate-plan -- --json`
+- `corepack pnpm --silent run selfhost:rotate -- --json`
+
+验收：
+
+- deployability overview 展示 `ready_now` 的 Recovery & Evidence
+- deployability dashboard 和 handoff 通过与 overview 相同的 shared pipeline
+  summary metadata 暴露 `recovery_evidence`
+- `deployability:commands -- --pipeline recovery_evidence` 返回交接、审计导出、
+  备份、恢复和轮换命令，且没有 `unmapped` 姿态
+- safety matrix 把这些命令标成 `writes_report`、`exports_evidence`、
+  `read_only` 或 `writes_env`，让 dashboard 在启动服务或公网暴露前能解释风险姿态
+- docs 和 brand-site 把它描述成证据与恢复就绪路径，而不是破坏性 restore
+  或自动 rotation workflow
+
 ## 管线 C：Public Stack Profile
 
 目标：让 `repos/platform/deploy/public-stack` 在公网暴露前就能被理解。
@@ -279,6 +630,9 @@ onboarding 或 release-image 路径前，先给出一个只读命令地图和一
 
 - operator 在 `up` 前能看到端口、路由和 secrets 状态
 - operator 能用一个非破坏性命令，在把 stack 视为可公网暴露前完成安全复核
+- `deployability:exposure -- --json` 输出 `pre_exposure_remediation_plan`，按
+  public origin、security review、route contract、onboarding check、
+  published-image dry-run 和 public-stack evidence export 给出有序检查步骤
 - smoke 能列出并验证 `/healthz`、`/platform/healthz`、`/relay/healthz`、`/gateway/healthz`、`/console/` 对应的 edge route
 - docs 解释 platform、relay、gateway、console、edge 的角色
 
@@ -286,8 +640,43 @@ onboarding 或 release-image 路径前，先给出一个只读命令地图和一
 
 目标：把 operational state 从纯终端检查迁移到 console surface。
 
+必备命令：
+
+- `corepack pnpm run deployability:console`
+- `corepack pnpm --silent run deployability:console -- --json`
+- `corepack pnpm --dir repos/client run check:ops-console-runtime-surface`
+- `corepack pnpm --dir repos/client run check:ops-console-settings-surface`
+- `corepack pnpm --dir repos/client run check:ops-console-logs-surface`
+- `corepack pnpm run test:deployability-console`
+
 验收：
 
+- `deployability:console -- --json` 输出 `console_management_index`，包含
+  `runtime_status`、`settings_approval_policy`、`logs_guidance`、
+  `billing_readiness`、`public_stack_console`、`gateway_session` surfaces
+- 每个 surface 包含 owner repository、routes、evidence commands、guardrails
+  remaining work 和机器可读 `next_action`，让 dashboard 能解释 console readiness，并渲染
+  下一步 owner/action，同时不把第四仓变成 runtime truth
+- 顶层 `surface_next_actions` 会镜像这些 surface actions，并包含
+  `connect_console_runtime_status_sources`、
+  `verify_console_settings_against_client_approval_policy`、
+  `connect_console_logs_to_safe_log_metadata`、
+  `keep_billing_production_gate_platform_owned`、
+  `run_public_stack_gate_before_console_exposure` 和
+  `continue_gateway_session_onboarding_checks`
+- 当 client-owned `check:ops-console-runtime-surface` 命令证明 Runtime 页已接入
+  `/status`、`/runtime/logs`、`/runtime/alerts`、caller、responder、relay、
+  skill adapter、MCP adapter 卡片和 secret-safety copy 时，`runtime_status`
+  报告 `client_owned_evidence_available`
+- 当 client-owned `check:ops-console-settings-surface` 命令证明 Preferences 和
+  Access Lists 已接入 `/caller/global-policy`、manual/allow_listed/allow_all
+  模式、Responder/Hotline whitelist、Blocklist、受保护的模式切换和 `allow_all`
+  安全文案时，`settings_approval_policy` 报告 `client_owned_evidence_available`
+- 当 client-owned `check:ops-console-logs-surface` 命令证明 Runtime 和 Help 已接入
+  `/runtime/logs`、`/runtime/alerts`、caller/responder/relay 日志服务、日志筛选
+  metadata、`selfhost:logs` 和 secret-safety copy 时，`logs_guidance` 报告
+  `client_owned_evidence_available`
+- console index 是只读命令：不读取 `.env`、不调用 Docker、不绑定端口、不探测网络、不启动 console 服务、不打印 secret 值
 - runtime 页展示 platform、relay、caller、responder、skill adapter、MCP adapter
 - settings 页解释 local/public mode 和 approval policies
 - logs 页能引导定位问题，但不 dump secrets
@@ -295,6 +684,29 @@ onboarding 或 release-image 路径前，先给出一个只读命令地图和一
 - Platform Console 有 admin-only `/billing` 页面，可通过 gateway proxy 做 tenant
   setup、balance inspection、人工 recharge capture 和 ledger review
 - public-stack 的 `/console/` 和 gateway session flow 能作为 operator 首次进入点被解释和验证
+
+### 可部署性 production hardening plan
+
+目标：让规划中的 production 工作可理解、可执行，但不把它表达成已经完成。
+
+证据命令：
+
+- `corepack pnpm run deployability:hardening-plan`
+- `corepack pnpm --silent run deployability:hardening-plan -- --json`
+- `corepack pnpm run test:deployability-hardening-plan`
+
+验收：
+
+- JSON mode 输出 `production_hardening_plan`、`hardening_plan_visible` 和
+  `production_ready=false`
+- `deployability:production -- --json` 输出
+  `production_readiness_remediation_plan`，让管理面无需调用 hardening-plan CLI
+  也能渲染 production gap sequence
+- 每条 track 都包含 owner scope、已知 owner repo、stages、blockers、guardrails、
+  next commands 和 evidence commands
+- billing 仍路由到 `repos/platform`，email transport 仍路由到 `repos/client`，
+  formal release gates 仍属于 owning formal repos
+- 命令保持只读，不读取 `.env`、不调用 Docker、不绑定端口、不探测网络、不打印 secret 值
 
 ## 管线 E：Brand Site
 
@@ -304,8 +716,27 @@ onboarding 或 release-image 路径前，先给出一个只读命令地图和一
 
 - homepage / docs 解释部署 profiles
 - `/docs/deployability-profiles` 与 `/en/docs/deployability-profiles` 解释
-  Local Agent Loop、Selfhost Platform、Public Stack、Management Console、
-  ready-now / planned 边界和 secrets 安全默认值
+  Local Agent Loop、All-in-One Demo、Selfhost Platform、Public Stack、
+  Management Console、ready-now / planned 边界和 secrets 安全默认值
+- Deployability Profiles 包含 `selfhost:init -- --json` 及 public-stack 变体，
+  作为机器可读的首次初始化命令
+- Deployability Profiles 包含 `test:deployability` 与
+  `test:deployability-operations`，并解释两条 gate 都可从 overview next commands、
+  safety matrix 的 `contract_test` 姿态和可搜索命令目录中发现
+- Deployability Profiles 包含 `deployability:action-plan`，并解释它是位于
+  dashboard 和完整命令目录之间的只读 operator 下一步动作选择器
+- Deployability Profiles 包含聚焦版
+  `deployability:action-plan -- --profile public-stack --json`，并解释 profile
+  aliases 和 unknown-profile blockers
+- Deployability Profiles 解释 dashboard 和 handoff 会暴露顶层 `profile_selector`
+  metadata，来源于命令目录，让管理面不必解析 prose 或调用 runtime 命令
+- Deployability Profiles 包含 `--profile public-stack` 的聚焦 dashboard / handoff
+  示例，并解释 profile focus 只过滤管理 metadata，不改变全局 ecosystem_readiness
+  scorecard
+- Deployability Profiles 解释 `profile_summaries` 是 dashboard / handoff 给管理 UI
+  卡片使用的便利投影
+- Deployability Profiles 解释 ready-now 命令目录不会回退到 `unmapped`，并列出
+  `runtime_diagnostic`、`runtime_acceptance` 和 `delegated_smoke` 这些姿态示例
 - console prototype 强调管理能力，而不只是视觉精致
 - self-host 文案诚实区分「现在可用」和「计划中」
 - brand-site build 与 deployability-content smoke 通过
@@ -337,6 +768,9 @@ onboarding 或 release-image 路径前，先给出一个只读命令地图和一
 - smoke 默认设置 `COMPOSE_NO_BUILD=true`，让平台 smoke 拉取已发布镜像而不是本地 build
 - smoke 默认使用 strict Docker 模式；只有显式 `--allow-skip` 才允许本地探测式跳过
 - 命令输出只显示 registry、tag 和命令形状，不打印 admin key、bootstrap secret 或 `.env` 值
+- 命令目录把 dry-run smoke 标成 dashboard-safe metadata，把真实
+  `published-image:smoke -- --image-tag <candidate-tag>` 命令标成
+  `delegated_smoke`，而不是 `unmapped`
 
 验收：
 

@@ -1,0 +1,521 @@
+{
+  "generated_at": "2026-06-10T15:56:00.499Z",
+  "command": "deployability:menu",
+  "mode": "operator_menu_profile",
+  "ok": true,
+  "current_bundle": {
+    "file": "changes/CHG-2026-133.yaml",
+    "change_id": "CHG-2026-133",
+    "goal": "add deployability management safety surfaces",
+    "protocol_sha": "da3027100cfe9391f7f8d03be18a108ee2804cf6",
+    "client_sha": "135546f7510167d99a31475515708553106c0545",
+    "platform_sha": "5961309c6b0ca4e8df22dbb5be92ac0845bf8d25",
+    "brand_site_sha": "c39953c4fdb523ab4de511f9e60c408f6c1f8918",
+    "contracts_check": "passed",
+    "integration_check": "passed"
+  },
+  "ecosystem_readiness": {
+    "goal": "daily-deployable",
+    "status": "daily_deployable_with_safety_gates",
+    "checks": [
+      {
+        "key": "profile_choice",
+        "label": "operator can choose a named deployment profile",
+        "ok": true,
+        "evidence": [
+          "corepack pnpm run deployability:overview",
+          "corepack pnpm run selfhost:profiles",
+          "corepack pnpm run selfhost:quickstart"
+        ],
+        "next_commands": [
+          "corepack pnpm run selfhost:profiles",
+          "corepack pnpm run selfhost:quickstart"
+        ]
+      },
+      {
+        "key": "secret_generation",
+        "label": "operator can generate or harden local secrets without printing values",
+        "ok": true,
+        "evidence": [
+          "corepack pnpm run selfhost:init",
+          "corepack pnpm --silent run selfhost:init -- --json"
+        ],
+        "next_commands": [
+          "corepack pnpm run selfhost:init"
+        ]
+      },
+      {
+        "key": "startup_path",
+        "label": "operator can start the selected profile through documented lifecycle commands",
+        "ok": true,
+        "evidence": [
+          "corepack pnpm run dev:local:up",
+          "corepack pnpm run selfhost:up",
+          "corepack pnpm run selfhost:up -- --profile public-stack"
+        ],
+        "next_commands": [
+          "corepack pnpm run dev:local:up",
+          "corepack pnpm run selfhost:up"
+        ]
+      },
+      {
+        "key": "doctor_path",
+        "label": "operator can run doctor/readiness commands before claiming readiness",
+        "ok": true,
+        "evidence": [
+          "corepack pnpm run deployability:doctor",
+          "corepack pnpm run dev:doctor",
+          "corepack pnpm run selfhost:doctor"
+        ],
+        "next_commands": [
+          "corepack pnpm run deployability:doctor",
+          "corepack pnpm run selfhost:readiness"
+        ]
+      },
+      {
+        "key": "runtime_inspection",
+        "label": "operator can inspect logs and runtime state from one command surface",
+        "ok": true,
+        "evidence": [
+          "corepack pnpm run dev:local:status",
+          "corepack pnpm run dev:local:logs",
+          "corepack pnpm run selfhost:status",
+          "corepack pnpm run selfhost:logs"
+        ],
+        "next_commands": [
+          "corepack pnpm run dev:local:status",
+          "corepack pnpm run selfhost:status"
+        ]
+      },
+      {
+        "key": "boundary_understanding",
+        "label": "operator can understand local/public, metadata, secret, and safety boundaries",
+        "ok": true,
+        "evidence": [
+          "corepack pnpm run deployability:safety",
+          "corepack pnpm run deployability:commands",
+          "corepack pnpm run deployability:handoff",
+          "corepack pnpm run compat:status"
+        ],
+        "next_commands": [
+          "corepack pnpm run deployability:safety",
+          "corepack pnpm run deployability:handoff"
+        ]
+      },
+      {
+        "key": "brand_site_story",
+        "label": "operator can find the same deployment story on the public brand site",
+        "ok": true,
+        "evidence": [
+          "repos/brand-site/src/app/pages/Docs/DeployabilityProfiles.tsx",
+          "repos/brand-site/src/app/pages/en/Docs/DeployabilityProfiles.tsx",
+          "npm run smoke:deployability-content"
+        ],
+        "next_commands": [
+          "corepack pnpm run deployability:doctor"
+        ]
+      }
+    ],
+    "safety_notes": [
+      "public-stack remains ready-now with safety gates, not automatically public-exposure ready",
+      "billing, email transport, and marketplace production readiness stay outside this scorecard until their own gates pass"
+    ]
+  },
+  "operator_status_summary": {
+    "status": "daily_deployable_with_planned_hardening",
+    "readiness_status": "daily_deployable_with_safety_gates",
+    "console_management_status": "ok",
+    "hardening_plan_status": "ok",
+    "public_exposure_status": "gated",
+    "production_hardening_status": "planned",
+    "blocked_count": 0,
+    "warning_count": 0
+  },
+  "operator_status_cards": [
+    {
+      "key": "daily_deployable",
+      "label": "Daily deployable",
+      "status": "ok",
+      "detail": "profile choice, generated secrets, startup path, doctors, runtime inspection, boundaries, and brand-site story are visible",
+      "next_commands": [
+        "corepack pnpm run deployability:readiness",
+        "corepack pnpm --silent run deployability:readiness -- --json"
+      ]
+    },
+    {
+      "key": "profile_management",
+      "label": "Profile management",
+      "status": "ok",
+      "detail": "operators and management UIs can choose, sort, inspect, and continue from named deployment profiles",
+      "next_commands": [
+        "corepack pnpm run deployability:profiles",
+        "corepack pnpm run deployability:action-plan",
+        "corepack pnpm run deployability:menu",
+        "corepack pnpm run deployability:commands"
+      ]
+    },
+    {
+      "key": "console_management",
+      "label": "Management Console",
+      "status": "ok",
+      "detail": "runtime, settings, logs, billing readiness, public-stack console, and gateway session surfaces are visible before starting console services",
+      "next_commands": [
+        "corepack pnpm run deployability:console",
+        "corepack pnpm --silent run deployability:console -- --json"
+      ]
+    },
+    {
+      "key": "hardening_plan",
+      "label": "Production hardening plan",
+      "status": "ok",
+      "detail": "owners, stages, blockers, guardrails, and evidence commands are visible without claiming production readiness",
+      "next_commands": [
+        "corepack pnpm run deployability:hardening-plan",
+        "corepack pnpm --silent run deployability:hardening-plan -- --json"
+      ]
+    },
+    {
+      "key": "public_stack_gate",
+      "label": "Public-stack safety gate",
+      "status": "gated",
+      "detail": "public exposure remains behind explicit security review, onboarding contract, and smoke gates",
+      "next_commands": [
+        "corepack pnpm run selfhost:security-review -- --profile public-stack"
+      ]
+    },
+    {
+      "key": "production_hardening",
+      "label": "Formal production hardening",
+      "status": "planned",
+      "detail": "formal production readiness remains separate from daily deployability until billing, email, marketplace, and release gates pass",
+      "next_commands": [
+        "corepack pnpm run published-image:plan"
+      ]
+    }
+  ],
+  "operator_next_decision": {
+    "key": "continue_selected_profile",
+    "status": "ready_next_step",
+    "profile_key": "all_in_one_demo",
+    "primary_command": "corepack pnpm run selfhost:quickstart -- --profile all-in-one",
+    "primary_json_command": "corepack pnpm --silent run selfhost:quickstart -- --profile all-in-one --json",
+    "reasons": [
+      "All-in-One Demo is the selected deployment profile",
+      "1 public exposure gate command(s)",
+      "4 service-touching command(s)",
+      "7 dashboard-safe command(s)"
+    ],
+    "guardrails": [
+      "stay on the selected profile for dashboard, commands, and handoff",
+      "run read-only readiness or doctor commands before lifecycle commands"
+    ],
+    "follow_up_commands": [
+      "corepack pnpm run deployability:dashboard -- --profile all-in-one",
+      "corepack pnpm run deployability:commands -- --profile all-in-one",
+      "corepack pnpm run deployability:handoff -- --profile all-in-one"
+    ]
+  },
+  "profile_filter": {
+    "requested": "all-in-one",
+    "resolved": "all_in_one_demo",
+    "pipeline": "all_in_one_demo"
+  },
+  "selected_profile": {
+    "key": "all_in_one_demo",
+    "aliases": [
+      "all-in-one",
+      "all-in-one-demo",
+      "all_in_one_demo"
+    ],
+    "label": "All-in-One Demo",
+    "purpose": "Evaluate the full product shape on one machine before splitting components.",
+    "pipeline_key": "all_in_one_demo",
+    "status": "ready_now",
+    "attention": {
+      "level": "safety_gate",
+      "rank": 91,
+      "primary_command": "corepack pnpm run selfhost:quickstart -- --profile all-in-one",
+      "primary_json_command": "corepack pnpm --silent run selfhost:quickstart -- --profile all-in-one --json",
+      "reasons": [
+        "1 public exposure gate command(s)",
+        "4 service-touching command(s)",
+        "7 dashboard-safe command(s)"
+      ]
+    },
+    "requires_gate": true,
+    "command_count": 7,
+    "dashboard_safe_command_count": 7,
+    "public_exposure_gate_count": 1,
+    "safety_notes": [
+      "all-in-one stays a local evaluation profile, not a public exposure profile",
+      "startup and smoke JSON inherit selfhost safety posture and omit secret values"
+    ],
+    "commands": {
+      "primary": "corepack pnpm run selfhost:quickstart -- --profile all-in-one",
+      "primary_json": "corepack pnpm --silent run selfhost:quickstart -- --profile all-in-one --json",
+      "profile_catalog": "corepack pnpm run deployability:profiles -- --profile all-in-one",
+      "action_plan": "corepack pnpm run deployability:action-plan -- --profile all-in-one",
+      "runbook": "corepack pnpm run deployability:runbook -- --profile all-in-one",
+      "dashboard": "corepack pnpm run deployability:dashboard -- --profile all-in-one",
+      "handoff": "corepack pnpm run deployability:handoff -- --profile all-in-one",
+      "command_catalog": "corepack pnpm run deployability:commands -- --profile all-in-one"
+    }
+  },
+  "selected_runbook": {
+    "phase_order": [
+      "inspect",
+      "gate",
+      "start",
+      "verify",
+      "operate",
+      "evidence"
+    ],
+    "phases": [
+      {
+        "key": "inspect",
+        "label": "Inspect",
+        "purpose": "Read static metadata, declared ports, readiness, or diagnostics before touching runtime state.",
+        "postures": [
+          "read_only",
+          "runtime_snapshot",
+          "runtime_diagnostic"
+        ],
+        "commands": [
+          {
+            "command": "corepack pnpm run selfhost:quickstart -- --profile all-in-one",
+            "json_command": "corepack pnpm --silent run selfhost:quickstart -- --profile all-in-one --json",
+            "posture": "read_only",
+            "category": "selfhost",
+            "dashboard_safe": true,
+            "ci_safe": true,
+            "public_exposure_gate": false,
+            "notes": [
+              "copy-paste sequence for a selected selfhost profile without executing commands",
+              "inherits safety posture from corepack pnpm run selfhost:quickstart"
+            ]
+          },
+          {
+            "command": "corepack pnpm run selfhost:readiness -- --profile all-in-one",
+            "json_command": "corepack pnpm --silent run selfhost:readiness -- --profile all-in-one --json",
+            "posture": "read_only",
+            "category": "selfhost",
+            "dashboard_safe": true,
+            "ci_safe": true,
+            "public_exposure_gate": false,
+            "notes": [
+              "inherits safety posture from corepack pnpm run selfhost:readiness",
+              "read-only selected-profile readiness summary before startup"
+            ]
+          },
+          {
+            "command": "corepack pnpm run selfhost:status -- --profile all-in-one",
+            "json_command": "corepack pnpm --silent run selfhost:status -- --profile all-in-one --json",
+            "posture": "runtime_snapshot",
+            "category": "selfhost",
+            "dashboard_safe": true,
+            "ci_safe": false,
+            "public_exposure_gate": false,
+            "notes": [
+              "inherits safety posture from corepack pnpm run selfhost:status",
+              "reads runtime state and health endpoints after startup"
+            ]
+          }
+        ]
+      },
+      {
+        "key": "start",
+        "label": "Start",
+        "purpose": "Start local or self-hosted services after inspection and gates are satisfied.",
+        "postures": [
+          "starts_services",
+          "starts_local_services"
+        ],
+        "commands": [
+          {
+            "command": "corepack pnpm run selfhost:up -- --profile all-in-one",
+            "json_command": "corepack pnpm --silent run selfhost:up -- --profile all-in-one --json",
+            "posture": "starts_services",
+            "category": "selfhost",
+            "dashboard_safe": true,
+            "ci_safe": false,
+            "public_exposure_gate": false,
+            "notes": [
+              "inherits safety posture from corepack pnpm run selfhost:up",
+              "runs init/preflight/compose up; JSON omits command stdout"
+            ]
+          }
+        ]
+      },
+      {
+        "key": "verify",
+        "label": "Verify",
+        "purpose": "Run smoke, delegated acceptance, or runtime acceptance checks after startup.",
+        "postures": [
+          "runtime_acceptance",
+          "delegated_smoke"
+        ],
+        "commands": [
+          {
+            "command": "corepack pnpm run selfhost:smoke -- --profile all-in-one",
+            "json_command": "corepack pnpm --silent run selfhost:smoke -- --profile all-in-one --json",
+            "posture": "runtime_acceptance",
+            "category": "selfhost",
+            "dashboard_safe": true,
+            "ci_safe": true,
+            "public_exposure_gate": true,
+            "notes": [
+              "inherits safety posture from corepack pnpm run selfhost:smoke",
+              "post-start acceptance checks for secret hygiene, compose config, routes, and health endpoints"
+            ]
+          }
+        ]
+      },
+      {
+        "key": "evidence",
+        "label": "Evidence",
+        "purpose": "Write non-secret reports, export evidence, or prepare recovery/change artifacts.",
+        "postures": [
+          "writes_report",
+          "exports_evidence",
+          "writes_env",
+          "backup_plan",
+          "restore_plan",
+          "rotation_plan"
+        ],
+        "commands": [
+          {
+            "command": "corepack pnpm run selfhost:init -- --profile all-in-one",
+            "json_command": "corepack pnpm --silent run selfhost:init -- --profile all-in-one --json",
+            "posture": "writes_env",
+            "category": "selfhost",
+            "dashboard_safe": true,
+            "ci_safe": false,
+            "public_exposure_gate": false,
+            "notes": [
+              "creates or hardens .env without printing generated secret values",
+              "inherits safety posture from corepack pnpm run selfhost:init"
+            ]
+          }
+        ]
+      }
+    ],
+    "next_commands": [
+      "corepack pnpm run deployability:profiles -- --profile all-in-one",
+      "corepack pnpm run deployability:commands -- --profile all-in-one",
+      "corepack pnpm --silent run deployability:commands -- --profile all-in-one --json",
+      "corepack pnpm run deployability:dashboard -- --profile all-in-one",
+      "corepack pnpm run deployability:handoff -- --profile all-in-one"
+    ]
+  },
+  "selected_onboarding_plan": null,
+  "recommended_profile_keys": [
+    "all_in_one_demo"
+  ],
+  "choices": [
+    {
+      "key": "all_in_one_demo",
+      "aliases": [
+        "all-in-one",
+        "all-in-one-demo",
+        "all_in_one_demo"
+      ],
+      "label": "All-in-One Demo",
+      "purpose": "Evaluate the full product shape on one machine before splitting components.",
+      "pipeline_key": "all_in_one_demo",
+      "status": "ready_now",
+      "attention": {
+        "level": "safety_gate",
+        "rank": 91,
+        "primary_command": "corepack pnpm run selfhost:quickstart -- --profile all-in-one",
+        "primary_json_command": "corepack pnpm --silent run selfhost:quickstart -- --profile all-in-one --json",
+        "reasons": [
+          "1 public exposure gate command(s)",
+          "4 service-touching command(s)",
+          "7 dashboard-safe command(s)"
+        ]
+      },
+      "requires_gate": true,
+      "command_count": 7,
+      "dashboard_safe_command_count": 7,
+      "public_exposure_gate_count": 1,
+      "safety_notes": [
+        "all-in-one stays a local evaluation profile, not a public exposure profile",
+        "startup and smoke JSON inherit selfhost safety posture and omit secret values"
+      ],
+      "commands": {
+        "primary": "corepack pnpm run selfhost:quickstart -- --profile all-in-one",
+        "primary_json": "corepack pnpm --silent run selfhost:quickstart -- --profile all-in-one --json",
+        "profile_catalog": "corepack pnpm run deployability:profiles -- --profile all-in-one",
+        "action_plan": "corepack pnpm run deployability:action-plan -- --profile all-in-one",
+        "runbook": "corepack pnpm run deployability:runbook -- --profile all-in-one",
+        "dashboard": "corepack pnpm run deployability:dashboard -- --profile all-in-one",
+        "handoff": "corepack pnpm run deployability:handoff -- --profile all-in-one",
+        "command_catalog": "corepack pnpm run deployability:commands -- --profile all-in-one"
+      }
+    }
+  ],
+  "blockers": [],
+  "warnings": [],
+  "source_status": {
+    "operator_status": {
+      "ok": true,
+      "direct_inputs": [
+        "profiles",
+        "commands",
+        "console"
+      ],
+      "avoids_recursive_status_cli": true
+    },
+    "operator_next_decision": {
+      "ok": true,
+      "direct_inputs": [
+        "selected_profile"
+      ],
+      "avoids_recursive_next_cli": true
+    },
+    "profiles": {
+      "ok": true,
+      "exit_code": 0,
+      "stderr": [],
+      "parse_error": null
+    },
+    "commands": {
+      "ok": true,
+      "exit_code": 0,
+      "stderr": [],
+      "parse_error": null
+    },
+    "console": {
+      "ok": true,
+      "exit_code": 0,
+      "stderr": [],
+      "parse_error": null
+    },
+    "runbook": {
+      "ok": true,
+      "exit_code": 0,
+      "stderr": [],
+      "parse_error": null
+    }
+  },
+  "safety_defaults": [
+    "deployability menu is read-only and does not read .env files directly",
+    "deployability menu only calls read-only deployability status-card, profile, runbook, and onboarding metadata",
+    "deployability menu does not call Docker, bind ports, or probe network endpoints",
+    "JSON output contains operator status, menu choices, and next commands without printing secret values"
+  ],
+  "next_commands": [
+    "corepack pnpm run deployability:menu -- --profile all-in-one",
+    "corepack pnpm --silent run deployability:menu -- --profile all-in-one --json",
+    "corepack pnpm run deployability:profiles -- --profile all-in-one",
+    "corepack pnpm run deployability:action-plan -- --profile all-in-one",
+    "corepack pnpm run deployability:runbook -- --profile all-in-one",
+    "corepack pnpm run deployability:dashboard -- --profile all-in-one",
+    "corepack pnpm run deployability:handoff -- --profile all-in-one",
+    "corepack pnpm run deployability:commands -- --profile all-in-one"
+  ],
+  "notes": [
+    "use this as the first operator menu when a human or management UI needs profile choices plus next commands",
+    "menu choices are convenience projections over deployability profiles, action plans, runbooks, onboarding plans, dashboard, and handoff metadata"
+  ]
+}

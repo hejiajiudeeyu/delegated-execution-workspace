@@ -1,0 +1,361 @@
+{
+  "generated_at": "2026-06-10T15:56:09.626Z",
+  "command": "deployability:recipe",
+  "mode": "profile_recipe",
+  "ok": true,
+  "current_bundle": {
+    "file": "changes/CHG-2026-133.yaml",
+    "change_id": "CHG-2026-133",
+    "goal": "add deployability management safety surfaces",
+    "protocol_sha": "da3027100cfe9391f7f8d03be18a108ee2804cf6",
+    "client_sha": "135546f7510167d99a31475515708553106c0545",
+    "platform_sha": "5961309c6b0ca4e8df22dbb5be92ac0845bf8d25",
+    "brand_site_sha": "c39953c4fdb523ab4de511f9e60c408f6c1f8918",
+    "contracts_check": "passed",
+    "integration_check": "passed"
+  },
+  "profile_filter": {
+    "requested": "public-stack",
+    "resolved": "public_stack",
+    "pipeline": "public_stack"
+  },
+  "profile": {
+    "key": "public_stack",
+    "aliases": [
+      "public-stack",
+      "public_stack"
+    ],
+    "label": "Public Stack",
+    "purpose": "Review public exposure gates before opening edge routes.",
+    "pipeline_key": "public_stack",
+    "status": "ready_now_with_safety_gates",
+    "attention": {
+      "level": "safety_gate",
+      "rank": 63,
+      "primary_command": "corepack pnpm run selfhost:readiness -- --profile public-stack",
+      "primary_json_command": "corepack pnpm --silent run selfhost:readiness -- --profile public-stack --json",
+      "reasons": [
+        "4 public exposure gate command(s)",
+        "status=ready_now_with_safety_gates",
+        "4 service-touching command(s)",
+        "8 dashboard-safe command(s)"
+      ]
+    },
+    "requires_gate": true,
+    "command_count": 8,
+    "dashboard_safe_command_count": 8,
+    "public_exposure_gate_count": 4,
+    "safety_notes": [
+      "unsafe public origins and placeholder secrets remain blockers",
+      "public exposure readiness is checked before services are treated as ready"
+    ],
+    "commands": {
+      "primary": "corepack pnpm run selfhost:readiness -- --profile public-stack",
+      "primary_json": "corepack pnpm --silent run selfhost:readiness -- --profile public-stack --json",
+      "profile_catalog": "corepack pnpm run deployability:profiles -- --profile public-stack",
+      "action_plan": "corepack pnpm run deployability:action-plan -- --profile public-stack",
+      "runbook": "corepack pnpm run deployability:runbook -- --profile public-stack",
+      "dashboard": "corepack pnpm run deployability:dashboard -- --profile public-stack",
+      "handoff": "corepack pnpm run deployability:handoff -- --profile public-stack",
+      "command_catalog": "corepack pnpm run deployability:commands -- --profile public-stack",
+      "operator_onboarding_plan": "corepack pnpm run operator:onboarding:plan",
+      "operator_onboarding_plan_json": "corepack pnpm --silent run operator:onboarding:plan -- --json",
+      "operator_onboarding_check": "corepack pnpm run operator:onboarding:check",
+      "operator_onboarding_check_json": "corepack pnpm --silent run operator:onboarding:check -- --json"
+    }
+  },
+  "readiness": {
+    "status": "daily_deployable_with_safety_gates",
+    "summary": {
+      "total_checks": 7,
+      "passed_checks": 7,
+      "blocked_checks": 0,
+      "status": "daily_deployable_with_safety_gates",
+      "safety_gate_required": true
+    },
+    "checks": [
+      {
+        "key": "profile_choice",
+        "label": "operator can choose a named deployment profile",
+        "ok": true,
+        "evidence": [
+          "corepack pnpm run deployability:overview",
+          "corepack pnpm run selfhost:profiles",
+          "corepack pnpm run selfhost:quickstart"
+        ],
+        "next_commands": [
+          "corepack pnpm run selfhost:profiles",
+          "corepack pnpm run selfhost:quickstart"
+        ]
+      },
+      {
+        "key": "secret_generation",
+        "label": "operator can generate or harden local secrets without printing values",
+        "ok": true,
+        "evidence": [
+          "corepack pnpm run selfhost:init",
+          "corepack pnpm --silent run selfhost:init -- --json"
+        ],
+        "next_commands": [
+          "corepack pnpm run selfhost:init"
+        ]
+      },
+      {
+        "key": "startup_path",
+        "label": "operator can start the selected profile through documented lifecycle commands",
+        "ok": true,
+        "evidence": [
+          "corepack pnpm run dev:local:up",
+          "corepack pnpm run selfhost:up",
+          "corepack pnpm run selfhost:up -- --profile public-stack"
+        ],
+        "next_commands": [
+          "corepack pnpm run dev:local:up",
+          "corepack pnpm run selfhost:up"
+        ]
+      },
+      {
+        "key": "doctor_path",
+        "label": "operator can run doctor/readiness commands before claiming readiness",
+        "ok": true,
+        "evidence": [
+          "corepack pnpm run deployability:doctor",
+          "corepack pnpm run dev:doctor",
+          "corepack pnpm run selfhost:doctor"
+        ],
+        "next_commands": [
+          "corepack pnpm run deployability:doctor",
+          "corepack pnpm run selfhost:readiness"
+        ]
+      },
+      {
+        "key": "runtime_inspection",
+        "label": "operator can inspect logs and runtime state from one command surface",
+        "ok": true,
+        "evidence": [
+          "corepack pnpm run dev:local:status",
+          "corepack pnpm run dev:local:logs",
+          "corepack pnpm run selfhost:status",
+          "corepack pnpm run selfhost:logs"
+        ],
+        "next_commands": [
+          "corepack pnpm run dev:local:status",
+          "corepack pnpm run selfhost:status"
+        ]
+      },
+      {
+        "key": "boundary_understanding",
+        "label": "operator can understand local/public, metadata, secret, and safety boundaries",
+        "ok": true,
+        "evidence": [
+          "corepack pnpm run deployability:safety",
+          "corepack pnpm run deployability:commands",
+          "corepack pnpm run deployability:handoff",
+          "corepack pnpm run compat:status"
+        ],
+        "next_commands": [
+          "corepack pnpm run deployability:safety",
+          "corepack pnpm run deployability:handoff"
+        ]
+      },
+      {
+        "key": "brand_site_story",
+        "label": "operator can find the same deployment story on the public brand site",
+        "ok": true,
+        "evidence": [
+          "repos/brand-site/src/app/pages/Docs/DeployabilityProfiles.tsx",
+          "repos/brand-site/src/app/pages/en/Docs/DeployabilityProfiles.tsx",
+          "npm run smoke:deployability-content"
+        ],
+        "next_commands": [
+          "corepack pnpm run deployability:doctor"
+        ]
+      }
+    ]
+  },
+  "selected_onboarding_plan": {
+    "command": "operator:onboarding:plan",
+    "profile": "public-stack",
+    "phases": [
+      {
+        "id": "preflight",
+        "title": "Preflight the public operator stack",
+        "commands": [
+          "corepack pnpm run selfhost:init -- --profile public-stack",
+          "corepack pnpm run selfhost:readiness -- --profile public-stack",
+          "corepack pnpm --silent run selfhost:readiness -- --profile public-stack --json",
+          "corepack pnpm run selfhost:ports -- --profile public-stack",
+          "corepack pnpm run selfhost:preflight -- --profile public-stack",
+          "corepack pnpm run selfhost:urls -- --profile public-stack"
+        ]
+      },
+      {
+        "id": "operator_surface",
+        "title": "Start and inspect the operator surface",
+        "commands": [
+          "corepack pnpm run selfhost:up -- --profile public-stack",
+          "open ${PUBLIC_SITE_ADDRESS%/}/console/",
+          "use /gateway/session/setup then /gateway/credentials/platform-admin"
+        ]
+      },
+      {
+        "id": "smoke_and_evidence",
+        "title": "Smoke the public routes and published images",
+        "commands": [
+          "corepack pnpm run selfhost:smoke -- --profile public-stack",
+          "corepack pnpm run selfhost:ops-report -- --profile public-stack",
+          "corepack pnpm run published-image:plan",
+          "corepack pnpm run published-image:smoke -- --image-tag <tag>"
+        ]
+      },
+      {
+        "id": "contract_validation",
+        "title": "Validate docs and onboarding contract",
+        "commands": [
+          "corepack pnpm run operator:onboarding:check",
+          "corepack pnpm --silent run operator:onboarding:check -- --json",
+          "corepack pnpm run test:operator-onboarding"
+        ]
+      },
+      {
+        "id": "source_fallback",
+        "title": "Source fallback for local integration",
+        "commands": [
+          "Branch A: bootstrap with operator credentials -> SUCCEEDED",
+          "Branch B: bootstrap pauses at awaiting_admin_approval -> approve -> SUCCEEDED"
+        ]
+      }
+    ],
+    "safety": [
+      "public-stack must not be marked ready while public origin or secrets are unsafe",
+      "gateway setup stores admin credentials without printing secret values",
+      "fourth repo checks the onboarding contract; platform owns runtime and deploy truth"
+    ],
+    "next": "corepack pnpm run operator:onboarding:check"
+  },
+  "recipe_steps": [
+    {
+      "key": "inspect",
+      "label": "Inspect",
+      "purpose": "Read readiness, profile, and declared deployment metadata before touching runtime state.",
+      "safety_gate": false,
+      "commands": [
+        "corepack pnpm run deployability:readiness",
+        "corepack pnpm run deployability:menu -- --profile public-stack",
+        "corepack pnpm run deployability:runbook -- --profile public-stack",
+        "corepack pnpm run selfhost:ports -- --profile public-stack",
+        "corepack pnpm run selfhost:readiness -- --profile public-stack",
+        "corepack pnpm run selfhost:urls -- --profile public-stack"
+      ]
+    },
+    {
+      "key": "gate",
+      "label": "Gate",
+      "purpose": "Stop for safety review before public exposure or risky startup.",
+      "safety_gate": true,
+      "commands": [
+        "corepack pnpm run selfhost:security-review -- --profile public-stack"
+      ]
+    },
+    {
+      "key": "start",
+      "label": "Start",
+      "purpose": "Start the selected local or self-host profile after inspection and gates.",
+      "safety_gate": false,
+      "commands": [
+        "corepack pnpm run selfhost:up -- --profile public-stack"
+      ]
+    },
+    {
+      "key": "verify",
+      "label": "Verify",
+      "purpose": "Run smoke or acceptance checks after startup.",
+      "safety_gate": false,
+      "commands": [
+        "corepack pnpm run selfhost:smoke -- --profile public-stack"
+      ]
+    },
+    {
+      "key": "operate",
+      "label": "Operate",
+      "purpose": "Inspect runtime state, private logs, or stop commands during normal operation.",
+      "safety_gate": false,
+      "commands": [
+        "corepack pnpm run selfhost:status -- --profile public-stack",
+        "corepack pnpm run selfhost:logs -- --profile public-stack",
+        "corepack pnpm run selfhost:down -- --profile public-stack"
+      ]
+    },
+    {
+      "key": "evidence",
+      "label": "Evidence",
+      "purpose": "Create non-secret handoff or recovery evidence for the selected profile.",
+      "safety_gate": false,
+      "commands": [
+        "corepack pnpm run selfhost:public-origin -- --profile public-stack --origin <public-origin>",
+        "corepack pnpm run deployability:evidence -- --profile public-stack",
+        "corepack pnpm run deployability:handoff -- --profile public-stack",
+        "corepack pnpm run selfhost:ops-report -- --profile public-stack",
+        "corepack pnpm run operator:onboarding:check"
+      ]
+    }
+  ],
+  "copy_paste_commands": [
+    "corepack pnpm run deployability:readiness",
+    "corepack pnpm run deployability:menu -- --profile public-stack",
+    "corepack pnpm run deployability:runbook -- --profile public-stack",
+    "corepack pnpm run selfhost:ports -- --profile public-stack",
+    "corepack pnpm run selfhost:readiness -- --profile public-stack",
+    "corepack pnpm run selfhost:urls -- --profile public-stack",
+    "corepack pnpm run selfhost:security-review -- --profile public-stack",
+    "corepack pnpm run selfhost:up -- --profile public-stack",
+    "corepack pnpm run selfhost:smoke -- --profile public-stack",
+    "corepack pnpm run selfhost:status -- --profile public-stack",
+    "corepack pnpm run selfhost:logs -- --profile public-stack",
+    "corepack pnpm run selfhost:down -- --profile public-stack",
+    "corepack pnpm run selfhost:public-origin -- --profile public-stack --origin <public-origin>",
+    "corepack pnpm run deployability:evidence -- --profile public-stack",
+    "corepack pnpm run deployability:handoff -- --profile public-stack",
+    "corepack pnpm run selfhost:ops-report -- --profile public-stack",
+    "corepack pnpm run operator:onboarding:check"
+  ],
+  "blockers": [],
+  "warnings": [],
+  "source_status": {
+    "menu": {
+      "ok": true,
+      "exit_code": 0,
+      "stderr": [],
+      "parse_error": null
+    },
+    "runbook": {
+      "ok": true,
+      "exit_code": 0,
+      "stderr": [],
+      "parse_error": null
+    },
+    "readiness": {
+      "ok": true,
+      "exit_code": 0,
+      "stderr": [],
+      "parse_error": null
+    }
+  },
+  "safety_defaults": [
+    "deployability recipe is read-only and does not read .env files directly",
+    "deployability recipe only calls read-only deployability menu, runbook, and readiness metadata",
+    "deployability recipe does not call Docker, bind ports, or probe network endpoints",
+    "JSON output contains copy-paste command order without printing secret values"
+  ],
+  "next_commands": [
+    "corepack pnpm run deployability:recipe -- --profile public-stack",
+    "corepack pnpm --silent run deployability:recipe -- --profile public-stack --json",
+    "corepack pnpm run deployability:menu -- --profile public-stack",
+    "corepack pnpm run deployability:runbook -- --profile public-stack",
+    "corepack pnpm run deployability:handoff -- --profile public-stack"
+  ],
+  "notes": [
+    "use this as a linear first-run recipe after choosing a deployability profile",
+    "recipe steps are convenience projections over menu, runbook, onboarding, and readiness metadata; they do not execute commands"
+  ]
+}

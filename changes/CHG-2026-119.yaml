@@ -1,0 +1,14 @@
+change_id: CHG-2026-119
+goal: add standalone daily-deployable readiness scorecard
+protocol_sha: da3027100cfe9391f7f8d03be18a108ee2804cf6
+client_sha: f1d6a2d8c9b83517cdf6ca9803b223847f880e9a
+platform_sha: 5961309c6b0ca4e8df22dbb5be92ac0845bf8d25
+brand_site_sha: b2729f2e77237affe27a32d90449c72477a739f4
+owner: hejiajiudeeyu
+risk_level: low
+affected_scope:
+  - orchestration
+  - documentation
+contracts_check: passed
+integration_check: passed
+notes: "Adds deployability:readiness as a read-only standalone daily-deployable scorecard for humans, CI jobs, and management UIs. The command reuses deployability:commands and deployability:doctor metadata plus the shared ecosystem readiness builder to report daily-deployable checks, evidence, summary counts, safety notes, blockers, warnings, and next commands without reading .env files, calling Docker, binding ports, probing networks, printing secrets, or introducing protocol/client/platform runtime truth."

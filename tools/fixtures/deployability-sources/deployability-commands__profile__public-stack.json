@@ -1,0 +1,423 @@
+{
+  "generated_at": "2026-06-10T15:55:00.863Z",
+  "command": "deployability:commands",
+  "ok": true,
+  "filters_applied": {
+    "category": null,
+    "posture": null,
+    "track": null,
+    "pipeline": "public_stack",
+    "profile": {
+      "requested": "public-stack",
+      "resolved": "public_stack",
+      "pipeline": "public_stack"
+    }
+  },
+  "filters": {
+    "categories": [
+      "local_agent_loop",
+      "operator_onboarding",
+      "public_stack",
+      "release_review",
+      "selfhost",
+      "top_level"
+    ],
+    "postures": [
+      "contract_check",
+      "contract_test",
+      "delegated_smoke",
+      "exports_evidence",
+      "operator_readiness_gate",
+      "preflight_gate",
+      "private_logs",
+      "public_exposure_gate",
+      "read_only",
+      "release_candidate_gate",
+      "runtime_acceptance",
+      "runtime_diagnostic",
+      "runtime_snapshot",
+      "starts_local_services",
+      "starts_services",
+      "stops_services",
+      "writes_env",
+      "writes_report"
+    ],
+    "tracks": [
+      "all_in_one_demo",
+      "daily_dev",
+      "public_stack",
+      "release_review",
+      "selfhost_platform"
+    ],
+    "pipelines": [
+      "all_in_one_demo",
+      "local_agent_loop",
+      "operator_onboarding",
+      "public_stack",
+      "published_image",
+      "recovery_evidence",
+      "selfhost_platform"
+    ],
+    "profiles": [
+      {
+        "key": "daily_dev",
+        "aliases": [
+          "daily-dev",
+          "daily_dev",
+          "local-agent-loop",
+          "local_agent_loop"
+        ],
+        "pipeline_key": "local_agent_loop",
+        "purpose": "Start with the local caller-skill and MCP development loop."
+      },
+      {
+        "key": "all_in_one_demo",
+        "aliases": [
+          "all-in-one",
+          "all-in-one-demo",
+          "all_in_one_demo"
+        ],
+        "pipeline_key": "all_in_one_demo",
+        "purpose": "Evaluate the full product shape on one machine before splitting components."
+      },
+      {
+        "key": "selfhost_platform",
+        "aliases": [
+          "selfhost",
+          "selfhost-platform",
+          "selfhost_platform",
+          "platform"
+        ],
+        "pipeline_key": "selfhost_platform",
+        "purpose": "Prepare and manage the private platform profile."
+      },
+      {
+        "key": "public_stack",
+        "aliases": [
+          "public-stack",
+          "public_stack"
+        ],
+        "pipeline_key": "public_stack",
+        "purpose": "Review public exposure gates before opening edge routes."
+      },
+      {
+        "key": "recovery_evidence",
+        "aliases": [
+          "recovery",
+          "recovery-evidence",
+          "recovery_evidence"
+        ],
+        "pipeline_key": "recovery_evidence",
+        "purpose": "Prepare handoff, audit, backup, restore rehearsal, and rotation evidence."
+      },
+      {
+        "key": "operator_onboarding",
+        "aliases": [
+          "operator-onboarding",
+          "operator_onboarding",
+          "onboarding"
+        ],
+        "pipeline_key": "operator_onboarding",
+        "purpose": "Follow the public-stack first-use operator path."
+      },
+      {
+        "key": "published_image",
+        "aliases": [
+          "published-image",
+          "published_image",
+          "release-review",
+          "release_review"
+        ],
+        "pipeline_key": "published_image",
+        "purpose": "Review published-image smoke metadata before running Docker."
+      }
+    ]
+  },
+  "source_status": {
+    "overview": {
+      "ok": true,
+      "exit_code": 0,
+      "stderr": [],
+      "parse_error": null
+    },
+    "quickstart": {
+      "ok": true,
+      "exit_code": 0,
+      "stderr": [],
+      "parse_error": null
+    },
+    "safety": {
+      "ok": true,
+      "exit_code": 0,
+      "stderr": [],
+      "parse_error": null
+    }
+  },
+  "command_count": 8,
+  "total_command_count": 81,
+  "commands": [
+    {
+      "command": "corepack pnpm run selfhost:public-origin -- --profile public-stack --origin <public-origin>",
+      "json_command": "corepack pnpm --silent run selfhost:public-origin -- --profile public-stack --origin <public-origin> --json",
+      "category": "public_stack",
+      "posture": "writes_env",
+      "reads_env": true,
+      "writes_files": true,
+      "starts_services": false,
+      "stops_services": false,
+      "calls_docker": false,
+      "probes_network": false,
+      "private_terminal_text": false,
+      "public_exposure_gate": true,
+      "ci_safe": false,
+      "dashboard_safe": true,
+      "track_keys": [
+        "public_stack"
+      ],
+      "pipeline_keys": [
+        "public_stack"
+      ],
+      "labels": [
+        "Public Stack: Operator path for public gateway, relay, platform API, console, and edge route contract.",
+        "Public Stack: Plan public origin update"
+      ],
+      "notes": [
+        "dry-run reports public origin update metadata; confirmed mode writes only PUBLIC_SITE_ADDRESS and a .env backup without printing secret values"
+      ]
+    },
+    {
+      "command": "corepack pnpm run selfhost:security-review -- --profile public-stack",
+      "json_command": "corepack pnpm --silent run selfhost:security-review -- --profile public-stack --json",
+      "category": "public_stack",
+      "posture": "public_exposure_gate",
+      "reads_env": true,
+      "writes_files": false,
+      "starts_services": false,
+      "stops_services": false,
+      "calls_docker": true,
+      "probes_network": false,
+      "private_terminal_text": false,
+      "public_exposure_gate": true,
+      "ci_safe": true,
+      "dashboard_safe": true,
+      "track_keys": [
+        "public_stack"
+      ],
+      "pipeline_keys": [
+        "public_stack"
+      ],
+      "labels": [
+        "Public Stack: Operator path for public gateway, relay, platform API, console, and edge route contract.",
+        "Public Stack: Run public exposure review"
+      ],
+      "notes": [
+        "inherits safety posture from corepack pnpm run selfhost:security-review",
+        "non-destructive review before public exposure"
+      ]
+    },
+    {
+      "command": "corepack pnpm run selfhost:ports -- --profile public-stack",
+      "json_command": "corepack pnpm --silent run selfhost:ports -- --profile public-stack --json",
+      "category": "selfhost",
+      "posture": "read_only",
+      "reads_env": false,
+      "writes_files": false,
+      "starts_services": false,
+      "stops_services": false,
+      "calls_docker": false,
+      "probes_network": false,
+      "private_terminal_text": false,
+      "public_exposure_gate": false,
+      "ci_safe": true,
+      "dashboard_safe": true,
+      "track_keys": [
+        "public_stack"
+      ],
+      "pipeline_keys": [
+        "public_stack"
+      ],
+      "labels": [
+        "Public Stack: Check declared public ports",
+        "Public Stack: Operator path for public gateway, relay, platform API, console, and edge route contract."
+      ],
+      "notes": [
+        "declared host-port inventory without binding sockets",
+        "inherits safety posture from corepack pnpm run selfhost:ports"
+      ]
+    },
+    {
+      "command": "corepack pnpm run selfhost:readiness -- --profile public-stack",
+      "json_command": "corepack pnpm --silent run selfhost:readiness -- --profile public-stack --json",
+      "category": "selfhost",
+      "posture": "read_only",
+      "reads_env": false,
+      "writes_files": false,
+      "starts_services": false,
+      "stops_services": false,
+      "calls_docker": false,
+      "probes_network": false,
+      "private_terminal_text": false,
+      "public_exposure_gate": false,
+      "ci_safe": true,
+      "dashboard_safe": true,
+      "track_keys": [],
+      "pipeline_keys": [
+        "public_stack"
+      ],
+      "labels": [
+        "Public Stack: Operator path for public gateway, relay, platform API, console, and edge route contract."
+      ],
+      "notes": [
+        "inherits safety posture from corepack pnpm run selfhost:readiness",
+        "read-only selected-profile readiness summary before startup"
+      ]
+    },
+    {
+      "command": "corepack pnpm run selfhost:smoke -- --profile public-stack",
+      "json_command": "corepack pnpm --silent run selfhost:smoke -- --profile public-stack --json",
+      "category": "selfhost",
+      "posture": "runtime_acceptance",
+      "reads_env": true,
+      "writes_files": false,
+      "starts_services": false,
+      "stops_services": false,
+      "calls_docker": true,
+      "probes_network": true,
+      "private_terminal_text": false,
+      "public_exposure_gate": true,
+      "ci_safe": true,
+      "dashboard_safe": true,
+      "track_keys": [],
+      "pipeline_keys": [
+        "public_stack"
+      ],
+      "labels": [
+        "Public Stack: Operator path for public gateway, relay, platform API, console, and edge route contract."
+      ],
+      "notes": [
+        "inherits safety posture from corepack pnpm run selfhost:smoke",
+        "post-start acceptance checks for secret hygiene, compose config, routes, and health endpoints"
+      ]
+    },
+    {
+      "command": "corepack pnpm run selfhost:up -- --profile public-stack",
+      "json_command": "corepack pnpm --silent run selfhost:up -- --profile public-stack --json",
+      "category": "selfhost",
+      "posture": "starts_services",
+      "reads_env": true,
+      "writes_files": true,
+      "starts_services": true,
+      "stops_services": false,
+      "calls_docker": true,
+      "probes_network": false,
+      "private_terminal_text": true,
+      "public_exposure_gate": false,
+      "ci_safe": false,
+      "dashboard_safe": true,
+      "track_keys": [],
+      "pipeline_keys": [
+        "public_stack"
+      ],
+      "labels": [
+        "Public Stack: Operator path for public gateway, relay, platform API, console, and edge route contract."
+      ],
+      "notes": [
+        "inherits safety posture from corepack pnpm run selfhost:up",
+        "runs init/preflight/compose up; JSON omits command stdout"
+      ]
+    },
+    {
+      "command": "corepack pnpm run deployability:evidence -- --profile public-stack",
+      "json_command": "corepack pnpm --silent run deployability:evidence -- --profile public-stack --json",
+      "category": "top_level",
+      "posture": "writes_report",
+      "reads_env": false,
+      "writes_files": true,
+      "starts_services": false,
+      "stops_services": false,
+      "calls_docker": false,
+      "probes_network": false,
+      "private_terminal_text": false,
+      "public_exposure_gate": false,
+      "ci_safe": true,
+      "dashboard_safe": true,
+      "track_keys": [
+        "daily_dev",
+        "public_stack"
+      ],
+      "pipeline_keys": [
+        "public_stack",
+        "recovery_evidence"
+      ],
+      "labels": [
+        "Daily development: Create a focused public-stack evidence bundle",
+        "Public Stack: Export public-stack deployability evidence",
+        "Public Stack: Operator path for public gateway, relay, platform API, console, and edge route contract.",
+        "Recovery & Evidence: Operator handoff, audit evidence, backup validation, restore rehearsal, and secret rotation planning."
+      ],
+      "notes": [
+        "writes a non-secret deployability evidence bundle with dashboard, menu, recipe, handoff, and command-catalog artifacts"
+      ]
+    },
+    {
+      "command": "corepack pnpm run deployability:operator-checklist -- --profile public-stack --image-tag <candidate-tag>",
+      "json_command": "corepack pnpm --silent run deployability:operator-checklist -- --profile public-stack --image-tag <candidate-tag> --json",
+      "category": "top_level",
+      "posture": "operator_readiness_gate",
+      "reads_env": true,
+      "writes_files": false,
+      "starts_services": false,
+      "stops_services": false,
+      "calls_docker": true,
+      "probes_network": false,
+      "private_terminal_text": false,
+      "public_exposure_gate": true,
+      "ci_safe": true,
+      "dashboard_safe": true,
+      "track_keys": [
+        "daily_dev",
+        "release_review"
+      ],
+      "pipeline_keys": [
+        "public_stack"
+      ],
+      "labels": [
+        "Daily development: Review public-stack operator checklist",
+        "Public Stack: Operator path for public gateway, relay, platform API, console, and edge route contract.",
+        "Release review: Review public-stack operator checklist"
+      ],
+      "notes": [
+        "non-destructive public-stack operator checklist; aggregates menu, recipe, onboarding, release, and backup-plan metadata"
+      ]
+    }
+  ],
+  "blockers": [],
+  "safety_defaults": [
+    "commands catalog is read-only and does not read .env files directly",
+    "commands catalog only calls read-only deployability metadata commands",
+    "commands catalog does not call Docker, bind ports, or probe network endpoints",
+    "JSON output contains command metadata and filters without printing secret values"
+  ],
+  "next_commands": [
+    "corepack pnpm run deployability:quickstart",
+    "corepack pnpm run deployability:safety",
+    "corepack pnpm run deployability:explain",
+    "corepack pnpm run deployability:readiness",
+    "corepack pnpm run deployability:prd",
+    "corepack pnpm run deployability:production",
+    "corepack pnpm run deployability:hardening-plan",
+    "corepack pnpm run deployability:status",
+    "corepack pnpm run deployability:gates",
+    "corepack pnpm run deployability:exposure",
+    "corepack pnpm run deployability:release -- --image-tag <candidate-tag>",
+    "corepack pnpm run deployability:operator-checklist -- --profile public-stack --image-tag <candidate-tag>",
+    "corepack pnpm run deployability:evidence -- --profile public-stack",
+    "corepack pnpm run deployability:dashboard",
+    "corepack pnpm run deployability:console",
+    "corepack pnpm run deployability:handoff"
+  ],
+  "notes": [
+    "use this as the searchable command catalog for humans, dashboards, and CI",
+    "runtime readiness still belongs to profile-specific doctor, preflight, status, smoke, and audit commands"
+  ]
+}

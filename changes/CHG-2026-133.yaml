@@ -1,0 +1,16 @@
+change_id: CHG-2026-133
+goal: add deployability management safety surfaces
+protocol_sha: da3027100cfe9391f7f8d03be18a108ee2804cf6
+client_sha: 135546f7510167d99a31475515708553106c0545
+platform_sha: 5961309c6b0ca4e8df22dbb5be92ac0845bf8d25
+brand_site_sha: c39953c4fdb523ab4de511f9e60c408f6c1f8918
+owner: hejiajiudeeyu
+risk_level: medium
+affected_scope:
+  - client
+  - brand-site
+  - documentation
+  - orchestration
+contracts_check: passed
+integration_check: passed
+notes: "Adds deployability command, console, hardening-plan, next-step, public-origin, and operator decision surfaces so local and public-stack deployments are easier to understand, manage, and verify. Updates ops-console evidence checks for management surfaces and aligns call-anything-brand-site deployability profile content and smoke coverage. Protocol and platform SHAs remain unchanged; the fourth repository records the verified source-integration combination without introducing runtime truth."

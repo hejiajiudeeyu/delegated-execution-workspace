@@ -1,0 +1,14 @@
+change_id: CHG-2026-123
+goal: add deployability gate checklist command
+protocol_sha: da3027100cfe9391f7f8d03be18a108ee2804cf6
+client_sha: f1d6a2d8c9b83517cdf6ca9803b223847f880e9a
+platform_sha: 5961309c6b0ca4e8df22dbb5be92ac0845bf8d25
+brand_site_sha: 397512ba0245974a358553b87d5b87d4b59a40c7
+owner: hejiajiudeeyu
+risk_level: low
+affected_scope:
+  - orchestration
+  - documentation
+contracts_check: passed
+integration_check: passed
+notes: "Adds deployability:gates as a read-only public exposure and production hardening gate checklist for management UIs. The command projects roadmap, command catalog, and status metadata into explicit gate cards without reading .env files, calling Docker, binding ports, probing networks, printing secrets, or introducing protocol/client/platform runtime truth. Brand-site deployability docs now present the same gate checklist."

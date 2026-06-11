@@ -1,0 +1,364 @@
+{
+  "generated_at": "2026-06-10T15:55:02.351Z",
+  "command": "deployability:doctor",
+  "ok": true,
+  "checks": [
+    {
+      "key": "compatibility_ledger",
+      "label": "compatibility ledger",
+      "ok": true,
+      "blockers": [],
+      "warnings": [],
+      "evidence": [
+        "changes/CHG-2026-133.yaml",
+        "repos/protocol@da3027100cfe9391f7f8d03be18a108ee2804cf6",
+        "repos/client@135546f7510167d99a31475515708553106c0545",
+        "repos/platform@5961309c6b0ca4e8df22dbb5be92ac0845bf8d25",
+        "repos/brand-site@c39953c4fdb523ab4de511f9e60c408f6c1f8918"
+      ],
+      "data": {
+        "current_bundle": {
+          "file": "changes/CHG-2026-133.yaml",
+          "change_id": "CHG-2026-133",
+          "goal": "add deployability management safety surfaces",
+          "protocol_sha": "da3027100cfe9391f7f8d03be18a108ee2804cf6",
+          "client_sha": "135546f7510167d99a31475515708553106c0545",
+          "platform_sha": "5961309c6b0ca4e8df22dbb5be92ac0845bf8d25",
+          "brand_site_sha": "c39953c4fdb523ab4de511f9e60c408f6c1f8918",
+          "contracts_check": "passed",
+          "integration_check": "passed"
+        },
+        "submodules": [
+          {
+            "path": "repos/protocol",
+            "label": "protocol",
+            "sha": "da3027100cfe9391f7f8d03be18a108ee2804cf6",
+            "bundle_sha": "da3027100cfe9391f7f8d03be18a108ee2804cf6",
+            "matches_bundle": true,
+            "marker": " ",
+            "ref": "heads/codex/billing-and-quota-rfc",
+            "dirty": false,
+            "dirty_entries": [],
+            "status_error": null
+          },
+          {
+            "path": "repos/client",
+            "label": "client",
+            "sha": "135546f7510167d99a31475515708553106c0545",
+            "bundle_sha": "135546f7510167d99a31475515708553106c0545",
+            "matches_bundle": true,
+            "marker": " ",
+            "ref": "heads/main",
+            "dirty": false,
+            "dirty_entries": [],
+            "status_error": null
+          },
+          {
+            "path": "repos/platform",
+            "label": "platform",
+            "sha": "5961309c6b0ca4e8df22dbb5be92ac0845bf8d25",
+            "bundle_sha": "5961309c6b0ca4e8df22dbb5be92ac0845bf8d25",
+            "matches_bundle": true,
+            "marker": " ",
+            "ref": "heads/codex/billing-p1-m1-1-schema",
+            "dirty": false,
+            "dirty_entries": [],
+            "status_error": null
+          },
+          {
+            "path": "repos/brand-site",
+            "label": "brand-site",
+            "sha": "c39953c4fdb523ab4de511f9e60c408f6c1f8918",
+            "bundle_sha": "c39953c4fdb523ab4de511f9e60c408f6c1f8918",
+            "matches_bundle": true,
+            "marker": " ",
+            "ref": "heads/codex/brand-site-strict-args",
+            "dirty": false,
+            "dirty_entries": [],
+            "status_error": null
+          }
+        ]
+      }
+    },
+    {
+      "key": "top_level_scripts",
+      "label": "top-level deployability scripts",
+      "ok": true,
+      "blockers": [],
+      "warnings": [],
+      "evidence": [
+        "package.json"
+      ],
+      "data": {
+        "required_scripts": [
+          "deployability:overview",
+          "deployability:quickstart",
+          "deployability:safety",
+          "deployability:explain",
+          "deployability:production",
+          "deployability:exposure",
+          "deployability:release",
+          "deployability:operator-checklist",
+          "deployability:readiness",
+          "deployability:roadmap",
+          "deployability:status",
+          "deployability:gates",
+          "deployability:doctor",
+          "deployability:dashboard",
+          "deployability:next",
+          "deployability:action-plan",
+          "deployability:profiles",
+          "deployability:commands",
+          "deployability:runbook",
+          "deployability:menu",
+          "deployability:recipe",
+          "deployability:handoff",
+          "deployability:evidence",
+          "compat:status",
+          "test:deployability-overview",
+          "test:deployability-quickstart",
+          "test:deployability-safety",
+          "test:deployability-explain",
+          "test:deployability-production",
+          "test:deployability-exposure",
+          "test:deployability-release",
+          "test:deployability-operator-checklist",
+          "test:deployability-readiness",
+          "test:deployability-roadmap",
+          "test:deployability-status",
+          "test:deployability-gates",
+          "test:deployability-doctor",
+          "test:deployability-dashboard",
+          "test:deployability-next",
+          "test:deployability-action-plan",
+          "test:deployability-profiles",
+          "test:deployability-pipeline-summaries",
+          "test:deployability-commands",
+          "test:deployability-runbook",
+          "test:deployability-menu",
+          "test:deployability-recipe",
+          "test:deployability-handoff",
+          "test:deployability-evidence",
+          "test:deployability",
+          "test:deployability-operations",
+          "test:compat-status"
+        ]
+      }
+    },
+    {
+      "key": "documentation_alignment",
+      "label": "documentation alignment",
+      "ok": true,
+      "blockers": [],
+      "warnings": [],
+      "evidence": [
+        "README.md",
+        "docs/product/deployability-ecosystem-prd.md",
+        "docs/product/deployability-ecosystem-prd.zh-CN.md",
+        "docs/product/deployability-pipelines-prd.md",
+        "docs/product/deployability-pipelines-prd.zh-CN.md",
+        "docs/runbooks/local-dev-setup.md",
+        "docs/runbooks/local-dev-setup.zh-CN.md",
+        "docs/architecture/main-readiness.md",
+        "docs/architecture/main-readiness.zh-CN.md"
+      ],
+      "data": {
+        "required_strings": [
+          "corepack pnpm run deployability:doctor",
+          "corepack pnpm --silent run deployability:doctor -- --json",
+          "corepack pnpm run deployability:readiness",
+          "corepack pnpm --silent run deployability:readiness -- --json",
+          "corepack pnpm run deployability:roadmap",
+          "corepack pnpm --silent run deployability:roadmap -- --json",
+          "corepack pnpm run deployability:explain",
+          "corepack pnpm --silent run deployability:explain -- --json",
+          "corepack pnpm run deployability:production",
+          "corepack pnpm --silent run deployability:production -- --json",
+          "corepack pnpm run deployability:status",
+          "corepack pnpm --silent run deployability:status -- --json",
+          "corepack pnpm run deployability:gates",
+          "corepack pnpm --silent run deployability:gates -- --json",
+          "corepack pnpm run deployability:exposure",
+          "corepack pnpm --silent run deployability:exposure -- --json",
+          "corepack pnpm run deployability:release -- --image-tag <candidate-tag>",
+          "corepack pnpm --silent run deployability:release -- --image-tag <candidate-tag> --json",
+          "corepack pnpm run deployability:operator-checklist -- --profile public-stack --image-tag <candidate-tag>",
+          "corepack pnpm --silent run deployability:operator-checklist -- --profile public-stack --image-tag <candidate-tag> --json",
+          "corepack pnpm run deployability:dashboard",
+          "corepack pnpm --silent run deployability:dashboard -- --json",
+          "corepack pnpm run deployability:action-plan",
+          "corepack pnpm --silent run deployability:action-plan -- --json",
+          "corepack pnpm run deployability:profiles",
+          "corepack pnpm --silent run deployability:profiles -- --json",
+          "overview, command, and doctor metadata",
+          "corepack pnpm run deployability:commands",
+          "corepack pnpm --silent run deployability:commands -- --json",
+          "corepack pnpm run deployability:runbook",
+          "corepack pnpm --silent run deployability:runbook -- --json",
+          "corepack pnpm run deployability:menu",
+          "corepack pnpm --silent run deployability:menu -- --json",
+          "corepack pnpm run deployability:menu -- --profile public-stack",
+          "corepack pnpm --silent run deployability:menu -- --profile public-stack --json",
+          "corepack pnpm run deployability:recipe -- --profile public-stack",
+          "corepack pnpm --silent run deployability:recipe -- --profile public-stack --json",
+          "corepack pnpm run deployability:evidence -- --profile public-stack",
+          "corepack pnpm --silent run deployability:evidence -- --profile public-stack --json",
+          "selected_onboarding_plan",
+          "operator:onboarding:plan"
+        ]
+      }
+    },
+    {
+      "key": "ecosystem_prd_alignment",
+      "label": "ecosystem PRD alignment",
+      "ok": true,
+      "blockers": [],
+      "warnings": [],
+      "evidence": [
+        "docs/product/deployability-ecosystem-prd.md",
+        "docs/product/deployability-ecosystem-prd.zh-CN.md"
+      ],
+      "data": {
+        "required_strings": [
+          "daily-deployable",
+          "Sub2API",
+          "CLIProxyAPI",
+          "one obvious quick-start path"
+        ]
+      }
+    },
+    {
+      "key": "brand_site_alignment",
+      "label": "brand-site alignment",
+      "ok": true,
+      "blockers": [],
+      "warnings": [],
+      "evidence": [
+        "repos/brand-site/scripts/deployability-content-smoke.mjs",
+        "repos/brand-site/src/app/pages/Docs/DeployabilityProfiles.tsx",
+        "repos/brand-site/src/app/pages/en/Docs/DeployabilityProfiles.tsx"
+      ],
+      "data": {
+        "required_strings": [
+          "corepack pnpm run deployability:doctor",
+          "corepack pnpm --silent run deployability:doctor -- --json",
+          "corepack pnpm run deployability:readiness",
+          "corepack pnpm --silent run deployability:readiness -- --json",
+          "corepack pnpm run deployability:roadmap",
+          "corepack pnpm --silent run deployability:roadmap -- --json",
+          "corepack pnpm run deployability:explain",
+          "corepack pnpm --silent run deployability:explain -- --json",
+          "corepack pnpm run deployability:production",
+          "corepack pnpm --silent run deployability:production -- --json",
+          "corepack pnpm run deployability:status",
+          "corepack pnpm --silent run deployability:status -- --json",
+          "corepack pnpm run deployability:gates",
+          "corepack pnpm --silent run deployability:gates -- --json",
+          "corepack pnpm run deployability:exposure",
+          "corepack pnpm --silent run deployability:exposure -- --json",
+          "corepack pnpm run deployability:release -- --image-tag <candidate-tag>",
+          "corepack pnpm --silent run deployability:release -- --image-tag <candidate-tag> --json",
+          "corepack pnpm run deployability:operator-checklist -- --profile public-stack --image-tag <candidate-tag>",
+          "corepack pnpm --silent run deployability:operator-checklist -- --profile public-stack --image-tag <candidate-tag> --json",
+          "corepack pnpm run deployability:dashboard",
+          "corepack pnpm --silent run deployability:dashboard -- --json",
+          "corepack pnpm run deployability:action-plan",
+          "corepack pnpm --silent run deployability:action-plan -- --json",
+          "corepack pnpm run deployability:profiles",
+          "corepack pnpm --silent run deployability:profiles -- --json",
+          "overview, command, and doctor metadata",
+          "corepack pnpm run deployability:commands",
+          "corepack pnpm --silent run deployability:commands -- --json",
+          "corepack pnpm run deployability:runbook",
+          "corepack pnpm --silent run deployability:runbook -- --json",
+          "corepack pnpm run deployability:menu",
+          "corepack pnpm --silent run deployability:menu -- --json",
+          "corepack pnpm run deployability:menu -- --profile public-stack",
+          "corepack pnpm --silent run deployability:menu -- --profile public-stack --json",
+          "corepack pnpm run deployability:recipe -- --profile public-stack",
+          "corepack pnpm --silent run deployability:recipe -- --profile public-stack --json",
+          "corepack pnpm run deployability:evidence -- --profile public-stack",
+          "corepack pnpm --silent run deployability:evidence -- --profile public-stack --json",
+          "selected_onboarding_plan",
+          "operator:onboarding:plan"
+        ]
+      }
+    },
+    {
+      "key": "brand_site_content_smoke",
+      "label": "brand-site content smoke",
+      "ok": true,
+      "blockers": [],
+      "warnings": [],
+      "evidence": [
+        "npm run smoke:deployability-content"
+      ],
+      "data": {
+        "command": "npm run smoke:deployability-content",
+        "exit_code": 0,
+        "stderr": []
+      }
+    },
+    {
+      "key": "safety_contract",
+      "label": "read-only safety contract",
+      "ok": true,
+      "blockers": [],
+      "warnings": [],
+      "evidence": [
+        "tools/deployability-doctor.mjs"
+      ],
+      "data": {
+        "reads_env": false,
+        "writes_files": false,
+        "starts_services": false,
+        "stops_services": false,
+        "calls_docker": false,
+        "probes_network": false,
+        "private_terminal_text": false,
+        "ci_safe": true,
+        "dashboard_safe": true
+      }
+    }
+  ],
+  "blockers": [],
+  "warnings": [],
+  "safety_defaults": [
+    "deployability doctor is read-only and does not read .env files",
+    "deployability doctor does not call Docker, bind ports, or probe network endpoints",
+    "JSON output contains checks, blockers, warnings, command metadata, and next commands only",
+    "dirty submodule worktrees are warnings; bundle mismatches and dirty gitlink markers are blockers"
+  ],
+  "next_commands": [
+    "corepack pnpm run deployability:quickstart",
+    "corepack pnpm run deployability:safety",
+    "corepack pnpm run deployability:explain",
+    "corepack pnpm run deployability:production",
+    "corepack pnpm run deployability:readiness",
+    "corepack pnpm run deployability:roadmap",
+    "corepack pnpm run deployability:status",
+    "corepack pnpm run deployability:gates",
+    "corepack pnpm run deployability:exposure",
+    "corepack pnpm run deployability:release -- --image-tag <candidate-tag>",
+    "corepack pnpm run deployability:operator-checklist -- --profile public-stack --image-tag <candidate-tag>",
+    "corepack pnpm run deployability:dashboard",
+    "corepack pnpm run deployability:next",
+    "corepack pnpm run deployability:action-plan",
+    "corepack pnpm run deployability:profiles",
+    "corepack pnpm run deployability:commands",
+    "corepack pnpm run deployability:runbook",
+    "corepack pnpm run deployability:menu",
+    "corepack pnpm run deployability:recipe -- --profile public-stack",
+    "corepack pnpm run deployability:evidence -- --profile public-stack",
+    "corepack pnpm run compat:status",
+    "corepack pnpm run deployability:handoff",
+    "corepack pnpm run test:deployability",
+    "corepack pnpm run test:deployability-operations",
+    "corepack pnpm run check:submodules",
+    "corepack pnpm run check:bundles"
+  ],
+  "notes": [
+    "run this after overview, quickstart, or safety when you need one read-only readiness snapshot",
+    "pipeline-specific doctor, readiness, preflight, status, smoke, and audit commands remain authoritative"
+  ]
+}

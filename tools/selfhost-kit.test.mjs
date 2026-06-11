@@ -248,6 +248,16 @@ function writeFakeDocker(root) {
 
 const tmpRoot = fs.mkdtempSync(path.join(os.tmpdir(), "delexec-selfhost-kit-test-"));
 try {
+  const separatorQuickstartJson = run(tmpRoot, ["quickstart", "--", "--profile", "public-stack", "--json"]);
+  assert.equal(separatorQuickstartJson.status, 0, separatorQuickstartJson.stderr || separatorQuickstartJson.stdout);
+  const separatorQuickstartBody = JSON.parse(separatorQuickstartJson.stdout);
+  assert.equal(separatorQuickstartBody.command, "selfhost:quickstart");
+  assert.equal(separatorQuickstartBody.profile, "public-stack");
+
+  const unknownOption = run(tmpRoot, ["quickstart", "--profil", "public-stack", "--json"]);
+  assert.notEqual(unknownOption.status, 0, "unknown selfhost options must fail instead of falling back to default profile");
+  assert.match(unknownOption.stderr, /unknown option --profil/);
+
   const initJsonRoot = path.join(tmpRoot, "init-json");
   fs.mkdirSync(initJsonRoot, { recursive: true });
   const initJsonProfile = writeMinimalProfile(initJsonRoot);
@@ -954,6 +964,105 @@ try {
     assert.equal(exportedJson.profile, "platform");
     assert.equal(exportedJson.body.items[0].action, "security.reviewed");
   });
+
+  const publicOriginRoot = path.join(tmpRoot, "public-origin-json");
+  fs.mkdirSync(publicOriginRoot, { recursive: true });
+  const publicOriginStack = writeMinimalPublicStackProfile(publicOriginRoot);
+  const publicOriginInit = run(publicOriginRoot, ["init", "--profile", "public-stack"]);
+  assert.equal(publicOriginInit.status, 0, publicOriginInit.stderr || publicOriginInit.stdout);
+  assert.match(publicOriginInit.stdout, /PUBLIC_SITE_ADDRESS still points at localhost/);
+  const publicOriginEnv = readEnv(publicOriginStack.envPath);
+
+  const publicOriginBeforeDryRun = fs.readFileSync(publicOriginStack.envPath, "utf8");
+  const publicOriginDryRun = run(publicOriginRoot, [
+    "public-origin",
+    "--profile",
+    "public-stack",
+    "--origin",
+    "https://callanything.example",
+    "--json"
+  ]);
+  assert.equal(publicOriginDryRun.status, 0, publicOriginDryRun.stderr || publicOriginDryRun.stdout);
+  const publicOriginDryRunBody = JSON.parse(publicOriginDryRun.stdout);
+  assert.equal(publicOriginDryRunBody.command, "selfhost:public-origin");
+  assert.equal(publicOriginDryRunBody.profile, "public-stack");
+  assert.equal(publicOriginDryRunBody.ok, true);
+  assert.equal(publicOriginDryRunBody.dry_run, true);
+  assert.equal(publicOriginDryRunBody.confirmed, false);
+  assert.equal(publicOriginDryRunBody.origin, "https://callanything.example");
+  assert.equal(publicOriginDryRunBody.env_path, "repos/platform/deploy/public-stack/.env");
+  assert.equal(publicOriginDryRunBody.target_key, "PUBLIC_SITE_ADDRESS");
+  assert.equal(publicOriginDryRunBody.backup_path, null);
+  assert.deepEqual(publicOriginDryRunBody.changed_files, []);
+  assert.equal(publicOriginDryRunBody.current_value_class, "localhost");
+  assert.match(publicOriginDryRunBody.next_commands.join("\n"), /selfhost:public-origin -- --profile public-stack --origin https:\/\/callanything\.example --confirm/);
+  assert.match(publicOriginDryRunBody.next_commands.join("\n"), /selfhost:security-review -- --profile public-stack/);
+  assert.match(publicOriginDryRunBody.notes.join("\n"), /dry-run only/);
+  assert.match(publicOriginDryRunBody.notes.join("\n"), /does not print secret values/);
+  assert.equal(fs.readFileSync(publicOriginStack.envPath, "utf8"), publicOriginBeforeDryRun, "public-origin dry-run must not modify .env");
+  assert.ok(!publicOriginDryRun.stdout.includes(publicOriginEnv.get("PLATFORM_ADMIN_API_KEY") || ""));
+  assert.ok(!publicOriginDryRun.stdout.includes(publicOriginEnv.get("PLATFORM_CONSOLE_BOOTSTRAP_SECRET") || ""));
+
+  for (const invalidOrigin of ["http://localhost", "http://127.0.0.1", "http://example.com", "callanything.example"]) {
+    const invalidPublicOrigin = run(publicOriginRoot, [
+      "public-origin",
+      "--profile",
+      "public-stack",
+      "--origin",
+      invalidOrigin,
+      "--json"
+    ]);
+    assert.notEqual(invalidPublicOrigin.status, 0, `invalid origin should fail: ${invalidOrigin}`);
+    assert.equal(
+      fs.readFileSync(publicOriginStack.envPath, "utf8"),
+      publicOriginBeforeDryRun,
+      `invalid origin must not modify .env: ${invalidOrigin}`
+    );
+    assert.ok(!invalidPublicOrigin.stdout.includes(publicOriginEnv.get("PLATFORM_ADMIN_API_KEY") || ""));
+    assert.ok(!invalidPublicOrigin.stdout.includes(publicOriginEnv.get("PLATFORM_CONSOLE_BOOTSTRAP_SECRET") || ""));
+  }
+
+  const wrongProfilePublicOrigin = run(publicOriginRoot, [
+    "public-origin",
+    "--origin",
+    "https://callanything.example",
+    "--json"
+  ]);
+  assert.notEqual(wrongProfilePublicOrigin.status, 0, "public-origin must only support public-stack");
+  assert.match(wrongProfilePublicOrigin.stderr || wrongProfilePublicOrigin.stdout, /only supports public-stack/);
+
+  const publicOriginConfirm = run(publicOriginRoot, [
+    "public-origin",
+    "--profile",
+    "public-stack",
+    "--origin",
+    "https://callanything.example",
+    "--confirm",
+    "--json"
+  ]);
+  assert.equal(publicOriginConfirm.status, 0, publicOriginConfirm.stderr || publicOriginConfirm.stdout);
+  const publicOriginConfirmBody = JSON.parse(publicOriginConfirm.stdout);
+  assert.equal(publicOriginConfirmBody.command, "selfhost:public-origin");
+  assert.equal(publicOriginConfirmBody.profile, "public-stack");
+  assert.equal(publicOriginConfirmBody.ok, true);
+  assert.equal(publicOriginConfirmBody.dry_run, false);
+  assert.equal(publicOriginConfirmBody.confirmed, true);
+  assert.equal(publicOriginConfirmBody.origin, "https://callanything.example");
+  assert.match(publicOriginConfirmBody.backup_path, /repos\/platform\/deploy\/public-stack\/\.env\.public-origin-backup-/);
+  assert.match(publicOriginConfirmBody.changed_files.join("\n"), /repos\/platform\/deploy\/public-stack\/\.env/);
+  assert.match(publicOriginConfirmBody.changed_files.join("\n"), /repos\/platform\/deploy\/public-stack\/\.env\.public-origin-backup-/);
+  assert.match(publicOriginConfirmBody.next_commands.join("\n"), /selfhost:security-review -- --profile public-stack/);
+  assert.match(publicOriginConfirmBody.notes.join("\n"), /writes only PUBLIC_SITE_ADDRESS/);
+  assert.ok(fs.existsSync(path.join(publicOriginRoot, publicOriginConfirmBody.backup_path)));
+  const publicOriginConfirmedEnv = readEnv(publicOriginStack.envPath);
+  assert.equal(publicOriginConfirmedEnv.get("PUBLIC_SITE_ADDRESS"), "https://callanything.example");
+  assert.equal(publicOriginConfirmedEnv.get("PLATFORM_ADMIN_API_KEY"), publicOriginEnv.get("PLATFORM_ADMIN_API_KEY"));
+  assert.equal(
+    publicOriginConfirmedEnv.get("PLATFORM_CONSOLE_BOOTSTRAP_SECRET"),
+    publicOriginEnv.get("PLATFORM_CONSOLE_BOOTSTRAP_SECRET")
+  );
+  assert.ok(!publicOriginConfirm.stdout.includes(publicOriginEnv.get("PLATFORM_ADMIN_API_KEY") || ""));
+  assert.ok(!publicOriginConfirm.stdout.includes(publicOriginEnv.get("PLATFORM_CONSOLE_BOOTSTRAP_SECRET") || ""));
 
   const publicStack = writeMinimalPublicStackProfile(tmpRoot);
   const publicInit = run(tmpRoot, ["init", "--profile", "public-stack"]);

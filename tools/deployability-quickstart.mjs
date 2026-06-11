@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 
+import { parseStrictArgs } from "./lib/strict-args.mjs";
+
 const TRACKS = [
   {
     key: "daily_dev",
@@ -22,6 +24,62 @@ const TRACKS = [
         json_command: "corepack pnpm --silent run deployability:safety -- --json"
       },
       {
+        label: "Read the architecture and ownership explainer",
+        command: "corepack pnpm run deployability:explain",
+        json_command: "corepack pnpm --silent run deployability:explain -- --json"
+      },
+      {
+        label: "Review production hardening boundaries",
+        command: "corepack pnpm run deployability:production",
+        json_command: "corepack pnpm --silent run deployability:production -- --json"
+      },
+      {
+        label: "Read the production hardening plan",
+        command: "corepack pnpm run deployability:hardening-plan",
+        json_command: "corepack pnpm --silent run deployability:hardening-plan -- --json"
+      },
+      {
+        label: "Read the daily-deployable scorecard",
+        command: "corepack pnpm run deployability:readiness",
+        json_command: "corepack pnpm --silent run deployability:readiness -- --json"
+      },
+      {
+        label: "Read the PRD index",
+        command: "corepack pnpm run deployability:prd",
+        json_command: "corepack pnpm --silent run deployability:prd -- --json"
+      },
+      {
+        label: "Read the PRD-aligned roadmap",
+        command: "corepack pnpm run deployability:roadmap",
+        json_command: "corepack pnpm --silent run deployability:roadmap -- --json"
+      },
+      {
+        label: "Read the compact operator status",
+        command: "corepack pnpm run deployability:status",
+        json_command: "corepack pnpm --silent run deployability:status -- --json"
+      },
+      {
+        label: "Review public and production gates",
+        command: "corepack pnpm run deployability:gates",
+        json_command: "corepack pnpm --silent run deployability:gates -- --json"
+      },
+      {
+        label: "Review public-stack exposure blockers",
+        command: "corepack pnpm run deployability:exposure",
+        json_command: "corepack pnpm --silent run deployability:exposure -- --json"
+      },
+      {
+        label: "Review release candidate gates",
+        command: "corepack pnpm run deployability:release -- --image-tag <candidate-tag>",
+        json_command: "corepack pnpm --silent run deployability:release -- --image-tag <candidate-tag> --json"
+      },
+      {
+        label: "Review public-stack operator checklist",
+        command: "corepack pnpm run deployability:operator-checklist -- --profile public-stack --image-tag <candidate-tag>",
+        json_command:
+          "corepack pnpm --silent run deployability:operator-checklist -- --profile public-stack --image-tag <candidate-tag> --json"
+      },
+      {
         label: "Run the read-only deployability doctor",
         command: "corepack pnpm run deployability:doctor",
         json_command: "corepack pnpm --silent run deployability:doctor -- --json"
@@ -32,9 +90,64 @@ const TRACKS = [
         json_command: "corepack pnpm --silent run deployability:dashboard -- --json"
       },
       {
+        label: "List deployability profiles",
+        command: "corepack pnpm run deployability:profiles",
+        json_command: "corepack pnpm --silent run deployability:profiles -- --json"
+      },
+      {
+        label: "Open the operator menu",
+        command: "corepack pnpm run deployability:menu",
+        json_command: "corepack pnpm --silent run deployability:menu -- --json"
+      },
+      {
+        label: "Read the focused public-stack recipe",
+        command: "corepack pnpm run deployability:recipe -- --profile public-stack",
+        json_command: "corepack pnpm --silent run deployability:recipe -- --profile public-stack --json"
+      },
+      {
+        label: "Read the console management index",
+        command: "corepack pnpm run deployability:console",
+        json_command: "corepack pnpm --silent run deployability:console -- --json"
+      },
+      {
+        label: "Emit a focused public-stack dashboard payload",
+        command: "corepack pnpm run deployability:dashboard -- --profile public-stack",
+        json_command: "corepack pnpm --silent run deployability:dashboard -- --profile public-stack --json"
+      },
+      {
+        label: "List supported action-plan profiles",
+        command: "corepack pnpm run deployability:action-plan -- --list-profiles",
+        json_command: "corepack pnpm --silent run deployability:action-plan -- --list-profiles --json"
+      },
+      {
+        label: "Choose the next operator action",
+        command: "corepack pnpm run deployability:action-plan",
+        json_command: "corepack pnpm --silent run deployability:action-plan -- --json"
+      },
+      {
+        label: "Browse the command catalog",
+        command: "corepack pnpm run deployability:commands",
+        json_command: "corepack pnpm --silent run deployability:commands -- --json"
+      },
+      {
+        label: "Read the daily profile runbook",
+        command: "corepack pnpm run deployability:runbook -- --profile daily-dev",
+        json_command: "corepack pnpm --silent run deployability:runbook -- --profile daily-dev --json"
+      },
+      {
         label: "Create a non-secret daily handoff",
         command: "corepack pnpm run deployability:handoff",
         json_command: "corepack pnpm --silent run deployability:handoff -- --json"
+      },
+      {
+        label: "Create a focused public-stack handoff",
+        command: "corepack pnpm run deployability:handoff -- --profile public-stack",
+        json_command: "corepack pnpm --silent run deployability:handoff -- --profile public-stack --json"
+      },
+      {
+        label: "Create a focused public-stack evidence bundle",
+        command: "corepack pnpm run deployability:evidence -- --profile public-stack",
+        json_command: "corepack pnpm --silent run deployability:evidence -- --profile public-stack --json"
       },
       {
         label: "Inspect the local stack plan",
@@ -45,6 +158,38 @@ const TRACKS = [
         label: "Run the daily local doctor",
         command: "corepack pnpm run dev:doctor",
         json_command: "corepack pnpm --silent run dev:doctor -- --json"
+      }
+    ]
+  },
+  {
+    key: "all_in_one_demo",
+    label: "All-in-One Demo",
+    purpose: "Run the single-machine caller, responder, relay, and platform stack for first-run product evaluation.",
+    steps: [
+      {
+        label: "Read the all-in-one copy-paste sequence",
+        command: "corepack pnpm run selfhost:quickstart -- --profile all-in-one",
+        json_command: "corepack pnpm --silent run selfhost:quickstart -- --profile all-in-one --json"
+      },
+      {
+        label: "Inspect all-in-one readiness",
+        command: "corepack pnpm run selfhost:readiness -- --profile all-in-one",
+        json_command: "corepack pnpm --silent run selfhost:readiness -- --profile all-in-one --json"
+      },
+      {
+        label: "Generate or harden all-in-one env",
+        command: "corepack pnpm run selfhost:init -- --profile all-in-one",
+        json_command: "corepack pnpm --silent run selfhost:init -- --profile all-in-one --json"
+      },
+      {
+        label: "Run all-in-one preflight before startup",
+        command: "corepack pnpm run selfhost:preflight -- --profile all-in-one",
+        json_command: "corepack pnpm --silent run selfhost:preflight -- --profile all-in-one --json"
+      },
+      {
+        label: "Start all-in-one only after preflight",
+        command: "corepack pnpm run selfhost:up -- --profile all-in-one",
+        json_command: "corepack pnpm --silent run selfhost:up -- --profile all-in-one --json"
       }
     ]
   },
@@ -96,6 +241,12 @@ const TRACKS = [
         json_command: "corepack pnpm --silent run selfhost:ports -- --profile public-stack --json"
       },
       {
+        label: "Plan public origin update",
+        command: "corepack pnpm run selfhost:public-origin -- --profile public-stack --origin <public-origin>",
+        json_command:
+          "corepack pnpm --silent run selfhost:public-origin -- --profile public-stack --origin <public-origin> --json"
+      },
+      {
         label: "Run public exposure review",
         command: "corepack pnpm run selfhost:security-review -- --profile public-stack",
         json_command: "corepack pnpm --silent run selfhost:security-review -- --profile public-stack --json"
@@ -104,6 +255,11 @@ const TRACKS = [
         label: "Validate operator onboarding contract",
         command: "corepack pnpm run operator:onboarding:check",
         json_command: "corepack pnpm --silent run operator:onboarding:check -- --json"
+      },
+      {
+        label: "Export public-stack deployability evidence",
+        command: "corepack pnpm run deployability:evidence -- --profile public-stack",
+        json_command: "corepack pnpm --silent run deployability:evidence -- --profile public-stack --json"
       }
     ]
   },
@@ -112,6 +268,17 @@ const TRACKS = [
     label: "Release review",
     purpose: "Inspect published-image smoke intent before asking platform-owned release checks to run.",
     steps: [
+      {
+        label: "Review release candidate gates",
+        command: "corepack pnpm run deployability:release -- --image-tag <candidate-tag>",
+        json_command: "corepack pnpm --silent run deployability:release -- --image-tag <candidate-tag> --json"
+      },
+      {
+        label: "Review public-stack operator checklist",
+        command: "corepack pnpm run deployability:operator-checklist -- --profile public-stack --image-tag <candidate-tag>",
+        json_command:
+          "corepack pnpm --silent run deployability:operator-checklist -- --profile public-stack --image-tag <candidate-tag> --json"
+      },
       {
         label: "Inspect image plan",
         command: "corepack pnpm run published-image:plan",
@@ -136,8 +303,27 @@ const SAFETY_DEFAULTS = [
 const NEXT_COMMANDS = [
   "corepack pnpm run deployability:overview",
   "corepack pnpm run deployability:safety",
+  "corepack pnpm run deployability:explain",
+  "corepack pnpm run deployability:production",
+  "corepack pnpm run deployability:hardening-plan",
+  "corepack pnpm run deployability:readiness",
+  "corepack pnpm run deployability:prd",
+  "corepack pnpm run deployability:roadmap",
+  "corepack pnpm run deployability:status",
+  "corepack pnpm run deployability:gates",
+  "corepack pnpm run deployability:exposure",
+  "corepack pnpm run deployability:release -- --image-tag <candidate-tag>",
+  "corepack pnpm run deployability:operator-checklist -- --profile public-stack --image-tag <candidate-tag>",
   "corepack pnpm run deployability:doctor",
   "corepack pnpm run deployability:dashboard",
+  "corepack pnpm run deployability:profiles",
+  "corepack pnpm run deployability:menu",
+  "corepack pnpm run deployability:recipe -- --profile public-stack",
+  "corepack pnpm run deployability:console",
+  "corepack pnpm run deployability:action-plan -- --list-profiles",
+  "corepack pnpm run deployability:action-plan",
+  "corepack pnpm run deployability:commands",
+  "corepack pnpm run deployability:runbook",
   "corepack pnpm run compat:status",
   "corepack pnpm run deployability:handoff",
   "corepack pnpm run check:submodules",
@@ -145,9 +331,7 @@ const NEXT_COMMANDS = [
 ];
 
 function parseArgs(argv) {
-  return {
-    json: argv.slice(2).includes("--json")
-  };
+  return parseStrictArgs(argv, [{ flag: "--json", name: "json", type: "boolean" }], { json: false });
 }
 
 function quickstartData() {

@@ -4,6 +4,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { spawnSync } from "node:child_process";
 import YAML from "yaml";
+import { parseStrictArgs } from "./lib/strict-args.mjs";
 
 const ROOT = process.cwd();
 const SUBMODULES = [
@@ -17,24 +18,98 @@ const REQUIRED_SCRIPTS = [
   "deployability:overview",
   "deployability:quickstart",
   "deployability:safety",
+  "deployability:explain",
+  "deployability:production",
+  "deployability:exposure",
+  "deployability:release",
+  "deployability:operator-checklist",
+  "deployability:readiness",
+  "deployability:roadmap",
+  "deployability:status",
+  "deployability:gates",
   "deployability:doctor",
   "deployability:dashboard",
+  "deployability:next",
+  "deployability:action-plan",
+  "deployability:profiles",
+  "deployability:commands",
+  "deployability:runbook",
+  "deployability:menu",
+  "deployability:recipe",
   "deployability:handoff",
+  "deployability:evidence",
   "compat:status",
   "test:deployability-overview",
   "test:deployability-quickstart",
   "test:deployability-safety",
+  "test:deployability-explain",
+  "test:deployability-production",
+  "test:deployability-exposure",
+  "test:deployability-release",
+  "test:deployability-operator-checklist",
+  "test:deployability-readiness",
+  "test:deployability-roadmap",
+  "test:deployability-status",
+  "test:deployability-gates",
   "test:deployability-doctor",
   "test:deployability-dashboard",
+  "test:deployability-next",
+  "test:deployability-action-plan",
+  "test:deployability-profiles",
+  "test:deployability-pipeline-summaries",
+  "test:deployability-commands",
+  "test:deployability-runbook",
+  "test:deployability-menu",
+  "test:deployability-recipe",
   "test:deployability-handoff",
+  "test:deployability-evidence",
+  "test:deployability",
+  "test:deployability-operations",
   "test:compat-status"
 ];
 
 const DOCTOR_COMMANDS = [
   "corepack pnpm run deployability:doctor",
   "corepack pnpm --silent run deployability:doctor -- --json",
+  "corepack pnpm run deployability:readiness",
+  "corepack pnpm --silent run deployability:readiness -- --json",
+  "corepack pnpm run deployability:roadmap",
+  "corepack pnpm --silent run deployability:roadmap -- --json",
+  "corepack pnpm run deployability:explain",
+  "corepack pnpm --silent run deployability:explain -- --json",
+  "corepack pnpm run deployability:production",
+  "corepack pnpm --silent run deployability:production -- --json",
+  "corepack pnpm run deployability:status",
+  "corepack pnpm --silent run deployability:status -- --json",
+  "corepack pnpm run deployability:gates",
+  "corepack pnpm --silent run deployability:gates -- --json",
+  "corepack pnpm run deployability:exposure",
+  "corepack pnpm --silent run deployability:exposure -- --json",
+  "corepack pnpm run deployability:release -- --image-tag <candidate-tag>",
+  "corepack pnpm --silent run deployability:release -- --image-tag <candidate-tag> --json",
+  "corepack pnpm run deployability:operator-checklist -- --profile public-stack --image-tag <candidate-tag>",
+  "corepack pnpm --silent run deployability:operator-checklist -- --profile public-stack --image-tag <candidate-tag> --json",
   "corepack pnpm run deployability:dashboard",
-  "corepack pnpm --silent run deployability:dashboard -- --json"
+  "corepack pnpm --silent run deployability:dashboard -- --json",
+  "corepack pnpm run deployability:action-plan",
+  "corepack pnpm --silent run deployability:action-plan -- --json",
+  "corepack pnpm run deployability:profiles",
+  "corepack pnpm --silent run deployability:profiles -- --json",
+  "overview, command, and doctor metadata",
+  "corepack pnpm run deployability:commands",
+  "corepack pnpm --silent run deployability:commands -- --json",
+  "corepack pnpm run deployability:runbook",
+  "corepack pnpm --silent run deployability:runbook -- --json",
+  "corepack pnpm run deployability:menu",
+  "corepack pnpm --silent run deployability:menu -- --json",
+  "corepack pnpm run deployability:menu -- --profile public-stack",
+  "corepack pnpm --silent run deployability:menu -- --profile public-stack --json",
+  "corepack pnpm run deployability:recipe -- --profile public-stack",
+  "corepack pnpm --silent run deployability:recipe -- --profile public-stack --json",
+  "corepack pnpm run deployability:evidence -- --profile public-stack",
+  "corepack pnpm --silent run deployability:evidence -- --profile public-stack --json",
+  "selected_onboarding_plan",
+  "operator:onboarding:plan"
 ];
 
 const DOC_ALIGNMENT_FILES = [
@@ -49,11 +124,25 @@ const DOC_ALIGNMENT_FILES = [
   "docs/architecture/main-readiness.zh-CN.md"
 ];
 
+const ECOSYSTEM_PRD_FILES = [
+  "docs/product/deployability-ecosystem-prd.md",
+  "docs/product/deployability-ecosystem-prd.zh-CN.md"
+];
+
+const ECOSYSTEM_PRD_NEEDLES = [
+  "daily-deployable",
+  "Sub2API",
+  "CLIProxyAPI",
+  "one obvious quick-start path"
+];
+
 const BRAND_SITE_ALIGNMENT_FILES = [
   "repos/brand-site/scripts/deployability-content-smoke.mjs",
   "repos/brand-site/src/app/pages/Docs/DeployabilityProfiles.tsx",
   "repos/brand-site/src/app/pages/en/Docs/DeployabilityProfiles.tsx"
 ];
+
+const BRAND_SITE_CONTENT_SMOKE_COMMAND = "npm run smoke:deployability-content";
 
 const SAFETY_DEFAULTS = [
   "deployability doctor is read-only and does not read .env files",
@@ -65,17 +154,34 @@ const SAFETY_DEFAULTS = [
 const NEXT_COMMANDS = [
   "corepack pnpm run deployability:quickstart",
   "corepack pnpm run deployability:safety",
+  "corepack pnpm run deployability:explain",
+  "corepack pnpm run deployability:production",
+  "corepack pnpm run deployability:readiness",
+  "corepack pnpm run deployability:roadmap",
+  "corepack pnpm run deployability:status",
+  "corepack pnpm run deployability:gates",
+  "corepack pnpm run deployability:exposure",
+  "corepack pnpm run deployability:release -- --image-tag <candidate-tag>",
+  "corepack pnpm run deployability:operator-checklist -- --profile public-stack --image-tag <candidate-tag>",
   "corepack pnpm run deployability:dashboard",
+  "corepack pnpm run deployability:next",
+  "corepack pnpm run deployability:action-plan",
+  "corepack pnpm run deployability:profiles",
+  "corepack pnpm run deployability:commands",
+  "corepack pnpm run deployability:runbook",
+  "corepack pnpm run deployability:menu",
+  "corepack pnpm run deployability:recipe -- --profile public-stack",
+  "corepack pnpm run deployability:evidence -- --profile public-stack",
   "corepack pnpm run compat:status",
   "corepack pnpm run deployability:handoff",
+  "corepack pnpm run test:deployability",
+  "corepack pnpm run test:deployability-operations",
   "corepack pnpm run check:submodules",
   "corepack pnpm run check:bundles"
 ];
 
 function parseArgs(argv) {
-  return {
-    json: argv.slice(2).includes("--json")
-  };
+  return parseStrictArgs(argv, [{ flag: "--json", name: "json", type: "boolean" }], { json: false });
 }
 
 function runGit(args, cwd = ROOT) {
@@ -291,12 +397,63 @@ function checkSafetyContract() {
   };
 }
 
+function checkBrandSiteContentSmoke() {
+  const cwd = path.join(ROOT, "repos/brand-site");
+  if (!fs.existsSync(path.join(cwd, "package.json"))) {
+    return {
+      key: "brand_site_content_smoke",
+      label: "brand-site content smoke",
+      ok: false,
+      blockers: ["repos/brand-site/package.json: missing"],
+      warnings: [],
+      evidence: [],
+      data: {
+        command: BRAND_SITE_CONTENT_SMOKE_COMMAND,
+        exit_code: null,
+        stderr: []
+      }
+    };
+  }
+
+  const result = spawnSync("npm", ["run", "smoke:deployability-content"], {
+    cwd,
+    encoding: "utf8",
+    maxBuffer: 1024 * 1024 * 10,
+    env: process.env
+  });
+  const stderr = result.stderr.trim().split("\n").filter(Boolean).slice(-20);
+  const blockers =
+    result.status === 0
+      ? []
+      : [
+          `repos/brand-site: ${BRAND_SITE_CONTENT_SMOKE_COMMAND} failed with exit ${
+            result.status ?? "unknown"
+          }`
+        ];
+
+  return {
+    key: "brand_site_content_smoke",
+    label: "brand-site content smoke",
+    ok: blockers.length === 0,
+    blockers,
+    warnings: [],
+    evidence: blockers.length === 0 ? [BRAND_SITE_CONTENT_SMOKE_COMMAND] : [],
+    data: {
+      command: BRAND_SITE_CONTENT_SMOKE_COMMAND,
+      exit_code: result.status,
+      stderr
+    }
+  };
+}
+
 function doctorData() {
   const checks = [
     checkCompatibilityLedger(),
     checkTopLevelScripts(),
     checkFilesContain("documentation_alignment", "documentation alignment", DOC_ALIGNMENT_FILES, DOCTOR_COMMANDS),
+    checkFilesContain("ecosystem_prd_alignment", "ecosystem PRD alignment", ECOSYSTEM_PRD_FILES, ECOSYSTEM_PRD_NEEDLES),
     checkFilesContain("brand_site_alignment", "brand-site alignment", BRAND_SITE_ALIGNMENT_FILES, DOCTOR_COMMANDS),
+    checkBrandSiteContentSmoke(),
     checkSafetyContract()
   ];
   const blockers = checks.flatMap((check) => check.blockers);

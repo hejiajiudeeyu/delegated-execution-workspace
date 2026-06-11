@@ -3,9 +3,16 @@
 import fs from "node:fs";
 import path from "node:path";
 import { spawnSync } from "node:child_process";
+import { fileURLToPath } from "node:url";
 import YAML from "yaml";
+import { buildEcosystemReadiness } from "./lib/deployability-ecosystem-readiness.mjs";
+import { PIPELINES, buildPipelineSummaries } from "./lib/deployability-pipeline-summaries.mjs";
+import { buildProfileSummaries } from "./lib/deployability-profile-summaries.mjs";
+import { recommendedProfileKeys } from "./lib/deployability-profile-attention.mjs";
 
 const ROOT = process.cwd();
+const TOOL_ROOT = path.dirname(fileURLToPath(import.meta.url));
+const SOURCE_ROOT = path.dirname(TOOL_ROOT);
 const SUBMODULES = [
   { path: "repos/protocol", bundleField: "protocol_sha", label: "protocol" },
   { path: "repos/client", bundleField: "client_sha", label: "client" },
@@ -45,6 +52,16 @@ const COMMAND_MAP = [
     purpose: "emit the single read-only JSON payload for top-level deployability dashboards and CI"
   },
   {
+    command: "corepack pnpm run deployability:action-plan",
+    json_command: "corepack pnpm --silent run deployability:action-plan -- --json",
+    purpose: "choose the next operator action by profile, dashboard safety, and public exposure posture"
+  },
+  {
+    command: "corepack pnpm run deployability:commands",
+    json_command: "corepack pnpm --silent run deployability:commands -- --json",
+    purpose: "browse the read-only command catalog by category, posture, track, or pipeline"
+  },
+  {
     command: "corepack pnpm run dev:doctor",
     json_command: "corepack pnpm --silent run dev:doctor -- --json",
     purpose: "diagnose the local caller-skill and MCP development loop"
@@ -62,9 +79,9 @@ const COMMAND_MAP = [
 ];
 
 const SAFETY_NOTES = [
-  "handoff is read-only and does not read .env files",
+  "handoff writes a non-secret Markdown handoff report and does not read .env files",
   "handoff does not call Docker, bind ports, or probe network endpoints",
-  "Markdown and JSON output include command metadata, bundle metadata, compatibility status, and safety notes only",
+  "Markdown and JSON output include command metadata, pipeline summaries, bundle metadata, compatibility status, and safety notes only",
   "business protocol, client runtime, and platform runtime truth remain in the three formal repositories"
 ];
 
@@ -77,14 +94,52 @@ const NEXT_COMMANDS = [
 ];
 
 function parseArgs(argv) {
-  const args = argv.slice(2);
   const parsed = {
-    json: args.includes("--json"),
-    output: null
+    json: false,
+    output: null,
+    profile: null
   };
-  const outputIndex = args.indexOf("--output");
-  if (outputIndex !== -1) {
-    parsed.output = args[outputIndex + 1] || null;
+  const args = argv.slice(2);
+  const readOptionValue = (index, option) => {
+    const next = args[index + 1];
+    if (!next || next.startsWith("--")) {
+      throw new Error(`missing value for ${option}`);
+    }
+    return next;
+  };
+  for (let index = 0; index < args.length; index += 1) {
+    const value = args[index];
+    if (value === "--") {
+      continue;
+    }
+    if (value === "--json") {
+      parsed.json = true;
+      continue;
+    }
+    if (value === "--output") {
+      parsed.output = readOptionValue(index, "--output");
+      index += 1;
+      continue;
+    }
+    if (value.startsWith("--output=")) {
+      parsed.output = value.slice("--output=".length);
+      if (!parsed.output) throw new Error("missing value for --output");
+      continue;
+    }
+    if (value === "--profile") {
+      parsed.profile = readOptionValue(index, "--profile");
+      index += 1;
+      continue;
+    }
+    if (value.startsWith("--profile=")) {
+      parsed.profile = value.slice("--profile=".length);
+      if (!parsed.profile) throw new Error("missing value for --profile");
+      continue;
+    }
+    if (value.startsWith("--")) {
+      throw new Error(`unknown option ${value}`);
+    }
+    throw new Error(`unexpected argument ${value}`);
   }
   return parsed;
 }
@@ -94,6 +149,28 @@ function runGit(args, cwd = ROOT) {
     cwd,
     encoding: "utf8"
   });
+}
+
+function runJsonScript(relativeScript, extraArgs = []) {
+  const result = spawnSync(process.execPath, [path.join(TOOL_ROOT, relativeScript), "--json", ...extraArgs], {
+    cwd: SOURCE_ROOT,
+    encoding: "utf8",
+    maxBuffer: 1024 * 1024 * 10,
+    env: process.env
+  });
+  let body = null;
+  try {
+    body = result.stdout.trim() ? JSON.parse(result.stdout) : null;
+  } catch (error) {
+    body = null;
+  }
+  return {
+    ok: result.status === 0 && body != null && body.ok !== false,
+    exit_code: result.status,
+    stderr: result.stderr.trim().split("\n").filter(Boolean),
+    body,
+    parse_error: body == null ? "script did not emit valid JSON" : null
+  };
 }
 
 function latestBundleFile() {
@@ -222,12 +299,37 @@ function resolveOutput(output) {
   return path.isAbsolute(output) ? output : path.join(ROOT, output);
 }
 
-function reportData(output) {
+function reportData(output, args = parseArgs(process.argv)) {
   const bundle = readLatestBundle();
   const compatibility = compatibilityData(bundle);
+  const commandCatalogArgs = args.profile != null ? ["--profile", args.profile] : [];
+  const commandCatalog = runJsonScript("deployability-commands.mjs", commandCatalogArgs);
+  const readinessCommandCatalog = args.profile == null ? commandCatalog : runJsonScript("deployability-commands.mjs");
+  const commandCatalogBlockers = commandCatalog.ok
+    ? []
+    : [
+        `deployability:commands: ${
+          commandCatalog.parse_error || commandCatalog.stderr.join("; ") || `exit=${commandCatalog.exit_code}`
+        }`
+      ];
+  const profileFilter = commandCatalog.body?.filters_applied?.profile || {
+    requested: args.profile,
+    resolved: null,
+    pipeline: null
+  };
+  const pipelineSummaries = buildPipelineSummaries({
+    pipelines: PIPELINES,
+    catalogCommands: commandCatalog.body?.commands || []
+  }).filter((item) => profileFilter.pipeline == null || item.key === profileFilter.pipeline);
+  const profileSummaries = buildProfileSummaries({
+    profiles: commandCatalog.body?.filters?.profiles || [],
+    pipelineSummaries,
+    catalogCommands: commandCatalog.body?.commands || []
+  });
+
   return {
     command: "deployability:handoff",
-    ok: compatibility.blockers.length === 0,
+    ok: compatibility.blockers.length === 0 && commandCatalogBlockers.length === 0,
     output,
     current_bundle: {
       file: bundle.file,
@@ -241,7 +343,24 @@ function reportData(output) {
       integration_check: bundle.integration_check
     },
     compatibility,
+    command_catalog_status: {
+      ok: commandCatalog.ok,
+      exit_code: commandCatalog.exit_code,
+      stderr: commandCatalog.stderr,
+      parse_error: commandCatalog.parse_error,
+      profile: profileFilter
+    },
     command_map: COMMAND_MAP,
+    profile_filter: profileFilter,
+    profile_selector: commandCatalog.body?.filters?.profiles || [],
+    profile_summaries: profileSummaries,
+    recommended_profile_keys: recommendedProfileKeys(profileSummaries),
+    ecosystem_readiness: buildEcosystemReadiness({
+      catalogCommands: readinessCommandCatalog.body?.commands || [],
+      brandSiteOk: true
+    }),
+    pipeline_summaries: pipelineSummaries,
+    blockers: commandCatalogBlockers,
     safety_notes: SAFETY_NOTES,
     next_commands: NEXT_COMMANDS,
     notes: [
@@ -294,11 +413,52 @@ function markdownReport(data) {
     for (const warning of data.compatibility.warnings) lines.push(`- ${warning}`);
   }
 
+  if (data.blockers.length) {
+    lines.push("", "## Handoff Blockers", "");
+    for (const blocker of data.blockers) lines.push(`- ${blocker}`);
+  }
+
   lines.push("", "## Command Map", "");
   for (const item of data.command_map) {
     lines.push(`- ${item.command}`);
     lines.push(`  - JSON: ${item.json_command}`);
     lines.push(`  - Purpose: ${item.purpose}`);
+  }
+
+  if (data.profile_filter.requested != null) {
+    lines.push("", "## Profile Filter", "");
+    lines.push(`- Requested: ${data.profile_filter.requested}`);
+    lines.push(`- Resolved: ${data.profile_filter.resolved || "unknown"}`);
+    lines.push(`- Pipeline: ${data.profile_filter.pipeline || "unknown"}`);
+  }
+
+  if (data.profile_selector.length) {
+    lines.push("", "## Profile Selector", "");
+    for (const profile of data.profile_selector) {
+      lines.push(`- ${profile.key} -> ${profile.pipeline_key}`);
+      lines.push(`  - Aliases: ${profile.aliases.join(", ")}`);
+      lines.push(`  - Purpose: ${profile.purpose}`);
+    }
+  }
+
+  lines.push("", "## Ecosystem Readiness", "");
+  lines.push(`- Goal: ${data.ecosystem_readiness.goal}`);
+  lines.push(`- Status: ${data.ecosystem_readiness.status}`);
+  for (const item of data.ecosystem_readiness.checks) {
+    lines.push(`- ${item.key}: ${item.ok ? "ok" : "blocked"}`);
+    lines.push(`  - Evidence: ${item.evidence.join(" | ")}`);
+    lines.push(`  - Next: ${item.next_commands.join(" | ")}`);
+  }
+  lines.push("", "### Ecosystem Safety Notes", "");
+  for (const note of data.ecosystem_readiness.safety_notes) lines.push(`- ${note}`);
+
+  lines.push("", "## Pipeline Summaries", "");
+  for (const item of data.pipeline_summaries) {
+    lines.push(
+      `- ${item.key}: ${item.status}; commands=${item.command_count}; json=${item.json_command_count}; dashboard-safe=${item.dashboard_safe_command_count}; ci-safe=${item.ci_safe_command_count}; exposure-gates=${item.public_exposure_gate_count}`
+    );
+    lines.push(`  - Next: ${item.next_commands.join(" | ")}`);
+    lines.push(`  - Safety: ${item.safety_notes.join(" | ")}`);
   }
 
   lines.push("", "## Safety Notes", "");
@@ -335,6 +495,13 @@ function printText(data) {
   console.log(`ledger=${data.compatibility.ledger_matches_current ? "matches-current" : "mismatch"}`);
   console.log(`worktree=${data.compatibility.working_tree_clean ? "clean" : "dirty"}`);
   console.log(`output=${data.output}`);
+  if (data.profile_filter.requested != null) {
+    console.log(`profile=${data.profile_filter.requested} resolved=${data.profile_filter.resolved || "unknown"}`);
+  }
+  console.log("\nCommand map:");
+  for (const item of data.command_map) {
+    console.log(`- ${item.command}`);
+  }
   if (data.compatibility.blockers.length) {
     console.log("\nBlockers:");
     for (const blocker of data.compatibility.blockers) console.log(`- ${blocker}`);
@@ -343,12 +510,16 @@ function printText(data) {
     console.log("\nWarnings:");
     for (const warning of data.compatibility.warnings) console.log(`- ${warning}`);
   }
+  if (data.blockers.length) {
+    console.log("\nHandoff blockers:");
+    for (const blocker of data.blockers) console.log(`- ${blocker}`);
+  }
 }
 
 try {
   const args = parseArgs(process.argv);
   const output = resolveOutput(args.output);
-  const data = reportData(output);
+  const data = reportData(output, args);
   writeReport(data);
   if (args.json) {
     printJson(data);

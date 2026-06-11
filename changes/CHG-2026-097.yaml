@@ -1,0 +1,15 @@
+change_id: CHG-2026-097
+goal: align brand-site deployability summary contract
+protocol_sha: da3027100cfe9391f7f8d03be18a108ee2804cf6
+client_sha: f1d6a2d8c9b83517cdf6ca9803b223847f880e9a
+platform_sha: 5961309c6b0ca4e8df22dbb5be92ac0845bf8d25
+brand_site_sha: 38ed3deee27945b52fdf2201b2b6f4c2d9ec343a
+owner: hejiajiudeeyu
+risk_level: low
+affected_scope:
+  - orchestration
+  - brand-site
+  - documentation
+contracts_check: passed
+integration_check: passed
+notes: "Updates call-anything-brand-site Deployability Profiles in Chinese and English to document the shared pipeline summary metadata contract now used by deployability:overview, deployability:dashboard, and deployability:handoff. The page now names command_count, json_command_count, catalog_command_count, dashboard_safe_command_count, ci_safe_command_count, public_exposure_gate_count, next_commands, next_json_commands, and safety_notes so operator-facing docs match the dashboard and handoff payloads. Strengthens the brand-site deployability content smoke test to prevent the shared summary contract from drifting out of the public docs, wires that smoke into deployability:doctor as a read-only brand-site content drift gate, adds test:deployability as the one-command regression gate for the top-level deployability surface, adds test:deployability-operations as the one-command regression gate for operator-facing deployment and management surfaces, makes both the aggregate and operations gates discoverable from overview next commands, the safety matrix, and the searchable command catalog, and aligns the public brand-site Deployability Profiles with both top-level contract_test postures. Keeps protocol, client, and platform SHAs unchanged."

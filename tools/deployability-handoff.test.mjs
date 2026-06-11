@@ -97,8 +97,86 @@ try {
   assert.ok(body.command_map.some((item) => item.command === "corepack pnpm run deployability:safety"));
   assert.ok(body.command_map.some((item) => item.command === "corepack pnpm run deployability:doctor"));
   assert.ok(body.command_map.some((item) => item.command === "corepack pnpm run deployability:dashboard"));
+  assert.ok(body.command_map.some((item) => item.command === "corepack pnpm run deployability:action-plan"));
+  assert.ok(body.command_map.some((item) => item.command === "corepack pnpm run deployability:commands"));
   assert.ok(body.command_map.some((item) => item.command === "corepack pnpm run compat:status"));
+  assert.ok(Array.isArray(body.profile_selector));
+  assert.equal(body.profile_selector.length, 7);
+  const handoffProfilesByKey = new Map(body.profile_selector.map((item) => [item.key, item]));
+  assert.deepEqual(handoffProfilesByKey.get("public_stack"), {
+    key: "public_stack",
+    aliases: ["public-stack", "public_stack"],
+    pipeline_key: "public_stack",
+    purpose: "Review public exposure gates before opening edge routes."
+  });
+  assert.equal(body.profile_summaries.length, 7);
+  const handoffProfileSummariesByKey = new Map(body.profile_summaries.map((item) => [item.key, item]));
+  assert.deepEqual(handoffProfileSummariesByKey.get("public_stack").aliases, ["public-stack", "public_stack"]);
+  assert.equal(handoffProfileSummariesByKey.get("public_stack").pipeline_key, "public_stack");
+  assert.equal(handoffProfileSummariesByKey.get("public_stack").status, "ready_now_with_safety_gates");
+  assert.equal(handoffProfileSummariesByKey.get("public_stack").attention.level, "safety_gate");
+  assert.equal(handoffProfileSummariesByKey.get("public_stack").attention.primary_command, "corepack pnpm run selfhost:readiness -- --profile public-stack");
+  assert.equal(handoffProfileSummariesByKey.get("public_stack").attention.primary_json_command, "corepack pnpm --silent run selfhost:readiness -- --profile public-stack --json");
+  assert.equal(body.recommended_profile_keys[0], "public_stack");
+  assert.deepEqual(
+    body.recommended_profile_keys,
+    [...body.profile_summaries].sort((left, right) => left.attention.rank - right.attention.rank).map((item) => item.key)
+  );
+  assert.ok(
+    handoffProfileSummariesByKey
+      .get("public_stack")
+      .next_commands.includes("corepack pnpm run selfhost:security-review -- --profile public-stack")
+  );
+  assert.equal(body.ecosystem_readiness.status, "daily_deployable_with_safety_gates");
+  assert.equal(body.ecosystem_readiness.goal, "daily-deployable");
+  assert.deepEqual(
+    body.ecosystem_readiness.checks.map((item) => item.key),
+    [
+      "profile_choice",
+      "secret_generation",
+      "startup_path",
+      "doctor_path",
+      "runtime_inspection",
+      "boundary_understanding",
+      "brand_site_story"
+    ]
+  );
+  assert.ok(Array.isArray(body.pipeline_summaries));
+  assert.deepEqual(
+    body.pipeline_summaries.map((item) => item.key),
+    [
+      "local_agent_loop",
+      "all_in_one_demo",
+      "selfhost_platform",
+      "public_stack",
+      "recovery_evidence",
+      "operator_onboarding",
+      "published_image"
+    ]
+  );
+  const allInOne = body.pipeline_summaries.find((item) => item.key === "all_in_one_demo");
+  assert.equal(allInOne.status, "ready_now");
+  assert.ok(allInOne.next_commands.includes("corepack pnpm run selfhost:quickstart -- --profile all-in-one"));
+  const publicStack = body.pipeline_summaries.find((item) => item.key === "public_stack");
+  assert.equal(publicStack.status, "ready_now_with_safety_gates");
+  assert.equal(publicStack.public_exposure_gate_count, 4);
+  assert.ok(publicStack.next_commands.includes("corepack pnpm run selfhost:security-review -- --profile public-stack"));
+  assert.equal(publicStack.command_count, 8);
+  assert.ok(publicStack.next_commands.includes("corepack pnpm run deployability:evidence -- --profile public-stack"));
+  const recoveryEvidence = body.pipeline_summaries.find((item) => item.key === "recovery_evidence");
+  assert.equal(recoveryEvidence.status, "ready_now");
+  assert.ok(recoveryEvidence.next_commands.includes("corepack pnpm run selfhost:backup-plan"));
   assert.ok(body.next_commands.includes("corepack pnpm run check:submodules"));
+  assert.ok(
+    body.safety_notes.some((note) => note.includes("writes a non-secret Markdown handoff report")),
+    "handoff safety notes must disclose report-file writes"
+  );
+  assert.ok(
+    !body.safety_notes.some((note) => note.includes("read-only")),
+    "handoff safety notes must not claim read-only posture because the command writes a report"
+  );
+  assert.ok(body.safety_notes.some((note) => note.includes("does not read .env files")));
+  assert.ok(body.safety_notes.some((note) => note.includes("does not call Docker, bind ports, or probe network endpoints")));
   assert.ok(!json.stdout.includes("sk_handoff_must_not_leak"));
   assert.ok(!json.stdout.includes("[ok]"));
 
@@ -106,15 +184,61 @@ try {
   assert.match(markdown, /# Deployability Handoff/);
   assert.match(markdown, /## Current Bundle/);
   assert.match(markdown, /## Compatibility/);
+  assert.match(markdown, /## Ecosystem Readiness/);
+  assert.match(markdown, /daily_deployable_with_safety_gates/);
+  assert.match(markdown, /profile_choice: ok/);
+  assert.match(markdown, /## Profile Selector/);
+  assert.match(markdown, /public_stack -> public_stack/);
+  assert.match(markdown, /## Pipeline Summaries/);
+  assert.match(markdown, /public_stack: ready_now_with_safety_gates/);
+  assert.match(markdown, /exposure-gates=2/);
   assert.match(markdown, /## Next Commands/);
   assert.match(markdown, /CHG-2026-091/);
   assert.match(markdown, /repos\/client: dirty/);
   assert.ok(!markdown.includes("sk_handoff_must_not_leak"));
 
+  const focusedOutput = path.join(tmpRoot, "exports/deployability/focused-handoff.md");
+  const focused = run(tmpRoot, ["--json", "--profile", "public-stack", "--output", focusedOutput], env);
+  assert.equal(focused.status, 0, focused.stderr || focused.stdout);
+  const focusedBody = JSON.parse(focused.stdout);
+  assert.equal(focusedBody.profile_filter.requested, "public-stack");
+  assert.equal(focusedBody.profile_filter.resolved, "public_stack");
+  assert.equal(focusedBody.profile_filter.pipeline, "public_stack");
+  assert.equal(focusedBody.ecosystem_readiness.status, "daily_deployable_with_safety_gates");
+  assert.deepEqual(focusedBody.pipeline_summaries.map((item) => item.key), ["public_stack"]);
+  assert.deepEqual(focusedBody.profile_summaries.map((item) => item.key), ["public_stack"]);
+  assert.deepEqual(focusedBody.recommended_profile_keys, ["public_stack"]);
+  assert.equal(focusedBody.profile_summaries[0].status, "ready_now_with_safety_gates");
+  assert.equal(focusedBody.profile_summaries[0].attention.level, "safety_gate");
+  assert.equal(focusedBody.command_catalog_status.profile.resolved, "public_stack");
+  assert.deepEqual(focusedBody.profile_selector, body.profile_selector);
+  const focusedMarkdown = fs.readFileSync(focusedOutput, "utf8");
+  assert.match(focusedMarkdown, /## Profile Filter/);
+  assert.match(focusedMarkdown, /Requested: public-stack/);
+  assert.match(focusedMarkdown, /Resolved: public_stack/);
+  assert.match(focusedMarkdown, /public_stack: ready_now_with_safety_gates/);
+  assert.doesNotMatch(focusedMarkdown, /local_agent_loop: ready_now/);
+  assert.ok(!focused.stdout.includes("sk_handoff_must_not_leak"));
+
+  const separatorOutput = path.join(tmpRoot, "exports/deployability/separator-handoff.md");
+  const separator = run(tmpRoot, ["--", "--json", "--profile", "public-stack", "--output", separatorOutput], env);
+  assert.equal(separator.status, 0, separator.stderr || separator.stdout);
+  const separatorBody = JSON.parse(separator.stdout);
+  assert.equal(separatorBody.profile_filter.requested, "public-stack");
+  assert.equal(separatorBody.profile_filter.resolved, "public_stack");
+  assert.deepEqual(separatorBody.pipeline_summaries.map((item) => item.key), ["public_stack"]);
+  assert.ok(fs.existsSync(separatorOutput));
+
+  const typo = run(tmpRoot, ["--json", "--profil", "public-stack", "--output", focusedOutput], env);
+  assert.equal(typo.status, 1, typo.stderr || typo.stdout);
+  assert.match(typo.stderr, /unknown option --profil/);
+  assert.ok(!typo.stdout.includes("sk_handoff_must_not_leak"));
+
   const textOutput = path.join(tmpRoot, "exports/deployability/text-handoff.md");
   const text = run(tmpRoot, ["--output", textOutput], env);
   assert.equal(text.status, 0, text.stderr || text.stdout);
   assert.match(text.stdout, /Deployability handoff/);
+  assert.match(text.stdout, /deployability:action-plan/);
   assert.match(text.stdout, /CHG-2026-091/);
   assert.match(text.stdout, /text-handoff\.md/);
   assert.ok(fs.existsSync(textOutput));

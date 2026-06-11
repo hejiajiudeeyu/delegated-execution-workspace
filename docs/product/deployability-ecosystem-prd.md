@@ -69,16 +69,37 @@ The ecosystem is "daily-deployable" when a fresh operator can:
 | --- | --- | --- |
 | Compatibility ledger | fourth repo | change bundles and required gates |
 | Compatibility status | fourth repo | `corepack pnpm run compat:status`, plus `corepack pnpm --silent run compat:status -- --json` for current bundle, submodule SHA, dirty-worktree, blocker, and warning metadata |
-| Deployability overview | fourth repo | `corepack pnpm run deployability:overview`, plus `corepack pnpm --silent run deployability:overview -- --json` as the read-only command map for all deployment and management paths |
-| Deployability quickstart | fourth repo | `corepack pnpm run deployability:quickstart`, plus `corepack pnpm --silent run deployability:quickstart -- --json` as the read-only first-use guide for daily development, self-host, public-stack, and release-review paths |
-| Deployability safety matrix | fourth repo | `corepack pnpm run deployability:safety`, plus `corepack pnpm --silent run deployability:safety -- --json` as the descriptive read/write/startup/network/logging posture map for deployment commands |
+| Deployability overview | fourth repo | `corepack pnpm run deployability:overview`, plus `corepack pnpm --silent run deployability:overview -- --json` as the read-only command map for all deployment and management paths, including the all-in-one demo profile |
+| Deployability quickstart | fourth repo | `corepack pnpm run deployability:quickstart`, plus `corepack pnpm --silent run deployability:quickstart -- --json` as the read-only first-use guide for daily development, all-in-one demo, self-host, public-stack, and release-review paths; daily development includes the dedicated profile catalog, action-plan profile selector, and focused dashboard/handoff examples before operators choose deeper profile-specific commands |
+| Deployability safety matrix | fourth repo | `corepack pnpm run deployability:safety`, plus `corepack pnpm --silent run deployability:safety -- --json` as the descriptive read/write/startup/network/logging posture map for deployment commands, including the dedicated profile catalog and action-plan profile selector as dashboard-safe read-only commands |
+| Deployability operator explainer | fourth repo | `corepack pnpm run deployability:explain`, plus `corepack pnpm --silent run deployability:explain -- --json` as the read-only architecture, truth-source boundary, profile, gate, and cross-repo validation explainer for operators and management UIs |
+| Deployability production hardening review | fourth repo | `corepack pnpm run deployability:production`, plus `corepack pnpm --silent run deployability:production -- --json` as the read-only production hardening boundary view that separates daily deployability from public exposure and formal production readiness; it surfaces billing, email, marketplace, and formal release gates without executing deployment commands, and emits `production_readiness_remediation_plan` / `formal_production_readiness_remediation` so dashboards and agents can render the ordered public exposure, billing, email transport, marketplace, formal release, and management-evidence steps without treating daily deployability as production readiness |
+| Deployability production hardening plan | fourth repo | `corepack pnpm run deployability:hardening-plan`, plus `corepack pnpm --silent run deployability:hardening-plan -- --json` as the read-only `production_hardening_plan` management artifact; it decomposes public exposure, billing, email transport, marketplace readiness, and formal release into owner repo, stages, blockers, guardrails, next commands, and evidence commands without claiming production readiness |
+| Deployability readiness scorecard | fourth repo | `corepack pnpm run deployability:readiness`, plus `corepack pnpm --silent run deployability:readiness -- --json` as the standalone daily-deployable scorecard for humans, CI, and management UIs; it reuses command-catalog and doctor metadata to report check evidence, summary counts, blockers, warnings, safety notes, and next commands without requiring consumers to parse the full dashboard or handoff payload |
+| Deployability PRD index | fourth repo | `corepack pnpm run deployability:prd`, plus `corepack pnpm --silent run deployability:prd -- --json` as the read-only PRD document, audience, pipeline, management-surface, and safety-boundary index for planning reviews, dashboards, and brand-site alignment; it runs before the roadmap and does not read `.env`, call Docker, probe networks, or print secret values |
+| Deployability roadmap | fourth repo | `corepack pnpm run deployability:roadmap`, plus `corepack pnpm --silent run deployability:roadmap -- --json` as the read-only PRD milestone view for management UIs and planning reviews; it separates satisfied, gated, blocked, and planned deployability work, including the `console_management_surface` and `production_hardening_plan` milestones, so daily deployability remains visible without overstating public production readiness |
+| Deployability operator status | fourth repo | `corepack pnpm run deployability:status`, plus `corepack pnpm --silent run deployability:status -- --json` as the compact operator status for first-glance management surfaces; it projects readiness and roadmap metadata into status cards, including the roadmap's console management, hardening plan, and public-stack recipe milestones, plus `console_management_status`, `hardening_plan_status`, primary next commands, source health, and safety defaults without executing deployment commands |
+| Deployability gate checklist | fourth repo | `corepack pnpm run deployability:gates`, plus `corepack pnpm --silent run deployability:gates -- --json` as the read-only public exposure and production hardening gate checklist for management UIs; it projects roadmap and command catalog metadata into explicit gate cards without running security-review, Docker, network, or release commands |
+| Deployability public exposure review | fourth repo | `corepack pnpm run deployability:exposure`, plus `corepack pnpm --silent run deployability:exposure -- --json` as the non-destructive public-stack exposure blocker snapshot for management UIs; it runs the existing `selfhost:security-review -- --profile public-stack` path, calls Docker only for compose config, does not start services or bind ports, reports gate findings under `exposure_blockers`, emits `operator_next_action` so a localhost `PUBLIC_SITE_ADDRESS` blocker becomes a concrete `.env` edit plus rerun command, and exposes `pre_exposure_remediation_plan` as an ordered checklist for public origin, security review, route contract, onboarding, published-image dry-run, and evidence export before any public exposure claim |
+| Deployability release candidate review | fourth repo | `corepack pnpm run deployability:release -- --image-tag <candidate-tag>`, plus `corepack pnpm --silent run deployability:release -- --image-tag <candidate-tag> --json` as the non-destructive release candidate gate for management UIs; it aggregates production hardening, public exposure, published-image plan, and dry-run smoke evidence without publishing images or packages, starting services, probing endpoints, or printing secret values |
+| Deployability operator checklist | fourth repo | `corepack pnpm run deployability:operator-checklist -- --profile public-stack --image-tag <candidate-tag>`, plus `corepack pnpm --silent run deployability:operator-checklist -- --profile public-stack --image-tag <candidate-tag> --json` as the non-destructive public-stack operator checklist for management UIs; it aggregates menu, recipe, onboarding, exposure/release gate, backup-plan, and handoff evidence into checklist groups without starting services, probing endpoints, publishing artifacts, or printing secret values, and returns an unsupported-profile blocker for non-public-stack profiles so those operators use profile-aware evidence/dashboard/handoff instead |
 | Deployability doctor | fourth repo | `corepack pnpm run deployability:doctor`, plus `corepack pnpm --silent run deployability:doctor -- --json` as the read-only readiness snapshot for compatibility ledger, top-level scripts, docs, brand-site, and safety-contract alignment |
-| Deployability dashboard | fourth repo | `corepack pnpm run deployability:dashboard`, plus `corepack pnpm --silent run deployability:dashboard -- --json` as the single read-only aggregate payload for top-level dashboards and CI, combining overview, quickstart, safety, doctor, and compatibility sections |
-| Deployability handoff | fourth repo | `corepack pnpm run deployability:handoff`, plus `corepack pnpm --silent run deployability:handoff -- --json` for a non-secret ecosystem handoff report under `exports/deployability/` |
+| Deployability dashboard | fourth repo | `corepack pnpm run deployability:dashboard`, plus `corepack pnpm --silent run deployability:dashboard -- --json` as the single read-only aggregate payload for top-level dashboards and CI, combining overview, quickstart, safety, doctor, compatibility, `console_management_index`, `production_hardening_plan`, top-level `profile_selector`, derived `profile_summaries` with shared `attention` metadata, top-level `recommended_profile_keys`, ecosystem_readiness, and per-pipeline summary sections; `--profile <key-or-alias>` emits a focused dashboard payload with `profile_filter`, filtered command catalog, one owning pipeline summary, and one profile summary while keeping ecosystem_readiness and management-plan sections global |
+| Deployability next decision | fourth repo | `corepack pnpm run deployability:next`, plus `corepack pnpm --silent run deployability:next -- --json` as the read-only single next-action decision for humans, dashboards, and agents; it combines menu, action-plan, and gate metadata into one recommended command, defaults to the public-stack safety gate while public exposure is gated, supports `--profile <key-or-alias>`, never executes the recommendation, and includes public-stack `detail_command` / `detail_json_command` links to `deployability:exposure` so blocker-specific `operator_next_action` details remain discoverable without making `deployability:next` call Docker or read `.env` |
+| Deployability action plan | fourth repo | `corepack pnpm run deployability:action-plan`, plus `corepack pnpm --silent run deployability:action-plan -- --json` as the read-only operator next-action selector that combines dashboard readiness and command catalog posture into profile-level recommended commands, dashboard-safe commands, public-exposure gates, service-touching command lists, profile `attention` metadata, and top-level `recommended_profile_keys`; `--list-profiles` / `--profiles` prints the read-only profile selector directory with keys, aliases, pipeline keys, and purposes without calling dashboard/catalog metadata; `--profile <key-or-alias>` narrows the output to one operator target, keeps dashboard/commands/handoff `next_commands` on that profile, and reports unknown profiles as blockers |
+| Deployability profiles catalog | fourth repo | `corepack pnpm run deployability:profiles`, plus `corepack pnpm --silent run deployability:profiles -- --json` as the dedicated read-only profile-card catalog for management UIs, dashboards, CI, and operator docs; it derives labels, aliases, pipeline keys, status, counts, safety notes, next commands, JSON commands, shared `attention` metadata, and `recommended_profile_keys` from overview, command, and doctor metadata plus shared pipeline/profile summary helpers and the shared fourth-repo profile registry; `--profile <key-or-alias>` returns one profile or a clean unknown-profile blocker |
+| Deployability commands catalog | fourth repo | `corepack pnpm run deployability:commands`, plus `corepack pnpm --silent run deployability:commands -- --json` as the read-only searchable command catalog with category, posture, first-use track, pipeline filters, `filters.profiles` selector metadata, `--profile <key-or-alias>` filtering that resolves operator profile names to their owning pipeline, inherited safety posture for profile-specific command variants, the dedicated profile catalog and action-plan profile selector surfaced under the `daily_dev` track, and no `unmapped` category/posture values for ready-now command paths |
+| Deployability profile runbook | fourth repo | `corepack pnpm run deployability:runbook`, plus `corepack pnpm --silent run deployability:runbook -- --json` as the read-only staged runbook projection for one selected profile; `--profile <key-or-alias>` emits `profile_runbook` phases in the order inspect, gate, start, verify, operate, and evidence, reusing profile catalog and command catalog metadata without executing commands; profile runbook `next_commands` keep dashboard and handoff on the selected profile |
+| Deployability operator menu | fourth repo | `corepack pnpm run deployability:menu`, plus `corepack pnpm --silent run deployability:menu -- --json` as the read-only first operator screen for humans and management UIs; it emits `operator_status_summary` and `operator_status_cards` from menu-local profiles/commands/console inputs without recursively calling `deployability:status`; it also emits `operator_next_decision` from the selected profile and shared operator decision helper while marking `avoids_recursive_next_cli`, so the menu does not call `deployability:next`; `--profile <key-or-alias>` focuses one profile and keeps `next_commands` on that profile instead of jumping back to `public-stack`; focused public-stack JSON also includes `selected_onboarding_plan` from `operator:onboarding:plan` plus the same exposure `detail_command` / `detail_json_command` remediation links used by `deployability:next`; it joins profile choices, attention, primary command, runbook, action-plan, dashboard, handoff, command-catalog, and public-stack operator-onboarding entry points without executing commands |
+| Deployability profile recipe | fourth repo | `corepack pnpm run deployability:recipe -- --profile public-stack`, plus `corepack pnpm --silent run deployability:recipe -- --profile public-stack --json` as the read-only linear first-run recipe for one selected profile; it combines readiness, menu, runbook, and onboarding metadata into inspect, gate, start, verify, operate, and evidence steps without executing commands |
+| Deployability console index | fourth repo | `corepack pnpm run deployability:console`, plus `corepack pnpm --silent run deployability:console -- --json` as the read-only Management Console surface index for runtime, settings, logs, billing readiness, public-stack console entry, and gateway session setup; each surface carries a machine-readable `next_action`, and top-level `surface_next_actions` collects owner repo, primary command, evidence commands, and guardrails so management UIs can render the next implementation or gate step without starting console services or making the fourth repo runtime truth |
+| Deployability recovery evidence path | fourth repo | `deployability:overview`, `deployability:dashboard`, `deployability:handoff`, and `deployability:commands -- --pipeline recovery_evidence` expose ops-report, audit export, backup, restore, and rotation commands as one ready-now evidence and recovery pipeline |
+| Deployability handoff | fourth repo | `corepack pnpm run deployability:handoff`, plus `corepack pnpm --silent run deployability:handoff -- --json` for a non-secret ecosystem handoff report under `exports/deployability/`, including the same profile selector directory, derived profile summaries, and ecosystem_readiness scorecard used by the dashboard; `--profile <key-or-alias>` writes a focused handoff report for one owning pipeline; the command accepts the pnpm `--` separator and rejects unknown options before writing reports |
+| Deployability evidence bundle | fourth repo | `corepack pnpm run deployability:evidence -- --profile public-stack`, plus `corepack pnpm --silent run deployability:evidence -- --profile public-stack --json` for a non-secret evidence bundle directory containing manifest, focused dashboard/menu/recipe/handoff/command-catalog JSON, and handoff Markdown for management review; the command accepts the pnpm `--` separator and rejects unknown options before generating a broader bundle |
 | Daily local doctor | fourth repo | `corepack pnpm run dev:doctor`, plus `corepack pnpm --silent run dev:doctor -- --json` for dashboards and scripts |
 | Local agent loop management metadata | fourth repo | `corepack pnpm run dev:local:plan`, `dev:local:up`, `dev:local:status`, `dev:local:logs`, and `dev:local:down`, plus `--json` for dashboards and scripts |
 | Agent-facing smoke | fourth repo | `corepack pnpm run test:agent-e2e` |
-| Self-host deployment map | fourth repo | `corepack pnpm run selfhost:profiles` |
+| Self-host deployment map | fourth repo | `corepack pnpm run selfhost:profiles`, including `platform`, `public-stack`, and `all-in-one` profiles |
 | Self-host quickstart sequence | fourth repo | `corepack pnpm run selfhost:quickstart` |
 | Self-host readiness overview | fourth repo | `corepack pnpm run selfhost:readiness -- --all`, plus `corepack pnpm --silent run ... --json` for automation |
 | Self-host deployment doctor | fourth repo | `corepack pnpm run selfhost:doctor`, plus `--json` for diagnostic panels |
@@ -154,33 +175,218 @@ Required baseline:
   read/write/startup/network/logging posture, CI/dashboard suitability, safety
   notes, and next commands without reading `.env`, calling Docker, binding
   ports, probing networks, or printing secrets
+- machine-readable deployability explainer metadata that lists repository
+  roles, truth-source boundaries, daily deployability, profile selection,
+  public exposure gates, production hardening, and fourth-repo validation order
+  without executing commands or printing secrets
 - machine-readable deployability doctor metadata that reports compatibility
-  ledger, script, documentation, brand-site, and safety-contract checks,
-  blockers, warnings, and next commands without reading `.env`, calling Docker,
-  binding ports, probing networks, or printing secrets
+  ledger, script, documentation, brand-site file alignment, brand-site
+  deployability content smoke, and safety-contract checks, blockers, warnings,
+  and next commands without reading `.env`, calling Docker, binding ports,
+  probing networks, or printing secrets
 - machine-readable deployability dashboard metadata that aggregates overview,
-  quickstart, safety, doctor, and compatibility JSON sections as one top-level
+  quickstart, safety, doctor, compatibility, top-level `profile_selector`,
+  ecosystem_readiness, and per-pipeline summary JSON sections as one top-level
   payload without reading `.env`, calling Docker, binding ports, probing
   networks, or printing secrets
+- machine-readable deployability action-plan metadata that turns the dashboard
+  and command catalog into profile-level recommended commands,
+  dashboard-safe commands, public-exposure gate commands, service-touching
+  commands, safety notes, next JSON commands, profile `attention` level/rank
+  metadata, primary next commands, and top-level `recommended_profile_keys`
+  without reading `.env`, calling Docker, binding ports, probing networks, or
+  printing secrets
+- machine-readable deployability action-plan profile-list metadata that exposes
+  the supported profile keys, aliases, pipeline keys, and purposes without
+  calling dashboard/catalog metadata, reading `.env`, calling Docker, binding
+  ports, probing networks, or printing secrets
+- machine-readable deployability profile-catalog metadata that exposes a
+  dedicated `deployability:profiles` management payload with labels, aliases,
+  owning pipeline keys, status, counts, next commands, next JSON commands,
+  safety notes, shared `attention` metadata, top-level
+  `recommended_profile_keys`, and clean unknown-profile blockers, derived from
+  overview, command, and doctor metadata plus shared pipeline/profile summary
+  helpers and the shared fourth-repo profile registry
+  without reading `.env`, calling Docker, binding ports, probing networks, or
+  printing secrets
+- machine-readable quickstart, safety, and command-catalog metadata that make
+  the dedicated profile catalog and action-plan profile selector discoverable
+  as first-use, read-only, dashboard-safe top-level commands before operators
+  choose a focused profile
+- machine-readable ecosystem_readiness metadata that turns the daily-deployable
+  definition into a dashboard and handoff scorecard for profile choice,
+  generated secrets, startup path, doctor path, runtime inspection, boundary
+  understanding, and brand-site story; when all checks pass it reports
+  daily_deployable_with_safety_gates rather than claiming ungated public
+  production readiness
+- shared fourth-repo pipeline summary metadata for `deployability:overview`,
+  `deployability:dashboard`, and `deployability:handoff`, so command counts,
+  JSON entry counts, dashboard-safe counts, CI-safe counts, public exposure
+  gate counts, next commands, and safety notes stay aligned across surfaces
+- machine-readable all-in-one demo metadata that exposes the existing
+  `all-in-one` selfhost profile as a local evaluation path, inherits selfhost
+  safety posture for profile-specific command variants, and avoids presenting
+  it as public exposure or formal production readiness
+- machine-readable deployability command catalog metadata that merges overview,
+  quickstart, and safety metadata into a filterable command list, including
+  `filters.profiles` with supported profile keys, aliases, owning pipeline
+  keys, and purposes, `--profile <key-or-alias>` as an operator-friendly alias
+  layer over pipeline filters, inherited posture for profile-specific command
+  variants, clean unknown-profile blockers instead of falling back to every
+  command, and explicit `runtime_diagnostic`, `runtime_acceptance`, and
+  `delegated_smoke` posture labels for local doctor/acceptance and real
+  published-image smoke commands, without reading `.env`, calling Docker,
+  binding ports, probing networks, or printing secrets; profile and filter
+  arguments tolerate the pnpm `--` separator and fail on unknown options before
+  emitting a broader catalog
+- machine-readable deployability profile runbook metadata that turns one
+  selected profile into a staged `profile_runbook` with inspect, gate, start,
+  verify, operate, and evidence phases. The runbook is a projection over the
+  profile catalog and command catalog, not a runner; it keeps public exposure
+  gates before startup, returns clean unknown-profile blockers, and does not
+  read `.env`, call Docker, bind ports, probe networks, or print secrets; its
+  profile argument tolerates the pnpm `--` separator and rejects unknown options
+- machine-readable deployability operator menu metadata that presents profile
+  choices, attention level, primary command, runbook, action-plan, dashboard,
+  handoff, command-catalog, and public-stack operator-onboarding entry points
+  on one first screen. The menu is a convenience projection over existing
+  deployability metadata, not a new truth source; focused
+  `corepack pnpm run deployability:menu -- --profile public-stack` /
+  `corepack pnpm --silent run deployability:menu -- --profile public-stack --json`
+  output includes the selected runbook, and focused public-stack output includes
+  `selected_onboarding_plan` from the read-only
+  `operator:onboarding:plan` projection so management UIs can render preflight,
+  `/console/` setup, gateway credential setup, smoke/evidence, and onboarding
+  contract validation without a second lookup. The same payload includes
+  `operator_status_summary`, `operator_status_cards`, and
+  `source_status.operator_status.avoids_recursive_status_cli=true`, so the
+  first screen can show daily deployability, console management, hardening
+  plan, public-stack gate, and planned production hardening without creating a
+  `menu -> status -> roadmap -> recipe -> menu` dependency loop. Unknown
+  profiles return clean blockers, and the command does not read `.env`, call
+  Docker, bind ports, probe networks, or print secrets. Profile arguments
+  tolerate the pnpm `--` separator and reject unknown options before rendering
+  the all-profile menu
+- machine-readable deployability console metadata that exposes
+  `console_management_index` with runtime, settings, logs, billing readiness,
+  public-stack console, and gateway session surfaces. Each surface reports
+  owner repository, routes, evidence commands, guardrails, remaining work, and
+  `next_action`; top-level `surface_next_actions` includes action keys such as
+  `connect_console_runtime_status_sources` and
+  `run_public_stack_gate_before_console_exposure`. The `runtime_status` surface
+  consumes the client-owned
+  `corepack pnpm --dir repos/client run check:ops-console-runtime-surface`
+  evidence command and reports `client_owned_evidence_available` when
+  ops-console wiring covers `/status`, `/runtime/logs`, `/runtime/alerts`, and
+  secret-safety copy. The `settings_approval_policy` surface consumes
+  `corepack pnpm --dir repos/client run check:ops-console-settings-surface` and
+  reports `client_owned_evidence_available` when Preferences and Access Lists
+  cover `/caller/global-policy`, manual/allow_listed/allow_all modes,
+  whitelist/Blocklist fields, and `allow_all` safety copy. The
+  `logs_guidance` surface consumes
+  `corepack pnpm --dir repos/client run check:ops-console-logs-surface` and
+  reports `client_owned_evidence_available` when Runtime and Help cover
+  `/runtime/logs`, `/runtime/alerts`, caller/responder/relay log services,
+  log filtering metadata, `selfhost:logs`, and secret-safety copy, without
+  starting console services, reading `.env`, calling Docker, binding ports,
+  probing networks, or printing secret values
+- machine-readable dashboard and handoff profile selector metadata that lifts
+  the same command-catalog `filters.profiles` directory to a top-level
+  `profile_selector` field, so management surfaces can render profile choices
+  without knowing the internal section path or calling runtime commands
+- machine-readable dashboard and handoff profile filtering that accepts
+  `--profile <key-or-alias>`, reuses the command-catalog resolver, emits
+  `profile_filter`, limits command catalog and pipeline summary metadata to the
+  owning pipeline, reports unknown profiles as blockers, and keeps
+  ecosystem_readiness as the global daily-deployable scorecard; focused
+  dashboard and handoff commands are discoverable from quickstart and the
+  command catalog. Focused dashboard arguments tolerate the pnpm `--` separator
+  and reject unknown options before emitting all-pipeline dashboard metadata
+- machine-readable `profile_summaries` metadata for dashboard and handoff,
+  derived from `profile_selector`, `pipeline_summaries`, and command-catalog
+  posture, so management UIs can render profile cards, sort them by shared
+  `attention.rank`, highlight `attention.level=safety_gate`, and consume
+  top-level `recommended_profile_keys` without joining arrays or re-deriving
+  risk themselves; this is a convenience projection, not a new profile truth
+  source
+- machine-readable profile catalog, action-plan, operator menu, runbook,
+  recipe, dashboard, command-catalog, operator-checklist, handoff, and evidence
+  surfaces share one strict option contract: documented pnpm `--` separators
+  are accepted, `--profile=value` and `--profile value` forms are equivalent
+  where profile filters are supported, missing option values fail, and unknown
+  options such as `--profil` fail instead of silently widening the result set
+- machine-readable top-level deployability status, gates, exposure, release,
+  doctor, overview, quickstart, safety, explanation, production, readiness,
+  roadmap, compatibility status, and daily dev doctor commands reject unknown
+  options before doing nested status or safety checks, while keeping documented
+  `-- --json` copy-paste forms valid
 - machine-readable compatibility status metadata that reports the current
   bundle, submodule SHAs, ledger matches, dirty submodules, blockers, warnings,
   and next commands without reading `.env`, calling Docker, probing networks, or
   printing secrets
+- machine-readable deployability roadmap metadata that reports PRD milestones,
+  satisfied/gated/blocked/planned status, `production_hardening_plan`, evidence commands, PRD sources,
+  remaining work, source status, and next commands without reading `.env`,
+  calling Docker, binding ports, probing networks, or printing secrets
 - machine-readable deployability handoff metadata, paired with a non-secret
   Markdown report, that combines current bundle, compatibility warnings,
-  command map, safety notes, and next validation commands without reading
-  `.env`, calling Docker, probing networks, or printing secrets
+  command map, profile selector, ecosystem_readiness, shared per-pipeline
+  summaries, safety notes, and next validation commands without reading
+  `.env`, calling Docker, probing networks, or printing secrets; the command
+  tolerates the pnpm `--` separator but fails on unknown options before writing
+  reports
+- machine-readable deployability evidence bundle metadata, generated by
+  `corepack pnpm run deployability:evidence -- --profile public-stack` or
+  `corepack pnpm --silent run deployability:evidence -- --profile public-stack --json`,
+  that writes one non-secret directory with manifest, focused dashboard/menu/recipe/handoff/command-catalog
+  JSON, and handoff Markdown for operators and management UIs; the command
+  tolerates the pnpm `--` separator but fails on unknown options instead of
+  silently generating all-profile artifacts
+- machine-readable recovery evidence metadata that exposes the existing
+  ops-report, audit-export, backup-plan, backup-validate, restore-plan,
+  rotate-plan, and rotate commands as the `recovery_evidence` pipeline, with
+  explicit `writes_report`, `exports_evidence`, `read_only`, and `writes_env`
+  posture labels and no secret values in JSON output
 
 ## 8. Success Metrics
 
 - A fresh checkout can run `deployability:overview`,
   `deployability:overview -- --json`, `deployability:quickstart`,
   `deployability:quickstart -- --json`, `deployability:safety`,
-  `deployability:safety -- --json`, `deployability:doctor`,
+  `deployability:safety -- --json`, `deployability:explain`,
+  `deployability:explain -- --json`, `deployability:production`,
+  `deployability:production -- --json`, `deployability:readiness`,
+  `deployability:readiness -- --json`, `deployability:prd`,
+  `deployability:prd -- --json`, `deployability:roadmap`,
+  `deployability:roadmap -- --json`, `deployability:status`,
+  `deployability:status -- --json`, `deployability:gates`,
+  `deployability:gates -- --json`, `deployability:exposure`,
+  `deployability:exposure -- --json`,
+  `deployability:release -- --image-tag <candidate-tag>`,
+  `deployability:release -- --image-tag <candidate-tag> --json`,
+  `corepack pnpm run deployability:operator-checklist -- --profile public-stack --image-tag <candidate-tag>`,
+  `corepack pnpm --silent run deployability:operator-checklist -- --profile public-stack --image-tag <candidate-tag> --json`,
+  `deployability:doctor`,
   `deployability:doctor -- --json`, `deployability:dashboard`,
-  `deployability:dashboard -- --json`, `compat:status`,
+  `deployability:dashboard -- --json`, `deployability:action-plan`,
+  `deployability:action-plan -- --json`, `deployability:profiles`,
+  `deployability:profiles -- --json`, `deployability:profiles -- --profile public-stack`,
+  `deployability:commands`,
+  `deployability:action-plan -- --profile public-stack`,
+  `deployability:action-plan -- --list-profiles`,
+  `deployability:action-plan -- --list-profiles --json`,
+  `deployability:action-plan -- --profile public-stack --json`,
+  `deployability:commands`, `deployability:commands -- --json`,
+  `deployability:recipe -- --profile public-stack`,
+  `deployability:recipe -- --profile public-stack --json`,
+  `deployability:commands -- --profile public-stack`, `compat:status`,
   `compat:status -- --json`, `deployability:handoff`,
-  `deployability:handoff -- --json`, `dev:local:plan -- --json`,
+  `deployability:handoff -- --json`, `test:deployability`,
+  `test:deployability-operations`,
+  `deployability:commands -- --pipeline recovery_evidence`,
+  `deployability:commands -- --pipeline local_agent_loop`,
+  `deployability:commands -- --pipeline published_image`,
+  `dev:local:plan -- --json`,
   `dev:local:up -- --json`, `dev:local:status -- --json`,
   `dev:local:logs -- --json`, `dev:local:down -- --json`,
   `selfhost:profiles`, `selfhost:quickstart`,
@@ -190,14 +396,26 @@ Required baseline:
   `selfhost:status -- --json`, `selfhost:up -- --json`, `selfhost:logs -- --json`,
   `selfhost:down -- --json`, `selfhost:smoke -- --json`, `dev:doctor`,
   `dev:doctor -- --json`,
-  `test:agent-e2e`, `published-image:plan -- --json`,
-  `published-image:smoke -- --dry-run --json`, `selfhost:security-review`,
-  `selfhost:audit-export -- --json`, `operator:onboarding:check`, and
+  `test:agent-e2e`, `mcp:golden-four`, `published-image:plan -- --json`,
+  `published-image:smoke -- --dry-run --json`, `published-image:smoke -- --image-tag <candidate-tag>`,
+  `selfhost:security-review`,
+  `selfhost:audit-export -- --json`, `selfhost:backup-plan`,
+  `selfhost:restore-plan`, `selfhost:rotate-plan`, `operator:onboarding:check`, and
   `operator:onboarding:check -- --json`.
 - Platform billing operators have an admin-only API and Platform Console page
   for tenant setup, balance inspection, manual recharge capture, and ledger
   browsing, while end-user billing remains outside the ready verdict.
 - PRD, runbooks, README, and brand-site copy use the same named profiles.
+- Handoff and evidence commands accept documented pnpm `--` separators and
+  reject unknown options such as `--profil`, preventing typoed profile filters
+  from producing all-profile reports or bundles.
+- Profile/operator management commands share the same argument-safety contract,
+  so typoed filters cannot silently widen dashboard, menu, runbook, recipe,
+  action-plan, profile-catalog, command-catalog, or operator-checklist output.
+- Top-level deployability, compatibility, release review, and daily dev doctor
+  commands also share strict option parsing: documented pnpm `--` separators
+  are accepted, `--json` remains machine-readable, `--image-tag` is explicit
+  where required, and unknown options fail before any nested checks run.
 - Fourth-repo CI remains green after adding orchestration helpers.
 - Brand-site build remains green after messaging updates.
 
@@ -315,5 +533,9 @@ Required baseline:
   so dashboards, CI, and operator runbooks can inspect dry-run rotation intent
   and confirmed rotation artifacts without parsing terminal prose or printing
   rotated secret values.
+- Expose the existing ops-report, audit export, backup, restore, and rotation
+  controls as the first-class `recovery_evidence` deployability pipeline so
+  operators can filter and hand off recovery readiness from the top-level
+  command map.
 - Published-image smoke is first connected as a fourth-repo wrapper; formal
   image build, publish, and release gates remain owned by `repos/platform`.

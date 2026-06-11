@@ -117,14 +117,58 @@ corepack pnpm run deployability:quickstart
 corepack pnpm --silent run deployability:quickstart -- --json
 corepack pnpm run deployability:safety
 corepack pnpm --silent run deployability:safety -- --json
+corepack pnpm run deployability:explain
+corepack pnpm --silent run deployability:explain -- --json
+corepack pnpm run deployability:production
+corepack pnpm --silent run deployability:production -- --json
+corepack pnpm run deployability:readiness
+corepack pnpm --silent run deployability:readiness -- --json
+corepack pnpm run deployability:roadmap
+corepack pnpm --silent run deployability:roadmap -- --json
+corepack pnpm run deployability:status
+corepack pnpm --silent run deployability:status -- --json
+corepack pnpm run deployability:gates
+corepack pnpm --silent run deployability:gates -- --json
+corepack pnpm run deployability:exposure
+corepack pnpm --silent run deployability:exposure -- --json
+corepack pnpm run deployability:release -- --image-tag <candidate-tag>
+corepack pnpm --silent run deployability:release -- --image-tag <candidate-tag> --json
+corepack pnpm run deployability:operator-checklist -- --profile public-stack --image-tag <candidate-tag>
+corepack pnpm --silent run deployability:operator-checklist -- --profile public-stack --image-tag <candidate-tag> --json
 corepack pnpm run deployability:doctor
 corepack pnpm --silent run deployability:doctor -- --json
 corepack pnpm run deployability:dashboard
 corepack pnpm --silent run deployability:dashboard -- --json
+corepack pnpm run deployability:dashboard -- --profile public-stack
+corepack pnpm --silent run deployability:dashboard -- --profile public-stack --json
+corepack pnpm run deployability:action-plan
+corepack pnpm --silent run deployability:action-plan -- --json
+corepack pnpm run deployability:action-plan -- --list-profiles
+corepack pnpm --silent run deployability:action-plan -- --list-profiles --json
+corepack pnpm run deployability:action-plan -- --profile public-stack
+corepack pnpm --silent run deployability:action-plan -- --profile public-stack --json
+corepack pnpm run deployability:commands
+corepack pnpm --silent run deployability:commands -- --json
+corepack pnpm run deployability:runbook
+corepack pnpm --silent run deployability:runbook -- --json
+corepack pnpm run deployability:menu
+corepack pnpm --silent run deployability:menu -- --json
+corepack pnpm run deployability:recipe -- --profile public-stack
+corepack pnpm --silent run deployability:recipe -- --profile public-stack --json
+corepack pnpm run deployability:commands -- --profile public-stack
+corepack pnpm --silent run deployability:commands -- --profile public-stack --json
 corepack pnpm run compat:status
 corepack pnpm --silent run compat:status -- --json
 corepack pnpm run deployability:handoff
 corepack pnpm --silent run deployability:handoff -- --json
+corepack pnpm run deployability:handoff -- --profile public-stack
+corepack pnpm --silent run deployability:handoff -- --profile public-stack --json
+corepack pnpm run deployability:evidence -- --profile public-stack
+corepack pnpm --silent run deployability:evidence -- --profile public-stack --json
+corepack pnpm run test:fast
+corepack pnpm run test:deployability
+corepack pnpm run test:deployability-operations
+corepack pnpm run test:release-gate
 corepack pnpm run dev:doctor
 corepack pnpm --silent run dev:doctor -- --json
 corepack pnpm run test:agent-e2e
@@ -132,6 +176,21 @@ corepack pnpm run mcp:golden-four
 corepack pnpm run test:local-stack
 corepack pnpm run test:selfhost-kit
 ```
+
+Use `test:fast` for the normal edit/run loop. It runs lightweight deployability
+tests and fixture-backed aggregate tests for dashboard, release,
+operator-checklist, and evidence payloads. Use `test:deployability` when changing
+deployability scripts or their JSON contracts; it includes the full tool test
+suite plus real aggregate smoke coverage. Before submitting or merging, use
+`test:release-gate`, which runs deployability tests, operations tests, and the
+AGENTS.md validation chain: `check:submodules`, `check:boundaries`,
+`check:bundles`, `test:contracts`, and `test:integration`.
+
+If the only failing part of the release gate is origin reachability for local
+submodule commits that intentionally have not been pushed yet, rerun locally with
+`SKIP_ORIGIN_REACHABILITY=1 corepack pnpm run test:release-gate` and mention the
+no-push mode in the handoff. Do not use that environment variable for merge
+readiness after the owning repo commits should be reachable from origin.
 
 `deployability:overview` is the read-only command map for the local,
 self-host, public-stack, onboarding, and published-image paths. Its JSON form
@@ -150,18 +209,162 @@ call Docker, probe networks, or print private terminal text. Its JSON form is
 safe for dashboards and does not read `.env`, call Docker, probe networks, or
 print secret values.
 
+`deployability:explain` is the read-only operator explainer for architecture,
+truth-source boundaries, profile selection, public-exposure gates, production
+hardening, and cross-repo validation. Its JSON form is meant for onboarding
+screens and management UIs before an operator chooses a profile; it does not
+read `.env`, call Docker, probe networks, or print secret values.
+
+`deployability:production` is the read-only production hardening boundary
+review. Use `corepack pnpm run deployability:production` or
+`corepack pnpm --silent run deployability:production -- --json` when a dashboard
+needs to separate daily deployability from public exposure and formal
+production readiness while surfacing billing, email, marketplace, and formal
+release gates without executing deployment commands.
+
 `deployability:doctor` is the read-only deployability alignment snapshot. It
-checks the compatibility ledger, top-level scripts, documentation, brand-site,
-and safety contract before an operator continues to pipeline-specific
-diagnostics. Its JSON form reports checks, blockers, warnings, evidence, and
-next commands without reading `.env`, calling Docker, probing networks, or
-printing secret values.
+checks the compatibility ledger, top-level scripts, documentation, brand-site
+file alignment, brand-site deployability content smoke, and safety contract
+before an operator continues to pipeline-specific diagnostics. Its JSON form
+reports checks, blockers, warnings, evidence, and next commands without reading
+`.env`, calling Docker, probing networks, or printing secret values.
 
 `deployability:dashboard` is the read-only aggregate payload for dashboards and
 CI. It combines overview, quickstart, safety, doctor, and compatibility JSON
-sections without reading `.env`, calling Docker, binding ports, probing
-networks, or printing secret values. Profile-specific readiness, preflight,
-status, smoke, and audit commands remain authoritative.
+sections plus per-pipeline summaries without reading `.env`, calling Docker,
+binding ports, probing networks, or printing secret values. Profile-specific
+readiness, preflight, status, smoke, and audit commands remain authoritative.
+The per-pipeline summaries use the same fourth-repo metadata builder as
+`deployability:overview` and `deployability:handoff`, so command counts and
+safety gate counts stay aligned across docs, dashboard JSON, and handoff
+reports.
+
+`deployability:status` is the compact read-only operator status for management
+first screens. Use `corepack pnpm run deployability:status` or
+`corepack pnpm --silent run deployability:status -- --json` when a dashboard
+needs readiness, roadmap, public-stack gating, and production-hardening status
+without parsing the larger dashboard payload.
+
+`deployability:gates` is the compact read-only gate checklist for public
+exposure and production hardening. Use
+`corepack pnpm run deployability:gates` or
+`corepack pnpm --silent run deployability:gates -- --json` when a dashboard
+needs to show what must pass before opening edge routes or claiming production
+readiness without running the gate commands.
+
+`deployability:exposure` is the non-destructive public-stack exposure blocker
+snapshot. Use `corepack pnpm run deployability:exposure` or
+`corepack pnpm --silent run deployability:exposure -- --json` when a dashboard
+needs the actual public exposure review result, including `exposure_blockers`
+such as localhost public origin. It calls Docker only for compose config and
+does not start services, bind ports, probe network endpoints, or print secret
+values. When the blocker is `PUBLIC_SITE_ADDRESS`, the JSON payload includes
+`selfhost:public-origin` dry-run/apply commands so operators can update only
+the public origin and then rerun `selfhost:security-review`.
+
+`deployability:release` is the non-destructive release candidate gate. Use
+`corepack pnpm run deployability:release -- --image-tag <candidate-tag>` or
+`corepack pnpm --silent run deployability:release -- --image-tag <candidate-tag> --json`
+when a dashboard needs to combine production hardening, public exposure,
+published-image plan, and dry-run smoke evidence before a real release-owned
+smoke. It does not publish images or packages, start services, probe endpoints,
+or print secret values.
+
+`deployability:operator-checklist` is the non-destructive public-stack operator
+checklist. Use
+`corepack pnpm run deployability:operator-checklist -- --profile public-stack --image-tag <candidate-tag>`
+or
+`corepack pnpm --silent run deployability:operator-checklist -- --profile public-stack --image-tag <candidate-tag> --json`
+when a dashboard needs one ready/blocked checklist for menu, recipe,
+onboarding, exposure/release gates, backup-plan, and handoff evidence. It does
+not start services, probe endpoints, publish artifacts, or print secret values.
+
+`deployability:profiles` is the dedicated read-only profile catalog for
+operators, dashboards, CI, and management scripts. It derives profile cards
+from overview, command, and doctor metadata plus shared pipeline/profile summary
+helpers and the shared fourth-repo profile registry, then emits aliases, labels,
+owning pipeline keys, status, counts, next commands,
+next JSON commands, safety notes, shared `attention` metadata, and top-level
+`recommended_profile_keys` without reading `.env`, calling Docker, binding
+ports, probing networks, or printing secrets. Use
+`corepack pnpm run deployability:profiles`,
+`corepack pnpm --silent run deployability:profiles -- --json`, or
+`--profile public-stack` / another profile key/alias when a surface only needs
+one card; unknown profiles return blockers instead of falling back to every
+profile.
+
+`deployability:action-plan` is the read-only operator action selector. It
+combines the dashboard and command catalog into profile-level recommended
+commands, dashboard-safe commands, public-exposure gates, service-touching
+commands, safety notes, next JSON commands, profile `attention` metadata, and
+top-level `recommended_profile_keys` without reading `.env`, calling Docker,
+binding ports, probing the network, or printing secrets. Dashboards can use
+`attention.rank`, `attention.level`, and `attention.reasons` to sort profile
+cards and highlight public-exposure gates without re-deriving risk from command
+lists.
+Use `--list-profiles` or `--profiles` first when an operator or dashboard
+needs the supported profile keys, aliases, pipeline keys, and purposes without
+calling the dashboard or command catalog.
+The same selector is also present in `deployability:quickstart`,
+`deployability:safety`, and `deployability:commands -- --track daily_dev`, so
+management surfaces can discover it before rendering a focused action plan.
+Use `--profile public-stack` or another profile key/alias when an operator
+needs only one focused next-action list. The JSON form includes
+`profile_filter` and returns a blocker for unknown profile names.
+
+`deployability:commands` is the read-only command catalog for humans,
+dashboards, and CI. It merges overview, quickstart, and safety metadata into
+one list that can be filtered by category, posture, first-use track, or
+pipeline. Its JSON form includes `filters.profiles` with supported profile
+keys, aliases, owning pipeline keys, and purposes, so dashboards can render the
+profile selector from the command catalog itself. It also supports
+`--profile <key-or-alias>` as the operator-friendly alias layer over pipeline
+filters, so `--profile public-stack` returns only the public-stack command
+catalog and unknown profile names return clean blockers. Profile-specific
+command variants inherit the safety posture of their base command. It does not
+read `.env`, call Docker, bind ports, probe networks, or print secret values.
+
+`deployability:runbook` is the read-only staged runbook projection for one
+profile. Use `corepack pnpm run deployability:runbook`,
+`corepack pnpm --silent run deployability:runbook -- --json`, or
+`--profile public-stack` / another profile key or alias when an operator or
+dashboard needs the exact inspect, gate, start, verify, operate, and evidence
+sequence before copying commands. It reuses `deployability:profiles` and
+`deployability:commands`, keeps public exposure gates before startup, returns
+unknown-profile blockers, and does not read `.env`, call Docker, bind ports,
+probe networks, or print secret values.
+
+`deployability:menu` is the read-only first operator menu for humans and
+management UIs. Use `corepack pnpm run deployability:menu`,
+`corepack pnpm --silent run deployability:menu -- --json`, or
+`corepack pnpm run deployability:menu -- --profile public-stack` /
+`corepack pnpm --silent run deployability:menu -- --profile public-stack --json`
+when a surface needs profile choices, attention, primary command, runbook,
+action-plan, dashboard, handoff, and command-catalog entry points in one payload. Focused public-stack
+JSON also includes `selected_onboarding_plan`, sourced from the read-only
+`operator:onboarding:plan` projection, so a management UI can render preflight,
+`/console/` setup, gateway credential setup, smoke/evidence, and onboarding
+contract validation next to the selected runbook. It is a convenience
+projection over existing deployability metadata, returns clean unknown-profile
+blockers, and does not read `.env`, call Docker, bind ports, probe networks, or
+print secret values.
+
+`deployability:dashboard -- --json` and `deployability:handoff -- --json`
+also expose the same directory as top-level `profile_selector`, so dashboards,
+handoff tools, and management scripts can render profile choices without
+knowing the nested command-catalog section path.
+Both commands also accept `--profile <key-or-alias>` for focused management
+payloads. In focused mode, `profile_filter` records the requested and resolved
+profile, command catalog and pipeline summaries are limited to the owning
+pipeline, and `ecosystem_readiness` remains the global daily-deployable
+scorecard. The focused public-stack examples are discoverable from
+`deployability:quickstart` and `deployability:commands -- --track daily_dev`.
+Both payloads also include `profile_summaries`, a derived profile-card array
+that joins profile aliases and purpose with pipeline status, counts, next
+commands, safety notes, and the same `attention` metadata used by
+`deployability:action-plan`. Dashboards can sort either aggregate payload by
+top-level `recommended_profile_keys` or by each card's `attention.rank` without
+calling the action-plan command separately.
 
 `compat:status` is the read-only compatibility-ledger snapshot. It compares the
 current submodule gitlinks to the latest `changes/CHG-*.yaml`, reports dirty
@@ -170,9 +373,16 @@ JSON form does not read `.env`, call Docker, probe networks, or print secrets.
 
 `deployability:handoff` writes a non-secret Markdown handoff report under
 `exports/deployability/` unless `--output` is provided. It combines the current
-bundle, compatibility warnings, command map, safety notes, and next validation
-commands. Its JSON form writes the same report and returns metadata without
-reading `.env`, calling Docker, probing networks, or printing secret values.
+bundle, compatibility warnings, command map, shared per-pipeline summaries, safety
+notes, and next validation commands. Its JSON form writes the same report and
+returns metadata without reading `.env`, calling Docker, probing networks, or
+printing secret values.
+
+`deployability:evidence` writes one non-secret evidence bundle directory for a
+selected profile. Use `corepack pnpm run deployability:evidence -- --profile public-stack`
+or `corepack pnpm --silent run deployability:evidence -- --profile public-stack --json`
+when an operator or management UI needs manifest, focused dashboard/menu/recipe/handoff/command-catalog
+JSON, and handoff Markdown without calling Docker, probing networks, or printing secrets.
 
 `dev:doctor -- --json` reports local prerequisites, runtime health,
 caller-skill manifest/search checks, blockers, and next commands as clean JSON.
@@ -238,6 +448,9 @@ corepack pnpm run selfhost:urls -- --profile public-stack
 corepack pnpm --silent run selfhost:urls -- --profile public-stack --json
 corepack pnpm run selfhost:ports -- --profile public-stack
 corepack pnpm --silent run selfhost:ports -- --profile public-stack --json
+corepack pnpm run selfhost:public-origin -- --profile public-stack --origin <public-origin>
+corepack pnpm --silent run selfhost:public-origin -- --profile public-stack --origin <public-origin> --json
+corepack pnpm --silent run selfhost:public-origin -- --profile public-stack --origin <public-origin> --confirm --json
 corepack pnpm run selfhost:preflight -- --profile public-stack
 corepack pnpm --silent run selfhost:preflight -- --profile public-stack --json
 corepack pnpm run selfhost:up -- --profile public-stack
@@ -416,6 +629,9 @@ corepack pnpm run selfhost:urls -- --profile public-stack
 corepack pnpm --silent run selfhost:urls -- --profile public-stack --json
 corepack pnpm run selfhost:ports -- --profile public-stack
 corepack pnpm --silent run selfhost:ports -- --profile public-stack --json
+corepack pnpm run selfhost:public-origin -- --profile public-stack --origin <public-origin>
+corepack pnpm --silent run selfhost:public-origin -- --profile public-stack --origin <public-origin> --json
+corepack pnpm --silent run selfhost:public-origin -- --profile public-stack --origin <public-origin> --confirm --json
 corepack pnpm run selfhost:ops-report -- --profile public-stack
 corepack pnpm --silent run selfhost:ops-report -- --profile public-stack --json
 corepack pnpm run selfhost:security-review -- --profile public-stack

@@ -1,0 +1,80 @@
+{
+  "generated_at": "2026-06-10T15:56:19.753Z",
+  "command": "operator:onboarding:check",
+  "profile": "public-stack",
+  "ok": true,
+  "checks": [
+    {
+      "key": "public_stack_console_contract",
+      "label": "public-stack console contract",
+      "ok": true,
+      "detail": "compose, Caddyfile, and README expose /console and gateway setup",
+      "files": [
+        "repos/platform/deploy/public-stack/Caddyfile",
+        "repos/platform/deploy/public-stack/docker-compose.yml",
+        "repos/platform/deploy/public-stack/README.md"
+      ]
+    },
+    {
+      "key": "platform_operator_guide_flow",
+      "label": "platform operator guide flow",
+      "ok": true,
+      "detail": "console route and gateway credential flow documented",
+      "files": [
+        "repos/platform/docs/current/guides/public-stack-operator-guide.md",
+        "repos/platform/docs/current/guides/public-stack-operator-guide.zh-CN.md"
+      ]
+    },
+    {
+      "key": "platform_operator_guide_stale_limitation",
+      "label": "platform operator guide stale limitation",
+      "ok": true,
+      "detail": "must not say public-stack lacks bundled console",
+      "files": [
+        "repos/platform/docs/current/guides/public-stack-operator-guide.md",
+        "repos/platform/docs/current/guides/public-stack-operator-guide.zh-CN.md"
+      ]
+    },
+    {
+      "key": "source_operator_branch_runbook",
+      "label": "source operator branch runbook",
+      "ok": true,
+      "detail": "automatic and manual approval branches plus public-stack handoff commands remain documented",
+      "files": [
+        "docs/runbooks/platform-first-operator-onboarding.md",
+        "docs/runbooks/platform-first-operator-onboarding.zh-CN.md"
+      ]
+    },
+    {
+      "key": "brand_site_operator_narrative",
+      "label": "brand-site operator narrative",
+      "ok": true,
+      "detail": "public docs expose the verifiable operator path",
+      "files": [
+        "repos/brand-site/src/app/pages/Docs/DeployabilityProfiles.tsx",
+        "repos/brand-site/src/app/pages/en/Docs/DeployabilityProfiles.tsx"
+      ]
+    },
+    {
+      "key": "brand_site_planned_onboarding_copy",
+      "label": "brand-site planned onboarding copy",
+      "ok": true,
+      "detail": "must not label current operator onboarding as planned",
+      "files": [
+        "repos/brand-site/src/app/pages/Docs/DeployabilityProfiles.tsx",
+        "repos/brand-site/src/app/pages/en/Docs/DeployabilityProfiles.tsx"
+      ]
+    }
+  ],
+  "blockers": [],
+  "next_commands": [
+    "corepack pnpm run operator:onboarding:plan",
+    "corepack pnpm --silent run operator:onboarding:plan -- --json",
+    "corepack pnpm run test:operator-onboarding"
+  ],
+  "notes": [
+    "validates public-stack, platform guide, runbook, and brand-site onboarding contracts",
+    "does not read .env files or print secret values",
+    "platform, client, and protocol repos remain the runtime truth sources"
+  ]
+}

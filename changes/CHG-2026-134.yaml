@@ -1,0 +1,15 @@
+change_id: CHG-2026-134
+goal: close out local-first P2 first-run onboarding
+protocol_sha: da3027100cfe9391f7f8d03be18a108ee2804cf6
+client_sha: 60be61a4767fc41f2f2a230da9663e8ce3d51e1c
+platform_sha: 5961309c6b0ca4e8df22dbb5be92ac0845bf8d25
+brand_site_sha: c39953c4fdb523ab4de511f9e60c408f6c1f8918
+owner: hejiajiudeeyu
+risk_level: medium
+affected_scope:
+  - client
+  - documentation
+  - orchestration
+contracts_check: passed
+integration_check: passed
+notes: "Extends the client SHA with the local-first P2 closeout: bootstrap-first onboarding docs, deterministic local ops bootstrap/run-example status reporting, and ops-console copy/debugging surfaces that keep the first-run path on bootstrap -> status -> run-example -> debug-snapshot. Protocol, platform, and brand-site SHAs remain unchanged; the fourth repository records the verified source-integration combination without introducing runtime truth."

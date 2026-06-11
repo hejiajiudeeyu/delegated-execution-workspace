@@ -1,7 +1,12 @@
 #!/usr/bin/env node
 
 import path from "node:path";
-import { spawnSync } from "node:child_process";
+import { buildEcosystemReadiness } from "./lib/deployability-ecosystem-readiness.mjs";
+import { buildPipelineSummaries } from "./lib/deployability-pipeline-summaries.mjs";
+import { buildProfileSummaries } from "./lib/deployability-profile-summaries.mjs";
+import { recommendedProfileKeys } from "./lib/deployability-profile-attention.mjs";
+import { runJsonSource } from "./lib/json-source-runner.mjs";
+import { parseStrictArgs } from "./lib/strict-args.mjs";
 
 const ROOT = process.cwd();
 
@@ -9,8 +14,11 @@ const SECTION_SCRIPTS = [
   ["overview", "tools/deployability-overview.mjs"],
   ["quickstart", "tools/deployability-quickstart.mjs"],
   ["safety", "tools/deployability-safety.mjs"],
+  ["commands", "tools/deployability-commands.mjs"],
   ["doctor", "tools/deployability-doctor.mjs"],
-  ["compatibility", "tools/compat-status.mjs"]
+  ["compatibility", "tools/compat-status.mjs"],
+  ["console", "tools/deployability-console.mjs"],
+  ["hardening_plan", "tools/deployability-hardening-plan.mjs"]
 ];
 
 const SAFETY_DEFAULTS = [
@@ -22,6 +30,8 @@ const SAFETY_DEFAULTS = [
 
 const NEXT_COMMANDS = [
   "corepack pnpm run deployability:doctor",
+  "corepack pnpm run deployability:action-plan",
+  "corepack pnpm run deployability:commands",
   "corepack pnpm run deployability:handoff",
   "corepack pnpm run selfhost:readiness -- --all",
   "corepack pnpm run operator:onboarding:plan",
@@ -30,38 +40,38 @@ const NEXT_COMMANDS = [
 ];
 
 function parseArgs(argv) {
-  return {
-    json: argv.slice(2).includes("--json")
-  };
+  return parseStrictArgs(
+    argv,
+    [
+      { flag: "--json", name: "json", type: "boolean" },
+      { flag: "--profile", name: "profile", type: "string" }
+    ],
+    { json: false, profile: null }
+  );
 }
 
-function runJsonScript(relativeScript) {
-  const result = spawnSync(process.execPath, [path.join(ROOT, relativeScript), "--json"], {
-    cwd: ROOT,
-    encoding: "utf8",
-    env: process.env
+function runJsonScript(relativeScript, extraArgs = []) {
+  return runJsonSource({
+    root: ROOT,
+    relativeScript,
+    args: ["--json", ...extraArgs],
+    okMode: "not_false"
   });
-  let body = null;
-  try {
-    body = result.stdout.trim() ? JSON.parse(result.stdout) : null;
-  } catch (error) {
-    body = null;
-  }
-  return {
-    ok: result.status === 0 && body != null && body.ok !== false,
-    exit_code: result.status,
-    stderr: result.stderr.trim().split("\n").filter(Boolean),
-    body,
-    parse_error: body == null ? "section did not emit valid JSON" : null
-  };
 }
 
 function unique(items) {
   return [...new Set(items.filter(Boolean))];
 }
 
-function dashboardData() {
-  const sectionResults = SECTION_SCRIPTS.map(([key, script]) => [key, runJsonScript(script)]);
+function doctorCheckOk(sections, key) {
+  return sections.doctor?.checks?.some((item) => item.key === key && item.ok === true) || false;
+}
+
+function dashboardData(args = parseArgs(process.argv)) {
+  const sectionResults = SECTION_SCRIPTS.map(([key, script]) => {
+    const extraArgs = key === "commands" && args.profile != null ? ["--profile", args.profile] : [];
+    return [key, runJsonScript(script, extraArgs)];
+  });
   const sections = Object.fromEntries(sectionResults.map(([key, result]) => [key, result.body]));
   const sectionStatus = Object.fromEntries(
     sectionResults.map(([key, result]) => [
@@ -89,6 +99,23 @@ function dashboardData() {
   );
   const blockers = [...sectionFailures, ...sectionBlockers];
   const currentBundle = sections.compatibility?.current_bundle || sections.doctor?.checks?.[0]?.data?.current_bundle || null;
+  const profileFilter = sections.commands?.filters_applied?.profile || {
+    requested: args.profile,
+    resolved: null,
+    pipeline: null
+  };
+  const readinessCommandCatalog =
+    args.profile == null ? sectionResults.find(([key]) => key === "commands")?.[1] : runJsonScript("tools/deployability-commands.mjs");
+  const readinessCommands = readinessCommandCatalog?.body?.commands || [];
+  const pipelineSummaries = buildPipelineSummaries({
+    pipelines: sections.overview?.pipelines || [],
+    catalogCommands: sections.commands?.commands || []
+  }).filter((item) => profileFilter.pipeline == null || item.key === profileFilter.pipeline);
+  const profileSummaries = buildProfileSummaries({
+    profiles: sections.commands?.filters?.profiles || [],
+    pipelineSummaries,
+    catalogCommands: sections.commands?.commands || []
+  });
 
   return {
     command: "deployability:dashboard",
@@ -96,6 +123,15 @@ function dashboardData() {
     current_bundle: currentBundle,
     sections,
     section_status: sectionStatus,
+    profile_filter: profileFilter,
+    profile_selector: sections.commands?.filters?.profiles || [],
+    profile_summaries: profileSummaries,
+    recommended_profile_keys: recommendedProfileKeys(profileSummaries),
+    ecosystem_readiness: buildEcosystemReadiness({
+      catalogCommands: readinessCommands,
+      brandSiteOk: doctorCheckOk(sections, "brand_site_alignment") && doctorCheckOk(sections, "brand_site_content_smoke")
+    }),
+    pipeline_summaries: pipelineSummaries,
     blockers,
     warnings,
     safety_defaults: SAFETY_DEFAULTS,
@@ -132,6 +168,36 @@ function printText(data) {
     console.log(`${key}: ${status.ok ? "ok" : "blocked"} exit=${status.exit_code}`);
   }
 
+  if (data.profile_filter.requested != null) {
+    console.log("\nProfile filter:");
+    console.log(`- requested=${data.profile_filter.requested}`);
+    console.log(`- resolved=${data.profile_filter.resolved || "unknown"}`);
+    console.log(`- pipeline=${data.profile_filter.pipeline || "unknown"}`);
+  }
+
+  if (data.pipeline_summaries.length) {
+    console.log("\nEcosystem readiness:");
+    console.log(`- goal=${data.ecosystem_readiness.goal}`);
+    console.log(`- status=${data.ecosystem_readiness.status}`);
+    for (const check of data.ecosystem_readiness.checks) {
+      console.log(`- ${check.key}: ${check.ok ? "ok" : "blocked"}`);
+    }
+
+    console.log("\nPipeline summaries:");
+    for (const pipeline of data.pipeline_summaries) {
+      console.log(
+        `- ${pipeline.key}: ${pipeline.status}; commands=${pipeline.command_count}; json=${pipeline.json_command_count}; dashboard-safe=${pipeline.dashboard_safe_command_count}; exposure-gates=${pipeline.public_exposure_gate_count}`
+      );
+    }
+  }
+
+  if (data.profile_selector.length) {
+    console.log("\nProfile selector:");
+    for (const profile of data.profile_selector) {
+      console.log(`- ${profile.key} -> ${profile.pipeline_key}; aliases=${profile.aliases.join(", ")}`);
+    }
+  }
+
   if (data.blockers.length) {
     console.log("\nBlockers:");
     for (const blocker of data.blockers) {
@@ -157,11 +223,16 @@ function printText(data) {
   }
 }
 
-const args = parseArgs(process.argv);
-const data = dashboardData();
-if (args.json) {
-  printJson(data);
-} else {
-  printText(data);
+try {
+  const args = parseArgs(process.argv);
+  const data = dashboardData(args);
+  if (args.json) {
+    printJson(data);
+  } else {
+    printText(data);
+  }
+  process.exitCode = data.ok ? 0 : 1;
+} catch (error) {
+  console.error(error.message);
+  process.exitCode = 1;
 }
-process.exit(data.ok ? 0 : 1);

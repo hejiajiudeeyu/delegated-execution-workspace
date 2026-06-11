@@ -1,0 +1,14 @@
+change_id: CHG-2026-116
+goal: add read-only deployability profile runbook projection
+protocol_sha: da3027100cfe9391f7f8d03be18a108ee2804cf6
+client_sha: f1d6a2d8c9b83517cdf6ca9803b223847f880e9a
+platform_sha: 5961309c6b0ca4e8df22dbb5be92ac0845bf8d25
+brand_site_sha: eff029c17f377676dfc2bb028ff2fb967be31c0a
+owner: hejiajiudeeyu
+risk_level: low
+affected_scope:
+  - orchestration
+  - documentation
+contracts_check: passed
+integration_check: passed
+notes: "Adds deployability:runbook as a read-only, machine-readable profile runbook projection for operators and management UIs. The command reuses deployability:profiles and deployability:commands metadata to emit staged inspect, gate, start, verify, operate, and evidence phases for a selected profile, with profile aliases, safety posture, command metadata, blockers, and next commands. Brand-site docs now expose the runbook path. It does not read .env files, call Docker, bind ports, probe networks, or introduce protocol/client/platform runtime truth."

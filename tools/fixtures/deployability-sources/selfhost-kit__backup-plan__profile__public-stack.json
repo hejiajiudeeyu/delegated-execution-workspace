@@ -1,0 +1,47 @@
+{
+  "generated_at": "2026-06-10T15:56:46.904Z",
+  "command": "selfhost:backup-plan",
+  "profile": "public-stack",
+  "ok": true,
+  "backup_dir": "backups/selfhost/public-stack/2026-06-10T15-56-46-903Z",
+  "env_path": "repos/platform/deploy/public-stack/.env",
+  "steps": [
+    {
+      "step": 1,
+      "action": "create-backup-directory",
+      "detail": "Create backup directory",
+      "command": "mkdir -p backups/selfhost/public-stack/2026-06-10T15-56-46-903Z"
+    },
+    {
+      "step": 2,
+      "action": "copy-env-privately",
+      "detail": "Copy the selected profile .env into the backup artifact",
+      "command": "cp repos/platform/deploy/public-stack/.env backups/selfhost/public-stack/2026-06-10T15-56-46-903Z/.env"
+    },
+    {
+      "step": 3,
+      "action": "store-env-privately",
+      "detail": "Store the copied .env in a private encrypted location."
+    },
+    {
+      "step": 4,
+      "action": "dump-postgres",
+      "detail": "Export PostgreSQL data",
+      "command": "docker compose --env-file .env exec postgres pg_dump -U \"$POSTGRES_USER\" \"$POSTGRES_DB\" > backups/selfhost/public-stack/2026-06-10T15-56-46-903Z/postgres.sql"
+    },
+    {
+      "step": 5,
+      "action": "record-compose-config",
+      "detail": "Record image tags and compose config",
+      "command": "corepack pnpm run selfhost:config -- --profile public-stack > backups/selfhost/public-stack/2026-06-10T15-56-46-903Z/compose.config.txt"
+    }
+  ],
+  "next": "corepack pnpm run selfhost:backup-validate -- --profile public-stack --backup-dir backups/selfhost/public-stack/2026-06-10T15-56-46-903Z",
+  "notes": [
+    "plan-only",
+    "does not copy files",
+    "does not dump the database",
+    "does not read or print .env secret values",
+    "store .env backups privately because they may contain secret values"
+  ]
+}

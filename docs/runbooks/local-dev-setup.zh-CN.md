@@ -96,14 +96,56 @@ corepack pnpm run deployability:quickstart
 corepack pnpm --silent run deployability:quickstart -- --json
 corepack pnpm run deployability:safety
 corepack pnpm --silent run deployability:safety -- --json
+corepack pnpm run deployability:explain
+corepack pnpm --silent run deployability:explain -- --json
+corepack pnpm run deployability:production
+corepack pnpm --silent run deployability:production -- --json
+corepack pnpm run deployability:readiness
+corepack pnpm --silent run deployability:readiness -- --json
+corepack pnpm run deployability:roadmap
+corepack pnpm --silent run deployability:roadmap -- --json
+corepack pnpm run deployability:status
+corepack pnpm --silent run deployability:status -- --json
+corepack pnpm run deployability:gates
+corepack pnpm --silent run deployability:gates -- --json
+corepack pnpm run deployability:exposure
+corepack pnpm --silent run deployability:exposure -- --json
+corepack pnpm run deployability:release -- --image-tag <candidate-tag>
+corepack pnpm --silent run deployability:release -- --image-tag <candidate-tag> --json
+corepack pnpm run deployability:operator-checklist -- --profile public-stack --image-tag <candidate-tag>
+corepack pnpm --silent run deployability:operator-checklist -- --profile public-stack --image-tag <candidate-tag> --json
 corepack pnpm run deployability:doctor
 corepack pnpm --silent run deployability:doctor -- --json
 corepack pnpm run deployability:dashboard
 corepack pnpm --silent run deployability:dashboard -- --json
+corepack pnpm run deployability:dashboard -- --profile public-stack
+corepack pnpm --silent run deployability:dashboard -- --profile public-stack --json
+corepack pnpm run deployability:action-plan
+corepack pnpm --silent run deployability:action-plan -- --json
+corepack pnpm run deployability:action-plan -- --list-profiles
+corepack pnpm --silent run deployability:action-plan -- --list-profiles --json
+corepack pnpm run deployability:action-plan -- --profile public-stack
+corepack pnpm --silent run deployability:action-plan -- --profile public-stack --json
+corepack pnpm run deployability:commands
+corepack pnpm --silent run deployability:commands -- --json
+corepack pnpm run deployability:runbook
+corepack pnpm --silent run deployability:runbook -- --json
+corepack pnpm run deployability:menu
+corepack pnpm --silent run deployability:menu -- --json
+corepack pnpm run deployability:recipe -- --profile public-stack
+corepack pnpm --silent run deployability:recipe -- --profile public-stack --json
+corepack pnpm run deployability:commands -- --profile public-stack
+corepack pnpm --silent run deployability:commands -- --profile public-stack --json
 corepack pnpm run compat:status
 corepack pnpm --silent run compat:status -- --json
 corepack pnpm run deployability:handoff
 corepack pnpm --silent run deployability:handoff -- --json
+corepack pnpm run deployability:handoff -- --profile public-stack
+corepack pnpm --silent run deployability:handoff -- --profile public-stack --json
+corepack pnpm run deployability:evidence -- --profile public-stack
+corepack pnpm --silent run deployability:evidence -- --profile public-stack --json
+corepack pnpm run test:deployability
+corepack pnpm run test:deployability-operations
 corepack pnpm run dev:doctor
 corepack pnpm --silent run dev:doctor -- --json
 corepack pnpm run test:agent-e2e
@@ -126,15 +168,139 @@ daily development、self-host platform、public-stack 公开暴露复核和 rele
 JSON 形式适合 dashboard 消费，且不读取 `.env`、不调用 Docker、不探测网络、不打印
 secret 值。
 
+`deployability:explain` 是只读 operator explainer，用来解释架构、truth-source
+边界、profile 选择、public-exposure gates、production hardening 和跨仓验证。
+JSON 形式适合 onboarding 屏和管理 UI 在 operator 选择 profile 前使用；它不读取
+`.env`、不调用 Docker、不探测网络、不打印 secret 值。
+
+`deployability:production` 是只读 production hardening 边界视图。当 dashboard
+需要把 daily deployability 与 public exposure / formal production readiness 分开，
+并展示 billing、email、marketplace 和 formal release gates 时，可以使用
+`corepack pnpm run deployability:production` 或
+`corepack pnpm --silent run deployability:production -- --json`；它不执行部署命令。
+
 `deployability:doctor` 是只读 deployability 对齐快照。它会在 operator 进入具体
-管线诊断前检查 compatibility ledger、顶层 scripts、文档、brand-site 和
-safety contract。JSON 形式输出 checks、blockers、warnings、evidence 和下一步命令，
-但不读取 `.env`、不调用 Docker、不探测网络、不打印 secret 值。
+管线诊断前检查 compatibility ledger、顶层 scripts、文档、brand-site file alignment、
+brand-site deployability content smoke 和 safety contract。JSON 形式输出 checks、
+blockers、warnings、evidence 和下一步命令，但不读取 `.env`、不调用 Docker、
+不探测网络、不打印 secret 值。
 
 `deployability:dashboard` 是给 dashboard 和 CI 使用的只读聚合 payload。它会组合
-overview、quickstart、safety、doctor 和 compatibility JSON sections，但不读取
-`.env`、不调用 Docker、不绑定端口、不探测网络、不打印 secret 值。各 profile 自己的
-readiness、preflight、status、smoke 和 audit 命令仍然是权威 gate。
+overview、quickstart、safety、doctor、compatibility JSON sections 和 per-pipeline
+summaries，但不读取 `.env`、不调用 Docker、不绑定端口、不探测网络、不打印 secret
+值。各 profile 自己的 readiness、preflight、status、smoke 和 audit 命令仍然是权威 gate。
+这些 per-pipeline summaries 与 `deployability:overview`、`deployability:handoff`
+共用同一个第四仓 metadata builder，让命令数和安全门禁计数在 docs、dashboard JSON
+和 handoff 报告之间保持一致。
+
+`deployability:status` 是给管理第一屏使用的 compact read-only operator status。
+当 dashboard 只需要 readiness、roadmap、public-stack gate 和 production-hardening
+状态，而不想解析更大的 dashboard payload 时，可以使用
+`corepack pnpm run deployability:status` 或
+`corepack pnpm --silent run deployability:status -- --json`。
+
+`deployability:gates` 是给 public exposure 和 production hardening 使用的
+compact read-only gate checklist。当 dashboard 需要展示 opening edge routes 或
+claiming production readiness 前必须通过哪些 gate，但不想执行 gate 命令时，可以使用
+`corepack pnpm run deployability:gates` 或
+`corepack pnpm --silent run deployability:gates -- --json`。
+
+`deployability:exposure` 是非破坏性的 public-stack exposure blocker snapshot。
+当 dashboard 需要实际 public exposure review 结果，包括 localhost public origin
+这类 `exposure_blockers` 时，可以使用 `corepack pnpm run deployability:exposure`
+或 `corepack pnpm --silent run deployability:exposure -- --json`；它只为 compose
+config 调用 Docker，不启动服务、不绑定端口、不探测网络、不打印 secret 值。
+
+`deployability:release` 是非破坏性的 release candidate gate。当 dashboard 需要在
+真实 release-owned smoke 前聚合 production hardening、public exposure、
+published-image plan 和 dry-run smoke evidence 时，可以使用
+`corepack pnpm run deployability:release -- --image-tag <candidate-tag>` 或
+`corepack pnpm --silent run deployability:release -- --image-tag <candidate-tag> --json`；
+它不发布镜像或包、不启动服务、不探测 endpoint、不打印 secret 值。
+
+`deployability:operator-checklist` 是非破坏性的 public-stack operator checklist。
+当 dashboard 需要一张覆盖 menu、recipe、onboarding、exposure / release gates、
+backup-plan 和 handoff evidence 的 ready / blocked checklist 时，可以使用
+`corepack pnpm run deployability:operator-checklist -- --profile public-stack --image-tag <candidate-tag>`
+或
+`corepack pnpm --silent run deployability:operator-checklist -- --profile public-stack --image-tag <candidate-tag> --json`；
+它不启动服务、不探测 endpoint、不发布 artifacts、不打印 secret 值。
+
+`deployability:profiles` 是给 operator、dashboard、CI 和管理脚本使用的专用只读
+profile catalog。它从 overview, command, and doctor metadata、共享
+pipeline/profile summary helpers 和共享第四仓 profile registry 派生 profile cards，
+输出 aliases、labels、所属 pipeline keys、status、counts、
+next commands、next JSON commands、safety notes、共享 `attention` metadata 和顶层
+`recommended_profile_keys`，同时不读取 `.env`、不调用 Docker、不绑定端口、
+不探测网络、不打印 secrets。当管理面只需要一张卡时，可以用
+`corepack pnpm run deployability:profiles`、
+`corepack pnpm --silent run deployability:profiles -- --json`，或
+`--profile public-stack` / 其他 profile key / alias；未知 profile 会返回
+blockers，而不是回退成全部 profiles。
+
+`deployability:action-plan` 是给 operator 使用的只读下一步动作选择器。它会把
+dashboard 和命令目录合成 profile 级 recommended commands、dashboard-safe
+commands、public-exposure gates、service-touching commands、safety notes 和
+next JSON commands、profile `attention` metadata 和顶层 `recommended_profile_keys`，
+同时不读取 `.env`、不调用 Docker、不绑定端口、不探测网络、不打印 secrets。
+dashboard 可以用 `attention.rank`、`attention.level` 和 `attention.reasons`
+排序 profile cards，并标出 public-exposure gates，而不需要从命令列表里重新推断风险。
+当 operator 或 dashboard 需要先获得支持的 profile keys、aliases、pipeline keys
+和 purposes 时，可以先用 `--list-profiles` 或 `--profiles`，该模式不会调用
+dashboard 或 command catalog。
+同一个 selector 也会出现在 `deployability:quickstart`、`deployability:safety`
+和 `deployability:commands -- --track daily_dev` 里，方便管理面在渲染聚焦
+action plan 前自动发现 profile 选择器。
+当 operator 只需要某一条路径时，可以用 `--profile public-stack` 或其他 profile
+key / alias 聚焦输出。JSON 形式会包含 `profile_filter`，未知 profile 会以 blocker
+返回。
+
+`deployability:commands` 是给人、dashboard 和 CI 使用的只读命令目录。它会把
+overview、quickstart 和 safety metadata 合并成一张列表，并支持按 category、posture、
+首次使用 track 或 pipeline 过滤；JSON 形式会包含 `filters.profiles`，输出支持的
+profile keys、aliases、所属 pipeline keys 和 purposes，让 dashboard 可以直接从命令
+目录渲染 profile selector。它也支持 `--profile <key-or-alias>` 作为 pipeline filter
+的 operator-friendly alias 层，所以 `--profile public-stack` 只返回 public-stack
+命令目录，未知 profile 会以干净 blocker 返回。带 profile 参数的命令变体会继承基础
+命令的安全姿态。它不读取 `.env`、不调用 Docker、不绑定端口、不探测网络、不打印
+secret 值。
+
+`deployability:runbook` 是单个 profile 的只读阶段化 runbook 投影。当 operator 或
+dashboard 需要在复制命令前看到 inspect、gate、start、verify、operate、evidence
+顺序时，可以使用 `corepack pnpm run deployability:runbook`、
+`corepack pnpm --silent run deployability:runbook -- --json`，或
+`--profile public-stack` / 其他 profile key / alias。它复用
+`deployability:profiles` 和 `deployability:commands`，让 public exposure gate 位于
+startup 之前，未知 profile 返回 blocker，并且不读取 `.env`、不调用 Docker、
+不绑定端口、不探测网络、不打印 secret 值。
+
+`deployability:menu` 是给人和管理 UI 使用的只读第一屏 operator menu。当界面需要在
+一个 payload 中展示 profile choices、attention、primary command、runbook、
+action-plan、dashboard、handoff 和 command catalog 入口时，可以使用
+`corepack pnpm run deployability:menu`、
+`corepack pnpm --silent run deployability:menu -- --json`，或
+`corepack pnpm run deployability:menu -- --profile public-stack` /
+`corepack pnpm --silent run deployability:menu -- --profile public-stack --json`。
+聚焦 public-stack 的 JSON 还会
+包含 `selected_onboarding_plan`，来源于只读 `operator:onboarding:plan` 投影，方便
+管理 UI 在 selected runbook 旁边渲染 preflight、`/console/` setup、gateway
+credential setup、smoke/evidence 和 onboarding contract validation。它是现有
+deployability metadata 的便利投影，未知 profile 返回干净 blocker，并且不读取
+`.env`、不调用 Docker、不绑定端口、不探测网络、不打印 secret 值。
+
+`deployability:dashboard -- --json` 和 `deployability:handoff -- --json` 也会把
+同一份目录作为顶层 `profile_selector` 输出，让 dashboard、交接工具和管理脚本不需要
+知道命令目录内部 section 路径，也能渲染 profile 选择器。
+两个命令也支持 `--profile <key-or-alias>` 聚焦管理 payload；聚焦模式会通过
+`profile_filter` 记录 requested / resolved profile，把命令目录和 pipeline summaries
+限制到所属 pipeline，同时让 `ecosystem_readiness` 继续表示全局 daily-deployable
+scorecard。focused public-stack 示例可从 `deployability:quickstart` 和
+`deployability:commands -- --track daily_dev` 发现。
+两个 payload 也包含 `profile_summaries`，这是派生出的 profile-card 数组，会把
+profile aliases / purpose 与 pipeline status、counts、next commands、safety notes
+和 `deployability:action-plan` 使用的同一套 `attention` metadata 合并在一起。
+dashboard 可以用顶层 `recommended_profile_keys` 或每张卡的 `attention.rank` 排序，
+不必再单独调用 action-plan 命令。
 
 `compat:status` 是只读兼容台账快照。它会把当前 submodule gitlinks 和最新
 `changes/CHG-*.yaml` 对齐检查，把 dirty submodule worktree 报成 warnings，并把
@@ -143,8 +309,15 @@ ledger mismatch 保持为 blockers。JSON 形式不读取 `.env`、不调用 Doc
 
 `deployability:handoff` 会把不含 secret 的 Markdown 交接报告写入
 `exports/deployability/`；也可以通过 `--output` 指定路径。报告聚合当前 bundle、
-兼容 warnings、命令地图、安全说明和下一步验证命令。JSON 形式会写同一份报告并输出
-metadata，不读取 `.env`、不调用 Docker、不探测网络、不打印 secret 值。
+兼容 warnings、命令地图、shared per-pipeline summaries、安全说明和下一步验证命令。JSON
+形式会写同一份报告并输出 metadata，不读取 `.env`、不调用 Docker、不探测网络、不打印
+secret 值。
+
+`deployability:evidence` 会为选定 profile 写出一个不含 secret 的 evidence bundle
+directory。管理 UI 或 operator 需要 manifest、聚焦 dashboard/menu/recipe/handoff/command-catalog
+JSON 和 handoff Markdown 时，可以使用 `corepack pnpm run deployability:evidence -- --profile public-stack`
+或 `corepack pnpm --silent run deployability:evidence -- --profile public-stack --json`；
+它不调用 Docker、不探测网络、不打印 secret 值。
 
 `dev:doctor -- --json` 会用干净 JSON 输出本地前置条件、runtime health、
 caller-skill manifest / search 检查、blockers 和下一步命令。它不会打印 raw

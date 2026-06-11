@@ -129,6 +129,8 @@ Commands:
             Run non-destructive public exposure review checks
   audit-export
             Export platform admin audit events to a local JSON file; --json reports metadata
+  public-origin
+            Dry-run public-stack PUBLIC_SITE_ADDRESS update, or write it with --confirm
   rotate    Dry-run secret rotation, or write .env with --confirm
   rotate-plan
             Print the manual secret rotation checklist
@@ -155,11 +157,15 @@ function parseArgs(argv) {
     output: null,
     auditBaseUrl: null,
     backupDir: null,
+    origin: null,
     all: false,
     json: false
   };
   for (let index = 3; index < argv.length; index += 1) {
     const value = argv[index];
+    if (value === "--") {
+      continue;
+    }
     if (value === "--force") {
       args.force = true;
       continue;
@@ -230,6 +236,15 @@ function parseArgs(argv) {
       args.backupDir = value.slice("--backup-dir=".length);
       continue;
     }
+    if (value === "--origin") {
+      args.origin = argv[index + 1];
+      index += 1;
+      continue;
+    }
+    if (value.startsWith("--origin=")) {
+      args.origin = value.slice("--origin=".length);
+      continue;
+    }
     if (value === "--profile") {
       args.profile = argv[index + 1];
       index += 1;
@@ -239,6 +254,7 @@ function parseArgs(argv) {
       args.profile = value.slice("--profile=".length);
       continue;
     }
+    throw new Error(`unknown option ${value}`);
   }
   if (!PROFILES[args.profile]) {
     throw new Error(`unknown profile ${args.profile}; expected one of ${Object.keys(PROFILES).join(", ")}`);
@@ -361,6 +377,67 @@ function rotateEnv(text) {
     entries.set("DATABASE_URL", `postgresql://${user}:${password}@postgres:5432/${db}`);
   }
   return renderEnv(text, entries);
+}
+
+function renderEnvWithSetKey(originalText, key, value) {
+  const entries = parseEnv(originalText);
+  const hadKey = entries.has(key);
+  entries.set(key, value);
+  if (hadKey) {
+    return renderEnv(originalText, entries);
+  }
+  return `${originalText.replace(/\n?$/, "\n")}${key}=${value}\n`;
+}
+
+function classifyPublicOriginValue(value) {
+  const raw = (value || "").trim();
+  if (!raw) {
+    return "missing";
+  }
+  let parsed;
+  try {
+    parsed = new URL(raw);
+  } catch {
+    return raw.includes("localhost") ? "localhost" : "invalid_or_missing";
+  }
+  const host = parsed.hostname.toLowerCase();
+  if (host === "localhost" || host.endsWith(".localhost")) {
+    return "localhost";
+  }
+  if (["127.0.0.1", "0.0.0.0", "::1", "[::1]"].includes(host)) {
+    return "local_or_bind_address";
+  }
+  if (parsed.protocol !== "https:") {
+    return "non_https";
+  }
+  return "set";
+}
+
+function normalizePublicOrigin(origin) {
+  const raw = (origin || "").trim();
+  if (!raw) {
+    throw new Error("--origin is required for public-origin");
+  }
+  let parsed;
+  try {
+    parsed = new URL(raw);
+  } catch {
+    throw new Error("public-origin requires a full HTTPS origin such as https://callanything.example");
+  }
+  if (parsed.protocol !== "https:") {
+    throw new Error("public-origin requires https:// for public-stack exposure");
+  }
+  const host = parsed.hostname.toLowerCase();
+  if (host === "localhost" || host.endsWith(".localhost")) {
+    throw new Error("public-origin refuses localhost for public-stack exposure");
+  }
+  if (["127.0.0.1", "0.0.0.0", "::1", "[::1]"].includes(host)) {
+    throw new Error("public-origin refuses loopback or bind addresses for public-stack exposure");
+  }
+  if (parsed.pathname !== "/" || parsed.search || parsed.hash) {
+    throw new Error("public-origin must be an origin only, without path, query, or hash");
+  }
+  return parsed.origin.replace(/\/+$/, "");
 }
 
 function secretFindings(text, profileName) {
@@ -2466,6 +2543,106 @@ function printRotateJson(profileName, options = {}) {
   return data.ok;
 }
 
+function publicOriginData(profileName, { origin, confirm = false } = {}) {
+  if (profileName !== "public-stack") {
+    throw new Error("selfhost:public-origin only supports public-stack");
+  }
+  const normalizedOrigin = normalizePublicOrigin(origin);
+  const { envPath } = profilePaths(profileName);
+  if (!fs.existsSync(envPath)) {
+    throw new Error(`${path.relative(ROOT, envPath)} missing; run selfhost:init -- --profile public-stack first`);
+  }
+
+  const current = fs.readFileSync(envPath, "utf8");
+  const entries = parseEnv(current);
+  const currentValue = entries.get("PUBLIC_SITE_ADDRESS") || "";
+  const relativeEnvPath = path.relative(ROOT, envPath);
+  const baseCommand = `corepack pnpm run selfhost:public-origin -- --profile public-stack --origin ${normalizedOrigin}`;
+  const verifyCommands = [
+    "corepack pnpm run selfhost:security-review -- --profile public-stack",
+    "corepack pnpm run deployability:exposure"
+  ];
+  const nextCommands = confirm ? verifyCommands : [`${baseCommand} --confirm`, ...verifyCommands];
+
+  if (!confirm) {
+    return {
+      command: "selfhost:public-origin",
+      profile: profileName,
+      ok: true,
+      dry_run: true,
+      confirmed: false,
+      env_path: relativeEnvPath,
+      target_key: "PUBLIC_SITE_ADDRESS",
+      origin: normalizedOrigin,
+      current_value_class: classifyPublicOriginValue(currentValue),
+      backup_path: null,
+      changed_files: [],
+      next_commands: nextCommands,
+      notes: [
+        "dry-run only",
+        "does not modify .env",
+        "does not print secret values",
+        "confirmed mode writes only PUBLIC_SITE_ADDRESS and a .env backup next to the selected profile env file"
+      ]
+    };
+  }
+
+  const backupPath = `${envPath}.public-origin-backup-${new Date().toISOString().replace(/[:.]/g, "-")}`;
+  const relativeBackupPath = path.relative(ROOT, backupPath);
+  fs.writeFileSync(backupPath, current, "utf8");
+  fs.writeFileSync(envPath, renderEnvWithSetKey(current, "PUBLIC_SITE_ADDRESS", normalizedOrigin), "utf8");
+
+  return {
+    command: "selfhost:public-origin",
+    profile: profileName,
+    ok: true,
+    dry_run: false,
+    confirmed: true,
+    env_path: relativeEnvPath,
+    target_key: "PUBLIC_SITE_ADDRESS",
+    origin: normalizedOrigin,
+    current_value_class: classifyPublicOriginValue(currentValue),
+    backup_path: relativeBackupPath,
+    changed_files: [relativeEnvPath, relativeBackupPath],
+    next_commands: nextCommands,
+    notes: [
+      "confirmed update writes only PUBLIC_SITE_ADDRESS",
+      "confirmed update writes a .env backup next to the selected profile env file",
+      "does not print secret values",
+      "rerun selfhost:security-review before startup or public exposure"
+    ]
+  };
+}
+
+function publicOriginProfile(profileName, options = {}) {
+  const data = publicOriginData(profileName, options);
+  console.log(`[selfhost:public-origin] ${data.dry_run ? "dry-run" : "updated"} profile=${profileName}`);
+  console.log(`origin=${data.origin}`);
+  console.log(`env_path=${data.env_path}`);
+  if (data.dry_run) {
+    console.log("No files were changed. Add --confirm to write PUBLIC_SITE_ADDRESS.");
+  } else {
+    console.log(`backup=${data.backup_path}`);
+    console.log("Run selfhost:security-review before startup or public exposure.");
+  }
+  return data.ok;
+}
+
+function printPublicOriginJson(profileName, options = {}) {
+  const data = publicOriginData(profileName, options);
+  console.log(
+    JSON.stringify(
+      {
+        generated_at: new Date().toISOString(),
+        ...data
+      },
+      null,
+      2
+    )
+  );
+  return data.ok;
+}
+
 async function main() {
   const args = parseArgs(process.argv);
   if (args.command === "help" || args.command === "--help" || args.command === "-h") {
@@ -2671,6 +2848,13 @@ async function main() {
       auditBaseUrl: args.auditBaseUrl
     });
     return;
+  }
+
+  if (args.command === "public-origin") {
+    if (args.json) {
+      process.exit(printPublicOriginJson(args.profile, { origin: args.origin, confirm: args.confirm }) ? 0 : 1);
+    }
+    process.exit(publicOriginProfile(args.profile, { origin: args.origin, confirm: args.confirm }) ? 0 : 1);
   }
 
   if (args.command === "restore-plan") {

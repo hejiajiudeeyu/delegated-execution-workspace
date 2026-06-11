@@ -1,0 +1,14 @@
+change_id: CHG-2026-124
+goal: add deployability operator explainer command
+protocol_sha: da3027100cfe9391f7f8d03be18a108ee2804cf6
+client_sha: f1d6a2d8c9b83517cdf6ca9803b223847f880e9a
+platform_sha: 5961309c6b0ca4e8df22dbb5be92ac0845bf8d25
+brand_site_sha: a5487d7200510e95d05855a0baf8f00876d0b37d
+owner: hejiajiudeeyu
+risk_level: low
+affected_scope:
+  - orchestration
+  - documentation
+contracts_check: passed
+integration_check: passed
+notes: "Adds deployability:explain as a read-only operator architecture, truth-source boundary, profile, gate, and validation explainer for operators and management UIs. The command projects existing status, gates, command catalog, and compatibility metadata without reading .env files, calling Docker, binding ports, probing networks, printing secrets, or introducing protocol/client/platform runtime truth. Brand-site deployability docs now expose the same explainer command."
