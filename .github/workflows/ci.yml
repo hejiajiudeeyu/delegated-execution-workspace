@@ -6,6 +6,15 @@ on:
 
 env:
   NX_DAEMON: "false"
+  FORMAL_SUBMODULES: "repos/protocol repos/client repos/platform"
+  CI_OPTIONAL_SUBMODULES: "repos/brand-site"
+
+defaults:
+  run:
+    shell: bash
+
+permissions:
+  contents: read
 
 jobs:
   submodule-integrity:
@@ -13,7 +22,11 @@ jobs:
     steps:
       - uses: actions/checkout@v5
         with:
-          submodules: recursive
+          submodules: false
+      - name: Checkout formal submodules
+        run: |
+          git submodule sync -- ${FORMAL_SUBMODULES}
+          git submodule update --init --force -- ${FORMAL_SUBMODULES}
       - name: Validate submodule SHA state
         run: node tools/validate-submodules.mjs
 
@@ -23,7 +36,11 @@ jobs:
     steps:
       - uses: actions/checkout@v5
         with:
-          submodules: recursive
+          submodules: false
+      - name: Checkout formal submodules
+        run: |
+          git submodule sync -- ${FORMAL_SUBMODULES}
+          git submodule update --init --force -- ${FORMAL_SUBMODULES}
       - uses: pnpm/action-setup@v4
         with:
           version: 10.11.0
@@ -39,7 +56,11 @@ jobs:
     steps:
       - uses: actions/checkout@v5
         with:
-          submodules: recursive
+          submodules: false
+      - name: Checkout formal submodules
+        run: |
+          git submodule sync -- ${FORMAL_SUBMODULES}
+          git submodule update --init --force -- ${FORMAL_SUBMODULES}
       - uses: pnpm/action-setup@v4
         with:
           version: 10.11.0
@@ -57,7 +78,11 @@ jobs:
     steps:
       - uses: actions/checkout@v5
         with:
-          submodules: recursive
+          submodules: false
+      - name: Checkout formal submodules
+        run: |
+          git submodule sync -- ${FORMAL_SUBMODULES}
+          git submodule update --init --force -- ${FORMAL_SUBMODULES}
       - uses: pnpm/action-setup@v4
         with:
           version: 10.11.0
@@ -74,7 +99,11 @@ jobs:
     steps:
       - uses: actions/checkout@v5
         with:
-          submodules: recursive
+          submodules: false
+      - name: Checkout formal submodules
+        run: |
+          git submodule sync -- ${FORMAL_SUBMODULES}
+          git submodule update --init --force -- ${FORMAL_SUBMODULES}
       - uses: pnpm/action-setup@v4
         with:
           version: 10.11.0
@@ -92,7 +121,11 @@ jobs:
     steps:
       - uses: actions/checkout@v5
         with:
-          submodules: recursive
+          submodules: false
+      - name: Checkout formal submodules
+        run: |
+          git submodule sync -- ${FORMAL_SUBMODULES}
+          git submodule update --init --force -- ${FORMAL_SUBMODULES}
       - uses: pnpm/action-setup@v4
         with:
           version: 10.11.0

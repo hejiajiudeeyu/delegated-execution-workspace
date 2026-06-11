@@ -285,6 +285,9 @@ importers:
       '@delexec/caller-controller-core':
         specifier: 0.1.0
         version: link:../../packages/caller-controller-core
+      '@delexec/caller-skill-adapter':
+        specifier: 0.1.0
+        version: link:../caller-skill-adapter
       '@delexec/contracts':
         specifier: ^0.1.0
         version: link:../../../protocol/packages/contracts
