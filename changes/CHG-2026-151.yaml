@@ -1,0 +1,16 @@
+change_id: CHG-2026-151
+goal: keep responder public quick start package-first through review commands
+protocol_sha: ffc028ccb4d1d92fd93b63ce3f715daf84a4ece8
+client_sha: 56b4032b60fca2966b3a25508555351ef17b2b4a
+platform_sha: 1663da1bd2602d10b306a02decf221250334b1cc
+brand_site_sha: 7c8688877c031f4598bf9bb975c8d6c19e2333b1
+owner: hejiajiudeeyu
+risk_level: low
+affected_scope:
+  - brand-site
+  - docs
+  - first-real-call
+  - aliyun-deployment
+contracts_check: passed
+integration_check: passed
+notes: "Fixes the T-403 pre-run public-docs risk where the package-first Responder quick start later sent unknown responders back to source-only npm script commands for enable-responder, add-hotline, submit-review, and status. Brand-site commit 7c8688877c031f4598bf9bb975c8d6c19e2333b1 switches Chinese and English Responder quick starts to the published delexec-ops CLI for responder identity, example hotline, custom hotline, submit-review, and status steps, while retaining source checkout only as a contributor path. The content smoke now asserts these commands use the published CLI and rejects the source-only variants. Owning repo verification passed: npm run smoke:first-real-call-content, targeted eslint, npm run build. Deployed to Aliyun /var/www/html after backup /home/admin/site-backups/html.20260613T050235Z.tgz, preserving /boids*. Public checks passed for Chinese and English Responder quick starts with deploycheck=20260613T050235Z: both pages return 200, include delexec-ops auth register/add-hotline/submit-review/status, and omit the old npm run ops variants for those responder steps. Public health and marketplace API remained healthy."

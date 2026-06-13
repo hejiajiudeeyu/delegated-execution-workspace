@@ -36,13 +36,13 @@ Agent-owned preflight before manual run:
   - Docs overview: `https://callanything.xyz/docs/`
   - LLM index: `https://callanything.xyz/llms.txt`
 
-## Pre-Run Public-Docs Risks To Verify
+## Pre-Run Public-Docs Risks And Fixes
 
-These are not final rehearsal findings yet. Verify them during the manual run before grading severity.
+These are pre-run issues discovered before the formal manual rehearsal. They do not complete T-403 by themselves; they reduce public-docs friction before the operator starts the run.
 
-| Severity candidate | Step | Observation | Evidence | Owning repo candidate |
-| --- | --- | --- | --- | --- |
-| major | Responder Capability Packaging / Submit Review | The public Responder quick start starts with the package-first `npm install -g @delexec/ops` golden path, but later advanced examples for `enable-responder`, `add-example-hotline`, `add-hotline`, `submit-review`, and `status` still use `npm run ops -- ...`. A package-only unknown Responder may be pushed back toward a source checkout before they can submit a production review. | `https://callanything.xyz/docs/quick-start-responder/` sections 03-07, checked 2026-06-13. | `repos/brand-site` for documentation; `repos/client` if the package CLI lacks equivalent public commands. |
+| Status | Severity candidate | Step | Observation | Evidence | Owning repo |
+| --- | --- | --- | --- | --- | --- |
+| fixed before manual run | major | Responder Capability Packaging / Submit Review | The public Responder quick start started with the package-first `npm install -g @delexec/ops` golden path, but later advanced examples for `enable-responder`, `add-example-hotline`, `add-hotline`, `submit-review`, and `status` still used `npm run ops -- ...`. A package-only unknown Responder could be pushed back toward a source checkout before they could submit a production review. | Verified `@delexec/ops@0.1.0` help exposes the needed global commands. Brand-site commit `7c8688877c031f4598bf9bb975c8d6c19e2333b1` switched Chinese and English Responder quick starts to `delexec-ops ...`, added content-smoke assertions, and was deployed to Aliyun after backup `/home/admin/site-backups/html.20260613T050235Z.tgz`. Public checks with `deploycheck=20260613T050235Z` confirmed both Responder pages return `200`, include `delexec-ops auth register`, `delexec-ops add-hotline`, `delexec-ops submit-review`, and `delexec-ops status`, and omit old `npm run ops -- ...` variants for those steps. | `repos/brand-site` |
 
 ## Rehearsal Metadata
 

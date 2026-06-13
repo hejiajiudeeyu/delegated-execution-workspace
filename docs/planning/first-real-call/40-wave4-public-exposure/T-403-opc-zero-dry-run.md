@@ -10,6 +10,8 @@
 
 2026-06-13 更新：agent-owned 演练记录包已准备好。`T-403-findings.md` 已创建为 draft 模板，只记录 preflight 证据与待填写字段；正式人工演练完成前不得把本卡标为 complete。公开预检已确认 npm 包可见、站点/platform/relay/gateway health 可用、marketplace API 返回诚实空目录、Console HTML 可访问、公开 docs/quick starts/llms 含 bootstrap-first golden path。
 
+2026-06-13 追加：人工演练前发现 Responder quick start 后续步骤仍把 package-first 用户引向 `npm run ops -- ...` 源码命令。已在 `repos/brand-site` 修复并部署：中英文 Responder quick start 的 responder identity、add-hotline、submit-review、status 等步骤现在使用已发布的 `delexec-ops ...` CLI。该修复不代表 T-403 完成；正式人工演练仍需从公开页面实际执行并回填 `T-403-findings.md`。
+
 ## 背景
 
 这是整个计划的终点验收：你自己扮演 OPC #0（第一个 Responder），用另一台机器/账号扮演陌生 Caller。**规则：全程只允许看 callanything.xyz 公开文档，禁止看源码、禁止用第四仓工具。** 每一次违规求助都是一个新断点，要记录。
