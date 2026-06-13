@@ -1,0 +1,16 @@
+change_id: CHG-2026-149
+goal: publish @delexec/ops and unblock public-doc npm bootstrap
+protocol_sha: ffc028ccb4d1d92fd93b63ce3f715daf84a4ece8
+client_sha: c7c7243d4080eb30b4384b91a5f15dd4d5cfc18a
+platform_sha: 1663da1bd2602d10b306a02decf221250334b1cc
+brand_site_sha: 5ce3da4bc3b0cce8936f15bd2afe7d4e8ea66349
+owner: hejiajiudeeyu
+risk_level: medium
+affected_scope:
+  - client
+  - npm-release
+  - ops-cli
+  - first-real-call
+contracts_check: passed
+integration_check: passed
+notes: "Publishes @delexec/ops@0.1.0 from client commit c7c7243d4080eb30b4384b91a5f15dd4d5cfc18a. Publish run 27455900100 passed npm test, npm run test:packages, and npm publish --workspace @delexec/ops. The publish blocker exposed that bundled Ops Console UI startup used corepack pnpm inside the formal client repo CI, which is installed with npm ci; client commits 2e7608f3032a7f196998614697bd252dfb2744d3, 5bf4635e5aa9a30433dae7f83823605ce26712f3, and c7c7243d4080eb30b4384b91a5f15dd4d5cfc18a add UI readiness headroom and switch bundled UI startup to npm workspaces. Registry verification returned version 0.1.0 and dist integrity. Clean npm install smoke in /tmp/delexec-ops-npm-smoke-x3jcRW with DELEXEC_HOME=/tmp/delexec-home-npm-smoke-gAP7Ib ran help, bootstrap, status, and mcp spec; bootstrap reached SUCCEEDED and mcp spec resolved the packaged adapter entry. Fourth-repo validation passed: check:submodules, check:boundaries, check:bundles, test:contracts, and test:integration."

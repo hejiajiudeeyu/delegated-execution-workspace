@@ -1,0 +1,38 @@
+# T-403 OPC #0：第一条真实 Hotline 上架演练
+
+- 仓库：不改代码（演练卡）；发现的缺陷回 owning 仓库开新卡
+- 依赖：T-401、T-402 完成
+- 完成标志：「陌生 Caller 付费调用陌生 Responder」第一次在生产真实发生，全程只用公开文档
+
+## 当前状态
+
+已解除 npm blocker（2026-06-13）：T-401/T-402 已上线，`@delexec/ops@0.1.0` 已发布并通过干净 npm install smoke。下一步是人工执行 OPC #0 演练；演练中仍需严格遵守“只用公开文档，不看源码/第四仓工具”的规则。
+
+## 背景
+
+这是整个计划的终点验收：你自己扮演 OPC #0（第一个 Responder），用另一台机器/账号扮演陌生 Caller。**规则：全程只允许看 callanything.xyz 公开文档，禁止看源码、禁止用第四仓工具。** 每一次违规求助都是一个新断点，要记录。
+
+## 执行步骤
+
+1. `[人工]` Responder 侧（你，机器 A）：
+   1. 按官网 quick-start-responder 从 `npm install -g @delexec/ops` 开始
+   2. 准备一个真实有用的小能力（建议：你已有的某个脚本/文档服务包装成 `--cmd` hotline）
+   3. `submit-review` 提交到生产 platform
+2. `[人工]` Operator 侧（你，生产 console）：双审批 + enable，确认 marketplace 页出现该条目
+3. `[人工]` 给 Caller 的 tenant 手工充值（admin recharge）
+4. `[人工]` Caller 侧（另一台机器/干净环境，机器 B）：
+   1. 按官网 quick-start-caller 安装
+   2. 在 marketplace 看到 Hotline → 发起付费调用 → 收到签名结果
+5. 对账：`/v1/tenants/me/balance` 与 ledger 与预期单价一致；platform console `/billing` 可见这笔流水
+6. agent 部分：把演练全程记录（每步耗时、卡点、违规求助点）整理为 `T-403-findings.md` 放本目录，按 blocker/major/minor 分级，每个发现标注 owning 仓库——这是下一轮计划的输入。
+
+## 验收标准
+
+1. 一笔真实付费调用完成：调用成功 + 扣费正确 + 双端可对账。
+2. `T-403-findings.md` 存在，含完整卡点记录与分级。
+3. 全程未使用源码知识的步骤清单（或诚实记录哪几步不得不违规）。
+
+## 防跑偏
+
+- 演练中发现缺陷不要现场修，记录下来开新卡——演练的价值就在于暴露真实摩擦。
+- Hotline 内容选最小可用的，不要为演练开发新能力。

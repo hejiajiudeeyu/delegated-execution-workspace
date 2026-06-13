@@ -1,0 +1,16 @@
+change_id: CHG-2026-150
+goal: unify first-real-call public golden path around npm bootstrap
+protocol_sha: ffc028ccb4d1d92fd93b63ce3f715daf84a4ece8
+client_sha: 56b4032b60fca2966b3a25508555351ef17b2b4a
+platform_sha: 1663da1bd2602d10b306a02decf221250334b1cc
+brand_site_sha: 93c9688d9d70cc1001ba2d1da9b1c6b11bc9e22b
+owner: hejiajiudeeyu
+risk_level: low
+affected_scope:
+  - client
+  - brand-site
+  - docs
+  - first-real-call
+contracts_check: passed
+integration_check: passed
+notes: "Unifies the public first-real-call golden path around the published @delexec/ops package. Client commit 56b4032b60fca2966b3a25508555351ef17b2b4a makes README.md and README.zh-CN.md package-first and adds README ordering checks. Brand-site commit 93c9688d9d70cc1001ba2d1da9b1c6b11bc9e22b makes Chinese/English Caller and Responder quick starts, Docs hero, and public/llms.txt show the same npm install + bootstrap + status + run-example path before any source clone path. Source install remains documented as the contributor path. Owning repo checks passed before this bundle: brand-site content smoke, targeted eslint, build, Browser local content checks; client npm test. Clean temp npm smoke in /tmp/delexec-t203-golden-RkA4qG installed @delexec/ops@0.1.0 and ran bootstrap/status/run-example with explicit free ports; bootstrap and run-example reached SUCCEEDED. Fourth-repo validation passed: check:submodules, check:boundaries, check:bundles, test:contracts, test:integration, followed by a final check:bundles after marking this bundle passed. Deployed current brand-site dist to Aliyun /var/www/html after backup /home/admin/site-backups/html.20260613T043956Z.tgz, preserving /boids*; public checks passed for /docs/, Chinese/English Caller and Responder quick starts, and /llms.txt."
