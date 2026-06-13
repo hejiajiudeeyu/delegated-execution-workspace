@@ -6,11 +6,13 @@
 
 ## 当前状态
 
-已解除 npm blocker（2026-06-13）：T-401/T-402 已上线，`@delexec/ops@0.1.0` 已发布并通过干净 npm install smoke。下一步是人工执行 OPC #0 演练；演练中仍需严格遵守“只用公开文档，不看源码/第四仓工具”的规则。
+已解除 npm / paid-Hotline docs blocker（2026-06-13）：T-401/T-402 已上线，`@delexec/ops@0.1.1` 已发布并通过干净 npm install paid-pricing smoke；中英文 Responder quick start 的生产演练命令已包含 `--fixed-price-cents`、`--currency` 和 `--billing-disclosure-url`，并已部署到 callanything.xyz。下一步是人工执行 OPC #0 演练；演练中仍需严格遵守“只用公开文档，不看源码/第四仓工具”的规则。
 
 2026-06-13 更新：agent-owned 演练记录包已准备好。`T-403-findings.md` 已创建为 draft 模板，只记录 preflight 证据与待填写字段；正式人工演练完成前不得把本卡标为 complete。公开预检已确认 npm 包可见、站点/platform/relay/gateway health 可用、marketplace API 返回诚实空目录、Console HTML 可访问、公开 docs/quick starts/llms 含 bootstrap-first golden path。
 
 2026-06-13 追加：人工演练前发现 Responder quick start 后续步骤仍把 package-first 用户引向 `npm run ops -- ...` 源码命令。已在 `repos/brand-site` 修复并部署：中英文 Responder quick start 的 responder identity、add-hotline、submit-review、status 等步骤现在使用已发布的 `delexec-ops ...` CLI。该修复不代表 T-403 完成；正式人工演练仍需从公开页面实际执行并回填 `T-403-findings.md`。
+
+2026-06-13 再追加：人工演练前又发现 `@delexec/ops@0.1.0` 不能从公开 Responder flow 声明/提交付费 `pricing_hint`。已在 `repos/client` 修复并通过 GitHub Actions 发布 `@delexec/ops@0.1.1`；随后在 `repos/brand-site` 把生产演练 Responder 命令补上 fixed-price pricing flags 并部署到 Aliyun。该修复仍不代表 T-403 完成；正式人工演练必须产生真实 Responder、真实 Caller、operator 审核/充值、Marketplace 可见性、付费调用、余额/ledger 对账证据。
 
 ## 背景
 
