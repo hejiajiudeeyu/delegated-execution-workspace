@@ -18,6 +18,8 @@
 
 2026-06-14 再追加：重新启动 public-docs rehearsal 后，`delexec-ops auth register --platform https://callanything.xyz/platform` 又暴露 path-prefix bug：CLI 丢掉 `/platform` 前缀并解析 brand-site HTML。已在 `repos/client` 修复 URL join 并发布 `@delexec/ops@0.1.3`；真实 global install + prefixed platform registration smoke 已通过。该修复仍不代表 T-403 完成；需要再次重新从公开文档启动演练并回填真实生产付费调用证据。
 
+2026-06-14 完成：第三次正式生产演练在 `@delexec/ops@0.1.3` 上又暴露 responder runtime heartbeat path-prefix blocker；已在 `repos/client` 修复 runtime/controller/supervisor/relay URL join 并发布 `@delexec/ops@0.1.4`。随后真实生产路径完成：Responder `responder_0f5343b85aa6` 提交并通过审核，Hotline `opc0.summary-20260613t200916z.v1` 在 Marketplace 公开可见；Caller `user_935cc176060749138e584684c79d9936` 充值 1000 PTS；最终请求 `req_opc0_20260613t203700z` 通过 public Platform + public Relay 返回 Ed25519 signed result，账务按 50 PTS 结算，余额 950 -> 900。`T-403-findings.md` 已记录证据、rule violations 和后续 owning repo findings。该卡作为生产 proof 完成，但 public-docs-only onboarding 仍有后续缺口：operator UI、relay dispatch 文档、Responder 长运行生命周期。
+
 ## 背景
 
 这是整个计划的终点验收：你自己扮演 OPC #0（第一个 Responder），用另一台机器/账号扮演陌生 Caller。**规则：全程只允许看 callanything.xyz 公开文档，禁止看源码、禁止用第四仓工具。** 每一次违规求助都是一个新断点，要记录。
