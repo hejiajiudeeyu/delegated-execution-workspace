@@ -14,6 +14,8 @@
 
 2026-06-13 再追加：人工演练前又发现 `@delexec/ops@0.1.0` 不能从公开 Responder flow 声明/提交付费 `pricing_hint`。已在 `repos/client` 修复并通过 GitHub Actions 发布 `@delexec/ops@0.1.1`；随后在 `repos/brand-site` 把生产演练 Responder 命令补上 fixed-price pricing flags 并部署到 Aliyun。该修复仍不代表 T-403 完成；正式人工演练必须产生真实 Responder、真实 Caller、operator 审核/充值、Marketplace 可见性、付费调用、余额/ledger 对账证据。
 
+2026-06-14 追加：正式 public-docs rehearsal 第一次尝试在第一步 `npm install -g @delexec/ops@0.1.1` 失败，原因是发布 tarball 在 npm global install 场景下无法给 `better-sqlite3` lifecycle script 提供可用的 `prebuild-install`。已在 `repos/client` 修复全局安装打包路径并发布 `@delexec/ops@0.1.2`；真实 `npm install -g @delexec/ops@0.1.2` smoke 已通过。该修复仍不代表 T-403 完成；需要重新从公开文档启动演练并回填真实生产付费调用证据。
+
 ## 背景
 
 这是整个计划的终点验收：你自己扮演 OPC #0（第一个 Responder），用另一台机器/账号扮演陌生 Caller。**规则：全程只允许看 callanything.xyz 公开文档，禁止看源码、禁止用第四仓工具。** 每一次违规求助都是一个新断点，要记录。
