@@ -36,6 +36,14 @@ Agent-owned preflight before manual run:
   - Docs overview: `https://callanything.xyz/docs/`
   - LLM index: `https://callanything.xyz/llms.txt`
 
+## Pre-Run Public-Docs Risks To Verify
+
+These are not final rehearsal findings yet. Verify them during the manual run before grading severity.
+
+| Severity candidate | Step | Observation | Evidence | Owning repo candidate |
+| --- | --- | --- | --- | --- |
+| major | Responder Capability Packaging / Submit Review | The public Responder quick start starts with the package-first `npm install -g @delexec/ops` golden path, but later advanced examples for `enable-responder`, `add-example-hotline`, `add-hotline`, `submit-review`, and `status` still use `npm run ops -- ...`. A package-only unknown Responder may be pushed back toward a source checkout before they can submit a production review. | `https://callanything.xyz/docs/quick-start-responder/` sections 03-07, checked 2026-06-13. | `repos/brand-site` for documentation; `repos/client` if the package CLI lacks equivalent public commands. |
+
 ## Rehearsal Metadata
 
 Fill these during the manual run.
