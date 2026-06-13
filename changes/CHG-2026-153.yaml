@@ -1,0 +1,15 @@
+change_id: CHG-2026-153
+goal: let public ops CLI submit paid hotline pricing for T-403
+protocol_sha: ffc028ccb4d1d92fd93b63ce3f715daf84a4ece8
+client_sha: 159658dcf79b5d45c6ec5cf8fc386dc8bfa120f8
+platform_sha: 1663da1bd2602d10b306a02decf221250334b1cc
+brand_site_sha: a8a293d0a7c1b468b2f788fa81a2cf9f5cbb6213
+owner: hejiajiudeeyu
+risk_level: medium
+affected_scope:
+  - client
+  - ops-cli
+  - first-real-call
+contracts_check: passed
+integration_check: passed
+notes: "Fixes the T-403 pre-run blocker where the published @delexec/ops responder flow could create a registration draft but could not declare or submit a paid fixed-price pricing_hint. Client commit 159658dcf79b5d45c6ec5cf8fc386dc8bfa120f8 adds fixed-price CLI flags to delexec-ops add-hotline, preserves pricing_hint in the generated/editable registration draft, forwards draft pricing_hint in submit-review, documents the paid Hotline draft flow in the npm package README, and bumps @delexec/ops to 0.1.1 for publication. TDD evidence: the targeted ops CLI integration first failed because draft.pricing_hint was undefined, then passed after implementation. Client verification passed npx vitest run --config tests/config/vitest.integration.config.mjs tests/integration/ops-cli.integration.test.js, npm test, and npm run test:packages. npm publish --workspace apps/ops prepared the @delexec/ops@0.1.1 tarball successfully but did not publish because this machine is not logged in to npm (ENEEDAUTH); T-403 remains blocked on npm login plus publishing and the real public-docs-only manual paid-call rehearsal."
