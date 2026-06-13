@@ -1,0 +1,16 @@
+change_id: CHG-2026-152
+goal: add public OPC #0 production rehearsal docs for T-403
+protocol_sha: ffc028ccb4d1d92fd93b63ce3f715daf84a4ece8
+client_sha: 56b4032b60fca2966b3a25508555351ef17b2b4a
+platform_sha: 1663da1bd2602d10b306a02decf221250334b1cc
+brand_site_sha: a8a293d0a7c1b468b2f788fa81a2cf9f5cbb6213
+owner: hejiajiudeeyu
+risk_level: low
+affected_scope:
+  - brand-site
+  - docs
+  - first-real-call
+  - aliyun-deployment
+contracts_check: passed
+integration_check: passed
+notes: "Adds OPC #0 production rehearsal appendices to Chinese and English Caller/Responder quick starts so a public-docs-only T-403 run can find the production Platform endpoint, Marketplace API visibility check, operator approval/recharge handoff, caller registration API, paid task-token billing consent, caller balance API, caller ledger API, and request-event checks without reading private runbooks. The new examples avoid Cloudflare email-obfuscation in the production sections by constructing placeholder email addresses from shell variables. Brand-site verification passed RED/GREEN content smoke, targeted eslint, and npm run build. Deployed to Aliyun /var/www/html after backup /home/admin/site-backups/html.20260613T122409Z.tgz, preserving /boids*. Public checks with deploycheck=20260613T122409Z passed for all four quick-start pages, and /healthz, /platform/healthz, and /marketplace/hotlines remained healthy. This does not complete T-403; the manual paid-call rehearsal evidence still has to be recorded in T-403-findings.md."
