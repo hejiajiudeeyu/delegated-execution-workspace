@@ -1,0 +1,15 @@
+change_id: CHG-2026-156
+goal: fix platform path-prefix registration for T-403 public-docs rehearsal
+protocol_sha: ffc028ccb4d1d92fd93b63ce3f715daf84a4ece8
+client_sha: 2035cd1cb92d37b1b2f937b3a350bcfe75c77e9b
+platform_sha: 1663da1bd2602d10b306a02decf221250334b1cc
+brand_site_sha: 5b4bcd24159bd57fc421888c9695dd1c752612aa
+owner: hejiajiudeeyu
+risk_level: low
+affected_scope:
+  - client
+  - platform-proxy
+  - first-real-call
+contracts_check: passed
+integration_check: passed
+notes: "T-403 public-docs rehearsal found that delexec-ops auth register --platform https://callanything.xyz/platform dropped the /platform prefix when building /v1/users/register URLs, causing the CLI to hit the brand-site route and parse HTML as JSON. Client commit 2035cd1cb92d37b1b2f937b3a350bcfe75c77e9b preserves platform base URL path prefixes, adds an integration regression test for prefixed platform base URLs, and bumps @delexec/ops to 0.1.3. Local verification passed the targeted prefixed-platform auth test, full ops CLI integration, npm test, and npm run test:packages. GitHub CI run 27477477188 passed npm ci, unit, integration, and package checks. GitHub Actions publish run 27477549634 passed npm test, npm run test:packages, and npm publish --workspace @delexec/ops --access public. npm registry returns @delexec/ops@0.1.3, and real smoke /tmp/delexec-ops-013-prefix-smoke-20260613T200400Z installed it globally and registered against https://callanything.xyz/platform successfully."

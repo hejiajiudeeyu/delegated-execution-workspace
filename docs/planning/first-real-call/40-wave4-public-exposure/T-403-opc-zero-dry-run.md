@@ -16,6 +16,8 @@
 
 2026-06-14 追加：正式 public-docs rehearsal 第一次尝试在第一步 `npm install -g @delexec/ops@0.1.1` 失败，原因是发布 tarball 在 npm global install 场景下无法给 `better-sqlite3` lifecycle script 提供可用的 `prebuild-install`。已在 `repos/client` 修复全局安装打包路径并发布 `@delexec/ops@0.1.2`；真实 `npm install -g @delexec/ops@0.1.2` smoke 已通过。该修复仍不代表 T-403 完成；需要重新从公开文档启动演练并回填真实生产付费调用证据。
 
+2026-06-14 再追加：重新启动 public-docs rehearsal 后，`delexec-ops auth register --platform https://callanything.xyz/platform` 又暴露 path-prefix bug：CLI 丢掉 `/platform` 前缀并解析 brand-site HTML。已在 `repos/client` 修复 URL join 并发布 `@delexec/ops@0.1.3`；真实 global install + prefixed platform registration smoke 已通过。该修复仍不代表 T-403 完成；需要再次重新从公开文档启动演练并回填真实生产付费调用证据。
+
 ## 背景
 
 这是整个计划的终点验收：你自己扮演 OPC #0（第一个 Responder），用另一台机器/账号扮演陌生 Caller。**规则：全程只允许看 callanything.xyz 公开文档，禁止看源码、禁止用第四仓工具。** 每一次违规求助都是一个新断点，要记录。
