@@ -1,0 +1,17 @@
+change_id: CHG-2026-154
+goal: publish paid-hotline ops CLI and deploy public pricing docs for T-403
+protocol_sha: ffc028ccb4d1d92fd93b63ce3f715daf84a4ece8
+client_sha: 159658dcf79b5d45c6ec5cf8fc386dc8bfa120f8
+platform_sha: 1663da1bd2602d10b306a02decf221250334b1cc
+brand_site_sha: 5b4bcd24159bd57fc421888c9695dd1c752612aa
+owner: hejiajiudeeyu
+risk_level: low
+affected_scope:
+  - client
+  - brand-site
+  - docs
+  - first-real-call
+  - aliyun-deployment
+contracts_check: passed
+integration_check: passed
+notes: "Publishes @delexec/ops@0.1.1 through GitHub Actions publish run 27467409186 after local npm auth remained unavailable. The run passed npm test, npm run test:packages, and npm publish --workspace @delexec/ops --access public. npm registry verification now returns version 0.1.1 and a 0.1.1 tarball URL. A clean-room install of @delexec/ops@0.1.1 in /tmp/delexec-ops-011-smoke-ksax3s generated a responder registration draft with fixed_price pricing_hint, currency PTS, fixed_price_cents 50, max_total_cents 50, trust_tier untrusted, and billing_disclosure_url. Brand-site commit 5b4bcd24159bd57fc421888c9695dd1c752612aa updates Chinese and English Responder production rehearsal docs to include --fixed-price-cents, --currency, and --billing-disclosure-url, plus smoke assertions. Brand-site verification passed RED/GREEN content smoke, targeted eslint, and npm run build. Deployed to Aliyun /var/www/html after backup /home/admin/site-backups/html.20260613T130316Z.tgz, preserving /boids*. Public checks with deploycheck=20260613T130316Z confirmed both Responder quick-start pages include the paid-pricing markers, while /healthz, /platform/healthz, and /marketplace/hotlines remained healthy. This unblocks the public-docs-only T-403 rehearsal but does not complete it; real manual paid-call evidence still has to be recorded in T-403-findings.md."
