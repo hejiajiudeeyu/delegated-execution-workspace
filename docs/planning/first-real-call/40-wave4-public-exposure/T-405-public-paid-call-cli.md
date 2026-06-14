@@ -30,6 +30,12 @@ Replace the long public Caller paid-call curl chain with a first-class `delexec-
 - `repos/client`: full `npx vitest run --config tests/config/vitest.integration.config.mjs tests/integration/ops-cli.integration.test.js` passed with 21 tests.
 - `repos/client`: `npm test` passed.
 - `repos/client`: `npm run test:packages` passed.
+- Clean-room package smoke passed before publish:
+  - `npm pack --workspace @delexec/ops` produced `delexec-ops-0.1.5.tgz`.
+  - Installing that tarball into `/tmp/delexec-ops-015-smoke-qI25GQ` succeeded.
+  - `./node_modules/.bin/delexec-ops --help` included `delexec-ops call-hotline`.
+- Publish attempt generated the `@delexec/ops@0.1.5` tarball but failed with `ENEEDAUTH`; `npm whoami` also failed with `ENEEDAUTH`.
+- `npm view @delexec/ops version` still returns `0.1.4`.
 - Root validation passed:
   - `corepack pnpm run check:submodules`
   - `corepack pnpm run check:boundaries`
@@ -39,6 +45,6 @@ Replace the long public Caller paid-call curl chain with a first-class `delexec-
 
 ## Remaining Follow-Ups
 
-- Publish `@delexec/ops@0.1.5` before public docs can instruct unknown users to rely on `delexec-ops call-hotline`.
+- Publish `@delexec/ops@0.1.5` from an authenticated npm environment before public docs instruct unknown users to rely on `delexec-ops call-hotline`.
 - Update public Caller quick-start docs to prefer `delexec-ops call-hotline` over the low-level curl chain after the package is published.
 - Run the next public-docs-only unknown-user rehearsal against the deployed T-404/T-405 path.
