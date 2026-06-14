@@ -1,0 +1,14 @@
+change_id: CHG-2026-158
+goal: harden public relay paid-call onboarding docs after T-403
+protocol_sha: ffc028ccb4d1d92fd93b63ce3f715daf84a4ece8
+client_sha: a595f64610a536abfe3b3bf860d66c32aebc0dde
+platform_sha: 1663da1bd2602d10b306a02decf221250334b1cc
+brand_site_sha: 247817a01caab1ed2deb1535c4c145ff0bd3c557
+owner: hejiajiudeeyu
+risk_level: low
+affected_scope:
+  - brand-site
+  - first-real-call
+contracts_check: passed
+integration_check: passed
+notes: "T-404 closes the public-docs-only gaps found during T-403 for relay-backed paid calls. Brand-site commit 247817a01caab1ed2deb1535c4c145ff0bd3c557 adds public relay runtime guidance for Responder, long-running nohup lifecycle notes, a Caller paid-call recipe covering billing task token, /v1/requests/$REQUEST_ID/delivery-meta, caller-controller dispatch, relay result inbox polling, signed result retrieval, and balance/ledger/event reconciliation. Content smoke now asserts the public relay, delivery-meta, relay send shape, caller-controller dispatch, inbox pull, and result polling markers. Local brand-site checks passed: npm run smoke:first-real-call-content, targeted eslint, and npm run build. Root validation passed: check:submodules, check:boundaries, check:bundles, test:contracts, and test:integration. Deployed to Aliyun /var/www/html after backup /home/admin/site-backups/html.20260614T035633Z.tgz; public verification with deploycheck=20260614T035633Z passed for Chinese/English Caller/Responder quick starts plus /healthz, /platform/healthz, /relay/healthz, and /marketplace/hotlines."
