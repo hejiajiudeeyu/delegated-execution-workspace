@@ -8,13 +8,14 @@ This roadmap tracks execution against `docs/planning/first-real-call/README.md`.
 
 ## Current execution slice
 
-Status: T-403 first production paid call complete; T-404 public relay onboarding docs deployed and public-verified
+Status: T-403 first production paid call complete; T-404 public relay onboarding docs deployed and public-verified; T-405 paid-call CLI wrapper local-verified
 
 Scope for this slice:
 
 - Keep the public stack and Marketplace API live on the existing Aliyun ECS host.
 - Keep the current brand site at `/var/www/html` while proxying `/platform/`, `/relay/`, `/gateway/`, and `/console/` to localhost public-stack services.
 - Harden the public docs after T-403 so public Responder/Caller onboarding includes relay transport, long-running runtime lifecycle, paid task token consent, delivery metadata, relay dispatch, signed result polling, and balance/ledger/event reconciliation.
+- Add a first-class `delexec-ops call-hotline` wrapper so the public Caller path no longer depends on a fragile manual curl chain.
 - Verify public health, Marketplace API, docs content, npm registry availability, and clean onboarding commands without printing production secrets.
 
 Why this slice first:
@@ -22,7 +23,7 @@ Why this slice first:
 - The Aliyun server already serves `callanything.xyz`, so the least disruptive path is to reuse its nginx/Cloudflare setup.
 - Direct public-stack Caddy deployment would collide with the existing nginx listeners on `80`/`443`, and the default Postgres port would collide with host Postgres on `127.0.0.1:5432`.
 - T-403 proved the first production paid call, but exposed public-docs-only gaps around relay invocation and runtime lifecycle.
-- T-404 reduces the next unknown-user rehearsal risk before adding broader product surface such as a full operator console or a paid-call CLI wrapper.
+- T-404 reduced the next unknown-user rehearsal risk by documenting the low-level public relay path; T-405 packages that flow into the public ops CLI.
 
 ## Progress tracker
 
@@ -44,6 +45,7 @@ Why this slice first:
 | T-402 marketplace live API | `repos/brand-site` + nginx | deployed; public empty-state verified | nginx now proxies `/marketplace/hotlines` and `/marketplace/hotlines/*` to platform-api while leaving Marketplace SPA routes on the brand site. Current brand-site dist from commit `5ce3da4bc3b0cce8936f15bd2afe7d4e8ea66349` was deployed to `/var/www/html` after backup `/var/www/html.bak.20260612T165509Z`. Public API returns `{ "items": [] }`; Playwright verified the production Marketplace renders the honest empty state instead of DEMO fallback. Residual risk: the page still logs two React hydration errors, but data rendering is correct. |
 | T-403 OPC #0 dry run | manual + findings doc | production proof complete; follow-ups recorded | T-401/T-402 are live. Formal rehearsals fixed three client blockers: global npm install in `@delexec/ops@0.1.2`, CLI Platform prefix in `@delexec/ops@0.1.3`, and runtime/controller/supervisor/relay prefix handling in `@delexec/ops@0.1.4` via client commit `a595f64610a536abfe3b3bf860d66c32aebc0dde` (CI `27478077929`, publish `27478151923`). Final production evidence is in `/tmp/delexec-opc0-20260613T200916Z` and `T-403-findings.md`: Responder `responder_0f5343b85aa6`, Hotline `opc0.summary-20260613t200916z.v1`, Marketplace public visibility, Caller `user_935cc176060749138e584684c79d9936`, recharge 1000 PTS, final request `req_opc0_20260613t203700z`, signed Ed25519 result, `BILLING_SETTLED` for 50 PTS, and balance 950 -> 900. Completion is accepted as first production paid-call proof, with follow-up gaps recorded for public relay invocation docs, operator console/billing UI, and long-running Responder lifecycle. |
 | T-404 public docs onboarding | `repos/brand-site` | deployed; public verified | Brand-site commit `247817a01caab1ed2deb1535c4c145ff0bd3c557` adds Chinese/English public relay runtime guidance, Responder `nohup` lifecycle notes, and a Caller paid relay recipe covering billing task token, `/v1/requests/$REQUEST_ID/delivery-meta`, caller-controller dispatch, relay inbox result polling, and balance/ledger/event reconciliation. Content smoke expanded to 117 checks; root five-gate validation passed. Deployed to Aliyun after backup `/home/admin/site-backups/html.20260614T035633Z.tgz`; public checks with `deploycheck=20260614T035633Z` passed for the four quick starts plus health/Marketplace API. |
+| T-405 public paid-call CLI wrapper | `repos/client` | local verified | Client commit `686f968e4cefd2dd268efb02c289d412b270701c` adds `delexec-ops call-hotline`, wrapping billing task-token issuance, delivery metadata, caller-controller request creation, controller dispatch, inbox/result polling, and Platform events/balance/ledger evidence. `@delexec/ops` is bumped to `0.1.5`. RED paid-call CLI integration first failed on `unsupported_command:call-hotline`; after implementation, targeted paid-call/help tests, full ops CLI integration, `npm test`, and `npm run test:packages` passed. Root five-gate validation passed. |
 
 ## Verification boundary
 
@@ -58,6 +60,8 @@ Latest local verification for the current slice:
 - `repos/brand-site` T-403 paid pricing docs: RED `npm run smoke:first-real-call-content` failed on missing `--fixed-price-cents` and `--billing-disclosure-url` in Chinese and English Responder quick starts; after implementation, content smoke passed with 91 checks, targeted eslint passed, and `npm run build` passed with the existing large chunk warning only. Deployed to Aliyun `/var/www/html` after backup `/home/admin/site-backups/html.20260613T130316Z.tgz`; public checks confirmed both Responder pages include the paid pricing markers and `/healthz`, `/platform/healthz`, and `/marketplace/hotlines` remain healthy.
 - `repos/brand-site` T-404 public relay onboarding docs: content smoke passed with 117 checks after adding assertions for public relay endpoint, `relay_http` transport env, `nohup` lifecycle, `/v1/requests/$REQUEST_ID/delivery-meta`, `/v1/messages/send` relay shape, caller-controller dispatch, inbox pull, result polling, and billing reconciliation markers. Targeted `npx eslint src/app/pages/Docs/QuickStartCaller.tsx src/app/pages/Docs/QuickStartResponder.tsx src/app/pages/en/Docs/QuickStartCaller.tsx src/app/pages/en/Docs/QuickStartResponder.tsx scripts/first-real-call-content-smoke.mjs` passed. `npm run build` passed with the existing large chunk warning.
 - T-404 public deployment: deployed current brand-site dist to Aliyun `/var/www/html` after backup `/home/admin/site-backups/html.20260614T035633Z.tgz`, preserving `/boids*`. Public checks with `deploycheck=20260614T035633Z` confirmed Chinese/English Responder pages include `TRANSPORT_TYPE="relay_http"`, `https://callanything.xyz/relay`, and `public-relay-responder.log`; Chinese/English Caller pages include `/v1/requests/$REQUEST_ID/delivery-meta`, `/controller/inbox/pull`, and `/v1/messages/send`; `/healthz`, `/platform/healthz`, `/relay/healthz`, and `/marketplace/hotlines` remain healthy.
+- `repos/client` T-405 paid-call CLI wrapper: RED targeted `npx vitest run --config tests/config/vitest.integration.config.mjs tests/integration/ops-cli.integration.test.js -t "calls a paid hotline through platform token delivery metadata dispatch and result polling"` failed on `unsupported_command:call-hotline`; after implementation, the targeted test passed. Help + paid-call targeted test passed. Full ops CLI integration passed with 21 tests. `npm test` and `npm run test:packages` passed. Package metadata now sets `@delexec/ops@0.1.5`; registry still reports `0.1.4`, so publishing remains a follow-up before public docs can rely on the new command.
+- Fourth repo T-405 validation: `corepack pnpm run check:submodules`, `corepack pnpm run check:boundaries`, `corepack pnpm run check:bundles`, `corepack pnpm run test:contracts`, and `corepack pnpm run test:integration` passed.
 - `repos/client` tarball smoke: clean-room install, `bootstrap` reached `SUCCEEDED`, `status` reported running, `mcp spec` resolved a packaged adapter entry, and non-source `ui start` returned the friendly source-checkout error.
 - Fourth repo local-only validation: `SKIP_ORIGIN_REACHABILITY=1 corepack pnpm run check:submodules`, `check:boundaries`, `check:bundles`, `test:contracts`, and `test:integration` passed.
 - `repos/platform` T-104 docs prep: `npm test`, `npm run test:service:packages`, `npm run test:deploy:config`, and `npm run test:public-stack-smoke` passed.
@@ -97,4 +101,5 @@ If owning-repo commits have not been pushed, run the same gate with `SKIP_ORIGIN
 The following cannot be completed by docs changes alone:
 
 - Re-run an unknown-user public-docs-only paid-call rehearsal after T-404 is deployed.
+- Publish `@delexec/ops@0.1.5` and update public Caller docs to prefer `delexec-ops call-hotline`.
 - Replace the operator manual channel with a production operator console/gateway flow.
