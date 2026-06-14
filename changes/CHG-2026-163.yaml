@@ -1,0 +1,16 @@
+change_id: CHG-2026-163
+goal: release and deploy expired paid hold refund to the public stack
+protocol_sha: ffc028ccb4d1d92fd93b63ce3f715daf84a4ece8
+client_sha: 686f968e4cefd2dd268efb02c289d412b270701c
+platform_sha: 508d95a2418839018b5a23f7fb909664970eff4f
+brand_site_sha: d0f50ede1099c9abd01a56a5202c123230c6f4d4
+owner: hejiajiudeeyu
+risk_level: medium
+affected_scope:
+  - platform
+  - billing
+  - release
+  - first-real-call
+contracts_check: passed
+integration_check: passed
+notes: "This bundle records the final T-407 release/deployment combination after CHG-2026-162 captured the billing fix at 5ceb76cf2d3dcfea3ec07e2972f6d98a90973dcd. Platform release commit 508d95a2418839018b5a23f7fb909664970eff4f fixes bundled workspace stage-dir creation after main CI exposed a test:service:packages failure. Platform main CI run 27495653899 passed. Image workflow run 27495687079 published and smoked v0.1.2. Aliyun deployment updated /home/admin/apps/delegated-execution-public-stack to IMAGE_TAG=v0.1.2 after .env backup .env.bak.20260614T182142Z; running images are rsp-platform:v0.1.2, rsp-relay:v0.1.2, and rsp-gateway:v0.1.2. Public checks passed for /healthz, /platform/healthz, /relay/healthz, /gateway/healthz, and /marketplace/hotlines. Live req_t406_retry4_20260614T062857Z now has FAILED with TASK_TOKEN_EXPIRED and BILLING_REFUNDED, balance credit_balance_cents 150 and pending_credit_cents 0, and ledger hold -50 plus refund +50; an idempotency recheck confirmed one refund event and one refund ledger entry. Root validation passed check:submodules, check:boundaries, check:bundles, test:contracts, and test:integration."
