@@ -1,0 +1,15 @@
+change_id: CHG-2026-162
+goal: refund expired paid holds for abandoned public relay requests
+protocol_sha: ffc028ccb4d1d92fd93b63ce3f715daf84a4ece8
+client_sha: 686f968e4cefd2dd268efb02c289d412b270701c
+platform_sha: 5ceb76cf2d3dcfea3ec07e2972f6d98a90973dcd
+brand_site_sha: d0f50ede1099c9abd01a56a5202c123230c6f4d4
+owner: hejiajiudeeyu
+risk_level: medium
+affected_scope:
+  - platform
+  - billing
+  - first-real-call
+contracts_check: passed
+integration_check: passed
+notes: "T-407 fixes the platform billing/event consistency gap found in T-406 retry4. Platform commit 5ceb76cf2d3dcfea3ec07e2972f6d98a90973dcd records paid hold expiry, derives expiry for older held requests from held_at plus TOKEN_TTL_SECONDS, and lazily refunds expired held requests from caller balance/ledger reads and request event reads. Reconciled requests append platform FAILED with TASK_TOKEN_EXPIRED and BILLING_REFUNDED exactly once. Platform verification passed the targeted expired-hold regression, full platform-api-billing integration, npm test, test:service:packages, test:deploy:config, and test:public-stack-smoke after a transient local rsp-gateway image build failure was reproduced as successful with direct docker build and then passed on smoke rerun. Root validation passed check:submodules, check:boundaries, check:bundles, test:contracts, and test:integration. Release/deployment remains pending before the live req_t406_retry4_20260614T062857Z can be reconciled on Aliyun."
