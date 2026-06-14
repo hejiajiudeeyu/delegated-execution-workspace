@@ -1,0 +1,16 @@
+change_id: CHG-2026-161
+goal: harden public responder process adapter docs after the public-docs CLI rehearsal
+protocol_sha: ffc028ccb4d1d92fd93b63ce3f715daf84a4ece8
+client_sha: 686f968e4cefd2dd268efb02c289d412b270701c
+platform_sha: 1663da1bd2602d10b306a02decf221250334b1cc
+brand_site_sha: d0f50ede1099c9abd01a56a5202c123230c6f4d4
+owner: hejiajiudeeyu
+risk_level: low
+affected_scope:
+  - brand-site
+  - first-real-call
+  - docs
+  - responder
+contracts_check: passed
+integration_check: passed
+notes: "T-406 proved the public Caller CLI path with @delexec/ops@0.1.5 and request req_t406_retry5_20260614T062857Z, then hardened the public Responder quick starts after an earlier retry exposed that relative process adapter commands are not restart-durable without cwd. Brand-site commit d0f50ede1099c9abd01a56a5202c123230c6f4d4 adds --cwd \"$PWD\" to Chinese and English process adapter examples, explains why relative --cmd adapters need an explicit cwd, and expands first-real-call content smoke coverage to assert the marker. Brand-site verification passed npm run smoke:first-real-call-content, targeted eslint, and npm run build. Root validation passed check:submodules, check:boundaries, check:bundles, test:contracts, and test:integration. Deployed to Aliyun /var/www/html after backup /home/admin/site-backups/html.20260614T083652Z.tgz; public verification with deploycheck=20260614T083652Z passed for Chinese/English Responder cwd markers, Chinese/English Caller CLI markers, /healthz, /platform/healthz, /relay/healthz, and /marketplace/hotlines. Residual platform follow-up remains for req_t406_retry4_20260614T062857Z: live recheck shows no terminal event, balance pending is 0, and ledger contains a -50 row."
