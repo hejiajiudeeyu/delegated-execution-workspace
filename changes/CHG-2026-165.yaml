@@ -1,0 +1,16 @@
+change_id: CHG-2026-165
+goal: preserve package-local bundled dependency sources during ops packaging
+protocol_sha: ffc028ccb4d1d92fd93b63ce3f715daf84a4ece8
+client_sha: 7728791a3169b2aadd73e03426962450897a043f
+platform_sha: 508d95a2418839018b5a23f7fb909664970eff4f
+brand_site_sha: d0f50ede1099c9abd01a56a5202c123230c6f4d4
+owner: hejiajiudeeyu
+risk_level: low
+affected_scope:
+  - client
+  - ops
+  - packaging
+  - ci
+contracts_check: passed
+integration_check: passed
+notes: "Follow-up to CHG-2026-164 after GitHub CI showed contracts-check still failing on @delexec/ops packaging with Cannot find module 'prebuild-install/package.json'. Client commit 7728791a3169b2aadd73e03426962450897a043f plans direct bundled npm dependency source directories before clearing the package-local staging node_modules directory, then resolves recursive dependency closures from each dependency's own directory. This covers clean CI installs where apps/ops/node_modules is the only package-local resolution entrypoint. Verification passed a local npm pack simulation with repos/client/node_modules/prebuild-install temporarily hidden, npm --prefix repos/client pack --workspace @delexec/ops --pack-destination <tmp>, root test:contracts, check:submodules, check:boundaries, check:bundles, and test:integration."
