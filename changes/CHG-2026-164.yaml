@@ -1,0 +1,16 @@
+change_id: CHG-2026-164
+goal: fix CI contracts packaging for bundled ops dependencies
+protocol_sha: ffc028ccb4d1d92fd93b63ce3f715daf84a4ece8
+client_sha: ebbf4fabf02baa79a796821ac1be9e92e889f7e9
+platform_sha: 508d95a2418839018b5a23f7fb909664970eff4f
+brand_site_sha: d0f50ede1099c9abd01a56a5202c123230c6f4d4
+owner: hejiajiudeeyu
+risk_level: low
+affected_scope:
+  - client
+  - ops
+  - packaging
+  - ci
+contracts_check: passed
+integration_check: passed
+notes: "Client commit ebbf4fabf02baa79a796821ac1be9e92e889f7e9 fixes the @delexec/ops bundled dependency staging path that made fourth-repo GitHub CI fail in contracts-check with Cannot find module 'prebuild-install/package.json'. The bundle script now resolves direct bundled npm dependencies from the target package directory and resolves recursive dependency closures from each dependency's own directory, matching clean CI installs instead of relying on incidental root node_modules state. Verification passed npm --prefix repos/client pack --workspace @delexec/ops --pack-destination <tmp>, root test:contracts, check:submodules, check:boundaries, check:bundles, and will be paired with root test:integration before this superproject SHA update is pushed."
