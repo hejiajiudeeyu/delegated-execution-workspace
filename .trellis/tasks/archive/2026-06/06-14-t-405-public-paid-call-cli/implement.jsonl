@@ -1,0 +1,5 @@
+{"_example": "Fill with {\"file\": \"<path>\", \"reason\": \"<why>\"}. Put spec/research files only — no code paths. Run `python3 .trellis/scripts/get_context.py --mode packages` to list available specs. Delete this line once real entries are added."}
+{"file": ".trellis/spec/delegated-execution-client/frontend/index.md", "reason": "Client app/package index for ops CLI and runtime integration patterns"}
+{"file": ".trellis/spec/ops/frontend/index.md", "reason": "Ops CLI package conventions and command wiring"}
+{"file": ".trellis/spec/caller-controller-core/frontend/index.md", "reason": "Caller controller API and request lifecycle contracts"}
+{"file": ".trellis/spec/transport-relay-http/frontend/index.md", "reason": "Relay transport send/poll/ack contract details"}
