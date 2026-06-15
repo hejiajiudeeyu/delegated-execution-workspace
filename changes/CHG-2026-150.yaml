@@ -1,16 +1,17 @@
 change_id: CHG-2026-150
-goal: unify first-real-call public golden path around npm bootstrap
-protocol_sha: ffc028ccb4d1d92fd93b63ce3f715daf84a4ece8
-client_sha: 56b4032b60fca2966b3a25508555351ef17b2b4a
-platform_sha: 1663da1bd2602d10b306a02decf221250334b1cc
-brand_site_sha: 93c9688d9d70cc1001ba2d1da9b1c6b11bc9e22b
+goal: expose platform-side service resolution in user and operator entrypoints
+protocol_sha: d50cb9c36e11a4e3151b145c70e8a553c4bef755
+client_sha: 243e07acd00a4155f9b1bc3b5ab8f113329ffc57
+platform_sha: 7eaa94b89def4ed97a6b8ef2eae5b1629bbb041e
+brand_site_sha: 5ce3da4bc3b0cce8936f15bd2afe7d4e8ea66349
 owner: hejiajiudeeyu
-risk_level: low
+risk_level: medium
 affected_scope:
+  - protocol
   - client
-  - brand-site
-  - docs
-  - first-real-call
+  - platform
+  - ops-console
+  - ops-cli
 contracts_check: passed
 integration_check: passed
-notes: "Unifies the public first-real-call golden path around the published @delexec/ops package. Client commit 56b4032b60fca2966b3a25508555351ef17b2b4a makes README.md and README.zh-CN.md package-first and adds README ordering checks. Brand-site commit 93c9688d9d70cc1001ba2d1da9b1c6b11bc9e22b makes Chinese/English Caller and Responder quick starts, Docs hero, and public/llms.txt show the same npm install + bootstrap + status + run-example path before any source clone path. Source install remains documented as the contributor path. Owning repo checks passed before this bundle: brand-site content smoke, targeted eslint, build, Browser local content checks; client npm test. Clean temp npm smoke in /tmp/delexec-t203-golden-RkA4qG installed @delexec/ops@0.1.0 and ran bootstrap/status/run-example with explicit free ports; bootstrap and run-example reached SUCCEEDED. Fourth-repo validation passed: check:submodules, check:boundaries, check:bundles, test:contracts, test:integration, followed by a final check:bundles after marking this bundle passed. Deployed current brand-site dist to Aliyun /var/www/html after backup /home/admin/site-backups/html.20260613T043956Z.tgz, preserving /boids*; public checks passed for /docs/, Chinese/English Caller and Responder quick starts, and /llms.txt."
+notes: "Adds service_id/capability support to the public ops CLI and console entrypoints, exposes service_id on responder publish/configuration flows, and documents the platform-side logical resolve contract so users can actually configure and call MinerU-style service pools. Verified with client unit/integration plus fourth-repo check:submodules, check:boundaries, check:bundles, test:contracts, test:integration."

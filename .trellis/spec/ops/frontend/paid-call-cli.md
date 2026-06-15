@@ -9,13 +9,15 @@
 
 ### 2. Signatures
 
-- Command: `delexec-ops call-hotline --platform <url> --hotline-id <id> --responder-id <id> [--text <text> | --payload-json <json>] [--request-id <id>] [--max-charge-cents <amount>] [--currency <code>] [--trust-tier <tier>] [--relay <url>] [--caller-base-url <url>] [--timeout-ms <ms>] [--poll-interval-ms <ms>]`
-- Required args: `--platform`, `--hotline-id`, `--responder-id`.
+- Direct command: `delexec-ops call-hotline --platform <url> --hotline-id <id> --responder-id <id> [--text <text> | --payload-json <json>] [--request-id <id>] [--max-charge-cents <amount>] [--currency <code>] [--trust-tier <tier>] [--relay <url>] [--caller-base-url <url>] [--timeout-ms <ms>] [--poll-interval-ms <ms>]`
+- Logical-service command: `delexec-ops call-hotline --platform <url> (--service-id <id> | --capability <capability>) [--task-type <type>] [--text <text> | --payload-json <json>] [--request-id <id>] [--max-charge-cents <amount>] [--currency <code>] [--trust-tier <tier>] [--relay <url>] [--caller-base-url <url>] [--timeout-ms <ms>] [--poll-interval-ms <ms>]`
+- Required args: `--platform` plus either concrete `--hotline-id` + `--responder-id` or logical `--service-id` / `--capability`.
 - Caller API key sources: existing ops state/secrets, `CALLER_PLATFORM_API_KEY`, or `PLATFORM_API_KEY`.
 
 ### 3. Contracts
 
 - Platform token request: `POST /v1/tokens/task` with `request_id`, `responder_id`, `hotline_id`, and `billing`.
+- Platform service resolve request: `POST /v1/service-resolutions` with `request_id`, `service_id` or `capability`, optional `task_type`, `billing`, and `result_delivery`; use this only when the caller selected logical service mode.
 - Billing body: `acknowledged: true`, `pricing_model: "fixed_price"`, `currency`, `max_charge_cents`, `trust_tier`.
 - Delivery metadata request: `POST /v1/requests/:request_id/delivery-meta` with `responder_id`, `hotline_id`, `task_token`, and `result_delivery`.
 - Result delivery: `{ "kind": "relay_http", "address": "local://relay/caller-controller/:request_id" }`.
@@ -27,8 +29,7 @@
 ### 4. Validation & Error Matrix
 
 - Missing `--platform` -> `platform_required`.
-- Missing `--hotline-id` -> `hotline_id_required`.
-- Missing `--responder-id` -> `responder_id_required`.
+- Missing both a concrete pair and a logical service selector -> `hotline_id_and_responder_id_or_service_id_or_capability_required`.
 - Missing Caller key -> `caller_platform_api_key_required`.
 - Invalid JSON payload -> `payload_json_invalid` or `payload_json_must_be_object`.
 - Unsupported trust tier -> `trust_tier_unsupported`.
