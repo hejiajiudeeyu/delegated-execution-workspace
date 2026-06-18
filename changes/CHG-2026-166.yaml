@@ -1,0 +1,16 @@
+change_id: CHG-2026-166
+goal: fix public-stack operator console static assets under nginx /console/ subpath
+protocol_sha: d50cb9c36e11a4e3151b145c70e8a553c4bef755
+client_sha: 7728791a3169b2aadd73e03426962450897a043f
+platform_sha: 3c9c3bd0edf30e662fc25bab43244a100941c07a
+brand_site_sha: d0f50ede1099c9abd01a56a5202c123230c6f4d4
+owner: hejiajiudeeyu
+risk_level: low
+affected_scope:
+  - platform
+  - operator
+  - public-stack
+  - deploy
+contracts_check: passed
+integration_check: pending
+notes: "T-501 production console route fix. Platform commits 5f5c233 and 3c9c3bd change apps/platform-console/index.html to use relative ./src/main.js and #app mount instead of absolute /src/main.tsx, which caused brand-site HTML MIME errors behind Aliyun nginx. Added integration and public-stack-smoke assertions for console asset MIME. Tagged platform v0.1.3 for rsp-gateway GHCR publish. After Images CI passes, roll Aliyun public-stack IMAGE_TAG to v0.1.3."
