@@ -1,0 +1,16 @@
+change_id: CHG-2026-167
+goal: hotline/responder field model refactor (P0/P1, 12 items)
+protocol_sha: 52f57e1189693789920f7fa14da70d97fc45cfe7
+client_sha: 526f02e2e13b4969cdbda0b7dcb3fbf159bb26b1
+platform_sha: 8a198dfbfe2bc8a0862c37fa4d2100d806808d5d
+owner: hejiajiudeeyu
+risk_level: medium
+affected_scope:
+  - protocol
+  - platform
+  - client
+  - hotline-registration
+  - responder
+contracts_check: passed
+integration_check: passed
+notes: "Hotline/Responder field model refactor across protocol, platform, and client. P0: activate recommended_for/not_recommended_for/limitations validation; promote trust_tier from pricing_hint to responder-level field; pricing_hint versioned updates with in-flight tasks billed at old version. P1: merge capabilities into tags; rename contact_email to delivery_email with placeholder rejection; add responder description and service_domain; marketplace list/detail expose summary/description plus input/output_summary; expose queue_depth and est_exec_p95_s in catalog API; mark service_id as self-host-only scope; hide attachment fields and add local task-files directory; implement soft/hard timeout signals; dual-channel delivery with task_id idempotency. All three submodule default test suites pass. platform-api.integration.test.js has 8 pre-existing failures (verified via git stash baseline) and is not in the default CI integration script."
