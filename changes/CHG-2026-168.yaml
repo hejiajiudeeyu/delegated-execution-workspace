@@ -1,0 +1,16 @@
+change_id: CHG-2026-168
+goal: operator console sidebar layout and human-readable panels (v0.1.4 gateway UI)
+protocol_sha: 52f57e1189693789920f7fa14da70d97fc45cfe7
+client_sha: 526f02e2e13b4969cdbda0b7dcb3fbf159bb26b1
+platform_sha: 38dfeea68fe7ddbf86953be1a33b4ebbc5f1ad50
+brand_site_sha: d0f50ede1099c9abd01a56a5202c123230c6f4d4
+owner: hejiajiudeeyu
+risk_level: low
+affected_scope:
+  - platform
+  - operator
+  - public-stack
+  - deploy
+contracts_check: passed
+integration_check: pending
+notes: "T-501 follow-up console UX. Platform v0.1.4 (38dfeea) adds sidebar navigation, human-readable overview/catalog/session/detail panels, unlock/session badge fixes, and lock-banner CSS fix. GHCR Images workflow built rsp-gateway:v0.1.4 successfully; published-image-smoke failed on pre-existing platform-api startup (validateServiceResolutionRequest). Deploy rsp-gateway:v0.1.4 only on public-stack. Local fourth-repo test:integration blocked by Docker npm network during platform image build."
