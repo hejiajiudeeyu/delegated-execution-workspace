@@ -8,8 +8,8 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 2
-- **Last Active**: 2026-06-14
+- **Total Sessions**: 3
+- **Last Active**: 2026-07-01
 <!-- @@@/auto:current-status -->
 
 ---
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~76 | Active |
+| `journal-1.md` | ~111 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 3 | 2026-07-01 | T-502 Operator Quick Start Docs | `ac8ea7b`, `94cbea3` | `codex/t-502-operator-quick-start-docs` |
 | 2 | 2026-06-14 | Workspace hygiene audit | `5d2e4a3` | `main` |
 | 1 | 2026-06-14 | T-407 expired paid hold deployment | `02132d7`, `d63ce6f` | `main` |
 <!-- @@@/auto:session-history -->
