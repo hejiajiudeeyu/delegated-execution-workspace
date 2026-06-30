@@ -160,6 +160,40 @@ The repository is ready to start the next formal development task from a compati
 * Do not mix the deferred staged first-real-call/deployability/tooling files into unrelated future business commits.
 * If the next task touches submodule SHAs, update the corresponding change bundle and run the full fourth-repo validation chain again.
 
+## Reassessment After T-502 Closeout (2026-07-01)
+
+T-502 is now closed and archived. The remaining dirty tree is still mixed and should not be committed as one batch.
+
+### Current state
+
+* Compatibility ledger is clean: `compat:status --json` reports `ok: true`, current bundle `CHG-2026-169`, and no dirty submodules.
+* Remaining root dirty files are staged/unstaged fourth-repo planning, tooling, skill, and old Trellis task records.
+* `06-15-platform-service-resolve/` remains active in Trellis, but the actual service-resolution code/bundle work was already recorded by commit `cf653ec`.
+* `docs/planning/first-real-call/**` includes the full first-real-call campaign plan and Wave task cards, including T-503 rehearsal templates. These are planning/runbook artifacts, not business implementation.
+* `tools/deployability-*.test.mjs`, `tools/dev-doctor*`, `tools/mcp-golden-four*`, and `tools/test-helpers/current-bundle.mjs` are tooling/test changes that make tests follow the current bundle dynamically and align local golden inputs with the current example/capability shape.
+* `.agents/skills/grill-me`, `.agents/skills/grilling`, `skills-lock.json`, and `.gitignore` are repo-local agent/skill configuration changes and should be kept separate from product/tooling closeout.
+
+### Recommended closeout grouping
+
+1. **Planning/runbook docs commit**: `docs/planning/first-real-call/**` plus `docs/planning/field-audit/**`.
+   * Reason: coherent documentation artifact; low runtime risk.
+   * Validation: markdown/source review plus no fourth-repo runtime gate needed unless combined with code.
+2. **Tooling/test cleanup commit**: deployability/dev-doctor/mcp-golden-four/agent-e2e test changes plus `tools/test-helpers/current-bundle.mjs` and related `pnpm-lock.yaml` only if lockfile is genuinely caused by these tool changes.
+   * Reason: executable test behavior; should be validated before commit.
+   * Validation: at least `corepack pnpm run test:fast`, `corepack pnpm run test:dev-doctor`, `corepack pnpm run test:mcp-golden-four`, and relevant deployability tests touched by the diff.
+3. **Archive old service-resolution Trellis task**: update/archive `.trellis/tasks/06-15-platform-service-resolve/` referencing commit `cf653ec`.
+   * Reason: active task pointer is stale relative to completed implementation.
+   * Validation: inspect that no current dirty source files belong to service-resolution.
+4. **Skill config commit or defer**: `.agents/skills/**`, `skills-lock.json`, `.gitignore`.
+   * Reason: repo-agent configuration decision, not part of first-real-call or runtime tooling.
+   * Validation: confirm user wants these shared in this repo rather than local-only.
+
+### Do not do
+
+* Do not commit all 57 dirty files together.
+* Do not fold T-503 rehearsal templates into a claim that T-503 is complete.
+* Do not rerun full fourth-repo integration for documentation-only planning commits unless a submodule SHA or executable validation surface changes.
+
 ## Expansion Sweep
 
 ### Future evolution
