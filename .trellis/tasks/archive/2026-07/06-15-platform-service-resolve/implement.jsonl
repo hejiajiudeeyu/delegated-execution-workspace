@@ -1,0 +1,7 @@
+{"_example": "Fill with {\"file\": \"<path>\", \"reason\": \"<why>\"}. Put spec/research files only — no code paths. Run `python3 .trellis/scripts/get_context.py --mode packages` to list available specs. Delete this line once real entries are added."}
+{"file": ".trellis/spec/guides/index.md", "reason": "shared workspace and cross-repo rules"}
+{"file": ".trellis/spec/contracts/frontend/index.md", "reason": "protocol contracts guidance"}
+{"file": ".trellis/spec/platform-api/frontend/index.md", "reason": "platform API guidance"}
+{"file": ".trellis/spec/platform-api/frontend/service-resolution.md", "reason": "platform-side service resolution contract"}
+{"file": ".trellis/tasks/06-15-platform-service-resolve/research/platform-side-resolve.md", "reason": "service resolve design notes"}
+{"file": ".trellis/spec/caller-controller-core/frontend/index.md", "reason": "caller controller guidance"}
