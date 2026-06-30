@@ -1,0 +1,18 @@
+change_id: CHG-2026-147
+goal: release and deploy public-stack images with published billing contracts on Aliyun
+protocol_sha: ffc028ccb4d1d92fd93b63ce3f715daf84a4ece8
+client_sha: 7462bc482b174f3f19f227ee7cb7972ef4395750
+platform_sha: 1663da1bd2602d10b306a02decf221250334b1cc
+brand_site_sha: 5ce3da4bc3b0cce8936f15bd2afe7d4e8ea66349
+owner: hejiajiudeeyu
+risk_level: medium
+affected_scope:
+  - protocol
+  - platform
+  - public-stack
+  - release-ci
+  - deployment-docs
+  - aliyun-deployment
+contracts_check: passed
+integration_check: passed
+notes: "Publishes @delexec/contracts@0.1.2 from protocol commit ffc028ccb4d1d92fd93b63ce3f715daf84a4ece8 so public images no longer consume the stale npm 0.1.1 package. Platform commit 1663da1bd2602d10b306a02decf221250334b1cc updates platform-api to @delexec/contracts ^0.1.2 and consumes successful public-stack health-check response bodies so the smoke exits after cleanup. Platform tag v0.1.1 was pushed; GitHub Actions Images run 27428828810 passed all three image builds and published-image-smoke. Local manifest checks passed for ghcr.io/hejiajiudeeyu/rsp-platform:v0.1.1, rsp-relay:v0.1.1, and rsp-gateway:v0.1.1. T-401 deployed to the existing Aliyun nginx host at /home/admin/apps/delegated-execution-public-stack using localhost ports 28080, 28085, 28090, and 25432. nginx was backed up, patched, tested, and reloaded; public /healthz, /platform/healthz, /relay/healthz, /gateway/healthz, /console/, and no-secret-output gateway session/proxy smoke passed."

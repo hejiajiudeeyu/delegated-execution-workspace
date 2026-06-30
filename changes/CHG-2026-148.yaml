@@ -1,0 +1,16 @@
+change_id: CHG-2026-148
+goal: wire production marketplace to the live platform catalog
+protocol_sha: ffc028ccb4d1d92fd93b63ce3f715daf84a4ece8
+client_sha: 7462bc482b174f3f19f227ee7cb7972ef4395750
+platform_sha: 1663da1bd2602d10b306a02decf221250334b1cc
+brand_site_sha: 5ce3da4bc3b0cce8936f15bd2afe7d4e8ea66349
+owner: hejiajiudeeyu
+risk_level: medium
+affected_scope:
+  - brand-site
+  - platform
+  - marketplace
+  - aliyun-deployment
+contracts_check: passed
+integration_check: passed
+notes: "Completes first-real-call T-402 without new source changes: the existing brand-site frontend already expects same-origin /marketplace/hotlines, and production platform returns the expected { items: [] } shape. Aliyun nginx now proxies /marketplace/hotlines and /marketplace/hotlines/* to platform-api while preserving /marketplace and /marketplace/responders/* as brand-site SPA routes. The current brand-site dist from commit 5ce3da4bc3b0cce8936f15bd2afe7d4e8ea66349 was deployed to /var/www/html after backup /var/www/html.bak.20260612T165509Z. Public verification passed: /marketplace/hotlines returns application/json with an empty items array, and Playwright verified Marketplace renders the honest empty state instead of DEMO fallback. Residual risk: the page still logs two minified React hydration errors, but data rendering and route behavior are correct."
