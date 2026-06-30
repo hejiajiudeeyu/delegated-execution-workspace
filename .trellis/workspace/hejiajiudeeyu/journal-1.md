@@ -109,3 +109,42 @@ Added Chinese and English Operator Quick Start docs in brand-site, linked Caller
 ### Next Steps
 
 - None - task complete
+
+
+## Session 4: Close unfinished repository work
+
+**Date**: 2026-07-01
+**Task**: Close unfinished repository work
+**Package**: caller-controller
+**Branch**: `main`
+
+### Summary
+
+Closed the remaining mixed dirty work by splitting planning docs, tooling tests, historical bundles, Trellis archives, and agent skill config into separate commits; verified tooling tests and compatibility status.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `f45d938` | (see git log) |
+| `4225d5a` | (see git log) |
+| `524591f` | (see git log) |
+| `c421374` | (see git log) |
+| `e11aaa6` | (see git log) |
+| `dcd04c8` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
