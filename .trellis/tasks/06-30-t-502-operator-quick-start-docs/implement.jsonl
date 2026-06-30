@@ -1,0 +1,5 @@
+{"file": ".trellis/spec/call-anything-brand-site/frontend/index.md", "reason": "Brand-site frontend/docs package guidance."}
+{"file": ".trellis/spec/call-anything-brand-site/frontend/quality-guidelines.md", "reason": "First-real-call public docs verification requirements."}
+{"file": ".trellis/spec/guides/index.md", "reason": "Shared Trellis thinking checklist."}
+{"file": ".trellis/spec/guides/code-reuse-thinking-guide.md", "reason": "Follow existing page/navigation/smoke patterns instead of inventing new structure."}
+{"file": ".trellis/spec/guides/cross-layer-thinking-guide.md", "reason": "Ensure docs, routes, smoke checks, llms, submodule SHA, and bundle stay consistent."}

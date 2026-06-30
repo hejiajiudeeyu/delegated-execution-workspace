@@ -1,0 +1,16 @@
+change_id: CHG-2026-169
+goal: add Operator Quick Start docs for production console reviews and billing handoff
+protocol_sha: 52f57e1189693789920f7fa14da70d97fc45cfe7
+client_sha: 526f02e2e13b4969cdbda0b7dcb3fbf159bb26b1
+platform_sha: 38dfeea68fe7ddbf86953be1a33b4ebbc5f1ad50
+brand_site_sha: ac8ea7be573b715bd1c9ad8b40397d7c19a1a374
+owner: hejiajiudeeyu
+risk_level: low
+affected_scope:
+  - brand-site
+  - operator
+  - docs
+  - public-docs
+contracts_check: passed
+integration_check: passed
+notes: "T-502 brand-site docs update. Adds Chinese and English Operator Quick Start pages for production /console/ gateway session setup, deployment-provided PLATFORM_ADMIN_API_KEY credential storage, reviews approval, billing tenant recharge, balance/ledger validation, docs navigation, SEO/search/prerender, llms.txt, and first-real-call content smoke coverage. Caller/Responder quick starts now link to Operator Quick Start for review and recharge handoff. Brand-site validation passed locally on 2026-06-30: npm run smoke:first-real-call-content, targeted eslint for touched files, and npm run build. Fourth-repo validation passed on 2026-07-01 using SKIP_ORIGIN_REACHABILITY=1 because the brand-site commit was local-only: check:submodules, check:boundaries, check:bundles, test:contracts, and test:integration. The first test:integration attempt failed during Docker npm install with registry ECONNRESET for @vitest/ui; rerun passed without code changes."
