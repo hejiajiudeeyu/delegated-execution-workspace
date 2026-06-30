@@ -30,6 +30,7 @@ junit.xml
 tests/reports/latest.json
 exports/
 
+# Personal local reference: research notes, positioning drafts, scratch (not workspace contract)
 _local_ref/
 
 # Personal tooling metadata (not part of the workspace contract)
