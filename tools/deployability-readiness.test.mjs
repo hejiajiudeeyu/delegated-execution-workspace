@@ -1,9 +1,11 @@
 import assert from "node:assert/strict";
 import path from "node:path";
 import { spawnSync } from "node:child_process";
+import { getExpectedCurrentBundleChangeId } from "./test-helpers/current-bundle.mjs";
 
 const REPO_ROOT = path.resolve(new URL("..", import.meta.url).pathname);
 const SCRIPT = path.join(REPO_ROOT, "tools/deployability-readiness.mjs");
+const expectedCurrentBundleChangeId = getExpectedCurrentBundleChangeId(REPO_ROOT);
 
 function run(args) {
   return spawnSync(process.execPath, [SCRIPT, ...args], {
@@ -22,7 +24,7 @@ assert.equal(json.status, 0, json.stderr || json.stdout);
 const body = JSON.parse(json.stdout);
 assert.equal(body.command, "deployability:readiness");
 assert.equal(body.ok, true);
-assert.equal(body.current_bundle.change_id, "CHG-2026-133");
+assert.equal(body.current_bundle.change_id, expectedCurrentBundleChangeId);
 assert.equal(body.ecosystem_readiness.goal, "daily-deployable");
 assert.equal(body.ecosystem_readiness.status, "daily_deployable_with_safety_gates");
 assert.deepEqual(

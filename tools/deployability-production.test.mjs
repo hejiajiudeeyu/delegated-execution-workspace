@@ -1,9 +1,11 @@
 import assert from "node:assert/strict";
 import path from "node:path";
 import { spawnSync } from "node:child_process";
+import { getExpectedCurrentBundleChangeId } from "./test-helpers/current-bundle.mjs";
 
 const REPO_ROOT = path.resolve(new URL("..", import.meta.url).pathname);
 const SCRIPT = path.join(REPO_ROOT, "tools/deployability-production.mjs");
+const expectedCurrentBundleChangeId = getExpectedCurrentBundleChangeId(REPO_ROOT);
 
 function run(args) {
   return spawnSync(process.execPath, [SCRIPT, ...args], {
@@ -23,7 +25,7 @@ const body = JSON.parse(json.stdout);
 assert.equal(body.command, "deployability:production");
 assert.equal(body.mode, "production_hardening_review");
 assert.equal(body.ok, true);
-assert.equal(body.current_bundle.change_id, "CHG-2026-133");
+assert.equal(body.current_bundle.change_id, expectedCurrentBundleChangeId);
 assert.deepEqual(body.summary, {
   status: "daily_deployable_production_planned",
   production_ready: false,

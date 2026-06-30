@@ -18,6 +18,19 @@ const EXPECTED_TOOLS = [
 const assertions = [];
 let nextId = 1;
 
+function parseEventStreamJson(text) {
+  const dataLines = [];
+  for (const line of String(text || "").split(/\r?\n/)) {
+    if (line.startsWith("data:")) {
+      dataLines.push(line.slice("data:".length).trimStart());
+    }
+  }
+  if (dataLines.length === 0) {
+    return null;
+  }
+  return JSON.parse(dataLines.join("\n"));
+}
+
 function assertThat(name, condition, detail = "") {
   const status = condition ? "PASS" : "FAIL";
   assertions.push({ name, status, detail });
@@ -32,9 +45,10 @@ async function fetchJson(url, options = {}) {
   try {
     const response = await fetch(url, { ...options, signal: controller.signal });
     const text = await response.text();
+    const contentType = response.headers.get("content-type") || "";
     let body = null;
     if (text) {
-      body = JSON.parse(text);
+      body = contentType.includes("text/event-stream") ? parseEventStreamJson(text) : JSON.parse(text);
     }
     return { ok: response.ok, status: response.status, body };
   } catch (error) {
@@ -116,8 +130,8 @@ async function main() {
 
   console.log("\n[2/4] Hotline search");
   const search = await callTool("caller_skill_search_hotlines_brief", {
-    task_type: "text_summarize",
-    task_goal: "summarize workspace status",
+    task_type: "workspace_diagnose",
+    task_goal: "diagnose workspace status",
     limit: 8
   });
   const searchItems = search?.items ?? [];
@@ -128,8 +142,7 @@ async function main() {
   const prepared = await callTool("caller_skill_prepare_request", {
     hotline_id: TEST_HOTLINE_ID,
     input: {
-      text: "MCP golden-four validates host wiring, request capability creation, signed result delivery, and report recovery.",
-      instruction: "Summarize the validation goal in one sentence."
+      text: "MCP golden-four validates host wiring, request creation, signed result delivery, and report recovery."
     },
     agent_session_id: TEST_SESSION_ID
   });

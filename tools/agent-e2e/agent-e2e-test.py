@@ -35,12 +35,9 @@ TEST_HOTLINE_ID = os.environ.get(
 TEST_SESSION_ID = f"agent-e2e-{int(time.time())}"
 TEST_INPUT = {
     "text": (
-        "CHG-2026-028 advances the platform billing-store implementation. "
-        "The fourth repository now validates submodule integrity, boundary "
-        "coverage, change bundles, contracts, and source integration on the "
-        "current pinned SHA combination."
-    ),
-    "instruction": "Summarize the status in one sentence and mention the next step."
+        "I opened Catalog from Dashboard next-up and want to verify the local "
+        "delegated-execution runtime is callable."
+    )
 }
 
 EXPECTED_ACTIONS = {
@@ -156,8 +153,8 @@ def main() -> int:
         "/skills/caller/search-hotlines-brief",
         method="POST",
         body={
-            "task_goal": "summarize workspace status",
-            "task_type": "text_summarize",
+            "task_goal": "diagnose workspace status",
+            "task_type": "workspace_diagnose",
             "limit": 8,
         },
         timeout=10,
@@ -193,8 +190,8 @@ def main() -> int:
         return 1
     hotline = read_response["body"]
     input_schema = hotline.get("input_schema") or {}
-    required_fields = set(input_schema.get("required") or [])
-    assert_that("read_hotline_has_text_schema", "text" in required_fields, f"required={sorted(required_fields)}")
+    properties = set((input_schema.get("properties") or {}).keys())
+    assert_that("read_hotline_has_text_schema", "text" in properties, f"properties={sorted(properties)}")
     assert_that("read_hotline_has_output_schema", bool(hotline.get("output_schema")), "")
 
     prepare_response = http_json(

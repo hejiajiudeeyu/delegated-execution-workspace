@@ -187,8 +187,8 @@ async function callerSkillManifestCheck() {
 
 async function catalogCheck() {
   const search = await postJson(URLS.callerSkillSearch, {
-    task_type: "text_summarize",
-    task_goal: "summarize workspace status",
+    task_type: "workspace_diagnose",
+    task_goal: "diagnose workspace status",
     limit: 8
   });
   if (!search.ok) {

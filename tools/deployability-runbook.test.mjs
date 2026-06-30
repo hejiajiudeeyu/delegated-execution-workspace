@@ -1,9 +1,11 @@
 import assert from "node:assert/strict";
 import path from "node:path";
 import { spawnSync } from "node:child_process";
+import { getExpectedCurrentBundleChangeId } from "./test-helpers/current-bundle.mjs";
 
 const REPO_ROOT = path.resolve(new URL("..", import.meta.url).pathname);
 const SCRIPT = path.join(REPO_ROOT, "tools/deployability-runbook.mjs");
+const expectedCurrentBundleChangeId = getExpectedCurrentBundleChangeId(REPO_ROOT);
 
 function run(args) {
   return spawnSync(process.execPath, [SCRIPT, ...args], {
@@ -22,7 +24,7 @@ const indexBody = JSON.parse(index.stdout);
 assert.equal(indexBody.command, "deployability:runbook");
 assert.equal(indexBody.mode, "profile_runbook_index");
 assert.equal(indexBody.ok, true);
-assert.equal(indexBody.current_bundle.change_id, "CHG-2026-133");
+assert.equal(indexBody.current_bundle.change_id, expectedCurrentBundleChangeId);
 assert.ok(indexBody.profiles.some((item) => item.key === "public_stack"));
 assert.ok(indexBody.next_commands.includes("corepack pnpm run deployability:runbook -- --profile public-stack"));
 assert.ok(!index.stdout.includes("sk_runbook_must_not_leak"));
@@ -33,7 +35,7 @@ const body = JSON.parse(json.stdout);
 assert.equal(body.command, "deployability:runbook");
 assert.equal(body.mode, "profile_runbook");
 assert.equal(body.ok, true);
-assert.equal(body.current_bundle.change_id, "CHG-2026-133");
+assert.equal(body.current_bundle.change_id, expectedCurrentBundleChangeId);
 assert.deepEqual(body.profile_filter, {
   requested: "public-stack",
   resolved: "public_stack",

@@ -3,9 +3,11 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { spawnSync } from "node:child_process";
+import { getExpectedCurrentBundleChangeId } from "./test-helpers/current-bundle.mjs";
 
 const REPO_ROOT = path.resolve(new URL("..", import.meta.url).pathname);
 const SCRIPT = path.join(REPO_ROOT, "tools/deployability-action-plan.mjs");
+const expectedCurrentBundleChangeId = getExpectedCurrentBundleChangeId(REPO_ROOT);
 
 function run(args) {
   if (args.includes("--json")) {
@@ -42,7 +44,7 @@ assert.equal(json.status, 0, json.stderr || json.stdout);
 const body = JSON.parse(json.stdout);
 assert.equal(body.command, "deployability:action-plan");
 assert.equal(body.ok, true);
-assert.equal(body.current_bundle.change_id, "CHG-2026-133");
+assert.equal(body.current_bundle.change_id, expectedCurrentBundleChangeId);
 assert.equal(body.ecosystem_readiness.status, "daily_deployable_with_safety_gates");
 assert.deepEqual(
   body.profiles.map((item) => item.key),
@@ -198,7 +200,7 @@ const pipedJson = spawnSync(process.execPath, [SCRIPT, "--json"], {
 assert.equal(pipedJson.status, 0, pipedJson.stderr || pipedJson.stdout);
 const pipedBody = JSON.parse(pipedJson.stdout);
 assert.equal(pipedBody.command, "deployability:action-plan");
-assert.equal(pipedBody.current_bundle.change_id, "CHG-2026-133");
+assert.equal(pipedBody.current_bundle.change_id, expectedCurrentBundleChangeId);
 assert.ok(!pipedJson.stdout.includes("sk_action_plan_must_not_leak"));
 
 const text = run([]);

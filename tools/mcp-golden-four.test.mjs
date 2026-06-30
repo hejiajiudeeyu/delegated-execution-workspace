@@ -93,8 +93,8 @@ function createFakeMcpServer() {
     } else {
       result = rpcResult(body.id, {});
     }
-    res.writeHead(200, { "content-type": "application/json" });
-    res.end(JSON.stringify(result));
+    res.writeHead(200, { "content-type": "text/event-stream" });
+    res.end(`event: message\ndata: ${JSON.stringify(result)}\n\n`);
   });
   return { server, calls };
 }

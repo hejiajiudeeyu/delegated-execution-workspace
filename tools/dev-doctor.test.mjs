@@ -44,6 +44,18 @@ function address(server) {
 }
 
 async function makeServers() {
+  const readJsonBody = (req) =>
+    new Promise((resolve) => {
+      const chunks = [];
+      req.on("data", (chunk) => chunks.push(chunk));
+      req.on("end", () => {
+        if (chunks.length === 0) {
+          resolve({});
+          return;
+        }
+        resolve(JSON.parse(Buffer.concat(chunks).toString("utf8")));
+      });
+    });
   const platform = await listen((req, res) => {
     res.setHeader("content-type", "application/json");
     res.end(JSON.stringify({ ok: req.url === "/healthz" }));
@@ -52,7 +64,7 @@ async function makeServers() {
     res.setHeader("content-type", "application/json");
     res.end(JSON.stringify({ running: req.url === "/status" }));
   });
-  const caller = await listen((req, res) => {
+  const caller = await listen(async (req, res) => {
     res.setHeader("content-type", "application/json");
     if (req.url === "/healthz") {
       res.end(JSON.stringify({ ok: true }));
@@ -63,7 +75,14 @@ async function makeServers() {
       return;
     }
     if (req.url === "/skills/caller/search-hotlines-brief") {
-      res.end(JSON.stringify({ items: [{ hotline_id: "local.delegated-execution.workspace-summary.v1" }] }));
+      const body = await readJsonBody(req);
+      const matchesOfficialExample =
+        body.task_type === "workspace_diagnose" &&
+        body.task_goal === "diagnose workspace status" &&
+        body.limit === 8;
+      res.end(JSON.stringify({
+        items: matchesOfficialExample ? [{ hotline_id: "local.delegated-execution.workspace-summary.v1" }] : []
+      }));
       return;
     }
     res.statusCode = 404;
