@@ -12,5 +12,5 @@ affected_scope:
   - public-stack
   - deploy
 contracts_check: passed
-integration_check: pending
-notes: "T-501 follow-up console UX. Platform v0.1.4 (38dfeea) adds sidebar navigation, human-readable overview/catalog/session/detail panels, unlock/session badge fixes, and lock-banner CSS fix. GHCR Images workflow built rsp-gateway:v0.1.4 successfully; published-image-smoke failed on pre-existing platform-api startup (validateServiceResolutionRequest). Deploy rsp-gateway:v0.1.4 only on public-stack. Local fourth-repo test:integration blocked by Docker npm network during platform image build."
+integration_check: passed
+notes: "T-501 follow-up console UX. Platform v0.1.4 (38dfeea) adds sidebar navigation, human-readable overview/catalog/session/detail panels, unlock/session badge fixes, and lock-banner CSS fix. GHCR Images workflow built rsp-gateway:v0.1.4 successfully; published-image-smoke failed on pre-existing platform-api startup (validateServiceResolutionRequest). Deploy rsp-gateway:v0.1.4 only on public-stack. Local fourth-repo validation passed on 2026-06-30 after aligning brand-site to d0f50ede1099c9abd01a56a5202c123230c6f4d4: check:submodules, check:boundaries, check:bundles, test:contracts, and test:integration."

@@ -1,0 +1,4 @@
+{"file": ".trellis/spec/guides/index.md", "reason": "Shared Trellis thinking checklist for closeout work."}
+{"file": ".trellis/spec/guides/code-reuse-thinking-guide.md", "reason": "Search-before-change and commit hygiene guidance for tooling/config edits."}
+{"file": ".trellis/spec/guides/cross-layer-thinking-guide.md", "reason": "Cross-layer validation checklist for bundle/submodule/runtime ledger closeout."}
+{"file": ".trellis/spec/call-anything-brand-site/frontend/index.md", "reason": "Brand-site submodule is the current ledger blocker; read before touching its state."}
