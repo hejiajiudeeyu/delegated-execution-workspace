@@ -26,7 +26,8 @@ Local workspace blocker `PUBLIC_SITE_ADDRESS=localhost` does **not** affect prod
 |--------|-----------------------------------|----------------------------|
 | `<title>` | `CALL ANYTHING — Agent 调用外部能力的开放协议` | `Platform Console` |
 | Root mount | marketing `ld+json`, `/og/home.png`, blog RSS | `<div id="root"></div>` + console JS module |
-| JS bundle markers | N/A (marketing HTML) | `reviews`, `billing`, `LEGACY_CONSOLE` in `/console/src/main.js` |
+| JS bundle markers | N/A (marketing HTML) | v0.1.3: `reviews`, `billing`, `LEGACY_CONSOLE`; v0.1.4+: `nav-model`, `human-view`, `shell-markup`, `#sidebar-nav` |
+| CSS cache-bust | N/A | `styles.css?v=20260620-sidebar` (v0.1.4 sidebar layout) |
 | `/gateway/healthz` body | HTML or 404 | JSON `{"ok":true,"service":"platform-console-gateway"}` |
 
 **Rule:** HTTP 200 alone is insufficient — brand-site `index.html` also returns 200.
@@ -93,8 +94,8 @@ Run on server after SSH (`aliyun-ecs` / `admin@116.62.4.213`):
 ```bash
 cd /home/admin/apps/delegated-execution-public-stack
 docker compose ps
-curl -fsS http://127.0.0.1:28085/gateway/healthz
-curl -fsS http://127.0.0.1:28085/console/ | head -n 20
+curl -fsS http://127.0.0.1:28085/ | head -n 20   # console at upstream root (not /console/)
+curl -fsS http://127.0.0.1:28085/healthz          # gateway health on upstream
 curl -fsS http://127.0.0.1:28080/platform/healthz
 curl -fsS https://callanything.xyz/console/ | head -n 20
 curl -fsS https://callanything.xyz/gateway/healthz
@@ -125,25 +126,74 @@ If `/console/` ever returns brand-site HTML again, check:
 
 **No compose or service gap identified** from read-only review.
 
+## Production Deploy Evidence (2026-06-18)
+
+**Actions taken on Aliyun (`aliyun-ecs`):**
+
+- Rolled `platform-console-gateway` → `ghcr.io/hejiajiudeeyu/rsp-gateway:v0.1.3`
+- Kept `platform-api` / `relay` at `v0.1.2` (`IMAGE_TAG` in `.env`); `v0.1.3` platform-api crashes without bundled service-resolution contracts
+- Pinned gateway image in `docker-compose.aliyun-nginx.override.yml` so future `compose up` does not downgrade gateway
+
+**Post-deploy public probes:**
+
+| URL | Result |
+|-----|--------|
+| `/console/` | ✅ `id="app"`, `src="./src/main.js"` |
+| `/console/src/main.js` | ✅ `content-type: text/javascript` |
+| `/gateway/healthz` | ✅ `platform-console-gateway` |
+| `/platform/healthz` | ✅ `platform-api` (after api rollback) |
+| `/relay/healthz` | ✅ `transport-relay` |
+
+**Gateway bootstrap smoke (existing encrypted store):**
+
+- `POST /gateway/session/setup` → **409** `AUTH_SECRET_STORE_EXISTS` (expected; store already initialized from T-401)
+- Proxy path requires **browser login** with production console passphrase (not in `.env`)
+
+**Browser step remaining:** open `https://callanything.xyz/console/`, unlock with operator passphrase, confirm Reviews + Billing load.
+
+---
+
+## Production Deploy Evidence (2026-06-21) — gateway v0.1.4 sidebar UI
+
+**Actions taken on Aliyun (`aliyun-ecs`):**
+
+- Rolled **only** `platform-console-gateway` → `ghcr.io/hejiajiudeeyu/rsp-gateway:v0.1.4` (platform commit `38dfeea`, tag `v0.1.4`)
+- Updated pin in `docker-compose.aliyun-nginx.override.yml` (`v0.1.3` → `v0.1.4`); backup saved alongside override
+- **Did not** change `IMAGE_TAG` — `platform-api` / `relay` remain `v0.1.2`
+- Fourth-repo bundle: `CHG-2026-168.yaml` (platform SHA `38dfeea`)
+
+**Commands:**
+
+```bash
+cd /home/admin/apps/delegated-execution-public-stack
+sed -i 's|rsp-gateway:v0.1.3|rsp-gateway:v0.1.4|g' docker-compose.aliyun-nginx.override.yml
+sudo docker compose -f docker-compose.yml -f docker-compose.aliyun-nginx.override.yml pull platform-console-gateway
+sudo docker compose -f docker-compose.yml -f docker-compose.aliyun-nginx.override.yml up -d platform-console-gateway
+```
+
+**Post-deploy probes (agent, 2026-06-21):**
+
+| URL | Result |
+|-----|--------|
+| `/console/` | ✅ `Platform Console`, `styles.css?v=20260620-sidebar`, `#app` |
+| `/console/src/main.js` | ✅ imports `./nav-model.js`, `./human-view.js`, `./shell-markup.js`; `#sidebar-nav` |
+| `/gateway/healthz` | ✅ `{"ok":true,"service":"platform-console-gateway"}` |
+| `/platform/healthz` | ✅ `platform-api` (unchanged) |
+| `/relay/healthz` | ✅ `transport-relay` (unchanged) |
+| `/healthz` | ✅ plain `ok` |
+
+**Local upstream note:** gateway container listens on `127.0.0.1:28085`; console HTML is at **`/`** on the upstream (nginx `location ^~ /console/` strips the prefix). Use `curl http://127.0.0.1:28085/` not `…/console/` when probing upstream directly. Gateway health JSON is at upstream `/healthz` (public path remains `/gateway/healthz` via nginx).
+
+**Browser step remaining:** unlock with production operator passphrase → confirm sidebar nav (Overview / Reviews / Billing / …) and human-readable panels load data.
+
+---
+
 ## Acceptance Criteria Status
 
-| # | Criterion | Agent probe | Manual remaining |
-|---|-----------|-------------|------------------|
-| 1 | `/gateway/healthz` → gateway JSON | ✅ `platform-console-gateway` | — |
-| 2 | `/console/` → platform-console UI (reviews/billing structure) | ✅ HTML + JS markers | Browser: Reviews & Billing panels load after session setup |
-| 3 | Gateway session + admin proxy smoke | ⏳ endpoint reachable (403 without creds) | `[人工]` bootstrap smoke on VPS (see T-501 task card §4) |
-| 4 | `/platform/healthz`, `/relay/healthz` regression | ✅ both healthy | — |
-| 5 | Platform tests if repos/platform changed | N/A — no code change yet | Run if smoke assertion added |
-
-## `[人工]` Next Steps (to close T-501)
-
-1. SSH → confirm `docker compose ps` all healthy on public-stack.
-2. If `28085` unhealthy → restart `platform-console-gateway` per T-401 runbook (do not rotate secrets unless required).
-3. Confirm nginx `location ^~ /console/` and `/gateway/` blocks match T-401 (only if public probes regress).
-4. Run gateway bootstrap smoke (secrets from server `.env` only; record HTTP statuses and JSON field names, **not** token/secret values):
-   - `POST /gateway/session/setup` → expect 201 + `token` field
-   - `PUT /gateway/credentials/platform-admin` → expect 200 + `api_key_configured`
-   - `GET /gateway/proxy/v2/admin/hotlines` → expect 200 + `items` array
-5. Browser: open `https://callanything.xyz/console/`, complete session setup, confirm **Reviews** and **Billing** sections render.
-
-After manual smoke, update the **Gateway session smoke** row in Acceptance Criteria above with status codes and field names only.
+| # | Criterion | Status |
+|---|-----------|--------|
+| 1 | `/gateway/healthz` → gateway JSON | ✅ |
+| 2 | `/console/` → platform-console UI | ✅ v0.1.4 sidebar layout live; browser unlock + data panels pending passphrase |
+| 3 | Gateway session + admin proxy smoke | ⏳ setup=409 (existing store); proxy needs browser session |
+| 4 | `/platform/healthz`, `/relay/healthz` regression | ✅ |
+| 5 | Platform tests | ✅ local `public-stack-smoke` passed |
