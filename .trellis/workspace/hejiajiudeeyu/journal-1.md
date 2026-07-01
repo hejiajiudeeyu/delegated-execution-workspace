@@ -148,3 +148,37 @@ Closed the remaining mixed dirty work by splitting planning docs, tooling tests,
 ### Next Steps
 
 - None - task complete
+
+
+## Session 5: Fix deployability console metadata
+
+**Date**: 2026-07-02
+**Task**: Fix deployability console metadata
+**Package**: caller-controller
+**Branch**: `main`
+
+### Summary
+
+Restored deployability console metadata JSON generation by making source result parsing null-safe and running client-owned console evidence scripts directly. Verified console, roadmap, status, recipe, next/action-plan, fast deployability tests, submodule/bundle/boundary checks, and contracts check; source integration was not run because this environment lacks corepack and that command starts Docker services.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `36f3556` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
