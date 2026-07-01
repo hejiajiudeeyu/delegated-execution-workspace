@@ -1,51 +1,31 @@
 # Hook Guidelines
 
-> How hooks are used in this project.
+## Scope
 
----
+call-anything-brand-site may use React hooks for console/site state, auth/session context, polling, and browser effects.
 
-## Overview
+## Patterns
 
-<!--
-Document your project's hook conventions here.
+- Name custom hooks with `use*` and keep them under `src/hooks` when shared across pages.
+- Hooks that depend on context should fail fast with explicit provider errors, following `useAuth must be used within AuthProvider`-style checks.
+- Polling hooks should centralize interval and cleanup behavior instead of duplicating `setInterval` logic in pages.
+- Data fetching currently uses local API wrappers around `fetch`; keep response parsing and status handling in `src/lib/api.ts`.
 
-Questions to answer:
-- What custom hooks do you have?
-- How do you handle data fetching?
-- What are the naming conventions?
-- How do you share stateful logic?
--->
+## Data Fetching and Side Effects
 
-(To be filled by the team)
-
----
-
-## Custom Hook Patterns
-
-<!-- How to create and structure custom hooks -->
-
-(To be filled by the team)
-
----
-
-## Data Fetching
-
-<!-- How data fetching is handled (React Query, SWR, etc.) -->
-
-(To be filled by the team)
-
----
-
-## Naming Conventions
-
-<!-- Hook naming rules (use*, etc.) -->
-
-(To be filled by the team)
-
----
+- Put network calls behind package-local API helpers and have pages/components call those helpers.
+- Keep URL query-param behavior near page-level components when it drives navigation or initial selection.
+- Always handle loading, non-2xx, JSON parse failures, and empty responses in the UI path.
 
 ## Common Mistakes
 
-<!-- Hook-related mistakes your team has made -->
+- Do not call hooks conditionally or from non-React package code.
+- Do not scatter duplicate polling/session logic across many pages; create or reuse a hook/helper.
+- Do not let hooks print secrets, API keys, or full env-derived values in errors.
 
-(To be filled by the team)
+## Current References
+
+- Use repos/brand-site/src/app/routes.tsx as a current reference.
+- Use repos/brand-site/src/app/components/brand-scaffold.tsx as a current reference.
+- Use repos/brand-site/src/design-system/patterns/homepage-hero.tsx as a current reference.
+- Use repos/brand-site/src/styles/theme.css as a current reference.

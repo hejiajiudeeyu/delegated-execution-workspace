@@ -1,51 +1,31 @@
 # Type Safety
 
-> Type safety patterns in this project.
+## Scope
 
----
+This project currently mixes JavaScript runtime packages with TypeScript React console/site code. Type safety is enforced through package boundaries, exported constants, runtime validators, tests, and TypeScript in UI apps.
 
-## Overview
+## Conventions
 
-<!--
-Document your project's type safety conventions here.
-
-Questions to answer:
-- What type system do you use?
-- How are types organized?
-- What validation library do you use?
-- How do you handle type inference?
--->
-
-(To be filled by the team)
-
----
-
-## Type Organization
-
-<!-- Where types are defined, shared types vs local types -->
-
-(To be filled by the team)
-
----
+- Protocol enums, error registries, validators, and canonicalization helpers live in `repos/protocol/packages/contracts/src/index.js` and should be reused by client/platform code.
+- UI apps use TypeScript for components and helpers. Keep API response shapes local and explicit near `src/lib/api.ts` unless they belong in protocol contracts.
+- Runtime services use JavaScript with runtime validation. Validate JSON bodies, env-derived values, CLI args, billing inputs, and delivery metadata before use.
+- Prefer exported constants/Object.freeze registries for shared string domains such as statuses, pricing models, trust tiers, and billing events.
 
 ## Validation
 
-<!-- Runtime validation patterns (Zod, Yup, io-ts, etc.) -->
-
-(To be filled by the team)
-
----
-
-## Common Patterns
-
-<!-- Type utilities, generics, type guards -->
-
-(To be filled by the team)
-
----
+- Use protocol validation helpers for request/result/delivery/billing semantics instead of re-implementing partial checks in consumers.
+- Use structured error builders from contracts when returning API errors.
+- Parse JSON in one place per boundary and report invalid JSON distinctly from unsupported business values.
+- Keep tests covering both good cases and error matrix cases.
 
 ## Forbidden Patterns
 
-<!-- any, type assertions, etc. -->
+- Do not use ad hoc strings for protocol status/error domains when an exported constant exists.
+- Do not cast unknown API responses straight into UI state without status and parse-error handling.
+- Do not let client or platform introduce new protocol semantics before the protocol package and docs are updated.
+- Do not use `any` as a shortcut in TypeScript UI code when a local type or narrow helper can describe the response.
 
-(To be filled by the team)
+## Current References
+
+- Use repos/client/apps/caller-controller/src/server.js as a current reference.
+- Use repos/client/tests/integration/caller-controller.integration.test.js as a current reference.

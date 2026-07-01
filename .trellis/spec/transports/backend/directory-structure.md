@@ -1,54 +1,23 @@
-# Directory Structure
+# Backend Directory Structure
 
-> How backend code is organized in this project.
+## Scope
 
----
+The transport family under `repos/client/packages/transports` provides adapter packages such as local, relay-http, email, emailengine, and gmail.
 
-## Overview
+## Layout
 
-<!--
-Document your project's backend directory structure here.
-
-Questions to answer:
-- How are modules/packages organized?
-- Where does business logic live?
-- Where are API endpoints defined?
-- How are utilities and helpers organized?
--->
-
-(To be filled by the team)
-
----
-
-## Directory Layout
-
-```
-<!-- Replace with your actual structure -->
-src/
-├── ...
-└── ...
-```
-
----
+- Each adapter package owns its own `package.json` and `src/index.js`.
+- Integration tests for adapters live in `repos/client/tests/integration/*-transport.integration.test.js`.
+- Shared transport semantics should be extracted deliberately; do not copy/paste behavior across adapters without checking the existing package family.
 
 ## Module Organization
 
-<!-- How should new features/modules be organized? -->
-
-(To be filled by the team)
-
----
-
-## Naming Conventions
-
-<!-- File and folder naming rules -->
-
-(To be filled by the team)
-
----
+- Keep adapter construction and send/receive behavior in the adapter package.
+- Keep protocol validation in `@delexec/contracts` and caller/responder orchestration in controller packages.
+- Keep environment-specific setup at the CLI/service boundary.
 
 ## Examples
 
-<!-- Link to well-organized modules as examples -->
-
-(To be filled by the team)
+- Use `repos/client/packages/transports/local/src/index.js` as the local adapter reference.
+- Use `repos/client/packages/transports/relay-http/src/index.js` as the relay-backed adapter reference.
+- Use `repos/client/tests/integration/email-transport.integration.test.js` and related tests for expected behavior.

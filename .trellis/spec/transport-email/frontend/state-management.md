@@ -1,51 +1,30 @@
 # State Management
 
-> How state is managed in this project.
+## Scope
 
----
+@delexec/transport-email manages runtime, request, store, transport, or protocol state outside React. State should be explicit, serializable where possible, and owned by the package that persists or serves it.
 
-## Overview
+## Categories
 
-<!--
-Document your project's state management conventions here.
+- Protocol constants and validation rules live in `repos/protocol/packages/contracts/src/index.js`.
+- Client local state, secrets, and supervisor session files are managed by `@delexec/ops`, `@delexec/runtime-utils`, and `@delexec/sqlite-store`.
+- Platform catalog/request/billing/persistence state is owned by platform API and store packages.
+- Transport state should stay adapter-local and testable.
 
-Questions to answer:
-- What state management solution do you use?
-- How is local vs global state decided?
-- How do you handle server state?
-- What are the patterns for derived state?
--->
+## Required Rules
 
-(To be filled by the team)
-
----
-
-## State Categories
-
-<!-- Local state, global state, server state, URL state -->
-
-(To be filled by the team)
-
----
-
-## When to Use Global State
-
-<!-- Criteria for promoting state to global -->
-
-(To be filled by the team)
-
----
-
-## Server State
-
-<!-- How server data is cached and synchronized -->
-
-(To be filled by the team)
-
----
+- Validate external inputs before mutating durable state.
+- Preserve direct caller/responder/hotline paths when adding logical service or capability flows.
+- Keep migrations, docs, tests, and CLI/console copy aligned when local or persisted state changes.
+- Treat submodule SHA movement as fourth-repo ledger state; it requires a matching change bundle.
 
 ## Common Mistakes
 
-<!-- State management mistakes your team has made -->
+- Do not use the fourth repo to persist business runtime state.
+- Do not derive platform selections in the client when the platform owns the decision, such as service resolution.
+- Do not silently coerce malformed persisted values; return explicit structured errors or repair through a documented migration.
 
-(To be filled by the team)
+## Current References
+
+- Use repos/client/packages/transports/email/src/index.js as a current reference.
+- Use repos/client/tests/integration/email-transport.integration.test.js as a current reference.

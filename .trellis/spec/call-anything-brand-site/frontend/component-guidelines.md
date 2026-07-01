@@ -1,59 +1,31 @@
 # Component Guidelines
 
-> How components are built in this project.
+## Scope
 
----
+call-anything-brand-site has React UI surfaces. Build components from existing page/layout/ui primitives and keep user workflows directly usable.
 
-## Overview
+## Patterns
 
-<!--
-Document your project's component conventions here.
+- Keep page containers in `src/pages` or `src/app/pages`; keep shell/navigation pieces in `src/components/layout` or `src/design-system/shells`.
+- Reuse the local `components/ui` primitives and CSS token files before adding new visual primitives.
+- Components should accept plain typed props, keep side effects in hooks or submit handlers, and render explicit loading/error/empty states.
+- Dashboard and console screens should be dense, operational, and scannable. Avoid marketing-style hero layouts inside console surfaces.
 
-Questions to answer:
-- What component patterns do you use?
-- How are props defined?
-- How do you handle composition?
-- What accessibility standards apply?
--->
+## Styling and Accessibility
 
-(To be filled by the team)
-
----
-
-## Component Structure
-
-<!-- Standard structure of a component file -->
-
-(To be filled by the team)
-
----
-
-## Props Conventions
-
-<!-- How props should be defined and typed -->
-
-(To be filled by the team)
-
----
-
-## Styling Patterns
-
-<!-- How styles are applied (CSS modules, styled-components, Tailwind, etc.) -->
-
-(To be filled by the team)
-
----
-
-## Accessibility
-
-<!-- A11y requirements and patterns -->
-
-(To be filled by the team)
-
----
+- Use existing Tailwind/CSS token files such as `src/styles/theme.css`, `console-tokens.css`, or brand design-system tokens.
+- Prefer semantic buttons, labels, tables, tabs, switches, dialogs, and status badges already present in `components/ui`.
+- Preserve keyboard and screen-reader behavior inherited from Radix-style primitives; do not replace them with custom div-click handlers.
 
 ## Common Mistakes
 
-<!-- Component-related mistakes your team has made -->
+- Do not copy component code between client and platform consoles. If a pattern repeats, first decide which repository owns it and whether a shared package already exists.
+- Do not add presentation-only behavior to `repos/protocol`; protocol docs can describe UI consequences but must not implement them.
+- Do not add a fourth-repo component as a new source of truth for business behavior.
 
-(To be filled by the team)
+## Current References
+
+- Use repos/brand-site/src/app/routes.tsx as a current reference.
+- Use repos/brand-site/src/app/components/brand-scaffold.tsx as a current reference.
+- Use repos/brand-site/src/design-system/patterns/homepage-hero.tsx as a current reference.
+- Use repos/brand-site/src/styles/theme.css as a current reference.

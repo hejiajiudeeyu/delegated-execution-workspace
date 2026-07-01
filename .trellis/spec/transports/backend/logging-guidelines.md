@@ -1,51 +1,23 @@
-# Logging Guidelines
+# Backend Logging Guidelines
 
-> How logging is done in this project.
+## Scope
 
----
+Logging is plain, explicit, and designed for local debugging without exposing secrets.
 
-## Overview
+## Patterns
 
-<!--
-Document your project's logging conventions here.
+- Log high-level lifecycle events, readiness, request ids, service ids, hotline ids, and stage names when useful.
+- Prefer structured JSON output for CLI evidence and machine-readable status commands.
+- Keep noisy debug data behind explicit debug/snapshot commands.
+- Redact API keys, bearer tokens, task tokens, secret-store contents, and raw env files.
 
-Questions to answer:
-- What logging library do you use?
-- What are the log levels and when to use each?
-- What should be logged?
-- What should NOT be logged (PII, secrets)?
--->
+## What Not To Log
 
-(To be filled by the team)
+- Caller API keys, Platform API keys, task tokens, bearer tokens, signing secrets, secret-store passphrases, or complete env files.
+- Full payloads when they may contain user data unless the command is explicitly producing local test evidence.
 
----
+## Examples
 
-## Log Levels
-
-<!-- When to use each level: debug, info, warn, error -->
-
-(To be filled by the team)
-
----
-
-## Structured Logging
-
-<!-- Log format, required fields -->
-
-(To be filled by the team)
-
----
-
-## What to Log
-
-<!-- Important events to log -->
-
-(To be filled by the team)
-
----
-
-## What NOT to Log
-
-<!-- Sensitive data, PII, secrets -->
-
-(To be filled by the team)
+- `repos/client/apps/ops/src/logging.js` centralizes local ops logging helpers.
+- `repos/client/apps/ops/src/cli.js` emits JSON evidence for command outputs.
+- Root deployability and compat tools expose `--json` modes for automation.

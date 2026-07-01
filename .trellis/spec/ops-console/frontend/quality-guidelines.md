@@ -1,51 +1,42 @@
 # Quality Guidelines
 
-> Code quality standards for frontend development.
+## Scope
 
----
-
-## Overview
-
-<!--
-Document your project's quality standards here.
-
-Questions to answer:
-- What patterns are forbidden?
-- What linting rules do you enforce?
-- What are your testing requirements?
-- What code review standards apply?
--->
-
-(To be filled by the team)
-
----
-
-## Forbidden Patterns
-
-<!-- Patterns that should never be used and why -->
-
-(To be filled by the team)
-
----
+@delexec/ops-console is part of client operator console React app. Quality means preserving the owning repository boundary, keeping tests near the behavior, and proving cross-repo compatibility when contracts or submodule SHAs move.
 
 ## Required Patterns
 
-<!-- Patterns that must always be used -->
+- Read the owning repository rules before changing behavior: root `CLAUDE.md` / `AGENTS.md`, then the submodule's `CLAUDE.md`, `AGENTS.md`, and `CONTRIBUTING.md` when present.
+- Keep `delexec-ops` usable as the primary end-user surface; do not require users to assemble internal packages manually.
+- Keep changes small and reviewable. Prefer focused commits by workstream.
+- Update docs under `docs/current` or package README files when externally visible behavior changes.
+- For cross-repo compatibility, run the fourth-repo gate: `corepack pnpm run check:submodules`, `check:boundaries`, `check:bundles`, `test:contracts`, and `test:integration`.
 
-(To be filled by the team)
+## Forbidden Patterns
 
----
+- Do not add protocol fields, schemas, or runtime truth in the fourth repository.
+- Do not update submodule SHAs without a matching `changes/*.yaml` bundle.
+- Do not bypass the owning repo by editing orchestration scripts only.
+- Do not print secrets, API keys, env file contents, or raw bearer tokens in CLI output, logs, tests, or docs.
+- Do not treat local 502s from agent/e2e services as code regressions without first proving the local stack is running.
 
 ## Testing Requirements
 
-<!-- What level of testing is expected -->
+- Run `npm --prefix repos/client run test:unit` when this area changes.
+- Run `npm --prefix repos/client run check:ops-console-runtime-surface` when this area changes.
+- For root compatibility status, use `corepack pnpm --silent run compat:status -- --json` before claiming the repo is cleanly closed out.
+- Add or update unit/integration tests at the layer where behavior changes, not only at the fourth-repo wrapper layer.
 
-(To be filled by the team)
+## Review Checklist
 
----
+- Owning repository is correct for the behavior changed.
+- Protocol, client, platform, docs, and change bundle are synchronized when a contract crosses repos.
+- Existing direct hotline/caller/responder flows still work after adding logical or platform-mediated flows.
+- Error codes are explicit and retryability is intentional.
 
-## Code Review Checklist
+## Current References
 
-<!-- What reviewers should check -->
-
-(To be filled by the team)
+- Use repos/client/apps/ops-console/src/App.tsx as a current reference.
+- Use repos/client/apps/ops-console/src/components/layout/AppShell.tsx as a current reference.
+- Use repos/client/apps/ops-console/src/pages/caller/CatalogPage.tsx as a current reference.
+- Use repos/client/apps/ops-console/src/lib/api.ts as a current reference.

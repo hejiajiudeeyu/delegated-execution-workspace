@@ -1,51 +1,32 @@
 # State Management
 
-> How state is managed in this project.
+## Scope
 
----
+call-anything-brand-site uses local React state, context for auth/session concerns, URL state for selected views, and server state loaded through local API helpers.
 
-## Overview
+## Categories
 
-<!--
-Document your project's state management conventions here.
+- Local form/filter/dialog state stays in the page or component that owns the interaction.
+- Auth/session state belongs in an explicit provider/hook pair, for example `src/hooks/useAuth.tsx`.
+- Server state is fetched through `src/lib/api.ts` wrappers and refreshed deliberately.
+- URL state is acceptable for selected rows, deep links, and mode-specific screens.
 
-Questions to answer:
-- What state management solution do you use?
-- How is local vs global state decided?
-- How do you handle server state?
-- What are the patterns for derived state?
--->
+## Required Rules
 
-(To be filled by the team)
-
----
-
-## State Categories
-
-<!-- Local state, global state, server state, URL state -->
-
-(To be filled by the team)
-
----
-
-## When to Use Global State
-
-<!-- Criteria for promoting state to global -->
-
-(To be filled by the team)
-
----
-
-## Server State
-
-<!-- How server data is cached and synchronized -->
-
-(To be filled by the team)
-
----
+- Validate external inputs before mutating durable state.
+- Preserve direct caller/responder/hotline paths when adding logical service or capability flows.
+- Keep migrations, docs, tests, and CLI/console copy aligned when local or persisted state changes.
+- Treat submodule SHA movement as fourth-repo ledger state; it requires a matching change bundle.
 
 ## Common Mistakes
 
-<!-- State management mistakes your team has made -->
+- Do not use the fourth repo to persist business runtime state.
+- Do not derive platform selections in the client when the platform owns the decision, such as service resolution.
+- Do not silently coerce malformed persisted values; return explicit structured errors or repair through a documented migration.
 
-(To be filled by the team)
+## Current References
+
+- Use repos/brand-site/src/app/routes.tsx as a current reference.
+- Use repos/brand-site/src/app/components/brand-scaffold.tsx as a current reference.
+- Use repos/brand-site/src/design-system/patterns/homepage-hero.tsx as a current reference.
+- Use repos/brand-site/src/styles/theme.css as a current reference.

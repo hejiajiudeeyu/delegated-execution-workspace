@@ -1,51 +1,24 @@
 # Database Guidelines
 
-> Database patterns and conventions for this project.
+## Scope
 
----
+Persistence is owned by package-specific stores: SQLite for client/local state, billing store for platform billing state, and Postgres snapshot store for platform persistence.
 
-## Overview
+## Patterns
 
-<!--
-Document your project's database conventions here.
+- Keep schema and query logic inside the store package that owns it.
+- Validate data before writing. Do not let HTTP handlers write unvalidated JSON directly into durable stores.
+- Tests should cover both in-memory/unit paths and integration paths that exercise the store through public package APIs.
+- Migrations or compatibility changes must be documented with the CLI/operator behavior that depends on them.
 
-Questions to answer:
-- What ORM/query library do you use?
-- How are migrations managed?
-- What are the naming conventions for tables/columns?
-- How do you handle transactions?
--->
+## Forbidden Patterns
 
-(To be filled by the team)
+- Do not create a new persistence truth source in the fourth repository.
+- Do not make protocol packages depend on concrete client/platform database packages.
+- Do not silently drop unknown state during migration; either preserve it or document the intentional removal.
 
----
+## Examples
 
-## Query Patterns
-
-<!-- How should queries be written? Batch operations? -->
-
-(To be filled by the team)
-
----
-
-## Migrations
-
-<!-- How to create and run migrations -->
-
-(To be filled by the team)
-
----
-
-## Naming Conventions
-
-<!-- Table names, column names, index names -->
-
-(To be filled by the team)
-
----
-
-## Common Mistakes
-
-<!-- Database-related mistakes your team has made -->
-
-(To be filled by the team)
+- `repos/client/packages/sqlite-store/src/index.js` owns local SQLite-backed state helpers.
+- `repos/platform/packages/billing-store/src/index.js` owns platform billing state.
+- `repos/platform/packages/postgres-store/src/index.js` owns Postgres snapshot persistence.

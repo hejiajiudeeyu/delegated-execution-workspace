@@ -21,34 +21,34 @@ the rest conversationally.
 
 ## Status (update the checkboxes as you complete each item)
 
-- [ ] Fill guidelines for call-anything-brand-site
-- [ ] Fill guidelines for delegated-execution-client
-- [ ] Fill guidelines for delegated-execution-platform-selfhost
-- [ ] Fill guidelines for delegated-execution-protocol
-- [ ] Fill guidelines for @delexec/caller-controller
-- [ ] Fill guidelines for @delexec/caller-skill-adapter
-- [ ] Fill guidelines for @delexec/caller-skill-mcp-adapter
-- [ ] Fill guidelines for @delexec/ops
-- [ ] Fill guidelines for @delexec/ops-console
-- [ ] Fill guidelines for @delexec/responder-controller
-- [ ] Fill guidelines for @delexec/platform-api
-- [ ] Fill guidelines for @delexec/platform-console
-- [ ] Fill guidelines for @delexec/platform-console-gateway
-- [ ] Fill guidelines for @delexec/transport-relay
-- [ ] Fill guidelines for @delexec/caller-controller-core
-- [ ] Fill guidelines for @delexec/responder-runtime-core
-- [ ] Fill guidelines for @delexec/runtime-utils
-- [ ] Fill guidelines for @delexec/sqlite-store
-- [ ] Fill guidelines for transports
-- [ ] Fill guidelines for @delexec/billing-store
-- [ ] Fill guidelines for @delexec/postgres-store
-- [ ] Fill guidelines for @delexec/contracts
-- [ ] Fill guidelines for @delexec/transport-email
-- [ ] Fill guidelines for @delexec/transport-emailengine
-- [ ] Fill guidelines for @delexec/transport-gmail
-- [ ] Fill guidelines for @delexec/transport-local
-- [ ] Fill guidelines for @delexec/transport-relay-http
-- [ ] Add code examples
+- [x] Fill guidelines for call-anything-brand-site
+- [x] Fill guidelines for delegated-execution-client
+- [x] Fill guidelines for delegated-execution-platform-selfhost
+- [x] Fill guidelines for delegated-execution-protocol
+- [x] Fill guidelines for @delexec/caller-controller
+- [x] Fill guidelines for @delexec/caller-skill-adapter
+- [x] Fill guidelines for @delexec/caller-skill-mcp-adapter
+- [x] Fill guidelines for @delexec/ops
+- [x] Fill guidelines for @delexec/ops-console
+- [x] Fill guidelines for @delexec/responder-controller
+- [x] Fill guidelines for @delexec/platform-api
+- [x] Fill guidelines for @delexec/platform-console
+- [x] Fill guidelines for @delexec/platform-console-gateway
+- [x] Fill guidelines for @delexec/transport-relay
+- [x] Fill guidelines for @delexec/caller-controller-core
+- [x] Fill guidelines for @delexec/responder-runtime-core
+- [x] Fill guidelines for @delexec/runtime-utils
+- [x] Fill guidelines for @delexec/sqlite-store
+- [x] Fill guidelines for transports
+- [x] Fill guidelines for @delexec/billing-store
+- [x] Fill guidelines for @delexec/postgres-store
+- [x] Fill guidelines for @delexec/contracts
+- [x] Fill guidelines for @delexec/transport-email
+- [x] Fill guidelines for @delexec/transport-emailengine
+- [x] Fill guidelines for @delexec/transport-gmail
+- [x] Fill guidelines for @delexec/transport-local
+- [x] Fill guidelines for @delexec/transport-relay-http
+- [x] Add code examples
 
 ---
 

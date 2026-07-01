@@ -1,59 +1,29 @@
 # Component Guidelines
 
-> How components are built in this project.
+## Scope
 
----
+@delexec/billing-store is not primarily a React component package. Do not invent a component layer here; route UI work to the console/site package that owns the screen.
 
-## Overview
+## Patterns
 
-<!--
-Document your project's component conventions here.
+- Runtime/service packages should expose functions, adapters, or server factories rather than UI components.
+- If a package needs a human-facing representation, add it in `ops-console`, `platform-console`, or `call-anything-brand-site` and call this package through its public API.
+- Keep DTO shaping close to route/client boundaries; do not create React props or view models inside service packages unless the existing package already does so.
 
-Questions to answer:
-- What component patterns do you use?
-- How are props defined?
-- How do you handle composition?
-- What accessibility standards apply?
--->
+## Styling and Accessibility
 
-(To be filled by the team)
-
----
-
-## Component Structure
-
-<!-- Standard structure of a component file -->
-
-(To be filled by the team)
-
----
-
-## Props Conventions
-
-<!-- How props should be defined and typed -->
-
-(To be filled by the team)
-
----
-
-## Styling Patterns
-
-<!-- How styles are applied (CSS modules, styled-components, Tailwind, etc.) -->
-
-(To be filled by the team)
-
----
-
-## Accessibility
-
-<!-- A11y requirements and patterns -->
-
-(To be filled by the team)
-
----
+- Service and package code should not import browser styling or component libraries.
+- API responses should be machine-readable JSON, with human-oriented labels added only by console/site packages.
 
 ## Common Mistakes
 
-<!-- Component-related mistakes your team has made -->
+- Do not copy component code between client and platform consoles. If a pattern repeats, first decide which repository owns it and whether a shared package already exists.
+- Do not add presentation-only behavior to `repos/protocol`; protocol docs can describe UI consequences but must not implement them.
+- Do not add a fourth-repo component as a new source of truth for business behavior.
 
-(To be filled by the team)
+## Current References
+
+- Use repos/platform/packages/billing-store/src/index.js as a current reference.
+- Use repos/platform/packages/billing-store/src/errors.js as a current reference.
+- Use repos/platform/tests/unit/billing-store.unit.test.js as a current reference.
+- Use repos/platform/tests/integration/billing-store.integration.test.js as a current reference.

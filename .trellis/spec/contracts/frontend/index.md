@@ -1,39 +1,38 @@
-# Frontend Development Guidelines
-
-> Best practices for frontend development in this project.
-
----
+# Development Guidelines
 
 ## Overview
 
-This directory contains guidelines for frontend development. Fill in each file with your project's specific conventions.
+Guidelines for @delexec/contracts, a protocol contract package under `repos/protocol/packages/contracts`.
 
----
+- This package owns protocol schemas, validators, error registries, canonicalization, signing rules, templates, and protocol docs. Runtime caller/responder/platform behavior belongs outside this repo.
 
 ## Guidelines Index
 
-| Guide | Description | Status |
-|-------|-------------|--------|
-| [Directory Structure](./directory-structure.md) | Module organization and file layout | To fill |
-| [Component Guidelines](./component-guidelines.md) | Component patterns, props, composition | To fill |
-| [Hook Guidelines](./hook-guidelines.md) | Custom hooks, data fetching patterns | To fill |
-| [State Management](./state-management.md) | Local state, global state, server state | To fill |
-| [Quality Guidelines](./quality-guidelines.md) | Code standards, forbidden patterns | To fill |
-| [Type Safety](./type-safety.md) | Type patterns, validation | To fill |
+| Guide | Path | Status |
+|-------|------|--------|
+| Directory Structure | [directory-structure.md](./directory-structure.md) | Filled |
+| Component Guidelines | [component-guidelines.md](./component-guidelines.md) | Filled |
+| Hook Guidelines | [hook-guidelines.md](./hook-guidelines.md) | Filled |
+| State Management | [state-management.md](./state-management.md) | Filled |
+| Quality Guidelines | [quality-guidelines.md](./quality-guidelines.md) | Filled |
+| Type Safety | [type-safety.md](./type-safety.md) | Filled |
 
----
+## Pre-Development Checklist
 
-## How to Fill These Guidelines
+- Read this index plus the specific guideline file for the kind of change you are making.
+- Search existing code before changing constants, ports, env names, status strings, protocol fields, or CLI flags.
+- Confirm the owning repo: protocol semantics in `repos/protocol`, client UX/runtime in `repos/client`, platform API/deploy in `repos/platform`, public site in `repos/brand-site`.
+- For cross-repo behavior, plan the full sequence: owning repo change, submodule SHA update, change bundle update, fourth-repo validation.
 
-For each guideline file:
+## Current Examples
 
-1. Document your project's **actual conventions** (not ideals)
-2. Include **code examples** from your codebase
-3. List **forbidden patterns** and why
-4. Add **common mistakes** your team has made
+- Use repos/protocol/packages/contracts/src/index.js as a current reference.
+- Use repos/protocol/tests/unit/contracts.test.js as a current reference.
+- Use repos/protocol/tests/unit/schema-validation.test.js as a current reference.
+- Use repos/protocol/tests/integration/contracts-package.integration.test.js as a current reference.
 
-The goal is to help AI assistants and new team members understand how YOUR project works.
+## Validation
 
----
+- Run `npm --prefix repos/protocol test` when this area changes.
 
-**Language**: All documentation should be written in **English**.
+**Language**: Documentation in this directory is written in English.

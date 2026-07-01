@@ -1,51 +1,20 @@
-# Quality Guidelines
-
-> Code quality standards for backend development.
-
----
-
-## Overview
-
-<!--
-Document your project's quality standards here.
-
-Questions to answer:
-- What patterns are forbidden?
-- What linting rules do you enforce?
-- What are your testing requirements?
-- What code review standards apply?
--->
-
-(To be filled by the team)
-
----
-
-## Forbidden Patterns
-
-<!-- Patterns that should never be used and why -->
-
-(To be filled by the team)
-
----
+# Backend Quality Guidelines
 
 ## Required Patterns
 
-<!-- Patterns that must always be used -->
+- Keep adapters and services focused on their owning layer.
+- Add unit tests for pure helpers and integration tests for HTTP/transport behavior.
+- Use contract helpers for protocol semantics and structured errors.
+- Validate with `npm --prefix repos/client run test:unit` and `npm --prefix repos/client run test:integration` for transport changes.
 
-(To be filled by the team)
+## Forbidden Patterns
 
----
+- Do not bypass caller-controller/responder-controller flows by sending directly from a CLI wrapper unless that is the explicit adapter contract.
+- Do not duplicate protocol validation in transport adapters.
+- Do not mark fourth-repo compatibility complete without the required root validation chain when submodule SHAs move.
 
-## Testing Requirements
+## Checklist
 
-<!-- What level of testing is expected -->
-
-(To be filled by the team)
-
----
-
-## Code Review Checklist
-
-<!-- What reviewers should check -->
-
-(To be filled by the team)
+- Existing direct local, relay-http, and remote paths still pass.
+- Error codes and retryability match protocol expectations.
+- Tests cover invalid input, timeout/failure, and success paths.

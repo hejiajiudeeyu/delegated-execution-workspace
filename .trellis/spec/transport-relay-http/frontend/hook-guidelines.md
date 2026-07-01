@@ -1,51 +1,28 @@
 # Hook Guidelines
 
-> How hooks are used in this project.
+## Scope
 
----
+@delexec/transport-relay-http is a runtime/service/package area. Avoid React hooks here; use ordinary functions, async helpers, or server factories.
 
-## Overview
+## Patterns
 
-<!--
-Document your project's hook conventions here.
+- Use small pure helpers for validation, config resolution, and adapter behavior.
+- For long-lived services, return explicit start/stop handles or server instances rather than hiding lifecycle in module top-level state.
+- Keep environment loading at app boundaries, not in lower-level protocol or utility packages.
 
-Questions to answer:
-- What custom hooks do you have?
-- How do you handle data fetching?
-- What are the naming conventions?
-- How do you share stateful logic?
--->
+## Data Fetching and Side Effects
 
-(To be filled by the team)
-
----
-
-## Custom Hook Patterns
-
-<!-- How to create and structure custom hooks -->
-
-(To be filled by the team)
-
----
-
-## Data Fetching
-
-<!-- How data fetching is handled (React Query, SWR, etc.) -->
-
-(To be filled by the team)
-
----
-
-## Naming Conventions
-
-<!-- Hook naming rules (use*, etc.) -->
-
-(To be filled by the team)
-
----
+- HTTP handlers should parse JSON bodies once, validate before mutation, and return structured JSON errors.
+- CLI commands should parse arguments first, validate them, then call reusable helpers.
+- Transport adapters should keep external side effects behind explicit function calls that tests can exercise.
 
 ## Common Mistakes
 
-<!-- Hook-related mistakes your team has made -->
+- Do not call hooks conditionally or from non-React package code.
+- Do not scatter duplicate polling/session logic across many pages; create or reuse a hook/helper.
+- Do not let hooks print secrets, API keys, or full env-derived values in errors.
 
-(To be filled by the team)
+## Current References
+
+- Use repos/client/packages/transports/relay-http/src/index.js as a current reference.
+- Use repos/client/tests/integration/ops-cli.integration.test.js as a current reference.
