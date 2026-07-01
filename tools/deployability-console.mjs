@@ -5,6 +5,7 @@ import { spawnSync } from "node:child_process";
 import { parseStrictArgs } from "./lib/strict-args.mjs";
 
 const ROOT = process.cwd();
+const CLIENT_ROOT = path.join(ROOT, "repos/client");
 
 const SAFETY_DEFAULTS = [
   "deployability console index is read-only and does not read .env files directly",
@@ -39,48 +40,49 @@ function parseArgs(argv) {
   return parseStrictArgs(argv, [{ flag: "--json", name: "json", type: "boolean" }], { json: false });
 }
 
-function runJsonScript(relativeScript, extraArgs = []) {
-  const result = spawnSync(process.execPath, [path.join(ROOT, relativeScript), ...extraArgs, "--json"], {
-    cwd: ROOT,
-    encoding: "utf8",
-    env: process.env,
-    maxBuffer: 20 * 1024 * 1024
-  });
+function stringOutput(value) {
+  return typeof value === "string" ? value : "";
+}
+
+function outputLines(value) {
+  return stringOutput(value).trim().split("\n").filter(Boolean);
+}
+
+function parseJsonResult(result) {
+  const stdout = stringOutput(result.stdout);
+  const stderr = outputLines(result.stderr);
+  if (result.error) stderr.unshift(result.error.message);
   let body = null;
   try {
-    body = result.stdout.trim() ? JSON.parse(result.stdout) : null;
+    body = stdout.trim() ? JSON.parse(stdout) : null;
   } catch (error) {
     body = null;
   }
   return {
     ok: result.status === 0 && body != null && body.ok !== false,
-    exit_code: result.status,
-    stderr: result.stderr.trim().split("\n").filter(Boolean),
+    exit_code: typeof result.status === "number" ? result.status : 1,
+    stderr,
     body,
     parse_error: body == null ? "source did not emit valid JSON" : null
   };
 }
 
-function runPackageJsonCommand(command, args) {
+function runJsonCommand(command, args, options = {}) {
   const result = spawnSync(command, args, {
-    cwd: ROOT,
+    cwd: options.cwd || ROOT,
     encoding: "utf8",
     env: process.env,
     maxBuffer: 20 * 1024 * 1024
   });
-  let body = null;
-  try {
-    body = result.stdout.trim() ? JSON.parse(result.stdout) : null;
-  } catch (error) {
-    body = null;
-  }
-  return {
-    ok: result.status === 0 && body != null && body.ok !== false,
-    exit_code: result.status,
-    stderr: result.stderr.trim().split("\n").filter(Boolean),
-    body,
-    parse_error: body == null ? "source did not emit valid JSON" : null
-  };
+  return parseJsonResult(result);
+}
+
+function runJsonScript(relativeScript, extraArgs = []) {
+  return runJsonCommand(process.execPath, [path.join(ROOT, relativeScript), ...extraArgs, "--json"]);
+}
+
+function runClientEvidenceScript(relativeScript) {
+  return runJsonCommand(process.execPath, [path.join(CLIENT_ROOT, relativeScript), "--json"], { cwd: CLIENT_ROOT });
 }
 
 function sourceBlocker(label, result) {
@@ -321,36 +323,9 @@ function consoleData() {
   const compatibilityResult = runJsonScript("tools/compat-status.mjs");
   const onboardingPlanResult = runJsonScript("tools/operator-onboarding.mjs", ["plan"]);
   const onboardingCheckResult = runJsonScript("tools/operator-onboarding.mjs", ["check"]);
-  const clientRuntimeSurfaceResult = runPackageJsonCommand("corepack", [
-    "pnpm",
-    "--silent",
-    "--dir",
-    "repos/client",
-    "run",
-    "check:ops-console-runtime-surface",
-    "--",
-    "--json"
-  ]);
-  const clientSettingsSurfaceResult = runPackageJsonCommand("corepack", [
-    "pnpm",
-    "--silent",
-    "--dir",
-    "repos/client",
-    "run",
-    "check:ops-console-settings-surface",
-    "--",
-    "--json"
-  ]);
-  const clientLogsSurfaceResult = runPackageJsonCommand("corepack", [
-    "pnpm",
-    "--silent",
-    "--dir",
-    "repos/client",
-    "run",
-    "check:ops-console-logs-surface",
-    "--",
-    "--json"
-  ]);
+  const clientRuntimeSurfaceResult = runClientEvidenceScript("scripts/check-ops-console-runtime-surface.mjs");
+  const clientSettingsSurfaceResult = runClientEvidenceScript("scripts/check-ops-console-settings-surface.mjs");
+  const clientLogsSurfaceResult = runClientEvidenceScript("scripts/check-ops-console-logs-surface.mjs");
   const sourceBlockers = [
     sourceBlocker("compatibility", compatibilityResult),
     sourceBlocker("operator_onboarding_plan", onboardingPlanResult),
