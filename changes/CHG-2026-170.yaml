@@ -1,0 +1,17 @@
+change_id: CHG-2026-170
+goal: T-503 operator console rehearsal prep — ops 0.1.6 schema/error fixes, gateway v0.1.5 Review Queue, submodule SHA bump
+protocol_sha: 52f57e1189693789920f7fa14da70d97fc45cfe7
+client_sha: a3f66a36adc6dbee95ee1ed3a956099763f31a3d
+platform_sha: 4ea820ce8e3a03deebfba581a29a0d598139cd22
+brand_site_sha: ac8ea7be573b715bd1c9ad8b40397d7c19a1a374
+owner: hejiajiudeeyu
+risk_level: medium
+affected_scope:
+  - client
+  - platform
+  - operator
+  - docs
+  - deployment
+contracts_check: passed
+integration_check: passed
+notes: "Client ops 0.1.6 aligns generic_task draft schema with call-hotline --text (text/summary) and improves request_failed errors. Platform v0.1.5 gateway adds Review Queue pending+approved-disabled refresh and template bundle text/summary fallback. Aliyun production rolled platform-console-gateway to v0.1.5 only; platform-api/relay remain v0.1.2. T-503 rehearsal executed 2026-07-02 with new responder/caller identities, gateway operator approve/enable/billing, and successful BILLING_SETTLED paid call; @delexec/ops@0.1.6 npm publish still blocked by CI integration flakes. Fourth-repo check:submodules, check:boundaries, check:bundles, test:contracts passed 2026-07-02; test:integration passed 2026-07-04 after providing a corepack->pnpm@10.11.0 shim and rebuilding better-sqlite3 for the Node 26 ABI (binary in pnpm store was built against Node 22). platform_sha advanced from e4d767655900759481ca24789dcb16cd51174eac (gateway v0.1.5 as rehearsed) to 4ea820c by T-504 gateway recovery + console session UI work tracked in CHG-2026-171."

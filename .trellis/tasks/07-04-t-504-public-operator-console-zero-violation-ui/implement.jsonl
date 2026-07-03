@@ -1,0 +1,5 @@
+{"file": ".trellis/spec/platform-console/frontend/index.md", "reason": "Pre-dev checklist and validation commands for platform-console changes; notes examples reference the React app, but the served surface is the vanilla src/main.js console"}
+{"file": ".trellis/spec/platform-console-gateway/frontend/index.md", "reason": "Gateway guideline index consulted before extending session routes usage from the console UI"}
+{"file": "docs/planning/first-real-call/50-wave5-operator/T-503-findings.md", "reason": "Source of the operator violations T-504 must close: SSH store reset, passphrase handoff gap, HTTP-API-instead-of-browser-UI"}
+{"file": "repos/brand-site/docs/console-content-spec.md", "reason": "Console-mode content standards (density, human-first summaries, explicit states) applied to the session/review/billing copy"}
+{"file": "repos/platform/docs/current/guides/public-stack-operator-guide.md", "reason": "Operator bootstrap flow documentation; extended with the lost-passphrase recovery section"}

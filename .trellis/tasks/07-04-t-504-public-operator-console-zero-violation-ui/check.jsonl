@@ -1,0 +1,5 @@
+{"check": "platform test:unit", "result": "passed", "detail": "33 tests incl. new tests/unit/platform-console-session-view.test.js (phase derivation, recovery markup, validation, no secret echo)", "date": "2026-07-04"}
+{"check": "platform test:integration", "result": "passed", "detail": "15 passed / 2 skipped (billing-store skip pre-existing); platform-console-gateway suite includes bootstrap-secret /session/recover coverage", "date": "2026-07-04"}
+{"check": "platform test:service:packages + test:deploy:config + test:release:docs", "result": "passed", "date": "2026-07-04"}
+{"check": "live gateway smoke", "result": "passed", "detail": "real server: console html + src modules served; setup via body bootstrap secret; credential save; /session/recover with UI payload; old passphrase rejected; new passphrase accepted", "date": "2026-07-04"}
+{"check": "fourth-repo check:submodules + check:boundaries + check:bundles + test:contracts + test:integration", "result": "passed", "detail": "integration unblocked by corepack->pnpm@10.11.0 shim and better-sqlite3 rebuild for Node 26 ABI; platform commits pushed to origin/main for reachability", "date": "2026-07-04"}
