@@ -1,0 +1,13 @@
+change_id: CHG-2026-174
+goal: M1 1.0c — restore the post-split platform e2e suite to green (sibling client entries, fail-fast startup, hermetic store env)
+protocol_sha: b9234e267ce91ea26a541e7dcbcae96f40a51d8d
+client_sha: a3f66a36adc6dbee95ee1ed3a956099763f31a3d
+platform_sha: 72feba2f18fb2cbe5be1fe6ae31552b8a7fd8940
+brand_site_sha: ac8ea7be573b715bd1c9ad8b40397d7c19a1a374
+owner: hejiajiudeeyu
+risk_level: low
+affected_scope:
+  - platform
+notes: "LOOP.md backlog 1.0c. Triage overturned the 'cold start too slow' hypothesis: the 6/6 beforeAll timeouts were (1) e2e spawning caller-controller/responder-controller/ops entries that moved to the client repo in the split (child died instantly, health polling still spun the full 10s), and (2) platform-api self-loading local deploy env files on direct run — a gitignored repos/platform/deploy/platform/.env carries DATABASE_URL=postgresql://...@postgres:5432 (compose-internal hostname), crashing any spawned platform that did not blank store env vars. Platform 72feba2 resolves client-owned entries from a sibling checkout (../client, ../../client, ../../repos/client, E2E_CLIENT_DIR; E2E_*_CMD overrides preserved; clear fail-fast error otherwise), makes startNodeHttpService fail fast with child logs when the process exits pre-health (waitFor fatal-error support), blanks DATABASE_URL/BILLING_DATABASE_URL/PLATFORM_DATABASE_URL/SQLITE_DATABASE_PATH via HERMETIC_STORE_ENV in all e2e spawns, bumps e2e hookTimeout to 30s, and realigns ops-supervisor expectations with the current ops contract (PUT /platform/settings enable step before review submission, local.delegated-execution.workspace-summary.v1 example id, note-suffixed summary via toContain). Result: e2e 6/6 files 7/7 tests green in ~10s (was 6/6 failed at 60.9s); this is the suite's first recorded green since the split. Platform validation 2026-07-04: npm test 15 passed/2 skipped, test:service:packages, test:deploy:config, test:release:docs passed; public-stack-smoke skipped as no runtime/deploy sources changed (tests/ only; smoke last green same day on 92701bb run 28685820610). E2E runs in the fourth-repo workspace require repos/client present (satisfied by definition). Protocol/client pointers unchanged from CHG-2026-173."
+contracts_check: passed
+integration_check: passed
