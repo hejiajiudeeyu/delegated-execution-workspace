@@ -34,8 +34,8 @@
 
 | # | 事项 | Owning repo | 状态 | 备注 |
 |---|------|-------------|------|------|
-| 1.0a | **修复 platform-api 容器启动崩溃**：源码引用 `validateCatalogGuidanceFields`，但 npm 上的 `@delexec/contracts@0.1.2` 无此导出 → 源码构建的 public-stack 起不来（selfhost 路径实际已断）。按仓库规则先发新版 contracts，再更新 platform | `repos/protocol` → `repos/platform` | todo | CI run 28681832219 public-stack-compose-smoke 日志为证；main CI 自 ≥6/21 全红，v0.1.4/v0.1.5 是带红灯发布的 |
-| 1.0b | **修 platform-api billing 集成测试 CI 500 flake**（`preserves submitted hotline pricing hints` 在 CI 500、本地过）——与 client 仓库 publish 被卡的"integration 500 flake"是同一症状家族，疑似同一个平台侧间歇 bug | `repos/platform` | todo | 修好它可能同时解开 1.1 |
+| 1.0a | **修复 platform-api 容器启动崩溃**:源码引用 `validateCatalogGuidanceFields`,但 npm 上的 `@delexec/contracts@0.1.2` 无此导出 → 源码构建的 public-stack 起不来(selfhost 路径实际已断)。按仓库规则先发新版 contracts,再更新 platform | `repos/protocol` → `repos/platform` | done (2026-07-04) | contracts@0.1.3 已发 npm(protocol `b9234e2`,publish run 28684335553);platform `e44abfe` 重钉 `^0.1.3`;CI run 28684633860 compose-smoke ✓ 57s;CHG-2026-172 |
+| 1.0b | **修 platform-api billing 集成测试 CI 500 flake**（`preserves submitted hotline pricing hints` 在 CI 500、本地过）——与 client 仓库 publish 被卡的"integration 500 flake"是同一症状家族，疑似同一个平台侧间歇 bug | `repos/platform` | todo | 修好它可能同时解开 1.1;失败样本 run 28681832219;e44abfe 触发的 run 28684633860 该用例未复现(flake 特性,不代表已修) |
 | 1.0c | 本机 e2e 套件 6/6 `beforeAll` 10s 超时（4 服务冷启超过 hookTimeout）——triage：调 hookTimeout 或查启动退化；CI 不跑 e2e，此套件当前无处于绿的证据 | `repos/platform` | todo | 2026-07-04 本机复现 |
 | 1.1 | 修复 client CI flake（integration 500 / unit localStorage），让 publish workflow 变绿 | `repos/client` | todo（先做 1.0b） | GH run 28583183537 是失败样本 |
 | 1.2 | 发布 `@delexec/ops@0.1.6` 到 npm | `repos/client` | blocked by 1.1 | 0.1.6 代码已验证（T-503 用本地 tgz 跑通） |
@@ -71,11 +71,14 @@
 - 本机无 `corepack`：跑 `test:integration` 用 corepack→pnpm@10.11.0 shim，或先 `npm i -g corepack`。
 - pnpm store 里 `better-sqlite3` 若再次回退为 Node 22 ABI：进 `node_modules/.pnpm/better-sqlite3@12.8.0/node_modules/better-sqlite3` 执行 `npx node-gyp rebuild`。
 - 详见 `docs/planning/first-real-call/50-wave5-operator/T-504-rollout-notes.md`。
+- 子模块 `package.json` 依赖 specifier 变更后:四仓根目录 `corepack pnpm install` 刷新 `pnpm-lock.yaml`(否则 `test:integration` 内部 frozen install 报 `ERR_PNPM_OUTDATED_LOCKFILE`);且任何 `pnpm install` 都可能把 better-sqlite3 换回旧 ABI,需按上条重建。
+- 与产品审计 loop(写 `docs/planning/product-audit/`,只暂存不提交)共用四仓 git 暂存区:本 loop 提交前先摘出外来暂存路径,提交后恢复其暂存状态。
 
 ## 证据日志（append-only，最新在上）
 
 | 日期 | 轮次/事项 | 结果 | 证据 |
 |------|-----------|------|------|
+| 2026-07-04 | 轮1(loop):1.0a 修复 selfhost 启动崩溃 | `@delexec/contracts@0.1.3` 发布(纯增量导出);platform-api 重钉 `^0.1.3` + platform 锁与四仓 pnpm-lock 刷新;本地 public-stack smoke source_build ✓;platform main CI **全绿**(compose-smoke 57s ✓,platform job 本次也绿);四仓五件套全过 | CHG-2026-172;protocol `b9234e2`(publish run 28684335553);platform `e44abfe`(CI run 28684633860) |
 | 2026-07-04 | 突击审计（应 owner 质疑） | 发现三笔硬欠账进 M1：platform main CI 自 ≥6/21 全红（含两次带红灯发布）；源码构建 public-stack 因 contracts@0.1.2 缺 `validateCatalogGuidanceFields` 导出而 DOA；本机 e2e 6/6 hook 超时。billing 500 flake 在 CI 复现、本地不复现 | GH runs 28681832219 / 28582756950 / 27897689953；本机 `npm run test:e2e` 输出 |
 | 2026-07-04 | 预备：T-504 完成（网关 /session/recover + 会话面板状态化重构） | platform 单测 33 过、集成 15 过/2 跳；四仓五件套全过；CHG-2026-170/171 passed/passed | `T-504-rollout-notes.md`、platform `928af80`+`4ea820c`（已推 origin/main） |
 | 2026-07-02 | 预备：T-503 彩排（功能性成功，3 条违规） | 付费调用 `BILLING_SETTLED`；违规：npm 未发包、SSH 重置、未走浏览器 UI | `T-503-findings.md` |

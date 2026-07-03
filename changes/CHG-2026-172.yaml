@@ -1,0 +1,15 @@
+change_id: CHG-2026-172
+goal: M1 1.0a — publish @delexec/contracts@0.1.3 and repin platform-api so source-built public-stack boots again
+protocol_sha: b9234e267ce91ea26a541e7dcbcae96f40a51d8d
+client_sha: a3f66a36adc6dbee95ee1ed3a956099763f31a3d
+platform_sha: e44abfea49183f8ae38546171a29048a9735ead8
+brand_site_sha: ac8ea7be573b715bd1c9ad8b40397d7c19a1a374
+owner: hejiajiudeeyu
+risk_level: low
+affected_scope:
+  - protocol
+  - platform
+  - deployment
+contracts_check: passed
+integration_check: passed
+notes: "Fixes LOOP.md backlog 1.0a: platform-api at main imports validateCatalogGuidanceFields (plus validateResponderTrustTier / validateServiceResolution* and billing options params) which existed only in protocol source, not in npm @delexec/contracts@0.1.2, so source-built public-stack containers crashed at boot (SyntaxError: missing export; CI run 28681832219 public-stack-compose-smoke). Protocol b9234e2 releases the purely additive @delexec/contracts@0.1.3 (npm publish run 28684335553, protocol npm test green incl. clean-room package integration). Platform e44abfe bumps platform-api to ^0.1.3, repins the shared lockfile resolution to 0.1.3, and drops a stale extraneous ../protocol/packages/contracts lock entry. Platform validation local 2026-07-04: npm test 15 passed/2 skipped (billing-store skip pre-existing), test:service:packages, test:deploy:config, test:release:docs, and test:public-stack-smoke (source_build mode, staged delexec-contracts-0.1.3.tgz, gateway proxy ok) all passed. Client pointer unchanged from CHG-2026-171. Platform main CI platform-job npm test still flakes 500 on 'preserves submitted hotline pricing hints' (backlog 1.0b, next up); compose-smoke path is the one certified here."
