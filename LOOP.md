@@ -35,7 +35,7 @@
 | # | 事项 | Owning repo | 状态 | 备注 |
 |---|------|-------------|------|------|
 | 1.0a | **修复 platform-api 容器启动崩溃**:源码引用 `validateCatalogGuidanceFields`,但 npm 上的 `@delexec/contracts@0.1.2` 无此导出 → 源码构建的 public-stack 起不来(selfhost 路径实际已断)。按仓库规则先发新版 contracts,再更新 platform | `repos/protocol` → `repos/platform` | done (2026-07-04) | contracts@0.1.3 已发 npm(protocol `b9234e2`,publish run 28684335553);platform `e44abfe` 重钉 `^0.1.3`;CI run 28684633860 compose-smoke ✓ 57s;CHG-2026-172 |
-| 1.0b | **修 platform-api billing 集成测试 CI 500 flake**（`preserves submitted hotline pricing hints` 在 CI 500、本地过）——与 client 仓库 publish 被卡的"integration 500 flake"是同一症状家族，疑似同一个平台侧间歇 bug | `repos/platform` | todo | 修好它可能同时解开 1.1;失败样本 run 28681832219;e44abfe 触发的 run 28684633860 该用例未复现(flake 特性,不代表已修) |
+| 1.0b | **修 platform-api billing 集成测试 CI 500 flake**（`preserves submitted hotline pricing hints` 在 CI 500、本地过）——与 client 仓库 publish 被卡的"integration 500 flake"是同一症状家族，疑似同一个平台侧间歇 bug | `repos/platform` | waiting(诊断已上线,等下次 CI 现场) | 根因未复现:本地 Node26 单文件 40x + node:22 双核容器全套件 40x 均绿;POST /v2/hotlines 全路径代码审查无随机抛点。platform `92701bb` 给两处 500 出口(全局 catch + sendBillingError 兜底)加 console.error 栈日志,flaky 断言带响应体;client CI 经 vitest alias 直用 platform main 源码,诊断自动传导(client 集群样本 run 28583183537 = 4 文件 11×500,顺序执行,指向 runner 资源耗尽如 EMFILE)。下次 CI 命中即自曝根因,届时回收此项;CHG-2026-173 |
 | 1.0c | 本机 e2e 套件 6/6 `beforeAll` 10s 超时（4 服务冷启超过 hookTimeout）——triage：调 hookTimeout 或查启动退化；CI 不跑 e2e，此套件当前无处于绿的证据 | `repos/platform` | todo | 2026-07-04 本机复现 |
 | 1.1 | 修复 client CI flake（integration 500 / unit localStorage），让 publish workflow 变绿 | `repos/client` | todo（先做 1.0b） | GH run 28583183537 是失败样本 |
 | 1.2 | 发布 `@delexec/ops@0.1.6` 到 npm | `repos/client` | blocked by 1.1 | 0.1.6 代码已验证（T-503 用本地 tgz 跑通） |
@@ -78,6 +78,7 @@
 
 | 日期 | 轮次/事项 | 结果 | 证据 |
 |------|-----------|------|------|
+| 2026-07-04 | 轮2(loop):1.0b 诊断埋点(根因未复现,如实记录) | 80 次压测零复现(本地 Node26 billing 文件 40x;node:22 双核容器全套件 40x);提交路径审查无随机抛点 → platform `92701bb` 两处 500 出口加栈日志 + 断言带响应体;发现 client CI 经 vitest alias 直用 platform main 源码(诊断自动传导);platform 全套验证绿;四仓五件套过——check:bundles 拦下一次我手写错的 platform_sha,已修正重验 | CHG-2026-173;platform `92701bb`;client 集群样本 run 28583183537 |
 | 2026-07-04 | 轮1(loop):1.0a 修复 selfhost 启动崩溃 | `@delexec/contracts@0.1.3` 发布(纯增量导出);platform-api 重钉 `^0.1.3` + platform 锁与四仓 pnpm-lock 刷新;本地 public-stack smoke source_build ✓;platform main CI **全绿**(compose-smoke 57s ✓,platform job 本次也绿);四仓五件套全过 | CHG-2026-172;protocol `b9234e2`(publish run 28684335553);platform `e44abfe`(CI run 28684633860) |
 | 2026-07-04 | 突击审计（应 owner 质疑） | 发现三笔硬欠账进 M1：platform main CI 自 ≥6/21 全红（含两次带红灯发布）；源码构建 public-stack 因 contracts@0.1.2 缺 `validateCatalogGuidanceFields` 导出而 DOA；本机 e2e 6/6 hook 超时。billing 500 flake 在 CI 复现、本地不复现 | GH runs 28681832219 / 28582756950 / 27897689953；本机 `npm run test:e2e` 输出 |
 | 2026-07-04 | 预备：T-504 完成（网关 /session/recover + 会话面板状态化重构） | platform 单测 33 过、集成 15 过/2 跳；四仓五件套全过；CHG-2026-170/171 passed/passed | `T-504-rollout-notes.md`、platform `928af80`+`4ea820c`（已推 origin/main） |

@@ -1,0 +1,13 @@
+change_id: CHG-2026-173
+goal: M1 1.0b diagnostics — surface unhandled platform-api 500 causes so the CI-only billing/submission flake self-identifies
+protocol_sha: b9234e267ce91ea26a541e7dcbcae96f40a51d8d
+client_sha: a3f66a36adc6dbee95ee1ed3a956099763f31a3d
+platform_sha: 92701bb9efbedd5c64a3344e74928fa3e6be9d33
+brand_site_sha: ac8ea7be573b715bd1c9ad8b40397d7c19a1a374
+owner: hejiajiudeeyu
+risk_level: low
+affected_scope:
+  - platform
+notes: "LOOP.md backlog 1.0b groundwork. Root cause of the 'expected 500 to be 201' flake (platform-api-billing integration, plus the same-family cluster in client CI run 28583183537 where 11 submission tests 500ed across 4 sequential files) remains unreproduced: 40x local Node 26 runs of the billing file and 40x full npm test in a 2-cpu node:22-bookworm container are all clean, and code review of the whole POST /v2/hotlines path (requireAuth, enforceRateLimit, parseJsonBody, submitCatalogHotline and every helper) finds only deterministic in-memory work with no throw sites for valid input. Both 500 exits swallowed the error identity, so platform 92701bb adds console.error with stack at the global route catch and sendBillingError fallback, and the flaky assertion now attaches the response body. Client CI checks out platform main as a sibling and vitest-aliases @delexec/platform-api to its source, so the diagnostics propagate there on the next run. Leading hypothesis: runner-level resource exhaustion (e.g. EMFILE) — fits run-position-clustered client failures, sporadic platform single-test failures, and local non-reproducibility; next CI occurrence will confirm via the new logs. Platform validation 2026-07-04: npm test 15 passed/2 skipped, test:service:packages, test:deploy:config, test:release:docs, test:public-stack-smoke all passed. Protocol/client pointers unchanged from CHG-2026-172."
+contracts_check: passed
+integration_check: passed
