@@ -44,9 +44,13 @@
 
 ### M2 T-503 零违规重演
 
+> **2026-07-04 owner 边界变更**:人工走查判定现有 console"设计反人性、反逻辑、指引不清"(摩擦 M1–M10,见 `T-503-rerun-manual-findings.md`),决定**前端推倒重建**后再计数彩排。决议:仅重建 UI 层(网关 API 冻结,保留 `/proxy/*` 演进通道);React 与 client ops-console 同栈;流程 = 设计稿 → owner 拍板 → 实现 → 自动化浏览器回归 → 彩排计数。
+
 | # | 事项 | Owning repo | 状态 | 备注 |
 |---|------|-------------|------|------|
-| 2.1 | 全新身份彩排：Operator 全程浏览器 `/console/`（含丢口令恢复路径演练一次）；**必须包含真实浏览器人工走查**——T-504 的新会话 UI 至今只有单测与 API 冒烟证据，从未在浏览器里被打开过 | 第四仓（彩排记录） | 自动化跑通 ✅,等 owner 人工复跑 | owner 首次真开浏览器即命中潜伏三版的 blocker(console API 子路径断裂)→ 修复并发 **v0.1.7** 已滚生产;随后自动化 Chromium 全流程零违规打通:恢复演练→解锁→审批→建户充值→付费调用 `BILLING_SETTLED`(11 张截图);详见 `T-503-rerun-automated-run.md`;CHG-2026-179。人工复跑清单已备好 |
+| 2.0a | Console 重建 · 设计稿(信息架构/交互规范/关键界面稿),owner 拍板后进入实现 | `repos/platform`(设计稿先落四仓 planning) | todo | 需求输入 = M1–M10 + owner 走查体感 + 自动化run截图;交互底线:操作反馈内联可见、非2xx绝不渲染空态、凭据保存必须验活、敏感操作无默认值、静态资产带指纹 |
+| 2.0b | Console 重建 · 实现 + 单测 + 自动化浏览器回归(Playwright 全流程绿) | `repos/platform` | blocked by 2.0a | 含退役未服务的旧 React 原型;发版走 tag→Images→滚生产 |
+| 2.1 | 全新身份彩排：Operator 全程浏览器 `/console/`（含丢口令恢复路径演练一次）；**必须包含真实浏览器人工走查** | 第四仓（彩排记录） | blocked by 2.0b(重建后重新计数) | 2026-07-04 自动化跑通旧UI全流程零违规(`T-503-rerun-automated-run.md`,CHG-2026-179);owner 人工走查贡献 M1–M10 后判定重建,本次不计数 |
 | 2.2 | 违规表为空 → 归档报告，Wave 5 关闭 | 第四仓 | blocked by 2.1 | |
 
 ### M3 首次即成功硬化（摩擦清单清零）
@@ -78,6 +82,7 @@
 
 | 日期 | 轮次/事项 | 结果 | 证据 |
 |------|-----------|------|------|
+| 2026-07-04 | 轮10(loop):owner 人工走查 + 重建决议 | owner 浏览器走查贡献 10 条摩擦(占位符陷阱、401 伪装空态、假 Ready、无引导等,全指向 console 交互架构)→ owner 判定推倒重建;决议:仅前端(网关 API 冻结)、React 同栈、设计稿先行、重建后再计彩排;backlog 新增 2.0a/2.0b,2.1 改挂其后 | `T-503-rerun-manual-findings.md`(M1–M10);owner 对话记录 |
 | 2026-07-04 | 轮9(loop):2.1 自动化跑通 + v0.1.7 紧急修复 | owner 真实浏览器 1 分钟命中 blocker:console API 子路径在任何边缘反代下断裂(前导斜杠丢 `/gateway` 前缀,潜伏 3 版,历来测试全走直连 :8085)→ platform `49b4273` 修复+8 单测,**v0.1.7** 发布(Images 28692687385 绿)并滚生产;自动化 Chromium 操作员全流程(恢复演练 RESET→解锁→凭据→审批→建户+充值 20000)+ Caller 付费调用 → **`BILLING_SETTLED`**,本次运行违规表**空**;口令按清单第 5 步入主机交接;五件套全过(check:bundles 又拦下一次手写 SHA) | CHG-2026-179;platform `36d1839`+tag `v0.1.7`;`T-503-rerun-automated-run.md`;req_cb9c8a87 |
 | 2026-07-04 | 轮8(loop):2.1 彩排就绪化 → **loop 停车待决策** | T-503 三违规中两条根因确认移除(npm 0.1.6 清洁房安装+CLI ✓;浏览器恢复面上线 ✓);公网四页 200;重演 runbook 落档(恢复演练前置为 Operator 第 0 步的方案);剩余唯一硬门槛="真实浏览器人工走查"须 owner 决策执行方式,按迭代协议第 5 条停车 | `T-503-rerun-runbook.md`;cleanroom 安装于 job tmp;本轮无子模块变更(无新 CHG) |
 | 2026-07-04 | 轮7(loop):1.4 生产滚动 + 宕机恢复 | 到场发现主机 03:08 重启后全栈宕机 5.5h(restart=no)——根因修在 owning repo(全服务 `unless-stopped`,platform `707b480`)并随滚动恢复;gateway → v0.1.6(api/relay 留 v0.1.2);验证:主机 4 容器 Up+策略生效、api/gateway 200、`/session/recover` 空body 403、公网三端点 200、`session-view.js` 版本指纹 ✓;bootstrap secret 在位;交接文档主机+四仓双落点;五件套全过。**M1 除 1.0b(等 CI 现场)外全部关闭,M2 解除阻塞** | CHG-2026-178;platform `707b480`;`aliyun-public-stack-handover.md` |
