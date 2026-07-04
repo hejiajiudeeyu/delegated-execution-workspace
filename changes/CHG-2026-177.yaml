@@ -1,0 +1,16 @@
+change_id: CHG-2026-177
+goal: M1 1.3 — coordinated v0.1.6 image release (gateway recovery + session UI) with green pipeline, plus v0.1.5 notes backfill
+protocol_sha: b9234e267ce91ea26a541e7dcbcae96f40a51d8d
+client_sha: c53cf7a65e449a57fa28e8c73f270d5843dc4941
+platform_sha: 5d141e5f844a5aaf82ffb1f853d9afa64a7ffdc7
+brand_site_sha: ac8ea7be573b715bd1c9ad8b40397d7c19a1a374
+owner: hejiajiudeeyu
+risk_level: medium
+affected_scope:
+  - platform
+  - deployment
+  - operator
+  - docs
+notes: "LOOP.md backlog 1.3. Platform 5d141e5 adds docs/archive/releases/v0.1.6.md, retroactively backfills v0.1.5.md (honest about the 2026-07-02 red-light release; its Images run 28582756950 had also failed), and extends the compatibility matrix with both rows. Tag v0.1.6 pushed on 5d141e5 triggered Images run 28689171280: rsp-platform / rsp-gateway / rsp-relay all built and pushed to GHCR and the tag-gated published-image-smoke passed (35s) against the freshly published images with COMPOSE_NO_BUILD — the first fully green coordinated release since v0.1.4. v0.1.6 gateway ships T-504 recovery (/session/recover guarded by PLATFORM_CONSOLE_BOOTSTRAP_SECRET, documented as an operator action in the notes) and the state-driven session panel; rsp-platform picks up the contracts ^0.1.3 repin and 500 diagnostics. Release precondition honored: main CI green streak (28684633860 / 28685820610 / 28687505922) before tagging. Aliyun rollout is deliberately NOT part of this bundle (backlog 1.4 — production action). Protocol/client pointers unchanged from CHG-2026-176."
+contracts_check: passed
+integration_check: passed
