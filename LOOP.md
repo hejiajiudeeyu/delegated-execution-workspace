@@ -40,7 +40,7 @@
 | 1.1 | 修复 client CI flake（integration 500 / unit localStorage），让 publish workflow 变绿 | `repos/client` | done (2026-07-04) | 两个新鲜样本连续全绿:rerun 28582744343(今日三仓组合)+ push run 28688332305(client `ab748f8`)。localStorage 真身=vitest happy-dom 环境在 Node26 不暴露 Web Storage(Node22 有)→ `ab748f8` 加 setup.web-storage.js 内存兜底,单测 138/138;integration 500 未复现(1.0b 诊断持续在岗);publish workflow 的测试关卡即同套件,正式变绿由 1.2 dispatch 验证;CHG-2026-175 |
 | 1.2 | 发布 `@delexec/ops@0.1.6` 到 npm | `repos/client` | done (2026-07-04) | publish run 28688824620 全绿并发布,`npm view @delexec/ops version` = 0.1.6,bundleDependencies 完整;首次 dispatch(00:04 UTC)暴露第 4 种 flake:NextUpCard "今日计数"跨 UTC 午夜窗口,client `c53cf7a` 钉死测试时钟修复;CHG-2026-176 |
 | 1.3 | 打新 `platform-console-gateway` 镜像（含 T-504 recovery+UI），补 release notes；**前置 = main CI 绿灯（1.0a/1.0b），不再带红灯发布** | `repos/platform` | done (2026-07-04) | tag `v0.1.6`(platform `5d141e5`)→ Images run 28689171280 三镜像推 GHCR + published-image-smoke ✓ 35s——v0.1.4 以来首次全绿协同发布(v0.1.5 当时 Images run 28582756950 亦失败);v0.1.6.md + 回填 v0.1.5.md + 矩阵两行;notes 明确 `/session/recover` 需 `PLATFORM_CONSOLE_BOOTSTRAP_SECRET`;CHG-2026-177 |
-| 1.4 | Aliyun public-stack 滚动到新网关镜像；确认生产 env 有 `PLATFORM_CONSOLE_BOOTSTRAP_SECRET` 且已录入交接文档 | `repos/platform` deploy | blocked by 1.3 | platform-api/relay 不动 |
+| 1.4 | Aliyun public-stack 滚动到新网关镜像；确认生产 env 有 `PLATFORM_CONSOLE_BOOTSTRAP_SECRET` 且已录入交接文档 | `repos/platform` deploy | done (2026-07-04) | 到场发现**生产已宕机 5.5h**(主机 03:08 重启 + restart=no)→ owning repo 修 restart 策略(platform `707b480`)+ 滚动恢复一并完成:gateway v0.1.5→**v0.1.6**,api/relay 保持 v0.1.2;公网 healthz/console 全 200,`session-view.js` 指纹确认新版;`/session/recover` 空 body 403(在线且拒未授权);bootstrap secret 确认在位(只验键不看值);交接双落点=主机 ALIYUN-OPS-README 新增章节 + 四仓 `docs/planning/operations/aliyun-public-stack-handover.md`;CHG-2026-178 |
 
 ### M2 T-503 零违规重演
 
@@ -78,6 +78,7 @@
 
 | 日期 | 轮次/事项 | 结果 | 证据 |
 |------|-----------|------|------|
+| 2026-07-04 | 轮7(loop):1.4 生产滚动 + 宕机恢复 | 到场发现主机 03:08 重启后全栈宕机 5.5h(restart=no)——根因修在 owning repo(全服务 `unless-stopped`,platform `707b480`)并随滚动恢复;gateway → v0.1.6(api/relay 留 v0.1.2);验证:主机 4 容器 Up+策略生效、api/gateway 200、`/session/recover` 空body 403、公网三端点 200、`session-view.js` 版本指纹 ✓;bootstrap secret 在位;交接文档主机+四仓双落点;五件套全过。**M1 除 1.0b(等 CI 现场)外全部关闭,M2 解除阻塞** | CHG-2026-178;platform `707b480`;`aliyun-public-stack-handover.md` |
 | 2026-07-04 | 轮6(loop):1.3 v0.1.6 协同镜像发布 | 发版文档补齐(v0.1.6.md、回填 v0.1.5.md 并如实记录红灯发布、矩阵两行);tag `v0.1.6` → 三镜像推 GHCR + published-image-smoke ✓(35s)——**v0.1.4 以来首次全绿协同发布**;tag/main CI 均绿;五件套全过。1.4(Aliyun 滚动)为生产操作,单独一轮处理 | CHG-2026-177;platform `5d141e5` + tag `v0.1.6`;Images run 28689171280 |
 | 2026-07-04 | 轮5(loop):1.2 ops 0.1.6 发布 | 首次 dispatch 在 UTC 00:04 失败 → 捕获**跨午夜时间 flake**(NextUpCard "今日计数" fixture 落昨日),`c53cf7a` 钉死测试时钟;二次 dispatch **publish workflow 全绿并发布**,npm 上 `@delexec/ops@0.1.6` 可见、bundle 完整(1.2MB);T-503 "npm 未发包"违规的根因就此移除;五件套全过 | CHG-2026-176;client `c53cf7a`;publish runs 28688671014(失败样本)/ 28688824620(发布) |
 | 2026-07-04 | 轮4(loop):1.1 client CI 解卡 | integration 500:rerun 28582744343 在今日组合(contracts 0.1.3 + platform 诊断)下**全绿**,未复现;unit localStorage:根因=vitest happy-dom 环境 Node26 下不暴露 Web Storage(Node22 有)→ setup.web-storage.js 内存兜底,本地 138/138 + integration 86/86 + packages ok;push run 28688332305 亦**全绿**(连续两绿);五件套全过 | CHG-2026-175;client `ab748f8`;runs 28582744343 / 28688332305 |

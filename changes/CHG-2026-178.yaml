@@ -1,0 +1,16 @@
+change_id: CHG-2026-178
+goal: M1 1.4 — roll Aliyun public-stack gateway to v0.1.6, recover the rebooted-down stack, and land the deployment handover
+protocol_sha: b9234e267ce91ea26a541e7dcbcae96f40a51d8d
+client_sha: c53cf7a65e449a57fa28e8c73f270d5843dc4941
+platform_sha: 707b4804d5dce9bb3e7c3c2b9e5209961588efe1
+brand_site_sha: ac8ea7be573b715bd1c9ad8b40397d7c19a1a374
+owner: hejiajiudeeyu
+risk_level: medium
+affected_scope:
+  - platform
+  - deployment
+  - operator
+  - docs
+notes: "LOOP.md backlog 1.4, executed with established access (ssh alias aliyun-ecs from ~/.ssh/config; sudo -n docker). Found production DOWN on arrival: host rebooted 2026-07-04 03:08 and all four public-stack containers had restart=no, so the stack had been offline ~5.5h (gateway/api logs show SIGTERM at shutdown; sub2api survived via its restart policy). Root fix in the owning repo: platform 707b480 adds restart: unless-stopped to all five services in deploy/public-stack/docker-compose.yml (deploy-config check green). Host rollout: verified host compose was byte-identical to repo before replacing; timestamped backups of compose+override; override gateway pin v0.1.5 -> v0.1.6; compose config validated; explicit GHCR pull; up -d brought postgres(healthy)/relay/platform-api/gateway up with unless-stopped policies. platform-api/relay intentionally stay v0.1.2. Verification: local api healthz 200, gateway 200, POST /session/recover with empty body -> 403 (endpoint live, refuses unauthorized, nothing destructive executed); public https://callanything.xyz healthz + /platform/healthz + /console/ all 200 through Cloudflare+nginx; /console/src/session-view.js 200 serving the T-504 module (RECOVERY_CONFIRMATION_PHRASE=RESET) as the version fingerprint. PLATFORM_CONSOLE_BOOTSTRAP_SECRET confirmed present and non-empty in the host .env (key checked, value never printed). Handover recorded on both sides: host ALIYUN-OPS-README.md gained a public-stack section (previously absent entirely) and the fourth repo gained docs/planning/operations/aliyun-public-stack-handover.md with topology, compose invocation, secret locations, rollback, and the incident record. Console passphrase remains unknown by design; the documented lost-passphrase path is now the browser recovery flow, to be exercised in M2. M1 is fully closed except 1.0b (waiting on the next CI occurrence with diagnostics armed)."
+contracts_check: passed
+integration_check: passed
