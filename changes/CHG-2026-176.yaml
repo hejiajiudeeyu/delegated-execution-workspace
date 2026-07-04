@@ -1,0 +1,14 @@
+change_id: CHG-2026-176
+goal: M1 1.2 — publish @delexec/ops@0.1.6 to npm via a green publish workflow (plus midnight today-count test hardening)
+protocol_sha: b9234e267ce91ea26a541e7dcbcae96f40a51d8d
+client_sha: c53cf7a65e449a57fa28e8c73f270d5843dc4941
+platform_sha: 72feba2f18fb2cbe5be1fe6ae31552b8a7fd8940
+brand_site_sha: ac8ea7be573b715bd1c9ad8b40397d7c19a1a374
+owner: hejiajiudeeyu
+risk_level: low
+affected_scope:
+  - client
+  - deployment
+notes: "LOOP.md backlog 1.2. First publish dispatch (run 28688671014, 00:04 UTC) failed in the unit phase and exposed a fourth distinct flake specimen: NextUpCard's all_normal case builds requests at now-minus-minutes and asserts the calendar-day 'today completed calls' count, so runs in the first minutes after UTC midnight land fixtures on yesterday. Client c53cf7a pins the test clock to local noon via fake timers (file already used shouldAdvanceTime). Second dispatch (run 28688824620) ran the full suite green and published: npm view @delexec/ops version = 0.1.6, bundleDependencies intact (workspace deps vendored per the established bundle-workspace-deps prepack). This also literally proves 1.1's 'publish workflow green' goal. T-503's npm-package violation root cause (users needed a local tgz) is now removed for the next rehearsal. Local validation: unit 138/138 with pinned clock. Protocol/platform pointers unchanged from CHG-2026-175."
+contracts_check: passed
+integration_check: passed
