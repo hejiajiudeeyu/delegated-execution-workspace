@@ -46,7 +46,7 @@
 
 | # | 事项 | Owning repo | 状态 | 备注 |
 |---|------|-------------|------|------|
-| 2.1 | 全新身份彩排：Operator 全程浏览器 `/console/`（含丢口令恢复路径演练一次）；**必须包含真实浏览器人工走查**——T-504 的新会话 UI 至今只有单测与 API 冒烟证据，从未在浏览器里被打开过 | 第四仓（彩排记录） | blocked by M1 | 模板沿用 `docs/planning/first-real-call/50-wave5-operator/T-503-findings.md` |
+| 2.1 | 全新身份彩排：Operator 全程浏览器 `/console/`（含丢口令恢复路径演练一次）；**必须包含真实浏览器人工走查**——T-504 的新会话 UI 至今只有单测与 API 冒烟证据，从未在浏览器里被打开过 | 第四仓（彩排记录） | ready-blocked(等 owner 决策) | M1 前置全部就绪;runbook 备齐 = `T-503-rerun-runbook.md`(预检全过:npm 0.1.6 清洁安装 ✓、公网四页 200、生产栈 v0.1.6 Up、bootstrap secret 在位);待决策:人工走查执行方式(亲自/授权浏览器自动化/混合)+ 恢复演练前置为第 0 步的确认 | 
 | 2.2 | 违规表为空 → 归档报告，Wave 5 关闭 | 第四仓 | blocked by 2.1 | |
 
 ### M3 首次即成功硬化（摩擦清单清零）
@@ -78,6 +78,7 @@
 
 | 日期 | 轮次/事项 | 结果 | 证据 |
 |------|-----------|------|------|
+| 2026-07-04 | 轮8(loop):2.1 彩排就绪化 → **loop 停车待决策** | T-503 三违规中两条根因确认移除(npm 0.1.6 清洁房安装+CLI ✓;浏览器恢复面上线 ✓);公网四页 200;重演 runbook 落档(恢复演练前置为 Operator 第 0 步的方案);剩余唯一硬门槛="真实浏览器人工走查"须 owner 决策执行方式,按迭代协议第 5 条停车 | `T-503-rerun-runbook.md`;cleanroom 安装于 job tmp;本轮无子模块变更(无新 CHG) |
 | 2026-07-04 | 轮7(loop):1.4 生产滚动 + 宕机恢复 | 到场发现主机 03:08 重启后全栈宕机 5.5h(restart=no)——根因修在 owning repo(全服务 `unless-stopped`,platform `707b480`)并随滚动恢复;gateway → v0.1.6(api/relay 留 v0.1.2);验证:主机 4 容器 Up+策略生效、api/gateway 200、`/session/recover` 空body 403、公网三端点 200、`session-view.js` 版本指纹 ✓;bootstrap secret 在位;交接文档主机+四仓双落点;五件套全过。**M1 除 1.0b(等 CI 现场)外全部关闭,M2 解除阻塞** | CHG-2026-178;platform `707b480`;`aliyun-public-stack-handover.md` |
 | 2026-07-04 | 轮6(loop):1.3 v0.1.6 协同镜像发布 | 发版文档补齐(v0.1.6.md、回填 v0.1.5.md 并如实记录红灯发布、矩阵两行);tag `v0.1.6` → 三镜像推 GHCR + published-image-smoke ✓(35s)——**v0.1.4 以来首次全绿协同发布**;tag/main CI 均绿;五件套全过。1.4(Aliyun 滚动)为生产操作,单独一轮处理 | CHG-2026-177;platform `5d141e5` + tag `v0.1.6`;Images run 28689171280 |
 | 2026-07-04 | 轮5(loop):1.2 ops 0.1.6 发布 | 首次 dispatch 在 UTC 00:04 失败 → 捕获**跨午夜时间 flake**(NextUpCard "今日计数" fixture 落昨日),`c53cf7a` 钉死测试时钟;二次 dispatch **publish workflow 全绿并发布**,npm 上 `@delexec/ops@0.1.6` 可见、bundle 完整(1.2MB);T-503 "npm 未发包"违规的根因就此移除;五件套全过 | CHG-2026-176;client `c53cf7a`;publish runs 28688671014(失败样本)/ 28688824620(发布) |
