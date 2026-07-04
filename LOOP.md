@@ -48,7 +48,7 @@
 
 | # | 事项 | Owning repo | 状态 | 备注 |
 |---|------|-------------|------|------|
-| 2.0a | Console 重建 · 设计稿(信息架构/交互规范/关键界面稿),owner 拍板后进入实现 | `repos/platform`(设计稿先落四仓 planning) | todo | 需求输入 = M1–M10 + owner 走查体感 + 自动化run截图;交互底线:操作反馈内联可见、非2xx绝不渲染空态、凭据保存必须验活、敏感操作无默认值、静态资产带指纹 |
+| 2.0a | Console 重建 · 设计稿(信息架构/交互规范/关键界面稿),owner 拍板后进入实现 | `repos/platform`(设计稿先落四仓 planning) | 设计稿已出,待 owner 拍板 | 需求输入 = M1–M10 + owner 走查体感 + 自动化run截图;交互底线:操作反馈内联可见、非2xx绝不渲染空态、凭据保存必须验活、敏感操作无默认值、静态资产带指纹 |
 | 2.0b | Console 重建 · 实现 + 单测 + 自动化浏览器回归(Playwright 全流程绿) | `repos/platform` | blocked by 2.0a | 含退役未服务的旧 React 原型;发版走 tag→Images→滚生产 |
 | 2.1 | 全新身份彩排：Operator 全程浏览器 `/console/`（含丢口令恢复路径演练一次）；**必须包含真实浏览器人工走查** | 第四仓（彩排记录） | blocked by 2.0b(重建后重新计数) | 2026-07-04 自动化跑通旧UI全流程零违规(`T-503-rerun-automated-run.md`,CHG-2026-179);owner 人工走查贡献 M1–M10 后判定重建,本次不计数 |
 | 2.2 | 违规表为空 → 归档报告，Wave 5 关闭 | 第四仓 | blocked by 2.1 | |
@@ -82,6 +82,7 @@
 
 | 日期 | 轮次/事项 | 结果 | 证据 |
 |------|-----------|------|------|
+| 2026-07-04 | 轮11(loop):2.0a 设计稿产出 → **停车等拍板** | 交互规范 v1(R1–R10 逐条映射 M1–M10)+ 三张浏览器可开的 HTML 设计稿(会话/恢复三步向导、审批队列双Tab+生命周期条、计费自动查询+确认充值);全部中文优先;含"凭据未验证=整面板引导态"等关键交互决策 | `docs/planning/console-rebuild/`(design-spec.md + mockups/01–03) |
 | 2026-07-04 | 轮10(loop):owner 人工走查 + 重建决议 | owner 浏览器走查贡献 10 条摩擦(占位符陷阱、401 伪装空态、假 Ready、无引导等,全指向 console 交互架构)→ owner 判定推倒重建;决议:仅前端(网关 API 冻结)、React 同栈、设计稿先行、重建后再计彩排;backlog 新增 2.0a/2.0b,2.1 改挂其后 | `T-503-rerun-manual-findings.md`(M1–M10);owner 对话记录 |
 | 2026-07-04 | 轮9(loop):2.1 自动化跑通 + v0.1.7 紧急修复 | owner 真实浏览器 1 分钟命中 blocker:console API 子路径在任何边缘反代下断裂(前导斜杠丢 `/gateway` 前缀,潜伏 3 版,历来测试全走直连 :8085)→ platform `49b4273` 修复+8 单测,**v0.1.7** 发布(Images 28692687385 绿)并滚生产;自动化 Chromium 操作员全流程(恢复演练 RESET→解锁→凭据→审批→建户+充值 20000)+ Caller 付费调用 → **`BILLING_SETTLED`**,本次运行违规表**空**;口令按清单第 5 步入主机交接;五件套全过(check:bundles 又拦下一次手写 SHA) | CHG-2026-179;platform `36d1839`+tag `v0.1.7`;`T-503-rerun-automated-run.md`;req_cb9c8a87 |
 | 2026-07-04 | 轮8(loop):2.1 彩排就绪化 → **loop 停车待决策** | T-503 三违规中两条根因确认移除(npm 0.1.6 清洁房安装+CLI ✓;浏览器恢复面上线 ✓);公网四页 200;重演 runbook 落档(恢复演练前置为 Operator 第 0 步的方案);剩余唯一硬门槛="真实浏览器人工走查"须 owner 决策执行方式,按迭代协议第 5 条停车 | `T-503-rerun-runbook.md`;cleanroom 安装于 job tmp;本轮无子模块变更(无新 CHG) |

@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>Mockup 02 · 审批队列</title>
+<style>
+  :root { --bg:#f7f7fb; --card:#fff; --line:#e5e5ef; --ink:#1c1c28; --mut:#6b6b80;
+    --pri:#7c5cff; --pri-soft:#f1edff; --ok:#14855f; --ok-soft:#e8f7f1;
+    --bad:#c2373c; --bad-soft:#fdeeee; --warn:#9a6b00; --warn-soft:#fff7e0; }
+  * { box-sizing:border-box; margin:0; }
+  body { background:var(--bg); color:var(--ink); font:15px/1.65 "PingFang SC",system-ui,sans-serif; display:flex; min-height:100vh; }
+  aside { width:230px; background:#fff; border-right:1px solid var(--line); padding:20px 14px; flex-shrink:0; }
+  aside h1 { font-size:17px; margin-bottom:2px; } aside .sub { font-size:12px; color:var(--mut); margin-bottom:16px; }
+  .badge { display:inline-flex; align-items:center; gap:6px; padding:5px 12px; border-radius:99px; font-size:13px; font-weight:600; }
+  .badge.ok { background:var(--ok-soft); color:var(--ok); }
+  .badge .dot { width:8px; height:8px; border-radius:50%; background:currentColor; }
+  nav { margin-top:18px; font-size:14px; }
+  nav .grp { color:var(--mut); font-size:12px; letter-spacing:.06em; margin:14px 0 4px; }
+  nav a { display:block; padding:7px 10px; border-radius:8px; color:var(--ink); text-decoration:none; }
+  nav a.on { background:var(--pri); color:#fff; font-weight:600; }
+  main { flex:1; padding:28px 34px; max-width:940px; }
+  .crumb { font-size:12px; color:var(--mut); letter-spacing:.08em; margin-bottom:4px; }
+  main > h2 { font-size:26px; margin-bottom:4px; } .lead { color:var(--mut); margin-bottom:18px; }
+  .tabs { display:flex; gap:6px; margin-bottom:16px; }
+  .tab { padding:8px 18px; border-radius:9px; font-size:14px; cursor:pointer; border:1px solid var(--line); background:#fff; color:var(--mut); }
+  .tab.on { background:var(--pri-soft); border-color:var(--pri); color:var(--pri); font-weight:600; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:20px 22px; margin-bottom:14px; }
+  .row { display:flex; justify-content:space-between; align-items:flex-start; gap:16px; }
+  .chips { display:flex; gap:8px; flex-wrap:wrap; margin:6px 0 2px; }
+  .chip { font-size:12px; padding:3px 10px; border-radius:99px; background:#f1f1f7; color:#55556c; }
+  .chip.mono { font-family:ui-monospace,Menlo,monospace; }
+  .life { display:flex; align-items:center; gap:6px; font-size:12px; color:var(--mut); margin:12px 0 4px; }
+  .life .seg { display:flex; align-items:center; gap:6px; }
+  .life .p { width:9px; height:9px; border-radius:50%; background:var(--line); }
+  .life .seg.done .p { background:var(--ok); } .life .seg.done { color:var(--ok); font-weight:600; }
+  .life .seg.now .p { background:var(--pri); box-shadow:0 0 0 3px var(--pri-soft); } .life .seg.now { color:var(--pri); font-weight:600; }
+  .life .bar { width:34px; height:2px; background:var(--line); }
+  .btn { display:inline-block; border:0; border-radius:9px; padding:9px 18px; font-size:14px; font-weight:600; cursor:pointer; font-family:inherit; }
+  .btn.pri { background:var(--pri); color:#fff; }
+  .btn.ok { background:var(--ok); color:#fff; }
+  .btn.ghost { background:#fff; border:1px solid var(--line); color:var(--ink); }
+  .btn.danger-ghost { background:#fff; border:1px solid #f0c9cb; color:var(--bad); }
+  .inline-ok { display:flex; gap:10px; align-items:flex-start; background:var(--ok-soft); color:var(--ok); border-radius:9px; padding:11px 14px; margin-top:12px; font-size:14px; }
+  .copy { color:var(--mut); font-size:12.5px; cursor:pointer; text-decoration:underline dotted; }
+  .empty { border:1.5px dashed var(--line); border-radius:12px; padding:26px; text-align:center; color:var(--mut); background:#fbfbfe; }
+  .note { border-left:3px solid var(--pri); background:var(--pri-soft); padding:12px 16px; border-radius:0 10px 10px 0; font-size:13px; margin:26px 0 8px; color:#4b3a99; }
+  .note b { display:block; margin-bottom:4px; }
+  .kv { font-size:13.5px; color:var(--mut); } .kv b { color:var(--ink); }
+</style>
+</head>
+<body>
+<aside>
+  <h1>Platform Console</h1>
+  <div class="sub">运营者控制台</div>
+  <span class="badge ok"><span class="dot"></span>已解锁 · 凭据已验证</span>
+  <nav>
+    <div class="grp">概览</div><a>总览</a>
+    <div class="grp">运营</div><a class="on">审批队列</a><a>请求</a>
+    <div class="grp">目录</div><a>Responders</a><a>Hotlines</a><a>Marketplace</a>
+    <div class="grp">资金</div><a>计费</a><a>审计</a>
+    <div class="grp">设置</div><a>会话与解锁</a><a>网关凭据</a>
+  </nav>
+</aside>
+<main>
+  <div class="crumb">运营 / 审批队列</div>
+  <h2>审批队列</h2>
+  <p class="lead">新提交的 Responder 与 Hotline 在这里审核。通过"批准 → 启用"两步后进入公开市场。</p>
+
+  <div class="tabs">
+    <div class="tab on">待审 (1)</div>
+    <div class="tab">最近处理 (2)</div>
+  </div>
+
+  <div class="card">
+    <div class="row">
+      <div>
+        <b style="font-size:16px">天气查询热线</b>
+        <div class="chips">
+          <span class="chip mono">demo.weather.lookup.v1 <span class="copy">复制</span></span>
+          <span class="chip mono">responder_9a12bb34cd56</span>
+          <span class="chip">50 PTS / 次</span>
+          <span class="chip">untrusted</span>
+        </div>
+        <div class="kv">提交于 <b>14:02</b> · 提交人邮箱 <b>hejiajiudeeyu+demo@gmail.com</b> · 模板校验 <b style="color:var(--ok)">通过</b></div>
+      </div>
+      <div style="display:flex; gap:8px; flex-shrink:0">
+        <button class="btn ok">批准</button>
+        <button class="btn danger-ghost">驳回…</button>
+      </div>
+    </div>
+    <div class="life">
+      <span class="seg done"><span class="p"></span>已提交</span><span class="bar"></span>
+      <span class="seg now"><span class="p"></span>待审核</span><span class="bar"></span>
+      <span class="seg"><span class="p"></span>已批准</span><span class="bar"></span>
+      <span class="seg"><span class="p"></span>已启用(上市场)</span>
+    </div>
+  </div>
+
+  <div class="card" style="border-color:#cdebdd; background:#fcfffd">
+    <div class="row">
+      <div>
+        <b style="font-size:16px">T503 重演回声摘要器</b>
+        <div class="chips">
+          <span class="chip mono">t503rerun.workspace.echo-summary.v1</span>
+          <span class="chip mono">responder_4c71505389e6</span>
+          <span class="chip">50 PTS / 次</span>
+        </div>
+      </div>
+      <span class="badge ok" style="align-self:center"><span class="dot"></span>已启用</span>
+    </div>
+    <div class="inline-ok">✓ 已批准并启用,现已进入公开市场(11:49)。<span style="color:var(--mut)">在 Hotlines 面板可随时停用。</span></div>
+  </div>
+
+  <div class="empty" style="margin-top:22px">
+    待审清空后的空态示例:当前没有待审提交 ✓<br>
+    <span style="font-size:13px">上一条处理:T503 重演回声摘要器(批准并启用,11:49)· 新提交会自动出现,无需刷新</span>
+  </div>
+
+  <div class="note"><b>设计注记(拍板后删除)</b>
+    ① 双 Tab:待审 / 最近处理——空队列不再"看起来像坏了",且能回看刚处理的条目(M7)。
+    ② 每张卡显示生命周期进度条,批准后原位变成成功反馈,不是整卡消失(M3/R1)。
+    ③ id 全部可复制;审核所需上下文(价格、提交人、模板校验)直接摆在卡上,不用点进 raw JSON。
+    ④ 若凭据未验证,本面板整体替换为引导卡(R9),示意见 mockup 03 顶部。
+  </div>
+</main>
+</body>
+</html>

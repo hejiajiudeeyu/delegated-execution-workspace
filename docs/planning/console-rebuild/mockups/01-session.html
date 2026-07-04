@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>Mockup 01 · 会话与解锁(含恢复向导)</title>
+<style>
+  :root { --bg:#f7f7fb; --card:#fff; --line:#e5e5ef; --ink:#1c1c28; --mut:#6b6b80;
+    --pri:#7c5cff; --pri-soft:#f1edff; --ok:#14855f; --ok-soft:#e8f7f1;
+    --bad:#c2373c; --bad-soft:#fdeeee; --warn:#9a6b00; --warn-soft:#fff7e0; }
+  * { box-sizing:border-box; margin:0; }
+  body { background:var(--bg); color:var(--ink); font:15px/1.65 "PingFang SC",system-ui,sans-serif; display:flex; min-height:100vh; }
+  aside { width:230px; background:#fff; border-right:1px solid var(--line); padding:20px 14px; flex-shrink:0; }
+  aside h1 { font-size:17px; margin-bottom:2px; } aside .sub { font-size:12px; color:var(--mut); margin-bottom:16px; }
+  .badge { display:inline-flex; align-items:center; gap:6px; padding:5px 12px; border-radius:99px; font-size:13px; font-weight:600; }
+  .badge.locked { background:var(--warn-soft); color:var(--warn); }
+  .badge .dot { width:8px; height:8px; border-radius:50%; background:currentColor; }
+  nav { margin-top:18px; font-size:14px; }
+  nav .grp { color:var(--mut); font-size:12px; letter-spacing:.06em; margin:14px 0 4px; }
+  nav a { display:block; padding:7px 10px; border-radius:8px; color:var(--ink); text-decoration:none; }
+  nav a.on { background:var(--pri); color:#fff; font-weight:600; }
+  nav a.dis { color:#c0c0cf; }
+  main { flex:1; padding:28px 34px; max-width:880px; }
+  .crumb { font-size:12px; color:var(--mut); letter-spacing:.08em; margin-bottom:4px; }
+  main > h2 { font-size:26px; margin-bottom:4px; } .lead { color:var(--mut); margin-bottom:20px; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:22px; margin-bottom:18px; }
+  .state-strip { display:flex; align-items:center; gap:12px; padding:14px 18px; border-radius:10px; background:var(--warn-soft); color:var(--warn); font-weight:600; margin-bottom:18px; }
+  .steps { display:flex; gap:0; margin:18px 0 22px; }
+  .step { flex:1; text-align:center; font-size:13px; color:var(--mut); position:relative; padding-top:26px; }
+  .step::before { content:""; position:absolute; top:8px; left:50%; width:100%; height:2px; background:var(--line); }
+  .step:last-child::before { display:none; }
+  .step .n { position:absolute; top:0; left:50%; transform:translateX(-50%); width:18px; height:18px; border-radius:50%; background:var(--line); color:#fff; font-size:11px; line-height:18px; z-index:1; }
+  .step.done .n { background:var(--ok); } .step.now .n { background:var(--pri); }
+  .step.now { color:var(--ink); font-weight:600; }
+  label { display:block; font-size:13px; font-weight:600; margin:14px 0 6px; }
+  .hint { font-size:12.5px; color:var(--mut); margin-top:6px; }
+  input { width:100%; padding:11px 12px; border:1px solid var(--line); border-radius:9px; font-size:14px; font-family:inherit; }
+  input:focus { outline:2px solid var(--pri-soft); border-color:var(--pri); }
+  .mono { font-family:ui-monospace,Menlo,monospace; font-size:13px; }
+  .copyline { display:flex; gap:8px; align-items:center; background:#f4f4f9; border:1px solid var(--line); border-radius:8px; padding:8px 10px; margin-top:6px; }
+  .copyline code { flex:1; font-size:12px; color:#44445a; overflow-x:auto; white-space:nowrap; }
+  .btn { display:inline-block; border:0; border-radius:9px; padding:11px 22px; font-size:14.5px; font-weight:600; cursor:pointer; font-family:inherit; }
+  .btn.pri { background:var(--pri); color:#fff; } .btn.pri:disabled { background:#cfc5f5; cursor:not-allowed; }
+  .btn.ghost { background:#fff; border:1px solid var(--line); color:var(--ink); }
+  .btn.sm { padding:6px 12px; font-size:13px; border-radius:7px; }
+  .inline-ok { display:flex; gap:10px; align-items:flex-start; background:var(--ok-soft); color:var(--ok); border-radius:9px; padding:12px 14px; margin-top:14px; font-size:14px; }
+  .inline-bad { display:flex; gap:10px; align-items:flex-start; background:var(--bad-soft); color:var(--bad); border-radius:9px; padding:12px 14px; margin-top:14px; font-size:14px; }
+  .fieldbad { border-color:var(--bad) !important; background:#fffafa; }
+  .fielderr { color:var(--bad); font-size:12.5px; margin-top:5px; }
+  details.tech { margin-top:12px; } details.tech summary { font-size:12.5px; color:var(--mut); cursor:pointer; }
+  details.tech pre { background:#16161f; color:#c9d1e9; border-radius:8px; padding:12px; font-size:12px; margin-top:8px; overflow-x:auto; }
+  .note { border-left:3px solid var(--pri); background:var(--pri-soft); padding:12px 16px; border-radius:0 10px 10px 0; font-size:13px; margin:26px 0 8px; color:#4b3a99; }
+  .note b { display:block; margin-bottom:4px; }
+</style>
+</head>
+<body>
+<aside>
+  <h1>Platform Console</h1>
+  <div class="sub">运营者控制台</div>
+  <span class="badge locked"><span class="dot"></span>已锁定</span>
+  <nav>
+    <div class="grp">概览</div><a class="dis">总览</a>
+    <div class="grp">运营</div><a class="dis">审批队列</a><a class="dis">请求</a>
+    <div class="grp">目录</div><a class="dis">Responders</a><a class="dis">Hotlines</a><a class="dis">Marketplace</a>
+    <div class="grp">资金</div><a class="dis">计费</a><a class="dis">审计</a>
+    <div class="grp">设置</div><a class="on">会话与解锁</a><a class="dis">网关凭据</a>
+  </nav>
+</aside>
+<main>
+  <div class="crumb">设置 / 会话与解锁</div>
+  <h2>会话与解锁</h2>
+  <p class="lead">解锁后才能使用审批、计费与审计工具。锁定不影响公开市场页面。</p>
+
+  <div class="state-strip">🔒 网关已锁定 —— 输入控制台口令解锁;没有口令?下方向导可安全重置。</div>
+
+  <div class="card">
+    <label for="pp">控制台口令</label>
+    <input id="pp" type="password" placeholder="输入口令后回车即解锁">
+    <div class="hint">口令由上一位操作员设置,通常记录在部署交接档案(服务器 CONSOLE-PASSPHRASE.txt)。</div>
+    <div style="margin-top:14px"><button class="btn pri">解锁</button></div>
+  </div>
+
+  <div class="card">
+    <h3 style="margin-bottom:2px">丢失口令?通过部署密钥重置</h3>
+    <p class="hint" style="margin-top:2px">重置会<b>清空旧的加密存储</b>(含已保存的管理密钥),完成后需重新配置网关凭据。整个过程分三步。</p>
+
+    <div class="steps">
+      <div class="step done"><span class="n">✓</span>粘贴部署密钥</div>
+      <div class="step now"><span class="n">2</span>设置新口令</div>
+      <div class="step"><span class="n">3</span>输入确认词</div>
+    </div>
+
+    <label for="np">新口令(至少 8 位)</label>
+    <input id="np" type="password" value="••••••••••••">
+    <label for="np2">再输入一次</label>
+    <input id="np2" type="password" class="fieldbad" value="••••••••">
+    <div class="fielderr">两次输入不一致,请检查后重试。</div>
+
+    <div style="margin-top:18px; display:flex; gap:10px;">
+      <button class="btn ghost">上一步</button>
+      <button class="btn pri" disabled>继续 → 第 3 步</button>
+    </div>
+    <div class="hint" style="margin-top:10px">第 3 步将要求你在空白输入框中键入大写 <b>RESET</b> 以确认执行(输入框不会预先显示答案)。</div>
+
+    <details class="tech"><summary>技术详情(给排障看的,默认收起)</summary>
+<pre>POST /gateway/session/recover
+{ "bootstrap_secret": "•••", "new_passphrase": "•••", "confirm_reset": true }</pre></details>
+  </div>
+
+  <div class="card" style="border-style:dashed">
+    <b style="font-size:14px">第 1 步的取密钥指引(向导内原样展示)</b>
+    <div class="hint">部署密钥由部署这套系统的人持有,来自网关运行环境变量 <span class="mono">PLATFORM_CONSOLE_BOOTSTRAP_SECRET</span>。若你就是部署者,在服务器上执行:</div>
+    <div class="copyline"><code>ssh aliyun-ecs 'grep "^PLATFORM_CONSOLE_BOOTSTRAP_SECRET=" ~/apps/delegated-execution-public-stack/.env | cut -d= -f2-'</code><button class="btn ghost sm">复制</button></div>
+  </div>
+
+  <div class="note"><b>设计注记(拍板后删除)</b>
+    ① 恢复从折叠区改为三步向导,每步一件事(消灭 M2 占位符陷阱:确认词框空白+提示语)。
+    ② 错误在字段旁红框+红字,不再只有页面底部 raw JSON(M3);JSON 降级为"技术详情"折叠(全局规范 R1)。
+    ③ 徽章用语统一为"已锁定/已解锁/未初始化/网关不可达"(M4/R7)。
+    ④ 锁定状态下不可用的导航置灰,减少误入(R9)。
+  </div>
+</main>
+</body>
+</html>

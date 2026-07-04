@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>Mockup 03 · 计费</title>
+<style>
+  :root { --bg:#f7f7fb; --card:#fff; --line:#e5e5ef; --ink:#1c1c28; --mut:#6b6b80;
+    --pri:#7c5cff; --pri-soft:#f1edff; --ok:#14855f; --ok-soft:#e8f7f1;
+    --bad:#c2373c; --bad-soft:#fdeeee; --warn:#9a6b00; --warn-soft:#fff7e0; }
+  * { box-sizing:border-box; margin:0; }
+  body { background:var(--bg); color:var(--ink); font:15px/1.65 "PingFang SC",system-ui,sans-serif; display:flex; min-height:100vh; }
+  aside { width:230px; background:#fff; border-right:1px solid var(--line); padding:20px 14px; flex-shrink:0; }
+  aside h1 { font-size:17px; margin-bottom:2px; } aside .sub { font-size:12px; color:var(--mut); margin-bottom:16px; }
+  .badge { display:inline-flex; align-items:center; gap:6px; padding:5px 12px; border-radius:99px; font-size:13px; font-weight:600; }
+  .badge.ok { background:var(--ok-soft); color:var(--ok); }
+  .badge .dot { width:8px; height:8px; border-radius:50%; background:currentColor; }
+  nav { margin-top:18px; font-size:14px; }
+  nav .grp { color:var(--mut); font-size:12px; letter-spacing:.06em; margin:14px 0 4px; }
+  nav a { display:block; padding:7px 10px; border-radius:8px; color:var(--ink); text-decoration:none; }
+  nav a.on { background:var(--pri); color:#fff; font-weight:600; }
+  main { flex:1; padding:28px 34px; max-width:980px; }
+  .crumb { font-size:12px; color:var(--mut); letter-spacing:.08em; margin-bottom:4px; }
+  main > h2 { font-size:26px; margin-bottom:4px; } .lead { color:var(--mut); margin-bottom:18px; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:20px 22px; margin-bottom:16px; }
+  label { display:block; font-size:13px; font-weight:600; margin:0 0 6px; }
+  input { width:100%; padding:11px 12px; border:1px solid var(--line); border-radius:9px; font-size:14px; font-family:inherit; }
+  .mono { font-family:ui-monospace,Menlo,monospace; }
+  .hint { font-size:12.5px; color:var(--mut); margin-top:6px; }
+  .btn { display:inline-block; border:0; border-radius:9px; padding:10px 20px; font-size:14px; font-weight:600; cursor:pointer; font-family:inherit; }
+  .btn.pri { background:var(--pri); color:#fff; }
+  .btn.ghost { background:#fff; border:1px solid var(--line); color:var(--ink); }
+  .grid2 { display:grid; grid-template-columns: 1.25fr .75fr; gap:16px; align-items:start; }
+  .balance-card { background:linear-gradient(135deg,#7c5cff 0%,#9d7bff 100%); color:#fff; border-radius:12px; padding:20px 22px; }
+  .balance-card .amt { font-size:34px; font-weight:700; letter-spacing:.01em; }
+  .balance-card .cap { font-size:12.5px; opacity:.85; }
+  .balance-card .row2 { display:flex; justify-content:space-between; margin-top:10px; font-size:12.5px; opacity:.92; }
+  table { width:100%; border-collapse:collapse; font-size:13.5px; }
+  th { text-align:left; color:var(--mut); font-weight:600; font-size:12px; letter-spacing:.05em; padding:8px 10px; border-bottom:1px solid var(--line); }
+  td { padding:10px; border-bottom:1px solid #f1f1f7; vertical-align:top; }
+  .kind { font-size:12px; padding:2px 10px; border-radius:99px; font-weight:600; }
+  .kind.rc { background:var(--ok-soft); color:var(--ok); }
+  .kind.hold { background:var(--warn-soft); color:var(--warn); }
+  .kind.settle { background:var(--pri-soft); color:var(--pri); }
+  .pos { color:var(--ok); font-weight:600; } .neg { color:var(--warn); font-weight:600; }
+  .inline-ok { display:flex; gap:10px; align-items:flex-start; background:var(--ok-soft); color:var(--ok); border-radius:9px; padding:11px 14px; margin-top:12px; font-size:14px; }
+  .guide { display:flex; gap:14px; align-items:center; background:var(--warn-soft); border:1px solid #f2dfae; color:var(--warn); border-radius:12px; padding:14px 18px; margin-bottom:16px; font-size:14px; }
+  .guide .btn { padding:7px 14px; font-size:13px; }
+  .confirm { border:1px solid var(--pri); background:var(--pri-soft); border-radius:10px; padding:14px 16px; margin-top:12px; font-size:14px; color:#4b3a99; }
+  details.tech { margin-top:12px; } details.tech summary { font-size:12.5px; color:var(--mut); cursor:pointer; }
+  .note { border-left:3px solid var(--pri); background:var(--pri-soft); padding:12px 16px; border-radius:0 10px 10px 0; font-size:13px; margin:26px 0 8px; color:#4b3a99; }
+  .note b { display:block; margin-bottom:4px; }
+</style>
+</head>
+<body>
+<aside>
+  <h1>Platform Console</h1>
+  <div class="sub">运营者控制台</div>
+  <span class="badge ok"><span class="dot"></span>已解锁 · 凭据已验证</span>
+  <nav>
+    <div class="grp">概览</div><a>总览</a>
+    <div class="grp">运营</div><a>审批队列</a><a>请求</a>
+    <div class="grp">目录</div><a>Responders</a><a>Hotlines</a><a>Marketplace</a>
+    <div class="grp">资金</div><a class="on">计费</a><a>审计</a>
+    <div class="grp">设置</div><a>会话与解锁</a><a>网关凭据</a>
+  </nav>
+</aside>
+<main>
+  <div class="crumb">资金 / 计费</div>
+  <h2>计费</h2>
+  <p class="lead">查询租户余额与账本,录入人工充值。Caller 的租户 ID = 注册时打印的 user_id。</p>
+
+  <div class="guide" style="text-decoration:line-through; opacity:.55">
+    ⚠ 管理凭据未配置——计费工具不可用。<button class="btn ghost">去配置凭据 →</button>
+    <span style="font-size:12px">(凭据未验证时本面板只显示这张引导卡,不会出现 401 报错;此处仅作状态示例)</span>
+  </div>
+
+  <div class="card">
+    <label for="tid">租户 ID(输入后回车或失焦自动查询)</label>
+    <input id="tid" class="mono" value="user_5c51d1f08cb8454cb38e6eabb4e2cef3">
+    <div class="inline-ok">✓ 已找到租户,余额与账本如下(查询于 13:20:41,自动刷新)。</div>
+  </div>
+
+  <div class="grid2">
+    <div class="card" style="margin-bottom:0">
+      <b>账本(最近 3 条 / 共 3 条)</b>
+      <table style="margin-top:10px">
+        <tr><th>类型</th><th>说明</th><th>金额</th><th>余额</th><th>时间</th></tr>
+        <tr>
+          <td><span class="kind settle">结算</span></td>
+          <td>付费调用结算 <span class="mono" style="font-size:11.5px;color:var(--mut)">req_cb9c8a87…</span><br><span style="font-size:12px;color:var(--mut)">t503rerun.workspace.echo-summary.v1</span></td>
+          <td>50 PTS</td><td>19,950</td><td>11:46</td>
+        </tr>
+        <tr>
+          <td><span class="kind hold">冻结</span></td>
+          <td>调用预冻结(结算时转正,失败自动退回)</td>
+          <td class="neg">−50</td><td>19,950</td><td>11:46</td>
+        </tr>
+        <tr>
+          <td><span class="kind rc">充值</span></td>
+          <td>人工充值 · provider: manual · 操作人: console</td>
+          <td class="pos">+20,000</td><td>20,000</td><td>11:42</td>
+        </tr>
+      </table>
+      <details class="tech"><summary>技术详情(raw JSON)</summary></details>
+    </div>
+    <div>
+      <div class="balance-card">
+        <div class="cap">当前余额</div>
+        <div class="amt">19,950 <span style="font-size:15px">PTS</span></div>
+        <div class="row2"><span>冻结中 0</span><span>累计充值 20,000</span><span>累计消费 50</span></div>
+      </div>
+      <div class="card" style="margin-top:16px">
+        <b>人工充值</b>
+        <label style="margin-top:12px" for="amt">金额(PTS)<span style="color:var(--bad)"> *必填,无默认值</span></label>
+        <input id="amt" placeholder="例如 20000" value="">
+        <div class="hint">provider=manual · 凭证号留空自动生成</div>
+        <div style="margin-top:12px"><button class="btn pri">充值…</button></div>
+        <div class="confirm">确认操作:将为 <b class="mono" style="font-size:12px">user_5c51d1f0…</b> 充值 <b>20,000 PTS</b>(充值后余额 39,950)。<br>
+          <div style="margin-top:8px; display:flex; gap:8px"><button class="btn pri" style="padding:7px 14px; font-size:13px">确认充值</button><button class="btn ghost" style="padding:7px 14px; font-size:13px">取消</button></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="note"><b>设计注记(拍板后删除)</b>
+    ① 租户 ID 回车/失焦即查(M8/R6);"未找到"时才内联出现"创建租户?"按钮,双按钮困惑消失。
+    ② 余额做成显性卡片;账本人话化:类型徽章(充值/冻结/结算/退款)+说明列,raw JSON 收进"技术详情"(M3/R1)。
+    ③ 金额必填、无默认值,提交前确认框回显对象与充值后余额(M9/R4)。
+    ④ 顶部划线卡示意"凭据未验证"时的整面板引导态——替代 401 伪装空态(M5/M6/R2/R9)。
+  </div>
+</main>
+</body>
+</html>
