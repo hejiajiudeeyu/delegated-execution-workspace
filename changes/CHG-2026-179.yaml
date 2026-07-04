@@ -1,0 +1,16 @@
+change_id: CHG-2026-179
+goal: M2 2.1 groundwork — console subpath blocker fixed and released as v0.1.7; automated real-browser operator run completes the full paid loop with an empty violations table
+protocol_sha: b9234e267ce91ea26a541e7dcbcae96f40a51d8d
+client_sha: c53cf7a65e449a57fa28e8c73f270d5843dc4941
+platform_sha: 36d18399ed21b8a57d310ee6d8bb47f38f489ed6
+brand_site_sha: ac8ea7be573b715bd1c9ad8b40397d7c19a1a374
+owner: hejiajiudeeyu
+risk_level: medium
+affected_scope:
+  - platform
+  - deployment
+  - operator
+  - docs
+notes: "The owner's first real-browser visit to /console/ hit 'Gateway Unreachable': the served console joined API paths with new URL(pathname, base), whose leading slash discards the /gateway base path, so behind any edge (Caddy handle_path or the aliyun nginx, whose /gateway/ route was in fact present) every session/proxy call escaped the prefix. Static assets worked; only direct :8085 origins ever exercised the API — unit tests, gateway integration tests, and T-503's API smoke all bypassed the edge, so the bug survived three releases. Platform 49b4273 adds gateway-url.js (normalized trailing-slash base + stripped leading slashes, 8 unit tests; suite 41 unit / 15+2 integration green), 36d1839 adds v0.1.7 release docs + matrix row. Tag v0.1.7 -> Images run 28692687385 all green (3 images + published-image-smoke). Production gateway rolled v0.1.6 -> v0.1.7 (timestamped override backup; public fingerprint /console/src/gateway-url.js 200). Automated Chromium (Playwright) operator run then completed the FULL loop against production with 11 full-page screenshots: locked -> destructive recovery drill (RESET + bootstrap secret, new passphrase recorded on-host per checklist step 5) -> unlock -> admin credential save -> review queue approve (responder_4c71505389e6, t503rerun.workspace.echo-summary.v1; approve auto-enabled) -> billing tenant create + 20000 PTS recharge. Marketplace shows the hotline enabled/public/healthy. Caller paid call req_cb9c8a87-f984-45f6-8bad-80359e6f9c3c: SUCCEEDED, schema_valid, hold -50 -> BILLING_SETTLED (ledger 01KWNKQXEQWDM98A6VJ1M3QBFT), balance 19950. Responder/Caller sides used fresh identities, public docs, and registry @delexec/ops@0.1.6 only. Violations table for the automated run: empty. 2.1 itself remains open pending the owner's manual browser rerun (its explicit requirement). Findings recorded in T-503-rerun-automated-run.md; known frictions (3.1 default max-charge, 3.2 stdin contract docs) recurred as expected, no new blocker/major beyond the fixed console bug. Client/protocol pointers unchanged from CHG-2026-178."
+contracts_check: passed
+integration_check: passed
