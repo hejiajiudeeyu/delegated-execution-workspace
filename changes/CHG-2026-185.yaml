@@ -1,0 +1,14 @@
+change_id: CHG-2026-185
+goal: M1 delivery unit 2 — freeze the minimal shared protocol slice (four-axis Call state, artifact descriptors, HotlineVersion binding, reconciliation reports)
+protocol_sha: d2ad83b59118347141062b29cfe7c2d02b64dc0c
+client_sha: d77422f606d102535a96a3fbe987caef0c0694c3
+platform_sha: f26a08bab2e3a16dd5875d92f69516fcfe27e039
+brand_site_sha: ac8ea7be573b715bd1c9ad8b40397d7c19a1a374
+owner: hejiajiudeeyu
+risk_level: low
+affected_scope:
+  - protocol
+  - contracts
+contracts_check: passed
+integration_check: passed
+notes: "Second delivery unit of M1. protocol d2ad83b59118347141062b29cfe7c2d02b64dc0c adds packages/contracts/src/call-state.js implementing decision A-04's shared semantics: the four independent state axes with their legal transition tables, cross-axis coherence validation, terminal detection, artifact descriptors, HotlineVersion binding with recoverability class, and post-restart reconciliation reports. The invariants encoded are the expensive ones: settled and refunded are final (exactly-once money, NFR-R04); a self-transition is legal so replayed events stay idempotent under at-least-once delivery; acceptance cannot start before delivery_integrity is verified (FR-044); an invalid delivery can never settle (NFR-R03); a pre-execution rejection must never hold funds (FR-050); settlement is blocked only while a dispute is open; and work is auto-rerun only when a HotlineVersion explicitly declares itself restartable, so unknown RUNNING work is never blindly repeated (A-03, PRD Flow E). Artifact descriptors actively reject bucket, object_key, presigned_url, url and local_path so the A-01 boundary is enforced in code rather than left to reviewer discipline. Six new CONTRACT_* error codes plus the three RELAY_* codes introduced by CHG-2026-183 are registered. Strictly additive: no existing export changes behavior, and nothing consumes the new exports yet, so there is no source-versus-npm drift. Evidence: 34 new unit cases, protocol suite 88 unit passed / 1 integration passed, contracts package check green packing delexec-contracts-0.1.4.tgz; fourth-repo submodules, boundaries, contracts and source-integration all green with the locally packed 0.1.4. Contracts version bumped 0.1.3 to 0.1.4 because the package content changed; PUBLISHING TO NPM IS NOT DONE and is deliberately deferred to a separately authorized step, needed before client or platform may depend on these exports."

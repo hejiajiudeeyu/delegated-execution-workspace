@@ -34,17 +34,17 @@ Created: 2026-07-31（Wave 0 产出）· 单一事实源 = `.trellis/tasks/07-17
 | FR-005 | 最小权限：只执行已注册 Hotline | client | partial | 无通用 shell 入口；缺文件/网络访问范围可配置（NFR-S02） |
 | FR-006 | 设备维护窗口 (P1) | platform | todo | |
 | FR-020 | 一次性结构化 Brief | protocol + client | partial | input schema 校验存在；缺档位与预算上限字段 |
-| FR-021 | 执行前 ACCEPTED/REJECTED | protocol + platform | todo | 当前无执行前拒绝语义（A-04 已定义 `rejected`） |
+| FR-021 | 执行前 ACCEPTED/REJECTED | protocol + platform | partial | 协议侧 `rejected` 语义与"拒绝不得持有资金"校验已冻结（protocol `d2ad83b`）；平台路由未实现 |
 | FR-022 | 预算硬上限 | platform | partial | `max_charge_cents` hold 存在；缺档位绑定与超支阻断语义 |
 | FR-023 | 幂等提交 | platform | **done** | request_id 幂等 + hold 状态双重幂等（审计 D2.5 确认） |
-| FR-024 | 取消 | protocol + platform | todo | |
-| FR-025 | 任务排队 (P1) | platform | todo | 当前无 queued 与 executing 区分 |
-| FR-030 | 长任务状态 | protocol + platform | todo | 四轴模型已冻结（A-04），实现未开始 |
+| FR-024 | 取消 | protocol + platform | partial | 协议侧 `canceled` 迁移已定义（已交付不可取消）；平台路由未实现 |
+| FR-025 | 任务排队 (P1) | protocol + platform | partial | 协议侧 `queued`/`executing` 已区分（protocol `d2ad83b`）；平台未实现 |
+| FR-030 | 长任务状态 | protocol + platform | partial | **协议侧完成**：四轴 + 合法迁移 + 跨轴校验（protocol `d2ad83b`，34 例）；platform 侧实现未开始 |
 | FR-031 | 状态持久化 | platform | partial | 快照持久化存在；`postgres-persistence` 集成测试已恢复入套件（platform `9584fdf`） |
-| FR-032 | 输入 artifact | protocol + platform + client | todo | A-01 已定通道；跨设备输入上传未实现 |
+| FR-032 | 输入 artifact | protocol + platform + client | partial | 协议侧 artifact 描述符已冻结并**主动拒绝 bucket/object_key/presigned_url/local_path**（protocol `d2ad83b`）；跨设备上传未实现 |
 | FR-033 | 输出 artifact | protocol + client | partial | 输出 artifact hash 与附件绑定存在；缺证据包/日志摘要形态 |
-| FR-034 | Artifact 完整性 | protocol + platform | partial | 输出 checksum 校验存在；缺"校验失败绝不 delivered"的独立状态位 |
-| FR-035 | 可恢复故障 | client + platform | todo | A-03 已定三等级；实现未开始 |
+| FR-034 | Artifact 完整性 | protocol + platform | partial | 输出 checksum 校验存在；协议侧已加独立 Delivery Integrity 轴 + `validateDeliveryArtifacts`（committed 才算交付，protocol `d2ad83b`）；平台侧持久化状态位未接 |
+| FR-035 | 可恢复故障 | protocol + client + platform | partial | 协议侧三等级 + `mayAutoRerun`（默认不重跑）+ 对账报告校验已冻结（protocol `d2ad83b`）；客户端 journal 与平台对账未实现 |
 | FR-036 | 进度事件 (P1) | protocol + client | todo | |
 
 ## M2 最小 Hotline 服务契约
@@ -55,7 +55,7 @@ Created: 2026-07-31（Wave 0 产出）· 单一事实源 = `.trellis/tasks/07-17
 | FR-011 | 固定服务档位 Quick/Standard/Deep | protocol + platform | todo | A-05 已定各档验收窗口 |
 | FR-012 | 隐私与履约模式 | protocol | todo | 本阶段仅 supervised 可用 |
 | FR-013 | 示例输入输出 | protocol | partial | 模板 bundle 含示例；缺边界说明要求 |
-| FR-014 | 版本化：每次 Call 固定 version | protocol + platform | todo | 当前热线无版本历史，改价即重审（审计 D3.6） |
+| FR-014 | 版本化：每次 Call 固定 version | protocol + platform | partial | 协议侧 `validateHotlineVersionRef` 已冻结（protocol `d2ad83b`）；平台无版本历史表 |
 | FR-015 | 启停与可用性等级 | platform | partial | admin enable/disable 存在；缺 always-on/scheduled/best-effort |
 | FR-016 | Stable/Preview (P1) | platform | todo | |
 | FR-070 | 导出 Hotline 包 | platform | todo | |
@@ -108,10 +108,10 @@ Created: 2026-07-31（Wave 0 产出）· 单一事实源 = `.trellis/tasks/07-17
 | NFR-S03 | 不打印/导出 secrets，日志脱敏 | platform | partial | 未系统审计；S3 弱默认密钥断言未做 |
 | NFR-S04 | token/签名/关键操作可验证 | protocol | **done** | HMAC task token + Ed25519 结果签名 + 公钥校验；relay 业务路由 bearer 鉴权（platform `f26a08b`） |
 | NFR-S05 | 内容查看/资金/版本/争议必审计 | platform | partial | 通用审计存在；内容访问与争议专项待 M3 |
-| NFR-R01 | 任何 Call 必达终态 | protocol + platform | todo | A-04 已定终态；实现与护栏指标待 M1/M3 |
+| NFR-R01 | 任何 Call 必达终态 | protocol + platform | partial | 协议侧 `isCallTerminal` 要求四轴齐备（已交付需验收+资金收口，protocol `d2ad83b`）；平台护栏未实现 |
 | NFR-R02 | 重启后状态与账本幂等恢复 | platform + client | partial | 快照 hydrate 存在；孤儿 hold 无对账（审计 D3.4） |
-| NFR-R03 | checksum 失败不得标 delivered | protocol + platform | partial | 校验存在，缺独立状态位 |
-| NFR-R04 | hold/settle/refund exactly-once | platform | partial | 同 FR-054 |
+| NFR-R03 | checksum 失败不得标 delivered | protocol + platform | partial | 协议侧已成硬约束：`invalid delivery cannot be settled` + 交付要求 committed artifact（protocol `d2ad83b`）；平台侧未接 |
+| NFR-R04 | hold/settle/refund exactly-once | protocol + platform | partial | 协议侧 settled/refunded 为终态、自迁移幂等（protocol `d2ad83b`）；平台跨分录单事务与崩溃测试仍缺 |
 | NFR-R05 | 设备离线检测 ≤ 2 分钟 | platform | partial | 阈值存在，未按此数值校准 |
 | NFR-R06 | 无人值守完成率 ≥ 90% | 全体 | todo | M5 dogfood 度量 |
 

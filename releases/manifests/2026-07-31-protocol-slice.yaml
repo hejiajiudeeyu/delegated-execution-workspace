@@ -1,0 +1,24 @@
+release_id: 2026-07-31-protocol-slice
+created_at: 2026-07-31T15:18:58.057Z
+components:
+  protocol:
+    sha: d2ad83b59118347141062b29cfe7c2d02b64dc0c
+    path: repos/protocol
+  client:
+    sha: d77422f606d102535a96a3fbe987caef0c0694c3
+    path: repos/client
+  platform:
+    sha: f26a08bab2e3a16dd5875d92f69516fcfe27e039
+    path: repos/platform
+  brand_site:
+    sha: ac8ea7be573b715bd1c9ad8b40397d7c19a1a374
+    path: repos/brand-site
+change_bundle: CHG-2026-185
+images: {}
+packages:
+  "@delexec/contracts": 0.1.4-unpublished
+  "@delexec/ops": 0.1.6
+notes: "M1 unit 2: minimal shared protocol slice (CHG-2026-185). contracts is
+  0.1.4 in source but NOT published to npm — recorded as 0.1.4-unpublished so
+  this manifest cannot be mistaken for a released combination."
+manifest_sha256: 5eb755737446a6d098ca4070cfcabc3f5b0f7d67294524a518675da076978df2

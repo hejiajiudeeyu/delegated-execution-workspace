@@ -22,7 +22,8 @@
 ## 交付单元顺序（每个独立可评审、独立走五件套）
 
 1. ~~**relay 鉴权 + 可见性租约**~~ ✅ **完成 2026-07-31**（platform `f26a08b` + client `0867e1b`，CHG-2026-183）——admin token + receiver-scoped token、admin-only 签发端点、可见性租约、租约保护的幂等 ACK（stale lease → 409）；memory/sqlite 双 store 同语义，sqlite 就地加列保留既有队列；direct-run 无凭据拒绝启动（捕获并修好三处裸启路径：e2e、打包服务烟测、compose）；e2e 7/7 在鉴权下绿。
-2. **最小 M1 协议切片**（`repos/protocol`）——声明式 Hotline 身份/版本、Call 四轴状态与合法迁移、artifact 描述符、终态与对账事件。**先发 contracts 再动 client/platform**（仓库纪律）。
+2. ~~**最小 M1 协议切片**~~ ✅ **完成 2026-07-31**（protocol `d2ad83b`，CHG-2026-185）——四轴状态 + 合法迁移表 + 跨轴一致性校验、artifact 描述符（主动拒绝 bucket/object_key/presigned_url/local_path）、HotlineVersion 绑定与可恢复性等级、对账报告校验；34 例单测。contracts 0.1.3 → **0.1.4（源码已改，npm 未发布）**。
+   > ⚠️ **下一单元的前置**：client/platform 一旦 import 新导出，就必须**先把 0.1.4 发到 npm**，否则重演 B1 式生产 DOA。发布属对外动作，需 owner 单独授权。
 3. **设备 enrollment 与能力上报**（`repos/platform` + `repos/client`）——受控凭据注册（去掉匿名 responder 注册）、心跳带容量与版本、online/degraded/offline/maintenance。
 4. **artifact 通道**（`repos/platform` + `repos/client`）——受限槽位分配、直传、checksum 提交、按描述符授权下载；对象存储进官方 compose。
 5. **重启对账**（`repos/client` + `repos/platform`）——本地 append-only journal、签名对账报告、按可恢复性等级收口；**未知态绝不自动结算**。
