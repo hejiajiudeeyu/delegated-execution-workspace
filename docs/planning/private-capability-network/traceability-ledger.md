@@ -23,6 +23,8 @@ Created: 2026-07-31（Wave 0 产出）· 单一事实源 = `.trellis/tasks/07-17
 
 ## M1 公网跨设备 Runtime
 
+> **硬前置已解除（2026-07-31）**：relay 六条业务路由此前无鉴权（审计 S1）。现已落地 admin token + receiver-scoped token 鉴权、可见性租约与租约保护的幂等 ACK（platform `f26a08b`，client `0867e1b`）；e2e 全流程 7/7 在鉴权开启下通过。私有证据可以进入该通道。
+
 | FR | 需求 | Owner | 状态 | 证据 |
 |---|---|---|---|---|
 | FR-001 | 创建单 Operator 信任域 | platform | partial | public-stack compose + console v0.2.0 可初始化；缺"网络"对象 |
@@ -102,9 +104,9 @@ Created: 2026-07-31（Wave 0 产出）· 单一事实源 = `.trellis/tasks/07-17
 | ID | 要求 | Owner | 状态 | 证据 |
 |---|---|---|---|---|
 | NFR-S01 | 禁止任意远程 shell/通用代码执行 | client + platform | **done** | 仅预声明 Hotline 可执行；全仓无通用 shell 入口 |
-| NFR-S02 | 最小权限、文件/网络范围可配置 | client | todo | |
+| NFR-S02 | 最小权限、文件/网络范围可配置 | client | partial | relay receiver token 已按 inbox 最小授权（platform `f26a08b`）；设备侧文件/网络范围仍未做 |
 | NFR-S03 | 不打印/导出 secrets，日志脱敏 | platform | partial | 未系统审计；S3 弱默认密钥断言未做 |
-| NFR-S04 | token/签名/关键操作可验证 | protocol | **done** | HMAC task token + Ed25519 结果签名 + 公钥校验 |
+| NFR-S04 | token/签名/关键操作可验证 | protocol | **done** | HMAC task token + Ed25519 结果签名 + 公钥校验；relay 业务路由 bearer 鉴权（platform `f26a08b`） |
 | NFR-S05 | 内容查看/资金/版本/争议必审计 | platform | partial | 通用审计存在；内容访问与争议专项待 M3 |
 | NFR-R01 | 任何 Call 必达终态 | protocol + platform | todo | A-04 已定终态；实现与护栏指标待 M1/M3 |
 | NFR-R02 | 重启后状态与账本幂等恢复 | platform + client | partial | 快照 hydrate 存在；孤儿 hold 无对账（审计 D3.4） |

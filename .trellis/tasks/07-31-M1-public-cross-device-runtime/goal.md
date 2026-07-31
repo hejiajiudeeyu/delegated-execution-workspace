@@ -13,15 +13,15 @@
 | A-04 共享状态边界 + 四轴状态模型 | 同上（含合法迁移与资金矩阵） |
 | A-07 元数据保留 | 平台仓 `docs/planned/design/mvp-policy-decisions.zh-CN.md` |
 
-## 硬前置（未解除不得进入真实数据测试）
+## 硬前置（✅ 已于 2026-07-31 解除）
 
-**relay 鉴权必须先落地。** 当前 transport-relay 六路由无鉴权；2026-07-31 已在 Caddy 与生产 nginx 双侧撤下公网暴露（仅留 healthz），但这只是止血，不是修复。**在 A-02 的 authenticated relay inbox 落地前，任何私有文档或证据不得进入该通道**（PRD Wave 1 第 6 条）。
+原前置：transport-relay 六路由无鉴权，任何人可读/注入/删除任务信封（审计 S1）。2026-07-31 分两步关闭——先在 Caddy 与生产 nginx 双侧撤下公网暴露（止血，CHG-2026-181），再落地 A-02 的 authenticated relay inbox（根治，CHG-2026-183）。
 
-因此 M1 的第一个交付单元就是 relay 鉴权，而不是 MinerU 打通。
+**私有文档与证据现在可以进入该通道。** 后续单元若引入新的数据面（如 artifact 直传），需各自重新评估暴露面，不得默认继承本结论。
 
 ## 交付单元顺序（每个独立可评审、独立走五件套）
 
-1. **relay 鉴权 + 可见性租约**（`repos/platform`）——receiver token 签发与校验、租约不可见窗口、幂等 ACK。解除硬前置。
+1. ~~**relay 鉴权 + 可见性租约**~~ ✅ **完成 2026-07-31**（platform `f26a08b` + client `0867e1b`，CHG-2026-183）——admin token + receiver-scoped token、admin-only 签发端点、可见性租约、租约保护的幂等 ACK（stale lease → 409）；memory/sqlite 双 store 同语义，sqlite 就地加列保留既有队列；direct-run 无凭据拒绝启动（捕获并修好三处裸启路径：e2e、打包服务烟测、compose）；e2e 7/7 在鉴权下绿。
 2. **最小 M1 协议切片**（`repos/protocol`）——声明式 Hotline 身份/版本、Call 四轴状态与合法迁移、artifact 描述符、终态与对账事件。**先发 contracts 再动 client/platform**（仓库纪律）。
 3. **设备 enrollment 与能力上报**（`repos/platform` + `repos/client`）——受控凭据注册（去掉匿名 responder 注册）、心跳带容量与版本、online/degraded/offline/maintenance。
 4. **artifact 通道**（`repos/platform` + `repos/client`）——受限槽位分配、直传、checksum 提交、按描述符授权下载；对象存储进官方 compose。

@@ -12,7 +12,9 @@ const platformEnvExample = path.join(platformRoot, "deploy/platform/.env.example
 const localDockerPackagesDir = path.join(platformRoot, ".docker-local-packages");
 const localProtocolContractsDir = path.join(ROOT, "repos/protocol/packages/contracts");
 const integrationPorts = [8079, 8081, 8082, 8090, 8091, 8092];
-const opsHome = fs.mkdtempSync(path.join(os.tmpdir(), "fourth-repo-delexec-home-"));
+// KEEP_OPS_HOME points the run at a fixed ops home and skips its cleanup, so a
+// failure can be diagnosed from the service logs it leaves behind.
+const opsHome = process.env.KEEP_OPS_HOME || fs.mkdtempSync(path.join(os.tmpdir(), "fourth-repo-delexec-home-"));
 
 function run(cwd, command, args, extraEnv = {}, options = {}) {
   const result = spawnSync(command, args, {
@@ -164,6 +166,15 @@ async function stopBackground(processInfo) {
   });
 }
 
+// Deterministic per-run token; the relay only needs both sides to agree.
+function hashString(value) {
+  let hash = 0;
+  for (let index = 0; index < value.length; index += 1) {
+    hash = (hash * 31 + value.charCodeAt(index)) | 0;
+  }
+  return hash;
+}
+
 async function cleanupIntegration(relay) {
   await stopBackground(relay);
   cleanupOpsProcesses();
@@ -192,7 +203,9 @@ async function cleanupIntegration(relay) {
     ]);
   } catch {}
 
-  fs.rmSync(opsHome, { recursive: true, force: true });
+  if (!process.env.KEEP_OPS_HOME) {
+    fs.rmSync(opsHome, { recursive: true, force: true });
+  }
   fs.rmSync(relayDbPath, { force: true });
   cleanupLocalDockerPackages();
 }
@@ -212,10 +225,17 @@ try {
 
   cleanupOpsProcesses();
 
+  // The relay authenticates its business routes and refuses to boot without
+  // credentials, so the integration stack runs authenticated end to end —
+  // the same shape a real deployment uses.
+  const relayAdminToken = `relay_admin_integration_${Math.abs(hashString(relayDbPath)).toString(16)}`;
+
   var relay = spawnBackground(platformRoot, "node", ["apps/transport-relay/src/server.js"], {
     PORT: "8090",
     SERVICE_NAME: "transport-relay",
-    RELAY_SQLITE_PATH: relayDbPath
+    RELAY_SQLITE_PATH: relayDbPath,
+    RELAY_ADMIN_TOKEN: relayAdminToken,
+    RELAY_TOKEN_SECRET: relayAdminToken
   });
 
   try {
@@ -254,6 +274,11 @@ try {
     DELEXEC_HOME: opsHome,
     TRANSPORT_TYPE: "relay_http",
     TRANSPORT_BASE_URL: "http://127.0.0.1:8090",
+    TRANSPORT_AUTH_TOKEN: relayAdminToken,
+    // This check runs its own relay on the port the ops supervisor would also
+    // manage. Pinning the supervisor's credential to the same value keeps the
+    // two consistent whichever one owns the port.
+    OPS_RELAY_ADMIN_TOKEN: relayAdminToken,
     PLATFORM_ADMIN_API_KEY: "sk_admin_local_dev",
     ADMIN_API_KEY: "sk_admin_local_dev"
   };
