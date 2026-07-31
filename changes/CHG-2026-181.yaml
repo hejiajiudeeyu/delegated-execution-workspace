@@ -1,0 +1,17 @@
+change_id: CHG-2026-181
+goal: security stopgap + integration-suite restoration; owner direction decision recorded (selfhost private network, marketplace loop archived)
+protocol_sha: b9234e267ce91ea26a541e7dcbcae96f40a51d8d
+client_sha: c53cf7a65e449a57fa28e8c73f270d5843dc4941
+platform_sha: 9584fdf4f7b5934ccf1942e90763d65e0e3dd919
+brand_site_sha: ac8ea7be573b715bd1c9ad8b40397d7c19a1a374
+owner: hejiajiudeeyu
+risk_level: medium
+affected_scope:
+  - platform
+  - deployment
+  - security
+  - tests
+  - docs
+contracts_check: passed
+integration_check: passed
+notes: "Owner decisions 2026-07-31 (recorded in .trellis/tasks/07-17-call-anything-private-capability-network-mvp/decisions.md): direction = single-Operator selfhost private capability network per the 07-17 PRD; LOOP.md archived as historical record; A-01..A-09 provisional recommendations approved as MVP baseline; PTS = operator-issued internal quota. Stopgap batch in repos/platform: 1c8f206 flips ENABLE_BOOTSTRAP_RESPONDERS code default to false (audit S2, fail-safe; demo/e2e envs set it explicitly; production env already false so no production roll needed) and stops the public-stack Caddy edge from proxying unauthenticated relay business routes, keeping only /relay/healthz (audit S1; READMEs updated). 9584fdf restores the two integration files test:integration had silently dropped: platform-api.integration repaired for the current API surface (marketplace template-bundle route, /v1 heartbeat + /v1 admin rotate routes, owner detail via /v1/catalog, starlight bootstrap fixture with explicit bootstrapEnabled opt-in, PLATFORM_DEPLOYMENT_MODE=selfhost gate for service_id pooling, env-precedence-aware short-TTL token server, review-test asserted via timeout path because the responder runtime moved to the client repo); postgres-persistence trimmed to the platform-scope snapshot round-trip. Platform suite after: unit 31 passed, integration 37 passed / 2 skipped, service-packages/deploy-config/release-docs checks green. Production edge on Aliyun is host nginx (Caddy disabled there), so the live /relay/ closure is a separate authorized host action still pending. Protocol/client/brand-site pointers unchanged from CHG-2026-180."

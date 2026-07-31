@@ -1,7 +1,7 @@
-# LOOP.md — 长线开发循环状态（单一事实源）
+# LOOP.md — 长线开发循环状态（已归档 2026-07-31）
 
-> 每轮 loop 醒来先读本文件；每轮收尾必须更新"Backlog 状态"和"证据日志"。
-> 本文件由 loop 维护；人工修改优先级/边界时直接编辑本文件即可。
+> **[归档说明]** 2026-07-31 owner 决策：方向转入单 Operator Selfhost 私有能力网络，本 loop（公网 marketplace 付费闭环）归档封存，M2 彩排计数与 M3 退出标准不再推进。
+> 现行唯一真相源 = `.trellis/tasks/07-17-call-anything-private-capability-network-mvp/prd.md`，决策记录见同目录 `decisions.md`。本文件仅作历史记录保留，不再更新。
 
 ## 目标（Goal）
 
