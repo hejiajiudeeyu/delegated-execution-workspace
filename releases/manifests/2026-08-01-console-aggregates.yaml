@@ -1,0 +1,27 @@
+release_id: 2026-08-01-console-aggregates
+created_at: 2026-07-31T18:15:03.833Z
+components:
+  protocol:
+    sha: adbab35b1c7a2eff62c38106b851b87eccdd6c40
+    path: repos/protocol
+  client:
+    sha: c920e9b02933c36ae00113e31075cbafe79c17f7
+    path: repos/client
+  platform:
+    sha: 3d9af65f82ea7a67fd9997b2c21536995a366be7
+    path: repos/platform
+  brand_site:
+    sha: ac8ea7be573b715bd1c9ad8b40397d7c19a1a374
+    path: repos/brand-site
+change_bundle: CHG-2026-189
+images:
+  rsp-platform: v0.3.0
+  rsp-relay: v0.3.0
+  rsp-gateway: v0.3.0
+packages:
+  "@delexec/contracts": 0.1.4
+  "@delexec/ops": 0.1.6-unpublished
+notes: "Console rebuild step 1: aggregate read endpoints (CHG-2026-189). Images
+  unchanged; production runs v0.3.0 and these endpoints are NOT deployed there
+  yet."
+manifest_sha256: 511ff91abce7af6719892109d44a829b5e06e36914d32ec19a9dc3b6c0115f93

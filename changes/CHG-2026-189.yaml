@@ -1,0 +1,14 @@
+change_id: CHG-2026-189
+goal: console rebuild step 1 — aggregate read endpoints (attention feed and call detail) so the new console is not forced back into per-endpoint pages
+protocol_sha: adbab35b1c7a2eff62c38106b851b87eccdd6c40
+client_sha: c920e9b02933c36ae00113e31075cbafe79c17f7
+platform_sha: 3d9af65f82ea7a67fd9997b2c21536995a366be7
+brand_site_sha: ac8ea7be573b715bd1c9ad8b40397d7c19a1a374
+owner: hejiajiudeeyu
+risk_level: low
+affected_scope:
+  - platform
+  - console
+contracts_check: passed
+integration_check: passed
+notes: "First step of the third console rebuild, deliberately backend-first. The diagnosis in .trellis/tasks/07-15-replace-public-console-frontend/diagnosis-v0.2.0.md read all 4925 lines of the v0.2.0 SPA and found the failure is architectural, not visual: navigation mirrors the API resource list, the next-step card consumes no business signal and goes silent after setup, five semantically different pages share one renderer ending in a raw JSON dump, there is no detail route at all so 'trace one call' does not exist in the IA, and billing asks the operator to type an internal primary key. The trap identified was that building on the current API shape forces per-endpoint pages, which is the likely reason both previous rebuilds produced CRUD browsers. platform 3d9af65f82ea7a67fd9997b2c21536995a366be7 therefore adds the two reads first: GET /v1/admin/attention (hotlines and responders awaiting review, calls past the grace window with no terminal event, funds still held after a call ended, unavailable devices; nothing_to_do is explicit so an empty list is a real answer) and GET /v1/admin/requests/:id (timeline, artifacts, billing, responder capacity/version, hotline, audit events joined server-side). Both follow one honesty rule: never report a state the platform does not track. Execution and settlement are derived from real state and name their source; delivery integrity and acceptance land in M3 and report tracked:false with a reason rather than a plausible value, and the attention feed names what it cannot yet watch (disputes, acceptance expiry). Evidence: 14 new integration cases including an untracked-axis assertion, a stuck-call detection case and its negative, funds-held-after-end, operator-only access on both routes, and a check that storage locators do not leak through the aggregate; platform unit+integration 86 passed / 2 skipped, e2e 7/7, service-packages and release-docs green. No UI work yet — that is the next step and it now has a data shape that permits task-oriented pages."
