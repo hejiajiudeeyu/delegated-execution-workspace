@@ -26,7 +26,7 @@
 - S2：`ENABLE_BOOTSTRAP_RESPONDERS` 代码默认改 `false`（fail-safe）——platform `1c8f206`。
 - 集成套件复活：`test:integration` 补回漏跑的 2 文件并修复其过时断言——platform `9584fdf`，套件 37 过 / 2 跳。
 - 随附四仓组合更新：`changes/CHG-2026-181.yaml`。
-- **未完成、待单独确认**：生产主机（Aliyun host nginx，非 Caddy）撤下 `/relay/` 公网代理与 `/platform/metrics` 暴露——需要生产操作授权。生产 env 已显式 `ENABLE_BOOTSTRAP_RESPONDERS=false`，S2 无需滚动生产。
+- **生产收口（owner 授权后 2026-07-31 当日执行完毕）**：Aliyun host nginx 撤下 `/relay/` 公网代理（仅留 `= /relay/healthz`）、`/platform/metrics` 边缘 403；备份 `callanything.xyz.bak.20260731T201329`；公网验证 relay 业务路由 403 / metrics 403 / 其余端点 200 无损；主机 ALIYUN-OPS-README 与四仓 handover 双侧已记录。生产 env 已显式 `ENABLE_BOOTSTRAP_RESPONDERS=false`，S2 无需滚动生产。
 
 ## 遗留待办指针（不在本轮范围）
 

@@ -41,6 +41,7 @@
 - 回滚:部署目录内有时间戳 `.bak.*` 的 compose/override 备份;回滚 gateway 只需把 override 里的镜像 tag 改回并重跑 compose 调用
 - 健康检查:本地 `curl 127.0.0.1:28080/healthz`、`127.0.0.1:28085/`;公网 `https://callanything.xyz/healthz`、`/platform/healthz`、`/console/`
 - 版本指纹:v0.2.0 起 console 为构建产物 SPA——`/console/` 的 index.html 引用 `assets/index-<hash>.js`(该资产 200 且 `cache-control: immutable`)⇔ gateway ≥ v0.2.0;旧指纹 `/console/src/session-view.js` 自 v0.2.0 起应 404
+- **2026-07-31 安全收口(CHG-2026-181)**:host nginx 停止公网代理 `/relay/` 业务路由(无鉴权,audit S1),仅保留 `location = /relay/healthz`;`/platform/metrics` 边缘 403(audit S5)。备份 `callanything.xyz.bak.20260731T201329` 在 `/etc/nginx/sites-enabled/`,主机侧 ALIYUN-OPS-README 已同步记录。公网验证:relay/v1/* 403、platform/metrics 403、healthz/platform/healthz/console/marketplace 均 200。外部 responder 未来走公网 relay 需先落 A-02 鉴权再重新暴露
 
 ## 2026-07-04 滚动验证记录
 
