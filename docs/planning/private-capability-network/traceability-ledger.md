@@ -119,7 +119,7 @@ Created: 2026-07-31（Wave 0 产出）· 单一事实源 = `.trellis/tasks/07-17
 
 | ID | 标准 | 状态 | 当前事实（2026-07-31） |
 |---|---|---|---|
-| E0 | 事实一致 | **partial** | 仓库/bundle/manifest 三者已一致（CHG-2026-181 + baseline manifest）；**生产未跑带 `/buildz` 的镜像，运行时一致性仍"未判定"** |
+| E0 | 事实一致 | **partial** | 仓库/bundle/manifest **与 npm 四者已一致**（contracts 0.1.4 已发布并洁净房验证，manifest `2026-08-01-contracts-0.1.4`）；**仍缺：生产未跑带 `/buildz` 的镜像，运行时一致性"未判定"**——需一次协同镜像发布 + 滚动才能闭合 |
 | E1 | MinerU ≥10 次真实任务、≥90% 无人值守、checksum 100% | todo | 0 次 |
 | E2 | 三条真实 Workflow 连续使用 | todo | 0 条 |
 | E3 | 接受/修订/自动接受/争议/结算/退款端到端证据 | todo | 仅有 hold→settle→refund 的旧路径证据 |

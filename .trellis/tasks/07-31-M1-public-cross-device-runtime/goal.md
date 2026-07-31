@@ -23,7 +23,7 @@
 
 1. ~~**relay 鉴权 + 可见性租约**~~ ✅ **完成 2026-07-31**（platform `f26a08b` + client `0867e1b`，CHG-2026-183）——admin token + receiver-scoped token、admin-only 签发端点、可见性租约、租约保护的幂等 ACK（stale lease → 409）；memory/sqlite 双 store 同语义，sqlite 就地加列保留既有队列；direct-run 无凭据拒绝启动（捕获并修好三处裸启路径：e2e、打包服务烟测、compose）；e2e 7/7 在鉴权下绿。
 2. ~~**最小 M1 协议切片**~~ ✅ **完成 2026-07-31**（protocol `d2ad83b`，CHG-2026-185）——四轴状态 + 合法迁移表 + 跨轴一致性校验、artifact 描述符（主动拒绝 bucket/object_key/presigned_url/local_path）、HotlineVersion 绑定与可恢复性等级、对账报告校验；34 例单测。contracts 0.1.3 → **0.1.4（源码已改，npm 未发布）**。
-   > ⚠️ **下一单元的前置**：client/platform 一旦 import 新导出，就必须**先把 0.1.4 发到 npm**，否则重演 B1 式生产 DOA。发布属对外动作，需 owner 单独授权。
+   > ✅ **前置已解除（2026-08-01）**：owner 授权后 `@delexec/contracts@0.1.4` 已发布（publish run 30645987065），洁净房安装验证 18 个新导出齐全且语义生效。源码与 npm 一致，client/platform 现在可以 import 该切片。
 3. ~~**设备 enrollment 与能力上报**~~ ✅ **完成 2026-08-01**（platform `9f2aa49` + client `5bdbda9` + protocol `adbab35`，CHG-2026-186）——匿名注册路径移除（破坏性，已知且有意）、心跳带 version/capacity 并进运营视图、maintenance 粘性、陈旧心跳压过自报。FR-002/FR-003 转 done。
 4. **artifact 通道**（`repos/platform` + `repos/client`）——受限槽位分配、直传、checksum 提交、按描述符授权下载；对象存储进官方 compose。
 5. **重启对账**（`repos/client` + `repos/platform`）——本地 append-only journal、签名对账报告、按可恢复性等级收口；**未知态绝不自动结算**。
