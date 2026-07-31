@@ -1,0 +1,32 @@
+release_id: 2026-08-01-v0.3.0-images
+created_at: 2026-07-31T17:14:15.725Z
+components:
+  protocol:
+    sha: adbab35b1c7a2eff62c38106b851b87eccdd6c40
+    path: repos/protocol
+  client:
+    sha: 5bdbda98e8c8ad9201723a0963261f4c1bb9b10a
+    path: repos/client
+  platform:
+    sha: 9b8abda6e17d6671bbc550dbbf785a6b06e4549f
+    path: repos/platform
+  brand_site:
+    sha: ac8ea7be573b715bd1c9ad8b40397d7c19a1a374
+    path: repos/brand-site
+change_bundle: CHG-2026-187
+images:
+  rsp-platform: v0.3.0
+  rsp-relay: v0.3.0
+  rsp-gateway: v0.3.0
+packages:
+  "@delexec/contracts": 0.1.4
+  "@delexec/ops": 0.1.6
+notes: "Coordinated image release v0.3.0 (Images run 30649798833: three images
+  to GHCR + published-image-smoke, all green). Verified by running the published
+  rsp-relay image: it reports release_id v0.3.0 and git_sha 9b8abda, with
+  un-injected facts reporting null as designed. PRODUCTION IS NOT YET ROLLED —
+  the Aliyun stack still runs gateway v0.2.0 / api v0.1.2 / relay v0.1.2, so
+  runtime agreement remains undetermined and E0 stays open on the deployment
+  side only. Rolling requires RELAY_ADMIN_TOKEN and RELAY_TOKEN_SECRET in the
+  host .env first, or the relay will refuse to boot."
+manifest_sha256: 682105a130fb425bb03fe348d58a6f8288aeca7abf8cf1b8a992f7e7cff6fa86

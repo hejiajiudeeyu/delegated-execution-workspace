@@ -17,7 +17,7 @@ Created: 2026-07-31（Wave 0 产出）· 单一事实源 = `.trellis/tasks/07-17
 |---|---|---|---|---|
 | FR-080 | 统一 release manifest | workspace | **done** | `releases/manifests/2026-07-31-selfhost-baseline.yaml` + `tools/release-manifest.mjs`（ADR-002） |
 | FR-081 | 组合认证：只有过 gate 的组合可标 current | workspace | **done** | `releases/current.yaml` 指针 + `test:release-gate` 链含 `release:manifest:verify` |
-| FR-082 | 生产版本探测 | platform | **partial** | `GET /buildz` 三服务已实现（platform `6c21ca5`，单测 6 + 集成 3）；**尚未发布镜像，生产仍 404** |
+| FR-082 | 生产版本探测 | platform | **partial** | `GET /buildz` 三服务已实现且**已随 v0.3.0 镜像发布**（Images run 30649798833；实跑 `rsp-relay:v0.3.0` 确认上报 `release_id=v0.3.0`/`git_sha=9b8abda`，未注入字段如实为 null）。**仍缺：生产未滚动**，线上仍是旧镜像 → 探测生产仍 404 |
 | FR-083 | 状态漂移阻断 | workspace | **done** | `release-manifest check` 阻断漂移；"服务无法自陈"报 undetermined 而非通过（`tools/release-manifest.test.mjs` 16 例） |
 | FR-084 | 回滚记录 | workspace | **partial** | manifest 不可变 ⇒ 回滚必产生新 release_id；专门的回滚记录字段待 M5 |
 
@@ -119,7 +119,7 @@ Created: 2026-07-31（Wave 0 产出）· 单一事实源 = `.trellis/tasks/07-17
 
 | ID | 标准 | 状态 | 当前事实（2026-07-31） |
 |---|---|---|---|
-| E0 | 事实一致 | **partial** | 仓库/bundle/manifest **与 npm 四者已一致**（contracts 0.1.4 已发布并洁净房验证，manifest `2026-08-01-contracts-0.1.4`）；**仍缺：生产未跑带 `/buildz` 的镜像，运行时一致性"未判定"**——需一次协同镜像发布 + 滚动才能闭合 |
+| E0 | 事实一致 | **partial** | 仓库/bundle/manifest/npm/**镜像** 五者已一致（contracts 0.1.4 已发；v0.3.0 三镜像已推 GHCR 并 smoke 绿，manifest `2026-08-01-v0.3.0-images`）；**唯一剩余缺口 = 生产未滚动**（线上仍 gateway v0.2.0 / api v0.1.2 / relay v0.1.2）。滚动前必须先在主机 `.env` 补 `RELAY_ADMIN_TOKEN`+`RELAY_TOKEN_SECRET`，否则 relay 拒启 |
 | E1 | MinerU ≥10 次真实任务、≥90% 无人值守、checksum 100% | todo | 0 次 |
 | E2 | 三条真实 Workflow 连续使用 | todo | 0 条 |
 | E3 | 接受/修订/自动接受/争议/结算/退款端到端证据 | todo | 仅有 hold→settle→refund 的旧路径证据 |
