@@ -3,7 +3,7 @@
   "name": "call-anything-private-capability-network-mvp",
   "title": "brainstorm: CALL ANYTHING Private Capability Network MVP",
   "description": "",
-  "status": "planning",
+  "status": "in_progress",
   "dev_type": null,
   "scope": null,
   "package": "caller-controller",
@@ -18,9 +18,13 @@
   "commit": null,
   "pr_url": null,
   "subtasks": [],
-  "children": [],
+  "children": [
+    "07-31-M1-public-cross-device-runtime",
+    "07-31-M2-hotline-service-contract",
+    "07-31-M3-delivery-acceptance-settlement"
+  ],
   "parent": null,
   "relatedFiles": [],
-  "notes": "",
+  "notes": "Wave 0 complete 2026-07-31: A-01..A-09 recorded in owning-layer ADRs, four-axis state model frozen, traceability ledger built, M0 release manifest + drift validator implemented. M1 activated; M4-M6 tasks intentionally not created until their entry gates are near.",
   "meta": {}
 }

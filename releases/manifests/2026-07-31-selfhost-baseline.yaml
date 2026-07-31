@@ -1,0 +1,27 @@
+release_id: 2026-07-31-selfhost-baseline
+created_at: 2026-07-31T12:36:36.474Z
+components:
+  protocol:
+    sha: d63317f9b5cfcf750924084f6f65db212c33d43f
+    path: repos/protocol
+  client:
+    sha: c53cf7a65e449a57fa28e8c73f270d5843dc4941
+    path: repos/client
+  platform:
+    sha: cdfd46a724a14e56148b186b0cce8ff96d0032d4
+    path: repos/platform
+  brand_site:
+    sha: ac8ea7be573b715bd1c9ad8b40397d7c19a1a374
+    path: repos/brand-site
+change_bundle: CHG-2026-181
+images:
+  rsp-platform: v0.1.2
+  rsp-relay: v0.1.2
+  rsp-gateway: v0.2.0
+packages:
+  "@delexec/contracts": 0.1.3
+  "@delexec/ops": 0.1.6
+notes: "Wave 0 baseline under ADR-002: first frozen manifest. Carries A-01..A-09
+  decisions, the four-axis state model and the observed-build-facts path.
+  Deployed images reflect the Aliyun public stack at freeze time."
+manifest_sha256: 922b21c3ad08c5a1c280bf223bda53694a5a8f158bb49f001c5e63640b63f5d6

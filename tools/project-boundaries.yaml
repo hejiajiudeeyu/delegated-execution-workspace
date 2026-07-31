@@ -82,6 +82,16 @@ projects:
       - shared/runtime-support
       - platform/data
 
+  platform/support:
+    repo: platform
+    tags:
+      - layer:platform
+      - scope:support
+    package_names:
+      - "@delexec/build-info"
+    allow_dependencies:
+      - platform/support
+
   platform/api:
     repo: platform
     tags:
@@ -94,6 +104,7 @@ projects:
       - shared/runtime-support
       - platform/data
       - platform/api
+      - platform/support
 
   platform/relay:
     repo: platform
@@ -106,6 +117,7 @@ projects:
       - protocol/contracts
       - shared/runtime-support
       - platform/relay
+      - platform/support
 
   platform/gateway:
     repo: platform
@@ -120,3 +132,4 @@ projects:
       - shared/runtime-support
       - platform/api
       - platform/gateway
+      - platform/support

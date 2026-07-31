@@ -140,8 +140,11 @@
     "ci": "corepack pnpm run test:release-gate",
     "test:deployability-aggregate-smoke": "node tools/deployability-aggregate-smoke.test.mjs",
     "test:fast": "node tools/run-tests.mjs --concurrency 8 tools/workspace-pnpm-policy.test.mjs tools/deployability-overview.test.mjs tools/deployability-quickstart.test.mjs tools/deployability-safety.test.mjs tools/deployability-release.test.mjs tools/deployability-operator-checklist.test.mjs tools/deployability-readiness.test.mjs tools/deployability-prd.test.mjs tools/deployability-doctor.test.mjs tools/deployability-dashboard.test.mjs tools/deployability-profiles.test.mjs tools/deployability-commands.test.mjs tools/deployability-console.test.mjs tools/deployability-handoff.test.mjs tools/deployability-evidence.test.mjs tools/compat-status.test.mjs tools/deployability-strict-args.test.mjs",
-    "test:release-gate": "corepack pnpm run test:deployability && corepack pnpm run test:deployability-operations && corepack pnpm run check:submodules && corepack pnpm run check:boundaries && corepack pnpm run check:bundles && corepack pnpm run test:contracts && corepack pnpm run test:integration",
-    "test:submodules": "node tools/validate-submodules.test.mjs"
+    "test:release-gate": "corepack pnpm run test:deployability && corepack pnpm run test:deployability-operations && corepack pnpm run test:release-manifest && corepack pnpm run release:manifest:verify && corepack pnpm run check:submodules && corepack pnpm run check:boundaries && corepack pnpm run check:bundles && corepack pnpm run test:contracts && corepack pnpm run test:integration",
+    "test:submodules": "node tools/validate-submodules.test.mjs",
+    "release:manifest": "node tools/release-manifest.mjs",
+    "release:manifest:verify": "node tools/release-manifest.mjs verify",
+    "test:release-manifest": "node tools/release-manifest.test.mjs"
   },
   "devDependencies": {
     "nx": "^20.0.0",
