@@ -25,6 +25,7 @@ Concretely:
 
 1. **Immutable manifest**: `releases/manifests/<release_id>.yaml` is written once and never modified, recording protocol/client/platform/brand SHAs and artifacts (npm versions, image tags).
 2. **Small pointer**: `releases/current.yaml` contains only `release_id` and `manifest_sha256`, naming the currently certified combination. It is small enough to verify at a glance.
+   - **Naming constraint (learned in practice 2026-08-01)**: when a combination ships images, its `release_id` **must equal the git tag those images were built from** (e.g. `v0.3.0`), because that is the value injected at build time and reported by `/buildz`. A date-slug id can never match what a service reports; the drift check refused the first real production roll for exactly this reason. Date-slug ids remain fine for combinations that ship no images, where services report null and the verdict is correctly undetermined.
 3. **Observed facts**: platform-api, transport-relay and platform-console-gateway each expose `GET /buildz` reporting component, version, git sha, image digest, console asset fingerprint, release id and manifest hash. These are **observations, not authority**; uninjected values report null and are never guessed.
 4. **Drift validator**: a workspace tool compares observed facts against the canonical manifest and blocks on mismatch (FR-083), reporting HEAD/index/worktree/bundle/manifest/artifact/runtime differences separately.
 5. **Platform must not generate a second canonical cross-repo manifest.**

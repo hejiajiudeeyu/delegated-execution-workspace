@@ -25,6 +25,7 @@
 
 1. **不可变 manifest**：`releases/manifests/<release_id>.yaml` 一次写入不再修改，记录 protocol/client/platform/brand 的 SHA 与发布物（npm 版本、镜像 tag）。
 2. **小指针**：`releases/current.yaml` 只含 `release_id` 与 `manifest_sha256`，指向当前认证组合。指针小到可以一眼核对。
+   - **命名约束（2026-08-01 实证补充）**：若该组合**发布了镜像**，`release_id` **必须等于镜像所用的 git tag**（如 `v0.3.0`）——因为那正是构建期注入、由 `/buildz` 上报的值。用日期式 id 会让漂移校验永远不匹配；首次真实滚动即被校验器拦下并据此修正。无镜像的组合可继续用日期式 id（服务上报 null → 判定为 undetermined，符合预期）。
 3. **观测事实**：platform-api / transport-relay / platform-console-gateway 各自暴露 `GET /buildz`，报告 component、version、git sha、image digest、console 资产指纹、release id、manifest hash。**报告的是观测，不是权威**；未注入的值报 null，绝不猜测。
 4. **漂移校验器**：workspace 工具比对"观测事实"与"canonical manifest"，不一致即阻断（FR-083），并分别报告 HEAD/index/worktree/bundle/manifest/artifact/runtime 各层差异。
 5. **Platform 不得生成第二份 canonical 跨仓 manifest。**
