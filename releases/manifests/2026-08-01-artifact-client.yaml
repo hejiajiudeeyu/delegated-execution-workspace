@@ -1,0 +1,28 @@
+release_id: 2026-08-01-artifact-client
+created_at: 2026-07-31T17:57:08.864Z
+components:
+  protocol:
+    sha: adbab35b1c7a2eff62c38106b851b87eccdd6c40
+    path: repos/protocol
+  client:
+    sha: c920e9b02933c36ae00113e31075cbafe79c17f7
+    path: repos/client
+  platform:
+    sha: 9b8abda6e17d6671bbc550dbbf785a6b06e4549f
+    path: repos/platform
+  brand_site:
+    sha: ac8ea7be573b715bd1c9ad8b40397d7c19a1a374
+    path: repos/brand-site
+change_bundle: CHG-2026-188
+images:
+  rsp-platform: v0.3.0
+  rsp-relay: v0.3.0
+  rsp-gateway: v0.3.0
+packages:
+  "@delexec/contracts": 0.1.4
+  "@delexec/ops": 0.1.6-unpublished
+notes: "M1 unit 4b: client side of the artifact channel (CHG-2026-188). Images
+  unchanged from v0.3.0, which is what production runs. @delexec/ops on npm
+  (0.1.6) is now BEHIND this source and is recorded as 0.1.6-unpublished: an
+  external device cannot use the artifact channel until ops is republished."
+manifest_sha256: 44de84f9a566a25e32137bf63eaf3bd5498343d015f5fff0a7164a8f84798225

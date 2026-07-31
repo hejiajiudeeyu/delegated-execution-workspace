@@ -279,6 +279,9 @@ importers:
 
   repos/client/apps/ops:
     dependencies:
+      '@delexec/artifact-client':
+        specifier: 0.1.0
+        version: link:../../packages/artifact-client
       '@delexec/caller-controller':
         specifier: 0.1.0
         version: link:../caller-controller
@@ -476,14 +479,22 @@ importers:
         specifier: ^12.6.2
         version: 12.8.0
 
+  repos/client/packages/artifact-client: {}
+
   repos/client/packages/caller-controller-core:
     dependencies:
+      '@delexec/artifact-client':
+        specifier: 0.1.0
+        version: link:../artifact-client
       '@delexec/contracts':
         specifier: ^0.1.0
         version: link:../../../protocol/packages/contracts
 
   repos/client/packages/responder-runtime-core:
     dependencies:
+      '@delexec/artifact-client':
+        specifier: 0.1.0
+        version: link:../artifact-client
       '@delexec/contracts':
         specifier: ^0.1.0
         version: link:../../../protocol/packages/contracts

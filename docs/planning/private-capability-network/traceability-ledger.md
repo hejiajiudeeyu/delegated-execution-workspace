@@ -41,8 +41,8 @@ Created: 2026-07-31（Wave 0 产出）· 单一事实源 = `.trellis/tasks/07-17
 | FR-025 | 任务排队 (P1) | protocol + platform | partial | 协议侧 `queued`/`executing` 已区分（protocol `d2ad83b`）；平台未实现 |
 | FR-030 | 长任务状态 | protocol + platform | partial | **协议侧完成**：四轴 + 合法迁移 + 跨轴校验（protocol `d2ad83b`，34 例）；platform 侧实现未开始 |
 | FR-031 | 状态持久化 | platform | partial | 快照持久化存在；`postgres-persistence` 集成测试已恢复入套件（platform `9584fdf`） |
-| FR-032 | 输入 artifact | protocol + platform + client | partial | 平台侧通道已实现：受限槽位→直传→checksum 提交→按 grant 授权下载（platform `0b77672`，12 例集成）；**客户端尚未接入**该通道 |
-| FR-033 | 输出 artifact | protocol + client | partial | 输出 artifact hash 与附件绑定存在；缺证据包/日志摘要形态 |
+| FR-032 | 输入 artifact | protocol + platform + client | **done**（代码侧） | 平台通道（platform `0b77672`）+ 客户端接入（client `c920e9b`，7 例集成对真实 platform-api）；字节离开信封，只传描述符。**跨设备实跑待 M1 单元 6** |
+| FR-033 | 输出 artifact | protocol + client | partial | responder 输出走 artifact 通道并携描述符（client `c920e9b`）；仍缺证据包/日志摘要形态（M4 相关） |
 | FR-034 | Artifact 完整性 | protocol + platform | **done**（平台侧） | checksum 不符即拒绝提交并保持 allocated，失败字节永不成为已交付（platform `0b77672`）；未 committed 的 artifact 绝不出字节。Delivery Integrity 轴与 Call 的绑定待 M3 |
 | FR-035 | 可恢复故障 | protocol + client + platform | partial | 协议侧三等级 + `mayAutoRerun`（默认不重跑）+ 对账报告校验已冻结（protocol `d2ad83b`）；客户端 journal 与平台对账未实现 |
 | FR-036 | 进度事件 (P1) | protocol + client | todo | |

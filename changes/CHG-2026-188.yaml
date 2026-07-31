@@ -1,0 +1,14 @@
+change_id: CHG-2026-188
+goal: M1 delivery unit 4b — client side of the artifact channel; artifact bytes leave the message envelope
+protocol_sha: adbab35b1c7a2eff62c38106b851b87eccdd6c40
+client_sha: c920e9b02933c36ae00113e31075cbafe79c17f7
+platform_sha: 9b8abda6e17d6671bbc550dbbf785a6b06e4549f
+brand_site_sha: ac8ea7be573b715bd1c9ad8b40397d7c19a1a374
+owner: hejiajiudeeyu
+risk_level: medium
+affected_scope:
+  - client
+  - transport
+contracts_check: passed
+integration_check: passed
+notes: "Completes the artifact channel started in CHG-2026-187. client c920e9b02933c36ae00113e31075cbafe79c17f7 adds @delexec/artifact-client and wires both ends: the responder uploads execution artifacts and sends descriptors instead of base64, and the caller resolves descriptors and verifies bytes before anything acts on them. This removes artifacts from the message envelope, which was risk R2 — the transport was carrying large-file semantics it was never designed for. Design points worth recording: the commit claims a checksum the client computed locally rather than echoing the server's, so the check catches corruption in transit instead of being tautological; a download is refused unless its bytes hash to the committed checksum; resolved descriptors are materialized into the same attachment shape the inline binding checks already use, so both transports converge on one verification path and a descriptor whose bytes fail yields no attachment, failing the existing binding check exactly as a corrupt inline artifact would. Backward compatibility is deliberate: local-only runs with no platform binding keep the inline path unchanged, and an upload failure falls back to inline rather than delivering a result whose artifacts the caller could not fetch. Evidence: 7 new integration cases exercised against a real platform-api (byte-identical round trip, checksum-mismatch refusal, locally computed claim, descriptor round trip through the envelope shape, failed upload reported not dropped, missing credentials refused, cross-request access denied); client integration 94 passed, unit 143 passed, client packages check green, and platform e2e still 7/7. Two packaging follow-ons were required and are part of this change: @delexec/artifact-client is added to the ops bundleDependencies or the packed CLI cannot resolve it in a clean room, and it is registered in the client packages check. NOTE: @delexec/ops on npm is now behind this source; publishing it is a separate authorized step and is needed before an external device can use the channel."

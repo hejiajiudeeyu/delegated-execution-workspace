@@ -19,6 +19,17 @@ projects:
       - protocol/contracts
       - shared/runtime-support
 
+  client/support:
+    repo: client
+    tags:
+      - layer:client
+      - scope:support
+    package_names:
+      - "@delexec/artifact-client"
+    allow_dependencies:
+      - protocol/contracts
+      - client/support
+
   client/runtime:
     repo: client
     tags:
@@ -35,6 +46,7 @@ projects:
       - shared/runtime-support
       - client/runtime
       - client/transports
+      - client/support
 
   client/transports:
     repo: client
@@ -68,6 +80,7 @@ projects:
       - client/runtime
       - client/transports
       - client/ops
+      - client/support
 
   platform/data:
     repo: platform
