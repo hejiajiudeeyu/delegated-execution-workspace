@@ -1,0 +1,16 @@
+change_id: CHG-2026-180
+goal: M2 2.0a/2.0b — operator console rebuilt as a React SPA (owner-approved design spec), released as v0.2.0 and rolled to production; 2.1 rehearsal unblocked
+protocol_sha: b9234e267ce91ea26a541e7dcbcae96f40a51d8d
+client_sha: c53cf7a65e449a57fa28e8c73f270d5843dc4941
+platform_sha: 60311d967f94b3c969748e08fc9574115da086e5
+brand_site_sha: ac8ea7be573b715bd1c9ad8b40397d7c19a1a374
+owner: hejiajiudeeyu
+risk_level: medium
+affected_scope:
+  - platform
+  - deployment
+  - operator
+  - docs
+notes: "Owner approved landing the console rebuild (2.0a design sign-off + 2.0b). platform 9091ea8 replaces the string-template vanilla console with a React SPA per the console-rebuild design spec (M1-M10): inline feedback beside every action, non-2xx never renders as empty state, credential save probes the platform before reporting verified, destructive/funding actions have no defaults, recovery is a three-step wizard; zh-first copy; gateway serves the fingerprinted vite build (index.html no-cache, /assets/* immutable) via a new console-build Docker stage + .dockerignore; legacy vanilla modules and the unserved React prototype retired (42 files, +1833/-5757). Local validation before landing: unit 31 passed, integration 15 passed / 2 skipped, vite build clean. First CI push failed honestly on two leftover gaps from the interrupted session: the public-stack smoke still fetched the retired /console/src/main.js (404), and CI checkouts have no dist so the gateway integration static assertions 404'd (the earlier local green had leaned on a leftover workspace dist). platform 60311d9 fixes both: smoke resolves the fingerprinted bundle from index.html (and image-build failures now surface docker output), integration beforeAll builds the SPA when dist is missing so npm test is self-contained; a local smoke run also hit a transient rsp-relay image build failure that passed on rerun end-to-end. main CI run 28706996109 green; tag v0.2.0 -> CI 28707058335 + Images 28707058353 green (3 images to GHCR + published-image-smoke). Production gateway rolled v0.1.7 -> v0.2.0 (timestamped override backup; api/relay stay v0.1.2 per compatibility matrix): host container Up, local 28085 serves the SPA with assets/index-DoU8e5Gd.js, POST /session/recover unauth 403; public callanything.xyz healthz + platform/healthz 200, /console/ 200 no-cache, fingerprinted bundle 200 immutable. Note for 2.1: the operator console passphrase was reset during the round-9 recovery drill and recorded on-host per checklist; the rebuilt UI keeps the same gateway session flow. Client/protocol/brand-site pointers unchanged from CHG-2026-179."
+contracts_check: passed
+integration_check: passed

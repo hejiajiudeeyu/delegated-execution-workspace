@@ -17,11 +17,11 @@
 - 基础 compose 与 platform 仓 `deploy/public-stack/docker-compose.yml` 保持一致(2026-07-04 校验 diff 为空后同步);aliyun override 负责:钉每服务镜像 tag、服务只绑 localhost 端口(28080/28085/28090/25432)、禁用 caddy edge(host nginx 持有 80/443)
 - caddy edge 通过 profile `caddy-edge-disabled-on-aliyun` 禁用,不要在此主机启用
 
-## 当前版本(2026-07-04 起)
+## 当前版本(2026-07-04 轮12 起)
 
 | 服务 | 镜像 | 说明 |
 |------|------|------|
-| platform-console-gateway | `rsp-gateway:v0.1.6` | T-504 恢复流程 + 状态化会话面板 |
+| platform-console-gateway | `rsp-gateway:v0.2.0` | Console 重建为 React SPA(此前轮9滚过 v0.1.7 子路径修复) |
 | platform-api | `rsp-platform:v0.1.2` | 有意保持;协同升级见兼容矩阵 |
 | relay | `rsp-relay:v0.1.2` | 同上 |
 | postgres | `postgres:16-alpine` | 数据卷 `public-stack-postgres-data` |
@@ -40,7 +40,7 @@
 - 2026-07-04 起全部服务 `restart: unless-stopped`(platform 仓 `707b480`)。**事故记录**:2026-07-04 03:08 主机重启,旧策略 `no` 导致全栈宕机约 5.5 小时,08:44 随 1.4 滚动一并恢复
 - 回滚:部署目录内有时间戳 `.bak.*` 的 compose/override 备份;回滚 gateway 只需把 override 里的镜像 tag 改回并重跑 compose 调用
 - 健康检查:本地 `curl 127.0.0.1:28080/healthz`、`127.0.0.1:28085/`;公网 `https://callanything.xyz/healthz`、`/platform/healthz`、`/console/`
-- 版本指纹:`/console/src/session-view.js` 200 ⇔ gateway ≥ v0.1.6
+- 版本指纹:v0.2.0 起 console 为构建产物 SPA——`/console/` 的 index.html 引用 `assets/index-<hash>.js`(该资产 200 且 `cache-control: immutable`)⇔ gateway ≥ v0.2.0;旧指纹 `/console/src/session-view.js` 自 v0.2.0 起应 404
 
 ## 2026-07-04 滚动验证记录
 

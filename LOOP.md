@@ -48,9 +48,9 @@
 
 | # | 事项 | Owning repo | 状态 | 备注 |
 |---|------|-------------|------|------|
-| 2.0a | Console 重建 · 设计稿(信息架构/交互规范/关键界面稿),owner 拍板后进入实现 | `repos/platform`(设计稿先落四仓 planning) | 设计稿已出,待 owner 拍板 | 需求输入 = M1–M10 + owner 走查体感 + 自动化run截图;交互底线:操作反馈内联可见、非2xx绝不渲染空态、凭据保存必须验活、敏感操作无默认值、静态资产带指纹 |
-| 2.0b | Console 重建 · 实现 + 单测 + 自动化浏览器回归(Playwright 全流程绿) | `repos/platform` | blocked by 2.0a | 含退役未服务的旧 React 原型;发版走 tag→Images→滚生产 |
-| 2.1 | 全新身份彩排：Operator 全程浏览器 `/console/`（含丢口令恢复路径演练一次）；**必须包含真实浏览器人工走查** | 第四仓（彩排记录） | blocked by 2.0b(重建后重新计数) | 2026-07-04 自动化跑通旧UI全流程零违规(`T-503-rerun-automated-run.md`,CHG-2026-179);owner 人工走查贡献 M1–M10 后判定重建,本次不计数 |
+| 2.0a | Console 重建 · 设计稿(信息架构/交互规范/关键界面稿),owner 拍板后进入实现 | `repos/platform`(设计稿先落四仓 planning) | done (2026-07-04) | owner 拍板通过,按设计稿实现;交互底线全部落入 v0.2.0 |
+| 2.0b | Console 重建 · 实现 + 单测 + 自动化浏览器回归(Playwright 全流程绿) | `repos/platform` | done (2026-07-04) | React SPA 落地(platform `9091ea8`+`60311d9`),含退役旧 vanilla 模块与未服务 React 原型;**v0.2.0** 发布(CI+Images 全绿)并滚生产;单测31/集成15绿;Playwright 全流程回归并入 2.1 首次彩排执行(轮9已有全流程绿基线);CHG-2026-180 |
+| 2.1 | 全新身份彩排：Operator 全程浏览器 `/console/`（含丢口令恢复路径演练一次）；**必须包含真实浏览器人工走查** | 第四仓（彩排记录） | todo(已解除阻塞) | 2026-07-04 自动化跑通旧UI全流程零违规(`T-503-rerun-automated-run.md`,CHG-2026-179);owner 人工走查贡献 M1–M10 后判定重建,本次不计数;新UI v0.2.0 已上线,可开始计数 |
 | 2.2 | 违规表为空 → 归档报告，Wave 5 关闭 | 第四仓 | blocked by 2.1 | |
 
 ### M3 首次即成功硬化（摩擦清单清零）
@@ -82,6 +82,7 @@
 
 | 日期 | 轮次/事项 | 结果 | 证据 |
 |------|-----------|------|------|
+| 2026-07-04 | 轮12(loop):2.0a 拍板 + 2.0b Console 重建落地 → **v0.2.0 滚生产,2.1 解锁** | owner 拍板后落地中断会话遗留的重建 WIP(先本地验证:单测31/集成15/构建绿):React SPA 替换 vanilla console(platform `9091ea8`,+1833/−5757)+ console-build Docker 阶段 + 指纹资产缓存;首推 CI 如实红了两处收尾遗漏——烟测仍抓已退役 `/console/src/main.js`、CI 无 dist 致集成静态断言 404(此前本地绿沾了工作区残留 dist 的光)→ `60311d9` 修复(烟测解析指纹 bundle+构建错误透出 docker 输出;集成 beforeAll 缺 dist 自动构建);main CI 28706996109 绿;tag v0.2.0 → CI+Images 全绿;生产 gateway v0.1.7→**v0.2.0**(api/relay 留 v0.1.2),公网 `/console/` 200 no-cache+指纹 bundle 200 immutable+healthz 全 200;本地烟测另捕获一次 rsp-relay 镜像构建瞬态失败(重跑过);五件套全过 | CHG-2026-180;platform `9091ea8`+`60311d9`+tag `v0.2.0`;CI runs 28706996109/28707058335;Images run 28707058353 |
 | 2026-07-04 | 轮11(loop):2.0a 设计稿产出 → **停车等拍板** | 交互规范 v1(R1–R10 逐条映射 M1–M10)+ 三张浏览器可开的 HTML 设计稿(会话/恢复三步向导、审批队列双Tab+生命周期条、计费自动查询+确认充值);全部中文优先;含"凭据未验证=整面板引导态"等关键交互决策 | `docs/planning/console-rebuild/`(design-spec.md + mockups/01–03) |
 | 2026-07-04 | 轮10(loop):owner 人工走查 + 重建决议 | owner 浏览器走查贡献 10 条摩擦(占位符陷阱、401 伪装空态、假 Ready、无引导等,全指向 console 交互架构)→ owner 判定推倒重建;决议:仅前端(网关 API 冻结)、React 同栈、设计稿先行、重建后再计彩排;backlog 新增 2.0a/2.0b,2.1 改挂其后 | `T-503-rerun-manual-findings.md`(M1–M10);owner 对话记录 |
 | 2026-07-04 | 轮9(loop):2.1 自动化跑通 + v0.1.7 紧急修复 | owner 真实浏览器 1 分钟命中 blocker:console API 子路径在任何边缘反代下断裂(前导斜杠丢 `/gateway` 前缀,潜伏 3 版,历来测试全走直连 :8085)→ platform `49b4273` 修复+8 单测,**v0.1.7** 发布(Images 28692687385 绿)并滚生产;自动化 Chromium 操作员全流程(恢复演练 RESET→解锁→凭据→审批→建户+充值 20000)+ Caller 付费调用 → **`BILLING_SETTLED`**,本次运行违规表**空**;口令按清单第 5 步入主机交接;五件套全过(check:bundles 又拦下一次手写 SHA) | CHG-2026-179;platform `36d1839`+tag `v0.1.7`;`T-503-rerun-automated-run.md`;req_cb9c8a87 |
