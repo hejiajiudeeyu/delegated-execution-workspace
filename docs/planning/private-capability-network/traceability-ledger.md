@@ -28,8 +28,8 @@ Created: 2026-07-31（Wave 0 产出）· 单一事实源 = `.trellis/tasks/07-17
 | FR | 需求 | Owner | 状态 | 证据 |
 |---|---|---|---|---|
 | FR-001 | 创建单 Operator 信任域 | platform | partial | public-stack compose + console v0.2.0 可初始化；缺"网络"对象 |
-| FR-002 | 受控凭据注册 Responder 设备 | platform + client | partial | 现有 responder 注册 + API key scope；缺安全 enrollment（可匿名注册） |
-| FR-003 | heartbeat 与在线状态 | platform + client | partial | 心跳与 healthy/degraded/offline 存在；缺容量与版本上报 |
+| FR-002 | 受控凭据注册 Responder 设备 | platform + client | **done** | 匿名注册路径已移除，enrollment 必须携带凭据并绑定注册者身份（platform `9f2aa49`，client `5bdbda9`，9 例集成） |
+| FR-003 | heartbeat 与在线状态 | platform + client | **done** | 心跳带 version + capacity 并在运营视图呈现；maintenance 粘性、陈旧心跳压过自报（platform `9f2aa49`）。客户端主动上报容量待接入运行时（记为 FR-036 邻项） |
 | FR-004 | Provider-managed execution | client | done | Platform 不持有 Provider 代码/模型/secrets（现架构即如此） |
 | FR-005 | 最小权限：只执行已注册 Hotline | client | partial | 无通用 shell 入口；缺文件/网络访问范围可配置（NFR-S02） |
 | FR-006 | 设备维护窗口 (P1) | platform | todo | |
@@ -104,8 +104,8 @@ Created: 2026-07-31（Wave 0 产出）· 单一事实源 = `.trellis/tasks/07-17
 | ID | 要求 | Owner | 状态 | 证据 |
 |---|---|---|---|---|
 | NFR-S01 | 禁止任意远程 shell/通用代码执行 | client + platform | **done** | 仅预声明 Hotline 可执行；全仓无通用 shell 入口 |
-| NFR-S02 | 最小权限、文件/网络范围可配置 | client | partial | relay receiver token 已按 inbox 最小授权（platform `f26a08b`）；设备侧文件/网络范围仍未做 |
-| NFR-S03 | 不打印/导出 secrets，日志脱敏 | platform | partial | 未系统审计；S3 弱默认密钥断言未做 |
+| NFR-S02 | 最小权限、文件/网络范围可配置 | client | partial | relay receiver token 按 inbox 最小授权（platform `f26a08b`）+ 设备入网需凭据（`9f2aa49`）；设备侧文件/网络访问范围仍未做 |
+| NFR-S03 | 不打印/导出 secrets，日志脱敏 | platform | partial | 未系统审计；S3 弱默认密钥断言未做。（相关：审计 S6 女巫面因 FR-002 移除匿名注册而显著收窄，但注册限速仍偏松） |
 | NFR-S04 | token/签名/关键操作可验证 | protocol | **done** | HMAC task token + Ed25519 结果签名 + 公钥校验；relay 业务路由 bearer 鉴权（platform `f26a08b`） |
 | NFR-S05 | 内容查看/资金/版本/争议必审计 | platform | partial | 通用审计存在；内容访问与争议专项待 M3 |
 | NFR-R01 | 任何 Call 必达终态 | protocol + platform | partial | 协议侧 `isCallTerminal` 要求四轴齐备（已交付需验收+资金收口，protocol `d2ad83b`）；平台护栏未实现 |

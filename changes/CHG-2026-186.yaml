@@ -1,0 +1,16 @@
+change_id: CHG-2026-186
+goal: M1 delivery unit 3 — controlled device enrollment (FR-002) and version/capacity reporting (FR-003)
+protocol_sha: adbab35b1c7a2eff62c38106b851b87eccdd6c40
+client_sha: 5bdbda98e8c8ad9201723a0963261f4c1bb9b10a
+platform_sha: 9f2aa49c449c76729e16ac43e7697625edf3c9e3
+brand_site_sha: ac8ea7be573b715bd1c9ad8b40397d7c19a1a374
+owner: hejiajiudeeyu
+risk_level: medium
+affected_scope:
+  - platform
+  - client
+  - protocol
+  - security
+contracts_check: passed
+integration_check: passed
+notes: "Third delivery unit of M1. FR-002: platform 9f2aa49c449c76729e16ac43e7697625edf3c9e3 removes anonymous responder enrollment; /v2/responders/register now requires an authenticated caller or responder and binds the device to the enrolling identity. This is a deliberate breaking change to a public route, justified because the private single-Operator network is the product for this stage and the anonymous path was the audit's S6 sybil surface; the marketplace consumer flow it served is explicitly out of scope per the frozen PRD. FR-003: heartbeats now carry device version (agent/runtime/build) and current capacity (max_concurrent/in_flight/accepting), both surfaced in the operator responder view. Deliberate semantics: unreported capacity stays null rather than zero so 'not reported' cannot be confused with 'no capacity left'; a partial heartbeat does not clear previously reported facts; a self-declared maintenance state is sticky so a fresh heartbeat cannot silently promote a device back into routing; and a stale heartbeat outranks a stale self-report, so a device claiming healthy while silent reads as offline. An unsupported status is refused with CONTRACT_INVALID_HEARTBEAT_STATUS (registered in protocol adbab35b1c7a2eff62c38106b851b87eccdd6c40) rather than coerced. client 5bdbda98e8c8ad9201723a0963261f4c1bb9b10a makes the responder runtime fail fast naming the missing credential instead of issuing a doomed unauthenticated request. Evidence: platform integration 60 passed / 2 skipped including 9 new enrollment and capability cases, platform e2e 7/7, service-packages and deploy-config green; client unit 143 passed, client integration 87 passed including a new case pinning the credential-less refusal; protocol 88 unit passed and the contracts package check green. Three pre-existing tests that asserted the anonymous behavior were updated to the new contract rather than the behavior being softened to keep them passing."
