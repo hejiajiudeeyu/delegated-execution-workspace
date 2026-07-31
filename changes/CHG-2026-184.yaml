@@ -1,0 +1,14 @@
+change_id: CHG-2026-184
+goal: follow-up to CHG-2026-183 — make the client's bootstrap-responder dependency explicit after the fail-safe default flip
+protocol_sha: d63317f9b5cfcf750924084f6f65db212c33d43f
+client_sha: d77422f606d102535a96a3fbe987caef0c0694c3
+platform_sha: f26a08bab2e3a16dd5875d92f69516fcfe27e039
+brand_site_sha: ac8ea7be573b715bd1c9ad8b40397d7c19a1a374
+owner: hejiajiudeeyu
+risk_level: low
+affected_scope:
+  - client
+  - tests
+contracts_check: passed
+integration_check: passed
+notes: "Client CI went red on CHG-2026-183 and the cause was real, not flaky. platform 1c8f206 flipped ENABLE_BOOTSTRAP_RESPONDERS to false as a fail-safe, and 37 client integration call sites had been relying on that ambient default to read state.bootstrap.responders[0]; without it they failed with 'Cannot read properties of undefined'. client d77422f passes bootstrapEnabled: true explicitly at every site. Worth recording why local runs stayed green: platform-api self-loads the gitignored <platform>/deploy/platform/.env at import time and that file sets the flag true, so a developer machine masks the regression entirely — reproducing CI by flipping that file locally showed the same 16 failures and then confirmed the fix, with client integration 86/86 under CI-like conditions. Client CI run 30640418834 green. Also carries the earlier supervisor fix (f0706cf, never mint a relay credential for a relay it does not manage) which was validated in CHG-2026-183 but landed after that bundle froze. Release manifest refrozen as 2026-07-31-relay-auth against this combination; five-check chain green."
