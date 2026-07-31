@@ -2,6 +2,24 @@
 
 This repository is a synthetic monorepo superproject for cross-repo development orchestration.
 
+## 当前进行中的工作（先读这一节）
+
+**唯一真相源** = `.trellis/tasks/07-17-call-anything-private-capability-network-mvp/prd.md`
+（单 Operator Selfhost 私有能力网络；owner 于 2026-07-31 决定的方向）
+
+| 想知道什么 | 看哪里 |
+|---|---|
+| owner 拍过哪些板、授权了什么 | 同目录 `decisions.md` |
+| 每条需求做到哪一步、证据是什么 | `docs/planning/private-capability-network/traceability-ledger.md` |
+| 当前里程碑的交付单元与进度 | `.trellis/tasks/07-31-M1-public-cross-device-runtime/goal.md` |
+| 当前认证的跨仓组合 | `releases/current.yaml`（`node tools/release-manifest.mjs verify` 校验） |
+| 生产是否与认证组合一致 | `node tools/release-manifest.mjs check https://callanything.xyz --component transport-relay=http://127.0.0.1:28090/buildz`（relay 公网 403，需内网/隧道） |
+| console 为何要第三次重做 | `.trellis/tasks/07-15-replace-public-console-frontend/diagnosis-v0.2.0.md` |
+
+**已作废，不要照着做**：根目录 `LOOP.md`（公网 marketplace 闭环，2026-07-31 归档）、`docs/planning/roadmap-2026H2.md` 的阶段表、`docs/planning/product-audit/P0.5-economic-closure-implementation.md`（Marketplace 版经济闭环蓝图，PRD 明令不照搬）。这些文档看起来仍然合理，但方向已变。
+
+台账规则：**状态只能由证据推动**，证据列为空即不得高于 `todo`。
+
 ## Start Here
 
 Read in this order before changing behavior:
