@@ -1,0 +1,25 @@
+release_id: 2026-08-01-artifact-channel
+created_at: 2026-07-31T16:53:19.148Z
+components:
+  protocol:
+    sha: adbab35b1c7a2eff62c38106b851b87eccdd6c40
+    path: repos/protocol
+  client:
+    sha: 5bdbda98e8c8ad9201723a0963261f4c1bb9b10a
+    path: repos/client
+  platform:
+    sha: 0b776729dea2d9aecd915a7bc9c253edd2df1273
+    path: repos/platform
+  brand_site:
+    sha: ac8ea7be573b715bd1c9ad8b40397d7c19a1a374
+    path: repos/brand-site
+change_bundle: CHG-2026-187
+images: {}
+packages:
+  "@delexec/contracts": 0.1.4
+  "@delexec/ops": 0.1.6
+notes: "M1 unit 4: artifact metadata and authorization plane (CHG-2026-187).
+  First combination consuming the published contracts 0.1.4 call-state slice.
+  Images unchanged: production still runs the baseline images, so runtime
+  agreement remains undetermined."
+manifest_sha256: eea7c7daff58247ea02077cb7977cdad0a5504b54d0a0516987f8b1ab2b41f0e

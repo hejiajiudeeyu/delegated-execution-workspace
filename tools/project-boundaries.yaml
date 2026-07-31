@@ -89,6 +89,7 @@ projects:
       - scope:support
     package_names:
       - "@delexec/build-info"
+      - "@delexec/artifact-store"
     allow_dependencies:
       - platform/support
 

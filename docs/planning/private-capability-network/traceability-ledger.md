@@ -41,9 +41,9 @@ Created: 2026-07-31（Wave 0 产出）· 单一事实源 = `.trellis/tasks/07-17
 | FR-025 | 任务排队 (P1) | protocol + platform | partial | 协议侧 `queued`/`executing` 已区分（protocol `d2ad83b`）；平台未实现 |
 | FR-030 | 长任务状态 | protocol + platform | partial | **协议侧完成**：四轴 + 合法迁移 + 跨轴校验（protocol `d2ad83b`，34 例）；platform 侧实现未开始 |
 | FR-031 | 状态持久化 | platform | partial | 快照持久化存在；`postgres-persistence` 集成测试已恢复入套件（platform `9584fdf`） |
-| FR-032 | 输入 artifact | protocol + platform + client | partial | 协议侧 artifact 描述符已冻结并**主动拒绝 bucket/object_key/presigned_url/local_path**（protocol `d2ad83b`）；跨设备上传未实现 |
+| FR-032 | 输入 artifact | protocol + platform + client | partial | 平台侧通道已实现：受限槽位→直传→checksum 提交→按 grant 授权下载（platform `0b77672`，12 例集成）；**客户端尚未接入**该通道 |
 | FR-033 | 输出 artifact | protocol + client | partial | 输出 artifact hash 与附件绑定存在；缺证据包/日志摘要形态 |
-| FR-034 | Artifact 完整性 | protocol + platform | partial | 输出 checksum 校验存在；协议侧已加独立 Delivery Integrity 轴 + `validateDeliveryArtifacts`（committed 才算交付，protocol `d2ad83b`）；平台侧持久化状态位未接 |
+| FR-034 | Artifact 完整性 | protocol + platform | **done**（平台侧） | checksum 不符即拒绝提交并保持 allocated，失败字节永不成为已交付（platform `0b77672`）；未 committed 的 artifact 绝不出字节。Delivery Integrity 轴与 Call 的绑定待 M3 |
 | FR-035 | 可恢复故障 | protocol + client + platform | partial | 协议侧三等级 + `mayAutoRerun`（默认不重跑）+ 对账报告校验已冻结（protocol `d2ad83b`）；客户端 journal 与平台对账未实现 |
 | FR-036 | 进度事件 (P1) | protocol + client | todo | |
 
@@ -104,13 +104,13 @@ Created: 2026-07-31（Wave 0 产出）· 单一事实源 = `.trellis/tasks/07-17
 | ID | 要求 | Owner | 状态 | 证据 |
 |---|---|---|---|---|
 | NFR-S01 | 禁止任意远程 shell/通用代码执行 | client + platform | **done** | 仅预声明 Hotline 可执行；全仓无通用 shell 入口 |
-| NFR-S02 | 最小权限、文件/网络范围可配置 | client | partial | relay receiver token 按 inbox 最小授权（platform `f26a08b`）+ 设备入网需凭据（`9f2aa49`）；设备侧文件/网络访问范围仍未做 |
+| NFR-S02 | 最小权限、文件/网络范围可配置 | client + platform | partial | relay receiver token 按 inbox 授权、设备入网需凭据、artifact grant 按单件+单向授权（`f26a08b`/`9f2aa49`/`0b77672`）；**设备侧文件/网络访问范围仍未做** |
 | NFR-S03 | 不打印/导出 secrets，日志脱敏 | platform | partial | 未系统审计；S3 弱默认密钥断言未做。（相关：审计 S6 女巫面因 FR-002 移除匿名注册而显著收窄，但注册限速仍偏松） |
 | NFR-S04 | token/签名/关键操作可验证 | protocol | **done** | HMAC task token + Ed25519 结果签名 + 公钥校验；relay 业务路由 bearer 鉴权（platform `f26a08b`） |
 | NFR-S05 | 内容查看/资金/版本/争议必审计 | platform | partial | 通用审计存在；内容访问与争议专项待 M3 |
 | NFR-R01 | 任何 Call 必达终态 | protocol + platform | partial | 协议侧 `isCallTerminal` 要求四轴齐备（已交付需验收+资金收口，protocol `d2ad83b`）；平台护栏未实现 |
 | NFR-R02 | 重启后状态与账本幂等恢复 | platform + client | partial | 快照 hydrate 存在；孤儿 hold 无对账（审计 D3.4） |
-| NFR-R03 | checksum 失败不得标 delivered | protocol + platform | partial | 协议侧已成硬约束：`invalid delivery cannot be settled` + 交付要求 committed artifact（protocol `d2ad83b`）；平台侧未接 |
+| NFR-R03 | checksum 失败不得标 delivered | protocol + platform | **done** | 协议侧硬约束 + 平台侧 `CONTRACT_ARTIFACT_CHECKSUM_MISMATCH` 拒绝提交（platform `0b77672`）；两侧一致 |
 | NFR-R04 | hold/settle/refund exactly-once | protocol + platform | partial | 协议侧 settled/refunded 为终态、自迁移幂等（protocol `d2ad83b`）；平台跨分录单事务与崩溃测试仍缺 |
 | NFR-R05 | 设备离线检测 ≤ 2 分钟 | platform | partial | 阈值存在，未按此数值校准 |
 | NFR-R06 | 无人值守完成率 ≥ 90% | 全体 | todo | M5 dogfood 度量 |
