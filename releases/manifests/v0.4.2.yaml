@@ -1,0 +1,28 @@
+release_id: v0.4.2
+created_at: 2026-08-01T18:46:47.261Z
+components:
+  protocol:
+    sha: 5b1acd0064055e8606d91bad113a217bdb1ff694
+    path: repos/protocol
+  client:
+    sha: ddcc3b453795191622a92b93db2f2dbe1ba42e82
+    path: repos/client
+  platform:
+    sha: 39e776e5d206ae0ff62ca43fdd018ee5dabef16a
+    path: repos/platform
+  brand_site:
+    sha: ac8ea7be573b715bd1c9ad8b40397d7c19a1a374
+    path: repos/brand-site
+change_bundle: CHG-2026-193
+images:
+  rsp-platform: v0.4.2
+  rsp-relay: v0.4.2
+  rsp-gateway: v0.4.2
+packages:
+  "@delexec/contracts": 0.1.4
+  "@delexec/ops": 0.1.7
+notes: "Console rebuild step 2: the UI on the three approved main lines, plus a
+  correction to CHG-2026-192's E6 claim (the approval UI existed; the real gap
+  is that production's console has no admin credential configured). Rolled to
+  production 2026-08-02."
+manifest_sha256: ddd3995b2b173bfcc0066ebf09e249f658117e6963582016abccb5e061621236

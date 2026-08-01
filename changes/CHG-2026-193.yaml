@@ -1,0 +1,16 @@
+change_id: CHG-2026-193
+goal: console rebuild step 2 — the UI on the three approved main lines, and a correction to what CHG-2026-192 claimed about E6
+protocol_sha: 5b1acd0064055e8606d91bad113a217bdb1ff694
+client_sha: ddcc3b453795191622a92b93db2f2dbe1ba42e82
+platform_sha: 39e776e5d206ae0ff62ca43fdd018ee5dabef16a
+brand_site_sha: ac8ea7be573b715bd1c9ad8b40397d7c19a1a374
+owner: hejiajiudeeyu
+risk_level: medium
+affected_scope:
+  - platform
+  - console
+  - release
+  - production
+contracts_check: passed
+integration_check: passed
+notes: "CORRECTION FIRST: CHG-2026-192 recorded E6 as unmet because 'the console has no UI, approval has nowhere to click'. That was wrong. ReviewQueuePage has implemented approve/reject/enable since v0.2.0 and admin.reviewAction was already wired; admin curl was used during unit 6 because that run was scripted, not because the console could not do it. Verified empirically this round by clicking 批准 in the UI against a seeded stack: local.mineru.pdf.parse.v1 moved review=pending status=disabled to review=approved status=enabled, and the item then disappeared from the attention feed. The ledger row is corrected accordingly. The real remaining E6 gap is operational, not missing capability: production's console is locked with a passphrase that no longer authenticates (the recorded CONSOLE-PASSPHRASE.txt returns AUTH_INVALID_PASSPHRASE) and reports admin_api_key_configured=false, so nobody can currently use the approval UI that exists. Recovering that needs the bootstrap secret and a new operator-chosen passphrase, which is the owner's to set. UI (platform 373ca64, v0.4.2): main line A replaces the health-light overview with the attention feed — every row is real work and leads somewhere, an empty feed says so in a sentence rather than implying it with green lights, and the page names the situations it cannot yet see so silence about an unbuilt feature is not read as silence about a healthy system. Main line B adds /calls/:id, which did not exist in any form: timeline, artifacts, billing, device and hotline joined into one story, with the four state axes drawn as four independent rows rather than four badges in a line, and any axis the platform does not track marked untracked with its reason. The tenant id is carried into billing by link instead of transcribed by hand. Main line C's approval flow already existed and was left alone rather than rebuilt. A terminology layer gives every internal term one plain sentence in one file. TWO BUGS FOUND WHILE BUILDING: (1) the console dev server could never reach a gateway — gatewayBase() returned a bare '/' in DEV, new URL() rejects a relative base, and the throw was classified as gateway_down, so the dev console reported unreachable regardless of what was running. Both previous rebuilds were developed against a UI that could not load real data, which is worth weighing against the fact that both produced CRUD browsers. Now pinned by a unit test. (2) the four-axis reasons were English inside an otherwise Chinese console while the attention feed on the same endpoint family was already Chinese; fixed at the API rather than translated client-side, which would drift from what the platform means. Verified in a browser against a seeded local stack, not by reading code. Production rolled to v0.4.2, console asset index-COLS8Y2T.js, all three images together."

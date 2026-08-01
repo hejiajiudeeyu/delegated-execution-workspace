@@ -80,12 +80,12 @@ Created: 2026-07-31（Wave 0 产出）· 单一事实源 = `.trellis/tasks/07-17
 | FR-053 | 争议冻结 | platform | todo | Settlement `blocked` 态未实现 |
 | FR-054 | Exactly-once 资金语义 | platform | partial | 计费轨 CAS + 行锁 + 幂等充值（审计 D3.1）；缺跨分录单事务与崩溃测试 |
 | FR-055 | 可审计账本 | platform | partial | ULID 流水 + 前后余额快照；缺到 Call/版本/操作人的完整追溯 |
-| FR-060 | 运行总览 | platform | partial | 后端待办聚合已就位：`GET /v1/admin/attention` 返回待审热线/责任人、过宽限期无终态的调用、调用结束后仍冻结的资金、不可用设备，`nothing_to_do` 显式（platform `3d9af65`，CHG-2026-189）。**仍缺 UI**——console v0.2.0 的总览只有三盏健康灯，不接业务信号；告警维度见 FR-066 |
-| FR-061 | 元数据查看 | platform | partial | `GET /v1/admin/requests/:id` 服务端 join 时间线/artifact/计费/责任人容量与版本/热线/审计（platform `3d9af65`，CHG-2026-189）；未跟踪的轴报 `tracked:false` 而非编造。**仍缺 UI**：console 无 detail 路由 |
+| FR-060 | 运行总览 | platform | **done** | 后端聚合（platform `3d9af65`，CHG-2026-189）+ UI（platform `373ca64`，v0.4.2，CHG-2026-193）：首页即真实待办，每行可点进处理；无事时明说"没有需要你处理的事"而非三盏绿灯；并显式列出**它还看不到什么**（争议、验收到期），避免"未实现的沉默"被读成"健康的沉默"。告警维度见 FR-066 |
+| FR-061 | 元数据查看 | platform | **done** | `GET /v1/admin/requests/:id` 服务端 join（platform `3d9af65`）+ `/calls/:id` 详情页（platform `373ca64`）：时间线、artifact（已提交/已分配可辨、带 checksum）、资金、设备与热线聚成一页；四轴画成四条独立的行而非并排四个徽章；未跟踪的轴标注 `tracked:false` 并给出原因。租户 id 由链接带过去，不再要求手抄 |
 | FR-062 | 内容审查授权（选理由） | platform | todo | |
 | FR-063 | 内容访问审计 | platform | todo | 通用审计存在，缺内容访问专项且不可静默删除 |
 | FR-064 | 争议处理 | platform | todo | |
-| FR-065 | 版本可见 | platform + workspace | partial | `/buildz` 已实现；调用详情聚合已带责任人版本（platform `3d9af65`）。console 呈现仍未接（M0/M3 跨界，PRD 未分配，本台账归 M3） |
+| FR-065 | 版本可见 | platform + workspace | partial | `/buildz` 已实现；调用详情页已呈现设备版本与最近心跳（未上报时显示"未上报"而非 0，platform `373ca64`）。**仍缺**：运行时组合与认证 manifest 的漂移在 console 里没有入口，只能靠 `release-manifest check` |
 | FR-066 | 告警 (P1) | platform | todo | **当前零告警**：2026-07-04 宕机 5.5h 靠撞见发现（PRD 未分配，本台账归 P1 运维）。相关教训：`/v1/admin/attention` 的卡住检测自交付起从未在真实数据上触发过（读了生产事件不存在的字段），v0.4.1 修复——"没有告警"曾等于"看不见"，不等于"没事"（platform `539e0e7`） |
 
 ## M4 第一方 Research Hotline
@@ -125,7 +125,7 @@ Created: 2026-07-31（Wave 0 产出）· 单一事实源 = `.trellis/tasks/07-17
 | E3 | 接受/修订/自动接受/争议/结算/退款端到端证据 | todo | 仅有 hold→settle→refund 的旧路径证据 |
 | E4 | Operator 内容访问全部有理由与记录 | todo | 内容访问授权机制不存在 |
 | E5 | ≥3 个真实技术路线决策、≥2 个推动动作、≥1 次重复使用 | todo | 0 |
-| E6 | 正常流程无 SSH/远程桌面/admin curl/手工搬运 | **partial（明确未达标）** | 跨设备任务流本身干净：文档走 artifact 通道跨设备，无 SSH、无远程桌面、无手工搬运。**但设备与热线的审批仍必须用 admin curl**——console 第三次重做目前只做到后端聚合接口，没有 UI，`/v2/admin/{responders,hotlines}/:id/approve` 无处可点。E6 因此**未达标**，缺口 = console UI（CHG-2026-192 如实记录，未粉饰） |
+| E6 | 正常流程无 SSH/远程桌面/admin curl/手工搬运 | partial | ~~CHG-2026-192 记为"审批无 UI 可点，必须 admin curl"——**该记录有误**~~：`ReviewQueuePage` 自 v0.2.0 起就实现了批准/驳回/启用，单元 6 用 admin curl 是因为那次是脚本化跑的，不是因为控制台做不到。2026-08-02 已实证：在 UI 点「批准」，`local.mineru.pdf.parse.v1` 由 pending/disabled 变 approved/enabled，该条目随即从待办里消失（CHG-2026-193）。<br>**真实剩余缺口是运维性的**：生产 console 处于锁定态且 `admin_api_key_configured=false`，记录在案的口令已无法认证——存在的审批 UI 当前没人能用。解锁需 bootstrap secret + owner 自定新口令，属 owner 动作。跨设备任务流本身仍然干净（无 SSH / 无远程桌面 / 无手工搬运） |
 | E7 | Platform/Responder/Research 各一次受控恢复回滚演练 | todo | **备份工具链不存在**，恢复演练无从做起 |
 
 ## 台账维护规则
