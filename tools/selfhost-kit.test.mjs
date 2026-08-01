@@ -146,8 +146,16 @@ function writeMinimalPublicStackProfile(root) {
       "  handle_path /platform/* {",
       "    reverse_proxy platform-api:8080",
       "  }",
-      "  handle_path /relay/* {",
+      // Mirrors the real Caddyfile since CHG-2026-181: only the relay health
+      // probe is reachable from the edge, everything else on /relay/* is
+      // refused. A fixture still carrying the old broad proxy would let the
+      // route contract pass against a shape production no longer has.
+      "  handle /relay/healthz {",
+      "    rewrite * /healthz",
       "    reverse_proxy relay:8090",
+      "  }",
+      "  handle /relay/* {",
+      "    respond \"relay is internal-only\" 403",
       "  }",
       "  handle_path /gateway/* {",
       "    reverse_proxy platform-console-gateway:8085",
@@ -1265,6 +1273,29 @@ try {
   assert.match(publicSmoke.stdout, /\[ok\] Caddyfile route \/console\/\*/);
   assert.ok(!publicSmoke.stdout.includes(publicEnv.get("PLATFORM_ADMIN_API_KEY") || ""));
   assert.ok(!publicSmoke.stdout.includes(publicEnv.get("PLATFORM_CONSOLE_BOOTSTRAP_SECRET") || ""));
+
+  // Negative control for the relay line of the route contract. CHG-2026-181
+  // took the relay's business routes off the public edge; if the contract
+  // still matched a broad `handle_path /relay/*`, a Caddyfile that re-exposed
+  // send/poll/ack would sail through green. Putting the pre-hardening shape
+  // back must fail, or the check is decorative.
+  const caddyPath = path.join(tmpRoot, "repos/platform/deploy/public-stack/Caddyfile");
+  const hardenedCaddyfile = fs.readFileSync(caddyPath, "utf8");
+  const reExposedCaddyfile = hardenedCaddyfile.replace(
+    /  handle \/relay\/healthz \{\n    rewrite \* \/healthz\n    reverse_proxy relay:8090\n  \}\n  handle \/relay\/\* \{\n    respond "relay is internal-only" 403\n  \}/,
+    ["  handle_path /relay/* {", "    reverse_proxy relay:8090", "  }"].join("\n")
+  );
+  // Without this, a drifted fixture would make the rewrite a no-op and the
+  // assertions below would be testing the hardened file under a name that
+  // claims otherwise.
+  assert.notEqual(reExposedCaddyfile, hardenedCaddyfile, "relay re-exposure fixture did not apply");
+  assert.match(reExposedCaddyfile, /handle_path \/relay\/\*/);
+  fs.writeFileSync(caddyPath, reExposedCaddyfile, "utf8");
+  const reExposedRelay = run(tmpRoot, ["security-review", "--profile", "public-stack", "--json"]);
+  const reExposedBody = JSON.parse(reExposedRelay.stdout);
+  assert.equal(reExposedBody.public_route_contract.ok, false);
+  assert.match(reExposedBody.blockers.join("\n"), /route contract/);
+  fs.writeFileSync(caddyPath, hardenedCaddyfile, "utf8");
 
   console.log("[selfhost-kit.test] ok");
 } finally {

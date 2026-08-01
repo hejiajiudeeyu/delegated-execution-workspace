@@ -86,10 +86,15 @@ const PROFILES = {
   }
 };
 
+// The relay entry is deliberately narrower than the others. CHG-2026-181 took
+// the relay's business routes off the public edge and left only the health
+// probe, so the contract asserts the exact `handle /relay/healthz` block —
+// matching `handle_path /relay/*` again would go green on a Caddyfile that had
+// re-exposed send/poll/ack, which is the regression this line exists to catch.
 const PUBLIC_STACK_ROUTE_CONTRACT = [
   ["public edge health", "/healthz", "handle /healthz"],
   ["platform API health", "/platform/healthz", "handle_path /platform/*"],
-  ["relay health", "/relay/healthz", "handle_path /relay/*"],
+  ["relay health", "/relay/healthz", "handle /relay/healthz"],
   ["gateway health", "/gateway/healthz", "handle_path /gateway/*"],
   ["operator console", "/console/", "handle_path /console/*"]
 ];
