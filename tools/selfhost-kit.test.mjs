@@ -120,6 +120,10 @@ function writeMinimalPublicStackProfile(root) {
       "TOKEN_SECRET=change-me-public-token-secret",
       "PLATFORM_ADMIN_API_KEY=sk_admin_change_me",
       "PLATFORM_CONSOLE_BOOTSTRAP_SECRET=change-me-public-bootstrap-secret",
+      // Mirrors the real public-stack example since the relay returned to the
+      // public edge; these are secret-hygiene keys now.
+      "RELAY_ADMIN_TOKEN=change-me-relay-admin-token",
+      "RELAY_TOKEN_SECRET=change-me-relay-token-secret",
       "PUBLIC_SITE_ADDRESS=http://localhost",
       ""
     ].join("\n"),
@@ -146,16 +150,11 @@ function writeMinimalPublicStackProfile(root) {
       "  handle_path /platform/* {",
       "    reverse_proxy platform-api:8080",
       "  }",
-      // Mirrors the real Caddyfile since CHG-2026-181: only the relay health
-      // probe is reachable from the edge, everything else on /relay/* is
-      // refused. A fixture still carrying the old broad proxy would let the
-      // route contract pass against a shape production no longer has.
-      "  handle /relay/healthz {",
-      "    rewrite * /healthz",
+      // Mirrors the real Caddyfile since 2026-08-02: the relay is proxied
+      // again now that it authenticates, because a Provider device off the
+      // platform host has to reach its inbox.
+      "  handle_path /relay/* {",
       "    reverse_proxy relay:8090",
-      "  }",
-      "  handle /relay/* {",
-      "    respond \"relay is internal-only\" 403",
       "  }",
       "  handle_path /gateway/* {",
       "    reverse_proxy platform-console-gateway:8085",
@@ -1274,28 +1273,26 @@ try {
   assert.ok(!publicSmoke.stdout.includes(publicEnv.get("PLATFORM_ADMIN_API_KEY") || ""));
   assert.ok(!publicSmoke.stdout.includes(publicEnv.get("PLATFORM_CONSOLE_BOOTSTRAP_SECRET") || ""));
 
-  // Negative control for the relay line of the route contract. CHG-2026-181
-  // took the relay's business routes off the public edge; if the contract
-  // still matched a broad `handle_path /relay/*`, a Caddyfile that re-exposed
-  // send/poll/ack would sail through green. Putting the pre-hardening shape
-  // back must fail, or the check is decorative.
-  const caddyPath = path.join(tmpRoot, "repos/platform/deploy/public-stack/Caddyfile");
-  const hardenedCaddyfile = fs.readFileSync(caddyPath, "utf8");
-  const reExposedCaddyfile = hardenedCaddyfile.replace(
-    /  handle \/relay\/healthz \{\n    rewrite \* \/healthz\n    reverse_proxy relay:8090\n  \}\n  handle \/relay\/\* \{\n    respond "relay is internal-only" 403\n  \}/,
-    ["  handle_path /relay/* {", "    reverse_proxy relay:8090", "  }"].join("\n")
-  );
-  // Without this, a drifted fixture would make the rewrite a no-op and the
-  // assertions below would be testing the hardened file under a name that
-  // claims otherwise.
-  assert.notEqual(reExposedCaddyfile, hardenedCaddyfile, "relay re-exposure fixture did not apply");
-  assert.match(reExposedCaddyfile, /handle_path \/relay\/\*/);
-  fs.writeFileSync(caddyPath, reExposedCaddyfile, "utf8");
-  const reExposedRelay = run(tmpRoot, ["security-review", "--profile", "public-stack", "--json"]);
-  const reExposedBody = JSON.parse(reExposedRelay.stdout);
-  assert.equal(reExposedBody.public_route_contract.ok, false);
-  assert.match(reExposedBody.blockers.join("\n"), /route contract/);
-  fs.writeFileSync(caddyPath, hardenedCaddyfile, "utf8");
+  // The relay is on the public edge again as of 2026-08-02, so "is it
+  // proxied" is no longer the interesting question — "can it be reached
+  // without credentials" is. That invariant lives in secret hygiene now, and
+  // this is its negative control: a public stack whose relay admin token is
+  // still the placeholder must be blocked, because on a public relay that
+  // token is read/inject/delete over every task envelope.
+  const publicEnvPath = path.join(tmpRoot, "repos/platform/deploy/public-stack/.env");
+  const goodEnv = fs.readFileSync(publicEnvPath, "utf8");
+  assert.match(goodEnv, /RELAY_ADMIN_TOKEN=/, "fixture env is missing the relay token this case is about");
+  const placeholderEnv = goodEnv.replace(/^RELAY_ADMIN_TOKEN=.*$/m, "RELAY_ADMIN_TOKEN=change-me-relay-admin-token");
+  assert.notEqual(placeholderEnv, goodEnv, "relay placeholder fixture did not apply");
+  fs.writeFileSync(publicEnvPath, placeholderEnv, "utf8");
+
+  const placeholderRelay = run(tmpRoot, ["security-review", "--profile", "public-stack", "--json"]);
+  const placeholderBody = JSON.parse(placeholderRelay.stdout);
+  const relayHygiene = placeholderBody.secret_hygiene.find((item) => item.key === "RELAY_ADMIN_TOKEN");
+  assert.ok(relayHygiene, "RELAY_ADMIN_TOKEN is not covered by secret hygiene");
+  assert.equal(relayHygiene.ok, false);
+  assert.equal(placeholderBody.ok, false);
+  fs.writeFileSync(publicEnvPath, goodEnv, "utf8");
 
   console.log("[selfhost-kit.test] ok");
 } finally {

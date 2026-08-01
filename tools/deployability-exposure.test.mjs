@@ -33,8 +33,11 @@ assert.deepEqual(body.summary, {
   gate_count: 1,
   route_count: 5,
   route_ready_count: 5,
-  secret_hygiene_check_count: 5,
-  secret_hygiene_ready_count: 4,
+  // 7 rather than 5 since 2026-08-02: RELAY_ADMIN_TOKEN and RELAY_TOKEN_SECRET
+  // joined secret hygiene when the relay went back onto the public edge, where
+  // a placeholder admin token is read/inject/delete over every task envelope.
+  secret_hygiene_check_count: 7,
+  secret_hygiene_ready_count: 6,
   warning_count: body.warnings.length
 });
 assert.deepEqual(body.profile, {

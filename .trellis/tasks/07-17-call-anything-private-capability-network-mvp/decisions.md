@@ -34,6 +34,14 @@
 - **D5.2 `@delexec/ops` 发布授权**：批准发布新版本到 npm（D2「对外发布」类动作的一次具体授权）。npm 上的 0.1.6 发布于 2026-07-04，不含 relay bearer token（`0867e1b`）、supervisor 凭据修复（`f0706cf`）、artifact 通道（`c920e9b`）——外部设备装到的客户端连不上鉴权后的 relay。
 - **D5.3 console 三条主线获批**：`.trellis/tasks/07-15-replace-public-console-frontend/diagnosis-v0.2.0.md` 的诊断与三条主线（A 首页=真实待办 / B `/calls/:id` 详情页=系统脊柱 / C 任务向导取代散落按钮）全部认可，按此推进。这是该诊断「建议的下一步」第 1 步所要求的 owner 确认，此前被跳过，现补上。
 
+## D6 单元 6 的三项授权（2026-08-02）
+
+执行单元 6 前发现三个硬阻塞，owner 当场拍板：
+
+- **D6.1 重新开放公网 relay 业务路由**。CHG-2026-181 撤下边缘是因为当时无鉴权；CHG-2026-183 已根治但边缘一直没开，而这正是跨设备 Provider 跑不起来的原因。执行前先验证了**已部署**的 relay 确实拒绝无凭据请求（四条业务路由无 bearer 均 401，伪造 bearer 也 401），确认不是在重开旧洞。补偿控制：`RELAY_ADMIN_TOKEN`/`RELAY_TOKEN_SECRET` 纳入 workspace 密钥卫生集，占位符即 blocker。
+- **D6.2 输入 artifact 当作单元 6 的一部分补完**。台账把 FR-032 记成 done，实为**两头客户端都没实现**：`uploadArtifact` 只被输出路径调用，caller 不上传输入、responder 不下载输入。真实 PDF 因此只能内联进信封。平台侧本来就支持（`canAccessRequestArtifacts` 双方放行、`role=input` 已接受），所以是纯客户端补齐。
+- **D6.3 切新版本并滚生产**。v0.4.0（对账端点 + console 聚合 + 边缘开放），随后 v0.4.1（stuck-call 守卫修复）。
+
 ## 遗留待办指针（不在本轮范围）
 
 - Wave 0（架构基线 + M0 release manifest）按 `goal.md` 契约另行启动。

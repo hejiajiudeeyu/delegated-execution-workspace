@@ -86,15 +86,19 @@ const PROFILES = {
   }
 };
 
-// The relay entry is deliberately narrower than the others. CHG-2026-181 took
-// the relay's business routes off the public edge and left only the health
-// probe, so the contract asserts the exact `handle /relay/healthz` block —
-// matching `handle_path /relay/*` again would go green on a Caddyfile that had
-// re-exposed send/poll/ack, which is the regression this line exists to catch.
+// The relay went back onto the public edge on 2026-08-02, once CHG-2026-183's
+// authentication made that safe and a cross-device Provider made it necessary.
+// So this contract is back to the broad proxy the other services use.
+//
+// The invariant that actually protects the relay is no longer expressible as a
+// Caddyfile shape — it is "the relay rejects unauthenticated business calls".
+// That moved to secret hygiene: RELAY_ADMIN_TOKEN and RELAY_TOKEN_SECRET are
+// now in SECRET_KEYS, so a public stack carrying placeholder relay credentials
+// is a blocker rather than a passing review.
 const PUBLIC_STACK_ROUTE_CONTRACT = [
   ["public edge health", "/healthz", "handle /healthz"],
   ["platform API health", "/platform/healthz", "handle_path /platform/*"],
-  ["relay health", "/relay/healthz", "handle /relay/healthz"],
+  ["relay health", "/relay/healthz", "handle_path /relay/*"],
   ["gateway health", "/gateway/healthz", "handle_path /gateway/*"],
   ["operator console", "/console/", "handle_path /console/*"]
 ];
@@ -103,7 +107,14 @@ const SECRET_KEYS = new Set([
   "TOKEN_SECRET",
   "PLATFORM_ADMIN_API_KEY",
   "PLATFORM_CONSOLE_BOOTSTRAP_SECRET",
-  "POSTGRES_PASSWORD"
+  "POSTGRES_PASSWORD",
+  // Added 2026-08-02 with the relay's return to the public edge. These were
+  // survivable as placeholders while the relay was internal-only; on a public
+  // relay the admin token is full read/inject/delete over every task envelope,
+  // and the token secret mints the per-receiver credentials. They are now
+  // exactly as critical as the platform's own secrets.
+  "RELAY_ADMIN_TOKEN",
+  "RELAY_TOKEN_SECRET"
 ]);
 
 function usage() {

@@ -41,8 +41,8 @@ Created: 2026-07-31（Wave 0 产出）· 单一事实源 = `.trellis/tasks/07-17
 | FR-025 | 任务排队 (P1) | protocol + platform | partial | 协议侧 `queued`/`executing` 已区分（protocol `d2ad83b`）；平台未实现 |
 | FR-030 | 长任务状态 | protocol + platform | partial | **协议侧完成**：四轴 + 合法迁移 + 跨轴校验（protocol `d2ad83b`，34 例）；platform 侧实现未开始 |
 | FR-031 | 状态持久化 | platform | partial | 快照持久化存在；`postgres-persistence` 集成测试已恢复入套件（platform `9584fdf`） |
-| FR-032 | 输入 artifact | protocol + platform + client | **done**（代码侧） | 平台通道（platform `0b77672`）+ 客户端接入（client `c920e9b`，7 例集成对真实 platform-api）；字节离开信封，只传描述符。已随 `@delexec/ops@0.1.7` 发布到 npm，外部设备可安装（client `b15c2bc`，CHG-2026-190，洁净房验证）。**跨设备实跑待 M1 单元 6** |
-| FR-033 | 输出 artifact | protocol + client | partial | responder 输出走 artifact 通道并携描述符（client `c920e9b`）；仍缺证据包/日志摘要形态（M4 相关） |
+| FR-032 | 输入 artifact | protocol + platform + client | **done** | ~~2026-08-01 曾据 `c920e9b` 记为 done（代码侧），系**记录错误**：那笔只做了输出方向，caller 不上传输入、responder 不下载输入，真实 PDF 只能内联~~。2026-08-02 补齐两头（client `86d1ac9`，6 例集成）：caller 以 `role=input` 上传、只传描述符；responder 执行前取回并校验，取不到即拒绝执行。**跨设备实跑已完成**：336919 字节 PDF 经 1498 字节信封跨设备，设备侧 sha256 与源一致（CHG-2026-192） |
+| FR-033 | 输出 artifact | protocol + client | partial | responder 输出走 artifact 通道并携描述符（client `c920e9b`）；跨设备实跑验证多件输出（markdown + 2 张抽取图）checksum 全部一致（CHG-2026-192）。仍缺证据包/日志摘要形态（M4 相关） |
 | FR-034 | Artifact 完整性 | protocol + platform | **done**（平台侧） | checksum 不符即拒绝提交并保持 allocated，失败字节永不成为已交付（platform `0b77672`）；未 committed 的 artifact 绝不出字节。Delivery Integrity 轴与 Call 的绑定待 M3 |
 | FR-035 | 可恢复故障 | protocol + client + platform | **done**（代码侧） | 协议侧三等级 + `mayAutoRerun` + 对账报告校验（protocol `d2ad83b`）；客户端 append-only journal（触发器强制，`synchronous=FULL`）+ boot_id/attempt_id + 按等级收口（client `f9a8c86`，8 单测 + 7 集成）；平台 `POST /v1/requests/:id/reconcile` 验签收口且**结构上无法结算**（platform `2fada76`，10 集成）。CHG-2026-191。**跨设备实跑待 M1 单元 6** |
 | FR-036 | 进度事件 (P1) | protocol + client | todo | |
@@ -86,7 +86,7 @@ Created: 2026-07-31（Wave 0 产出）· 单一事实源 = `.trellis/tasks/07-17
 | FR-063 | 内容访问审计 | platform | todo | 通用审计存在，缺内容访问专项且不可静默删除 |
 | FR-064 | 争议处理 | platform | todo | |
 | FR-065 | 版本可见 | platform + workspace | partial | `/buildz` 已实现；调用详情聚合已带责任人版本（platform `3d9af65`）。console 呈现仍未接（M0/M3 跨界，PRD 未分配，本台账归 M3） |
-| FR-066 | 告警 (P1) | platform | todo | **当前零告警**：2026-07-04 宕机 5.5h 靠撞见发现（PRD 未分配，本台账归 P1 运维） |
+| FR-066 | 告警 (P1) | platform | todo | **当前零告警**：2026-07-04 宕机 5.5h 靠撞见发现（PRD 未分配，本台账归 P1 运维）。相关教训：`/v1/admin/attention` 的卡住检测自交付起从未在真实数据上触发过（读了生产事件不存在的字段），v0.4.1 修复——"没有告警"曾等于"看不见"，不等于"没事"（platform `539e0e7`） |
 
 ## M4 第一方 Research Hotline
 
@@ -120,12 +120,12 @@ Created: 2026-07-31（Wave 0 产出）· 单一事实源 = `.trellis/tasks/07-17
 | ID | 标准 | 状态 | 当前事实（2026-07-31） |
 |---|---|---|---|
 | E0 | 事实一致 | **done** | 仓库/bundle/manifest/npm/镜像/**生产运行时** 六者一致：生产 2026-08-01 滚到 v0.3.0，漂移校验器对生产实测 **runtime matches release v0.3.0**（relay 因公网 403 走内网探测）。首次真实校验暴露并修正了 manifest 命名约束（见 ADR-002） |
-| E1 | MinerU ≥10 次真实任务、≥90% 无人值守、checksum 100% | todo | 0 次 |
+| E1 | MinerU ≥10 次真实任务、≥90% 无人值守、checksum 100% | partial | **2 次**真实跨设备任务，均无人值守完成、checksum 100%（CHG-2026-192）。设备=本机 Mac，平台+relay=生产 callanything.xyz。run1 v0.4.0：337KB PDF → 3248B markdown，16.3s；run2 v0.4.1：另一份 PDF → markdown + 2 图，三件 checksum 全过。**还差 8 次** |
 | E2 | 三条真实 Workflow 连续使用 | todo | 0 条 |
 | E3 | 接受/修订/自动接受/争议/结算/退款端到端证据 | todo | 仅有 hold→settle→refund 的旧路径证据 |
 | E4 | Operator 内容访问全部有理由与记录 | todo | 内容访问授权机制不存在 |
 | E5 | ≥3 个真实技术路线决策、≥2 个推动动作、≥1 次重复使用 | todo | 0 |
-| E6 | 正常流程无 SSH/远程桌面/admin curl/手工搬运 | partial | 2026-07-04 自动化彩排违规表为空（旧 UI）；新阶段标准未重测 |
+| E6 | 正常流程无 SSH/远程桌面/admin curl/手工搬运 | **partial（明确未达标）** | 跨设备任务流本身干净：文档走 artifact 通道跨设备，无 SSH、无远程桌面、无手工搬运。**但设备与热线的审批仍必须用 admin curl**——console 第三次重做目前只做到后端聚合接口，没有 UI，`/v2/admin/{responders,hotlines}/:id/approve` 无处可点。E6 因此**未达标**，缺口 = console UI（CHG-2026-192 如实记录，未粉饰） |
 | E7 | Platform/Responder/Research 各一次受控恢复回滚演练 | todo | **备份工具链不存在**，恢复演练无从做起 |
 
 ## 台账维护规则

@@ -1,0 +1,29 @@
+release_id: v0.4.1
+created_at: 2026-08-01T18:11:37.134Z
+components:
+  protocol:
+    sha: 5b1acd0064055e8606d91bad113a217bdb1ff694
+    path: repos/protocol
+  client:
+    sha: ddcc3b453795191622a92b93db2f2dbe1ba42e82
+    path: repos/client
+  platform:
+    sha: 49e7515bcfcfceeb1c79cf6e7306fe3e1bc8e0f3
+    path: repos/platform
+  brand_site:
+    sha: ac8ea7be573b715bd1c9ad8b40397d7c19a1a374
+    path: repos/brand-site
+change_bundle: CHG-2026-192
+images:
+  rsp-platform: v0.4.1
+  rsp-relay: v0.4.1
+  rsp-gateway: v0.4.1
+packages:
+  "@delexec/contracts": 0.1.4
+  "@delexec/ops": 0.1.7
+notes: "M1 unit 6: input artifacts on both client ends, the relay back on the
+  public edge, and two real cross-device MinerU tasks through production. Rolled
+  to production on 2026-08-02, all three images together. E6 is still unmet —
+  device and hotline approval needs admin curl until the console has a UI.
+  release_id equals the image tag per ADR-002's naming constraint."
+manifest_sha256: 465ad8a47cbc4a8ccd67a158ce5dc44796aa81422565216e93df68b2e7f109bb
