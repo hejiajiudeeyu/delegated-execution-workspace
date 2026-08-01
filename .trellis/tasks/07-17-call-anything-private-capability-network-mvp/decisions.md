@@ -28,6 +28,12 @@
 - 随附四仓组合更新：`changes/CHG-2026-181.yaml`。
 - **生产收口（owner 授权后 2026-07-31 当日执行完毕）**：Aliyun host nginx 撤下 `/relay/` 公网代理（仅留 `= /relay/healthz`）、`/platform/metrics` 边缘 403；备份 `callanything.xyz.bak.20260731T201329`；公网验证 relay 业务路由 403 / metrics 403 / 其余端点 200 无损；主机 ALIYUN-OPS-README 与四仓 handover 双侧已记录。生产 env 已显式 `ENABLE_BOOTSTRAP_RESPONDERS=false`，S2 无需滚动生产。
 
+## D5 里程碑排序与 console 方向（2026-08-01）
+
+- **D5.1 下一步顺序**：M1 单元 4 收尾 + 单元 5 重启对账优先，console 界面与备份工具链往后排。理由：单元 6（真实 MinerU 跨设备）是 M1 退出门，而它被单元 4 的分发缺口堵住。
+- **D5.2 `@delexec/ops` 发布授权**：批准发布新版本到 npm（D2「对外发布」类动作的一次具体授权）。npm 上的 0.1.6 发布于 2026-07-04，不含 relay bearer token（`0867e1b`）、supervisor 凭据修复（`f0706cf`）、artifact 通道（`c920e9b`）——外部设备装到的客户端连不上鉴权后的 relay。
+- **D5.3 console 三条主线获批**：`.trellis/tasks/07-15-replace-public-console-frontend/diagnosis-v0.2.0.md` 的诊断与三条主线（A 首页=真实待办 / B `/calls/:id` 详情页=系统脊柱 / C 任务向导取代散落按钮）全部认可，按此推进。这是该诊断「建议的下一步」第 1 步所要求的 owner 确认，此前被跳过，现补上。
+
 ## 遗留待办指针（不在本轮范围）
 
 - Wave 0（架构基线 + M0 release manifest）按 `goal.md` 契约另行启动。

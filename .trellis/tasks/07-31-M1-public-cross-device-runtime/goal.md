@@ -27,7 +27,8 @@
 3. ~~**设备 enrollment 与能力上报**~~ ✅ **完成 2026-08-01**（platform `9f2aa49` + client `5bdbda9` + protocol `adbab35`，CHG-2026-186）——匿名注册路径移除（破坏性，已知且有意）、心跳带 version/capacity 并进运营视图、maintenance 粘性、陈旧心跳压过自报。FR-002/FR-003 转 done。
 4. 🟡 **artifact 通道** — 平台侧完成 2026-08-01（platform `0b77672`，CHG-2026-187，12 例集成）：受限槽位→直传→checksum 提交→按 grant 授权下载；grant 按单件+单向授权；已提交字节不可覆写；描述符不含任何存储定位符。`@delexec/artifact-store` 作为可换后端的接缝，先落文件系统后端 + compose 持久卷。
    ✅ **客户端接入完成 2026-08-01**（client `c920e9b`，CHG-2026-188）：`@delexec/artifact-client` 落地，responder 上传输出并只传描述符，caller 解析描述符并校验字节；本地模式保持内联路径不变；上传失败回退内联而非交付取不到的 artifact。7 例集成对真实 platform-api。
-   > **仍欠两项**：(a) **`@delexec/ops` 需重新发布**——npm 上的 0.1.6 已落后于源码，外部设备用不了该通道；(b) A-01 目标的 S3/MinIO 后端（接缝已留，换后端不动协议）。
+   > ✅ **分发缺口已补（2026-08-01）**：owner 授权后（decisions.md D5.2）发布 `@delexec/ops@0.1.7`（client `b15c2bc`，CHG-2026-190，publish run 30706250315）。npm 上的 0.1.6 发布于 2026-07-04，缺 relay bearer token、supervisor 凭据修复与 artifact 通道三笔——外部设备装到的客户端在 CHG-2026-183 关掉无鉴权路由后根本连不上 relay。洁净房验证：contracts 0.1.4 从 npm 解析，13 个 workspace 包随 prepack 打包进 `ops/node_modules`，CLI 可运行，已发布字节内含 Bearer 头、opt-in `lease_id` ACK 守卫与 `@delexec/artifact-client`。
+   > **仍欠一项**：A-01 目标的 S3/MinIO 后端（`@delexec/artifact-store` 接缝已留，换后端不动协议；今天走文件系统后端）。**是否在 M1 内做尚未决策**——单 Operator 跨设备实跑不依赖它。
 5. **重启对账**（`repos/client` + `repos/platform`）——本地 append-only journal、签名对账报告、按可恢复性等级收口；**未知态绝不自动结算**。
 6. **真实 MinerU 跨设备跑通**——正常流程无 SSH / 远程桌面 / admin curl / 手工搬运。
 

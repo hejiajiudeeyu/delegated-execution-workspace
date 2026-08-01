@@ -1,0 +1,13 @@
+change_id: CHG-2026-190
+goal: publish @delexec/ops 0.1.7 so an external device can actually install the authenticated relay and the artifact channel
+protocol_sha: adbab35b1c7a2eff62c38106b851b87eccdd6c40
+client_sha: b15c2bc083bffa1f4c07d35a114a5168adf70da3
+platform_sha: 3d9af65f82ea7a67fd9997b2c21536995a366be7
+brand_site_sha: ac8ea7be573b715bd1c9ad8b40397d7c19a1a374
+owner: hejiajiudeeyu
+risk_level: low
+affected_scope:
+  - client
+contracts_check: passed
+integration_check: passed
+notes: "Closes gap (a) of M1 delivery unit 4. npm served @delexec/ops 0.1.6, published 2026-07-04, while three commits had landed on apps/ops since: 0867e1b (relay bearer token and lease id), f0706cf (supervisor no longer mints a credential for a relay it does not own) and c920e9b (artifact bytes onto the platform channel). An operator installing the package today therefore received a client that could not authenticate to the relay after CHG-2026-183 closed the unauthenticated routes, and could not use the artifact channel at all — which is what blocks unit 6, the cross-device MinerU run M1 exits on. Owner authorized the publish on 2026-08-01 (decisions.md D5.2); external publishing is one of the three action classes D2 reserves for the owner. Version-only bump, no code change. Published by workflow run 30706250315 after npm test (94 cases) and npm run test:packages (13 packages) ran in CI. Verified in a clean room rather than on the workflow's word: fresh npm install of @delexec/ops@0.1.7 resolves @delexec/contracts 0.1.4 from npm, carries all 13 workspace packages bundled under ops/node_modules (prepack staging), the CLI runs, and the published bytes contain the Bearer authorization header plus the opt-in lease_id ack guard in transport-relay-http and the @delexec/artifact-client package. Still open on unit 4: the S3/MinIO backend behind the @delexec/artifact-store seam (A-01 target; the filesystem backend ships today)."
