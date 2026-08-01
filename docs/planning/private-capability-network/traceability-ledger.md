@@ -44,7 +44,7 @@ Created: 2026-07-31（Wave 0 产出）· 单一事实源 = `.trellis/tasks/07-17
 | FR-032 | 输入 artifact | protocol + platform + client | **done**（代码侧） | 平台通道（platform `0b77672`）+ 客户端接入（client `c920e9b`，7 例集成对真实 platform-api）；字节离开信封，只传描述符。已随 `@delexec/ops@0.1.7` 发布到 npm，外部设备可安装（client `b15c2bc`，CHG-2026-190，洁净房验证）。**跨设备实跑待 M1 单元 6** |
 | FR-033 | 输出 artifact | protocol + client | partial | responder 输出走 artifact 通道并携描述符（client `c920e9b`）；仍缺证据包/日志摘要形态（M4 相关） |
 | FR-034 | Artifact 完整性 | protocol + platform | **done**（平台侧） | checksum 不符即拒绝提交并保持 allocated，失败字节永不成为已交付（platform `0b77672`）；未 committed 的 artifact 绝不出字节。Delivery Integrity 轴与 Call 的绑定待 M3 |
-| FR-035 | 可恢复故障 | protocol + client + platform | partial | 协议侧三等级 + `mayAutoRerun`（默认不重跑）+ 对账报告校验已冻结（protocol `d2ad83b`）；客户端 journal 与平台对账未实现 |
+| FR-035 | 可恢复故障 | protocol + client + platform | **done**（代码侧） | 协议侧三等级 + `mayAutoRerun` + 对账报告校验（protocol `d2ad83b`）；客户端 append-only journal（触发器强制，`synchronous=FULL`）+ boot_id/attempt_id + 按等级收口（client `f9a8c86`，8 单测 + 7 集成）；平台 `POST /v1/requests/:id/reconcile` 验签收口且**结构上无法结算**（platform `2fada76`，10 集成）。CHG-2026-191。**跨设备实跑待 M1 单元 6** |
 | FR-036 | 进度事件 (P1) | protocol + client | todo | |
 
 ## M2 最小 Hotline 服务契约
@@ -109,9 +109,9 @@ Created: 2026-07-31（Wave 0 产出）· 单一事实源 = `.trellis/tasks/07-17
 | NFR-S04 | token/签名/关键操作可验证 | protocol | **done** | HMAC task token + Ed25519 结果签名 + 公钥校验；relay 业务路由 bearer 鉴权（platform `f26a08b`） |
 | NFR-S05 | 内容查看/资金/版本/争议必审计 | platform | partial | 通用审计存在；内容访问与争议专项待 M3 |
 | NFR-R01 | 任何 Call 必达终态 | protocol + platform | partial | 协议侧 `isCallTerminal` 要求四轴齐备（已交付需验收+资金收口，protocol `d2ad83b`）；平台护栏未实现 |
-| NFR-R02 | 重启后状态与账本幂等恢复 | platform + client | partial | 快照 hydrate 存在；孤儿 hold 无对账（审计 D3.4） |
+| NFR-R02 | 重启后状态与账本幂等恢复 | platform + client | partial | 快照 hydrate 存在；中断尝试现在能收口——journal 记录未闭合尝试，重启后签名上报，平台按 attempt_id 幂等退款（`f9a8c86`/`2fada76`，CHG-2026-191）。**仍缺**：非中断来源的孤儿 hold（如 responder 永不回来、hold 过期外的边角）仍无主动对账扫描（审计 D3.4） |
 | NFR-R03 | checksum 失败不得标 delivered | protocol + platform | **done** | 协议侧硬约束 + 平台侧 `CONTRACT_ARTIFACT_CHECKSUM_MISMATCH` 拒绝提交（platform `0b77672`）；两侧一致 |
-| NFR-R04 | hold/settle/refund exactly-once | protocol + platform | partial | 协议侧 settled/refunded 为终态、自迁移幂等（protocol `d2ad83b`）；平台跨分录单事务与崩溃测试仍缺 |
+| NFR-R04 | hold/settle/refund exactly-once | protocol + platform | partial | 协议侧 settled/refunded 为终态、自迁移幂等（protocol `d2ad83b`）；对账路径按 attempt_id 幂等，且以计费轨 `state === held` 为结构性兜底——重复上报只退一次（platform `2fada76`）。**仍缺**：跨分录单事务与崩溃测试 |
 | NFR-R05 | 设备离线检测 ≤ 2 分钟 | platform | partial | 阈值存在，未按此数值校准 |
 | NFR-R06 | 无人值守完成率 ≥ 90% | 全体 | todo | M5 dogfood 度量 |
 

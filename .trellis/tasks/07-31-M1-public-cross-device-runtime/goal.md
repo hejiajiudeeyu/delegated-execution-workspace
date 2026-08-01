@@ -29,7 +29,8 @@
    ✅ **客户端接入完成 2026-08-01**（client `c920e9b`，CHG-2026-188）：`@delexec/artifact-client` 落地，responder 上传输出并只传描述符，caller 解析描述符并校验字节；本地模式保持内联路径不变；上传失败回退内联而非交付取不到的 artifact。7 例集成对真实 platform-api。
    > ✅ **分发缺口已补（2026-08-01）**：owner 授权后（decisions.md D5.2）发布 `@delexec/ops@0.1.7`（client `b15c2bc`，CHG-2026-190，publish run 30706250315）。npm 上的 0.1.6 发布于 2026-07-04，缺 relay bearer token、supervisor 凭据修复与 artifact 通道三笔——外部设备装到的客户端在 CHG-2026-183 关掉无鉴权路由后根本连不上 relay。洁净房验证：contracts 0.1.4 从 npm 解析，13 个 workspace 包随 prepack 打包进 `ops/node_modules`，CLI 可运行，已发布字节内含 Bearer 头、opt-in `lease_id` ACK 守卫与 `@delexec/artifact-client`。
    > **仍欠一项**：A-01 目标的 S3/MinIO 后端（`@delexec/artifact-store` 接缝已留，换后端不动协议；今天走文件系统后端）。**是否在 M1 内做尚未决策**——单 Operator 跨设备实跑不依赖它。
-5. **重启对账**（`repos/client` + `repos/platform`）——本地 append-only journal、签名对账报告、按可恢复性等级收口；**未知态绝不自动结算**。
+5. ~~**重启对账**~~ ✅ **完成 2026-08-02**（client `f9a8c86` + platform `2fada76` + protocol `5b1acd0`，CHG-2026-191）——本地 append-only journal（SQLite 触发器强制不可改写，`synchronous=FULL`）、boot_id/attempt_id、按可恢复性等级收口：仅 `restartable` 自动重跑，其余签名上报终态 `failed`。**未知态无法结算**这条是结构性的而非约定：`delivered` 上报直接 409，且计费调用硬编码走 FAILED 路径，两道独立防线。平台不可达时**故意**保留尝试为未闭合——记为已处理等于在断网时把 Call 从两侧一起抹掉。25 例新测试（8 单测 + 17 集成）。
+   > 顺带修掉一个陷阱：platform `test:integration` 里手写的文件清单导致新套件在 `npm test` 下**静默不跑**（CHG-2026-181 已经栽过一次）。改回用 vitest 配置的目录 glob，覆盖面不变，集成从 86 过升到 96 过。
 6. **真实 MinerU 跨设备跑通**——正常流程无 SSH / 远程桌面 / admin curl / 手工搬运。
 
 ## 退出条件
