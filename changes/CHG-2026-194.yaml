@@ -1,0 +1,16 @@
+change_id: CHG-2026-194
+goal: a failed console unlock explains itself instead of returning the AES-GCM error, and the deployment-key mix-up gets its own message
+protocol_sha: 5b1acd0064055e8606d91bad113a217bdb1ff694
+client_sha: ddcc3b453795191622a92b93db2f2dbe1ba42e82
+platform_sha: 274d98dfc0a50dae9fb8dcc9a5db1cf7b1865811
+brand_site_sha: ac8ea7be573b715bd1c9ad8b40397d7c19a1a374
+owner: hejiajiudeeyu
+risk_level: low
+affected_scope:
+  - platform
+  - console
+  - release
+  - production
+contracts_check: passed
+integration_check: passed
+notes: "Found by the owner hitting it, not by a test. Unlocking the console decrypts the gateway secret store with the passphrase, so every wrong passphrase fails inside AES-GCM, and the handler returned that error verbatim: 'Unsupported state or unable to authenticate data'. That is a Node crypto internal — it says nothing about passphrases and reads like a malfunctioning gateway, so the owner reasonably asked whether the verifier was broken. It was not: the verifier correctly refused a wrong credential and then described the refusal terribly. Confirmed before changing anything by probing the deployment key non-destructively (POST /session/recover with the correct bootstrap secret and NO confirm_reset stops at the confirmation gate, proving the key valid without resetting), and by reproducing the exact error string locally. The unlock endpoint no longer surfaces the decryption error at all. The specific mix-up that caused it — the deployment key pasted into the passphrase box — now returns AUTH_BOOTSTRAP_SECRET_IS_NOT_PASSPHRASE and points at the reset flow where that key actually belongs; it is a predictable confusion since both are long opaque strings, the reset link sits directly under the unlock field, and the deployment key is the one an operator can always retrieve from the host. Telling the caller leaks nothing they did not submit, and requireBootstrapSetupAccess was already the same oracle. Bootstrap-secret comparison also moved from a plain === to a constant-time digest compare. 4 gateway integration cases including a regression assertion that the raw decrypt error never reaches the client; platform 104 passed / 2 skipped, e2e 7/7. Rolled to production as v0.4.3 and verified live against the owner's real deployment key. Process note: the deploy was chained after a `gh run watch` that reported exit=1; all four image jobs had in fact succeeded and production is healthy, but the command should not have proceeded past an unchecked failure."

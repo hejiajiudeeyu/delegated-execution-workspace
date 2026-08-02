@@ -1,0 +1,27 @@
+release_id: v0.4.3
+created_at: 2026-08-02T03:59:05.949Z
+components:
+  protocol:
+    sha: 5b1acd0064055e8606d91bad113a217bdb1ff694
+    path: repos/protocol
+  client:
+    sha: ddcc3b453795191622a92b93db2f2dbe1ba42e82
+    path: repos/client
+  platform:
+    sha: 274d98dfc0a50dae9fb8dcc9a5db1cf7b1865811
+    path: repos/platform
+  brand_site:
+    sha: ac8ea7be573b715bd1c9ad8b40397d7c19a1a374
+    path: repos/brand-site
+change_bundle: CHG-2026-194
+images:
+  rsp-platform: v0.4.3
+  rsp-relay: v0.4.3
+  rsp-gateway: v0.4.3
+packages:
+  "@delexec/contracts": 0.1.4
+  "@delexec/ops": 0.1.7
+notes: Console unlock stops returning the raw AES-GCM error, and the
+  deployment-key-in-passphrase-box mix-up gets its own message. Rolled to
+  production 2026-08-02.
+manifest_sha256: 763dc48e8e396c11b0af8f01d0d62bd84804fed76bf6fbeac7fb806f3323c2d8
