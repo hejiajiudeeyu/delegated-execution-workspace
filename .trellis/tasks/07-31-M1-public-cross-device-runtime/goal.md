@@ -33,7 +33,7 @@
    > 顺带修掉一个陷阱：platform `test:integration` 里手写的文件清单导致新套件在 `npm test` 下**静默不跑**（CHG-2026-181 已经栽过一次）。改回用 vitest 配置的目录 glob，覆盖面不变，集成从 86 过升到 96 过。
 6. 🟡 **真实 MinerU 跨设备跑通** — **任务侧完成 2026-08-02**（CHG-2026-192）。设备 = 本机 Mac 上的真实 MinerU 3.4.4，平台 + relay = 生产 callanything.xyz，两次真实任务无人值守完成、checksum 全过：run1 在 v0.4.0（337KB PDF 经 **1498 字节**信封跨设备，设备侧 sha256 与源一致，3248B markdown / 16.3s），run2 在 v0.4.1（另一份 PDF，markdown + 2 张抽取图，三件全过）。平台自身的调用详情聚合独立复核了时间线与两件 artifact 的 committed 状态。
    > 前置一并解决：**输入 artifact 两头客户端本来都没实现**（台账记错，已订正）；**公网 relay 边缘重新开放**（先验证已部署 relay 四条业务路由无凭据均 401 才开，并把 relay 两个凭据纳入密钥卫生）；生产滚到 **v0.4.1**。
-   > ❌ **E6 未达标**：任务流本身无 SSH / 无手工搬运，但**设备与热线审批仍要 admin curl**——console 第三次重做只到后端聚合接口，没有 UI 可点。这是 M1 剩下的唯一缺口。
+   > ~~❌ **E6 未达标**：任务流本身无 SSH / 无手工搬运，但**设备与热线审批仍要 admin curl**——console 第三次重做只到后端聚合接口，没有 UI 可点。~~ **该判断有误，CHG-2026-193 订正**：审批 UI（ReviewQueuePage）自 v0.2.0 就存在且 2026-08-02 已实证可用；单元 6 用 admin curl 只因那次是脚本化跑的。真实剩余缺口是运维性的：生产 console 锁定，待 owner 以 deployment key 走重置流程设新口令（路径已修顺并生产验证，CHG-2026-194，v0.4.3）。
 
 ## 退出条件
 
@@ -46,7 +46,7 @@
 | 真实 MinerU 跨设备无人值守完成 | ✅ 2 次（CHG-2026-192） |
 | artifact 校验一致 | ✅ 输入/输出双向 checksum 全过，含多件输出 |
 | 失败矩阵 9 项各有行为与证据 | ✅ 平台 7 例 + 客户端 2 例集成测试 |
-| E6 正常流程无 admin curl | ❌ **审批仍需 admin curl**，缺 console UI |
+| E6 正常流程无 admin curl | 🟡 ~~审批仍需 admin curl，缺 console UI~~（CHG-2026-193 订正：UI 存在且已实证可用）。剩余=生产 console 锁定，待 owner 以 deployment key 走重置流程（CHG-2026-194 已修顺，v0.4.3） |
 
 失败矩阵证据位置：`repos/platform/tests/integration/failure-matrix.integration.test.js`（接受前离线、重复提交、重复交付、部分 artifact、重启、超时+宽限、过期版本）与 `repos/client/tests/integration/failure-matrix.integration.test.js`（执行中断连=重放不重跑、重试=独立 attempt）。
 

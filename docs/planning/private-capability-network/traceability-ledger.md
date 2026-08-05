@@ -45,7 +45,7 @@ Created: 2026-07-31（Wave 0 产出）· 单一事实源 = `.trellis/tasks/07-17
 | FR-033 | 输出 artifact | protocol + client | partial | responder 输出走 artifact 通道并携描述符（client `c920e9b`）；跨设备实跑验证多件输出（markdown + 2 张抽取图）checksum 全部一致（CHG-2026-192）。仍缺证据包/日志摘要形态（M4 相关） |
 | FR-034 | Artifact 完整性 | protocol + platform | **done**（平台侧） | checksum 不符即拒绝提交并保持 allocated，失败字节永不成为已交付（platform `0b77672`）；未 committed 的 artifact 绝不出字节。Delivery Integrity 轴与 Call 的绑定待 M3 |
 | FR-035 | 可恢复故障 | protocol + client + platform | **done**（代码侧） | 协议侧三等级 + `mayAutoRerun` + 对账报告校验（protocol `d2ad83b`）；客户端 append-only journal（触发器强制，`synchronous=FULL`）+ boot_id/attempt_id + 按等级收口（client `f9a8c86`，8 单测 + 7 集成）；平台 `POST /v1/requests/:id/reconcile` 验签收口且**结构上无法结算**（platform `2fada76`，10 集成）。CHG-2026-191。**跨设备实跑待 M1 单元 6** |
-| FR-036 | 进度事件 (P1) | protocol + client | todo | |
+| FR-036 | 进度事件 (P1) | protocol + client + platform | **done** | 观测事件对（PROGRESS/SOFT_TIMEOUT）刻意置于 CALL_EVENT 之外——观测不是第五根轴（protocol `d01ffeb`，contracts 0.1.5 已发 npm）；responder 三锚点叙述 + `hooks.reportProgress`，尽力而为、失败不影响任务（client `c3e68b0`，3 集成）；平台收下并在 `/calls/:id` 时间线渲染，不碰计费/不动投影/终态后 409/按 seq 幂等/仅修剪 PROGRESS（platform `ae55883`，7 集成）；**进度刷新卡住检测**，长任务不再被误报（测试固定）。顺带关闭现存静默缺陷：SOFT_TIMEOUT 此前一直被平台 400 拒且两侧无声。浏览器实证两次（本地 seeded 栈，13%→100% 实时推进）；生产 v0.4.4 已滚（CHG-2026-196） |
 
 ## M2 最小 Hotline 服务契约
 

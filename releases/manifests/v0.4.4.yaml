@@ -1,0 +1,27 @@
+release_id: v0.4.4
+created_at: 2026-08-05T15:15:08.380Z
+components:
+  protocol:
+    sha: d01ffeb62a0262ba552c8aae385df6c03fb3818c
+    path: repos/protocol
+  client:
+    sha: b9adf9ef6dc0a8f90702735cc5a70b7ddb3ae29c
+    path: repos/client
+  platform:
+    sha: 3eab8db0459285cae6d121c0231137eb9df73613
+    path: repos/platform
+  brand_site:
+    sha: ac8ea7be573b715bd1c9ad8b40397d7c19a1a374
+    path: repos/brand-site
+change_bundle: CHG-2026-196
+images:
+  rsp-platform: v0.4.4
+  rsp-relay: v0.4.4
+  rsp-gateway: v0.4.4
+packages:
+  "@delexec/contracts": 0.1.5
+  "@delexec/ops": 0.1.8
+notes: "Progress observations (FR-036): devices narrate execution, console
+  timeline shows it, stuck guardrail learns the difference between grinding and
+  silent. Rolled to production 2026-08-05."
+manifest_sha256: 48d1444c28236a596c760a531797c1575f4d2b3745b4a38b7a7c64e789130637

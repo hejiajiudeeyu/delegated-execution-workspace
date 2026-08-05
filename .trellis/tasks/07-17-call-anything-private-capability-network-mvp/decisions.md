@@ -42,6 +42,19 @@
 - **D6.2 输入 artifact 当作单元 6 的一部分补完**。台账把 FR-032 记成 done，实为**两头客户端都没实现**：`uploadArtifact` 只被输出路径调用，caller 不上传输入、responder 不下载输入。真实 PDF 因此只能内联进信封。平台侧本来就支持（`canAccessRequestArtifacts` 双方放行、`role=input` 已接受），所以是纯客户端补齐。
 - **D6.3 切新版本并滚生产**。v0.4.0（对账端点 + console 聚合 + 边缘开放），随后 v0.4.1（stuck-call 守卫修复）。
 
+## D7 下一轮排序：先补「好用」，M2 顺延（2026-08-05）
+
+- owner 以多选题拍板：下一轮为**可用性冲刺**——进度事件（FR-036）、最小告警（FR-066）、备份与恢复最小工具链（E7 前置）；M2 最小 Hotline 服务契约顺延至该轮完成后。任务落点 `.trellis/tasks/08-05-daily-usability-sprint/goal.md`。
+- 生产 console 解锁仍是 owner 动作（deployment key 走重置流程；CHG-2026-194 已非破坏性验证 key 有效并修顺报错，生产 v0.4.3），列为该轮入口条件。
+- S3/MinIO 对象存储后端（A-01 目标形态，勿与安全审计编号 S3 混淆）：按 D2 授权的推荐默认记为**推迟出 M1**——单 Operator 自用不依赖，`@delexec/artifact-store` 接缝已留，换后端不动协议；owner 可随时改回。
+- FR-066 的通知通道（邮件 / webhook / 其他）尚未定，实施该单元前以多选题回询 owner。
+
+**D7 追加（2026-08-05，单元 1 执行中 owner 逐项授权）**：
+
+- **contracts@0.1.5 发 npm**：批准（多选题「发布 npm + 验收后滚生产」）。publish run 31013054782，洁净房验证新导出与语义齐全。
+- **验收后滚生产 v0.4.4**：同上批准。本地 seeded 栈浏览器实证通过后执行；镜像 run 31016488978（三镜像 + published-image 烟测全绿），生产 `/buildz` 报 v0.4.4，`release-manifest check` 报 runtime matches。
+- **ops@0.1.8 发 npm**：单独多选题批准（不发则 npm 装的设备在 v0.4.4 生产上无进度拍）。publish run 31016666317（第一次因两仓 lockfile 仍钉 contracts 0.1.4 在 CI 被拦，修复后重发），发布字节含叙述代码，CI 洁净房端到端过。
+
 ## 遗留待办指针（不在本轮范围）
 
 - Wave 0（架构基线 + M0 release manifest）按 `goal.md` 契约另行启动。
