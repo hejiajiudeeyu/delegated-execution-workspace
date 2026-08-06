@@ -106,7 +106,7 @@ Created: 2026-07-31（Wave 0 产出）· 单一事实源 = `.trellis/tasks/07-17
 | NFR-S01 | 禁止任意远程 shell/通用代码执行 | client + platform | **done** | 仅预声明 Hotline 可执行；全仓无通用 shell 入口 |
 | NFR-S02 | 最小权限、文件/网络范围可配置 | client + platform | partial | relay receiver token 按 inbox 授权、设备入网需凭据、artifact grant 按单件+单向授权（`f26a08b`/`9f2aa49`/`0b77672`）；**设备侧文件/网络访问范围仍未做** |
 | NFR-S03 | 不打印/导出 secrets，日志脱敏 | platform | partial | 未系统审计；S3 弱默认密钥断言未做。（相关：审计 S6 女巫面因 FR-002 移除匿名注册而显著收窄，但注册限速仍偏松） |
-| NFR-S04 | token/签名/关键操作可验证 | protocol | **done** | HMAC task token + Ed25519 结果签名 + 公钥校验；relay 业务路由 bearer 鉴权（platform `f26a08b`） |
+| NFR-S04 | token/签名/关键操作可验证 | protocol | **done** | HMAC task token + Ed25519 结果签名 + 公钥校验；relay 业务路由 bearer 鉴权（platform `f26a08b`）。2026-08-06 修掉一条相邻缺陷：`PLATFORM_ADMIN_API_KEY` 在任何已有持久化状态的栈上被 hydration 静默覆盖，**轮换 admin key 从来没吊销过任何东西**——显式配置的 key 现在胜过快照并吊销上一把（CHG-2026-199，5 例单测） |
 | NFR-S05 | 内容查看/资金/版本/争议必审计 | platform | partial | 通用审计存在；内容访问与争议专项待 M3 |
 | NFR-R01 | 任何 Call 必达终态 | protocol + platform | partial | 协议侧 `isCallTerminal` 要求四轴齐备（已交付需验收+资金收口，protocol `d2ad83b`）；平台护栏未实现 |
 | NFR-R02 | 重启后状态与账本幂等恢复 | platform + client | partial | 快照 hydrate 存在；中断尝试现在能收口——journal 记录未闭合尝试，重启后签名上报，平台按 attempt_id 幂等退款（`f9a8c86`/`2fada76`，CHG-2026-191）。**仍缺**：非中断来源的孤儿 hold（如 responder 永不回来、hold 过期外的边角）仍无主动对账扫描（审计 D3.4） |
@@ -126,7 +126,7 @@ Created: 2026-07-31（Wave 0 产出）· 单一事实源 = `.trellis/tasks/07-17
 | E4 | Operator 内容访问全部有理由与记录 | todo | 内容访问授权机制不存在 |
 | E5 | ≥3 个真实技术路线决策、≥2 个推动动作、≥1 次重复使用 | todo | 0 |
 | E6 | 正常流程无 SSH/远程桌面/admin curl/手工搬运 | partial | ~~CHG-2026-192 记为"审批无 UI 可点，必须 admin curl"——**该记录有误**~~：`ReviewQueuePage` 自 v0.2.0 起就实现了批准/驳回/启用，单元 6 用 admin curl 是因为那次是脚本化跑的，不是因为控制台做不到。2026-08-02 已实证：在 UI 点「批准」，`local.mineru.pdf.parse.v1` 由 pending/disabled 变 approved/enabled，该条目随即从待办里消失（CHG-2026-193）。<br>**真实剩余缺口是运维性的**：生产 console 处于锁定态且 `admin_api_key_configured=false`，记录在案的口令已无法认证——存在的审批 UI 当前没人能用。解锁需 bootstrap secret + owner 自定新口令，属 owner 动作。跨设备任务流本身仍然干净（无 SSH / 无远程桌面 / 无手工搬运） |
-| E7 | Platform/Responder/Research 各一次受控恢复回滚演练 | todo | **备份工具链不存在**，恢复演练无从做起 |
+| E7 | Platform/Responder/Research 各一次受控恢复回滚演练 | partial | ~~备份工具链不存在~~ **Platform 侧已达成（2026-08-06，CHG-2026-199）**：`repos/platform/scripts/stack-backup.mjs` 覆盖四个有状态面（postgres dump / artifact 字节 / gateway 凭据存储 / relay sqlite），`verify` 交叉校验「每条 `committed` artifact 必须有字节且大小与 sha256 一致」，`verify --deep` 把 dump 真的灌进一次性 postgres——文件在不在只证明字节完好，不证明 postgres 会接受它。**演练用真实生产快照**：v0.4.5 备份 → 本机全新栈恢复 → **6/6 artifact 经恢复后的平台取回，字节与 sha256 全部一致**，console 报 `configured/locked` 而非 `setup_required`。演练挖出并修掉一个真缺陷（见下）。<br>**仍缺**：Responder 与 Research 两侧演练（Research 私仓未创建）；异地/定时备份——现在是「跑一条命令」，单主机上的备份挡不住主机整体丢失 |
 
 ## 台账维护规则
 

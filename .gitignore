@@ -30,11 +30,20 @@ junit.xml
 tests/reports/latest.json
 exports/
 
+# Stack backups. The selfhost plan writes here, and a backup carries API keys
+# and the encrypted console credential store — it must never reach a commit.
+backups/
+
 # Personal local reference: research notes, positioning drafts, scratch (not workspace contract)
 _local_ref/
 
 # Personal tooling metadata (not part of the workspace contract)
 .wiki-system.json
+
+# Qoder-generated repowiki (derived docs, regenerated from the repo; hundreds of files)
+# Scoped to repowiki/ on purpose: .qoder/ is also a platform config dir
+# (.qoder/agents/, .qoder/skills/, .qoder/settings.json) that stays tracked like .codex/.
+.qoder/repowiki/
 
 # Stray artifacts from mis-typed pnpm/npm commands
 /delegated-execution-workspace@*

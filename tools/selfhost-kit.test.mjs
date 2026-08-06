@@ -1294,6 +1294,79 @@ try {
   assert.equal(placeholderBody.ok, false);
   fs.writeFileSync(publicEnvPath, goodEnv, "utf8");
 
+  // public-stack is the profile production runs, and it is the one whose data
+  // plane has four stateful surfaces. Its plan must send the operator to the
+  // real tool rather than repeat a postgres-only checklist here, which is what
+  // this command did until 2026-08-06.
+  const stackBackupPlan = run(tmpRoot, ["backup-plan", "--profile", "public-stack", "--json"]);
+  assert.equal(stackBackupPlan.status, 0, stackBackupPlan.stderr || stackBackupPlan.stdout);
+  const stackBackupBody = JSON.parse(stackBackupPlan.stdout);
+  assert.equal(stackBackupBody.profile, "public-stack");
+  const stackBackupText = stackBackupBody.steps.map((item) => item.command || item.detail).join("\n");
+  assert.match(stackBackupText, /stack-backup\.mjs backup/);
+  assert.match(stackBackupText, /stack-backup\.mjs verify .*--deep/);
+  assert.ok(
+    !/pg_dump/.test(stackBackupText),
+    "public-stack must not keep a second, postgres-only backup procedure alongside the real tool"
+  );
+  assert.match(stackBackupBody.notes.join("\n"), /a postgres dump alone is not a backup of this stack/);
+
+  const stackRestorePlan = run(
+    tmpRoot,
+    ["restore-plan", "--profile", "public-stack", "--backup-dir", "backups/selfhost/public-stack/sample", "--json"]
+  );
+  assert.equal(stackRestorePlan.status, 0, stackRestorePlan.stderr || stackRestorePlan.stdout);
+  const stackRestoreBody = JSON.parse(stackRestorePlan.stdout);
+  const stackRestoreText = stackRestoreBody.steps.map((item) => item.command || item.detail).join("\n");
+  assert.match(stackRestoreText, /stack-backup\.mjs verify/);
+  assert.match(stackRestoreText, /stack-backup\.mjs restore/);
+  assert.match(stackRestoreText, /Bring the \.env yourself/);
+
+  // A real stack-backup artifact must not be judged against the old
+  // `.env` + `postgres.sql` shape, which would call a complete backup broken.
+  const stackArtifactDir = path.join(tmpRoot, "backups/selfhost/public-stack/2026-08-06T00-00-00-000Z");
+  fs.mkdirSync(stackArtifactDir, { recursive: true });
+  for (const name of ["manifest.json", "postgres.sql.gz", "artifacts.tar.gz", "gateway.tar.gz", "relay.tar.gz"]) {
+    fs.writeFileSync(path.join(stackArtifactDir, name), name === "manifest.json" ? "{}" : "x", "utf8");
+  }
+  const stackValidate = run(
+    tmpRoot,
+    [
+      "backup-validate",
+      "--profile",
+      "public-stack",
+      "--backup-dir",
+      "backups/selfhost/public-stack/2026-08-06T00-00-00-000Z",
+      "--json"
+    ]
+  );
+  assert.equal(stackValidate.status, 0, stackValidate.stderr || stackValidate.stdout);
+  const stackValidateBody = JSON.parse(stackValidate.stdout);
+  assert.equal(stackValidateBody.ok, true);
+  assert.deepEqual(
+    stackValidateBody.files.map((file) => file.name).sort(),
+    ["artifacts.tar.gz", "gateway.tar.gz", "manifest.json", "postgres.sql.gz", "relay.tar.gz"]
+  );
+  assert.match(stackValidateBody.notes.join("\n"), /presence is not restorability/);
+  assert.match(stackValidateBody.next, /stack-backup\.mjs verify .*--deep/);
+
+  // Missing artifact bytes must block, not pass quietly.
+  fs.rmSync(path.join(stackArtifactDir, "artifacts.tar.gz"));
+  const stackValidateBroken = run(
+    tmpRoot,
+    [
+      "backup-validate",
+      "--profile",
+      "public-stack",
+      "--backup-dir",
+      "backups/selfhost/public-stack/2026-08-06T00-00-00-000Z",
+      "--json"
+    ]
+  );
+  const stackValidateBrokenBody = JSON.parse(stackValidateBroken.stdout);
+  assert.equal(stackValidateBrokenBody.ok, false);
+  assert.match(stackValidateBrokenBody.blockers.join("\n"), /artifacts\.tar\.gz missing/);
+
   console.log("[selfhost-kit.test] ok");
 } finally {
   fs.rmSync(tmpRoot, { recursive: true, force: true });

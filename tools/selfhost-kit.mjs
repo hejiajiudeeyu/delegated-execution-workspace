@@ -1822,7 +1822,59 @@ function printBackupPlan(profileName) {
   }
 }
 
+// The public-stack profile has a real backup tool in the owning repository
+// (`repos/platform/scripts/stack-backup.mjs`, added 2026-08-06). Before it
+// existed this command printed a hand checklist covering `.env` and a postgres
+// dump — one of four stateful surfaces. Following it would restore a database
+// full of committed artifact descriptors whose bytes were never archived. The
+// fourth repo orchestrates; it does not get to keep its own, smaller, wrong
+// version of the procedure, so for that profile this now points at the tool.
+const STACK_BACKUP_PROFILES = new Set(["public-stack"]);
+const STACK_BACKUP_SCRIPT = "repos/platform/scripts/stack-backup.mjs";
+
+function stackBackupPlanData(profileName) {
+  const backupDir = "backups/selfhost/public-stack";
+  return {
+    command: "selfhost:backup-plan",
+    profile: profileName,
+    ok: true,
+    backup_dir: backupDir,
+    env_path: path.relative(ROOT, profilePaths(profileName).envPath),
+    steps: [
+      {
+        step: 1,
+        action: "run-backup",
+        detail: "Back up all four stateful surfaces (postgres, artifact bytes, gateway credential store, relay sqlite)",
+        command: `node ${STACK_BACKUP_SCRIPT} backup --project public-stack --out ${backupDir}`
+      },
+      {
+        step: 2,
+        action: "verify-backup",
+        detail: "Prove the dump loads and every committed artifact has matching bytes",
+        command: `node ${STACK_BACKUP_SCRIPT} verify --backup ${backupDir}/<stamp> --deep`
+      },
+      {
+        step: 3,
+        action: "store-env-separately",
+        detail:
+          "Store the profile .env encrypted and separately: it is deliberately not inside the backup, and without it a restored stack loses its relay tokens and admin key."
+      }
+    ],
+    next: `corepack pnpm run selfhost:backup-validate -- --profile ${profileName} --backup-dir ${backupDir}/<stamp>`,
+    notes: [
+      "plan-only",
+      "the backup command itself lives in the owning repository, not here",
+      "a postgres dump alone is not a backup of this stack",
+      "backup artifacts are secret material: they carry API keys and the encrypted console credential store",
+      "see repos/platform/docs/current/guides/backup-and-restore.md"
+    ]
+  };
+}
+
 function backupPlanData(profileName) {
+  if (STACK_BACKUP_PROFILES.has(profileName)) {
+    return stackBackupPlanData(profileName);
+  }
   const stamp = new Date().toISOString().replace(/[:.]/g, "-");
   const backupDir = `backups/selfhost/${profileName}/${stamp}`;
   const envPath = path.relative(ROOT, profilePaths(profileName).envPath);
@@ -1872,7 +1924,10 @@ function backupPlanData(profileName) {
       "does not copy files",
       "does not dump the database",
       "does not read or print .env secret values",
-      "store .env backups privately because they may contain secret values"
+      "store .env backups privately because they may contain secret values",
+      // Naming the gap is the point: a checklist that silently covers one
+      // surface reads as a complete backup procedure.
+      "covers .env and postgres only; artifact bytes, gateway credentials and relay state are not included in this profile's checklist"
     ]
   };
 }
@@ -1989,6 +2044,55 @@ function restorePlanData(profileName, backupDir) {
   }
   const { envPath } = profilePaths(profileName);
   const normalizedBackupDir = backupDir.replace(/\/+$/, "");
+  if (STACK_BACKUP_PROFILES.has(profileName)) {
+    return {
+      command: "selfhost:restore-plan",
+      profile: profileName,
+      ok: true,
+      backup_dir: normalizedBackupDir,
+      env_path: path.relative(ROOT, envPath),
+      steps: [
+        {
+          step: 1,
+          action: "verify-first",
+          detail: "Never restore an unverified backup",
+          command: `node ${STACK_BACKUP_SCRIPT} verify --backup ${normalizedBackupDir} --deep`
+        },
+        {
+          step: 2,
+          action: "rehearse-into-a-fresh-project",
+          detail: "Restore into a project name that holds no data; restore refuses to overwrite without --force",
+          command: `node ${STACK_BACKUP_SCRIPT} restore --backup ${normalizedBackupDir} --project <target>`
+        },
+        {
+          step: 3,
+          action: "supply-env",
+          detail: `Bring the .env yourself — it is not in the backup — and make DATABASE_URL agree with the restored password.`
+        },
+        {
+          step: 4,
+          action: "start-services",
+          detail: "Start the restored stack",
+          command: `docker compose -p <target> -f repos/platform/deploy/public-stack/docker-compose.yml --env-file .env up -d`
+        },
+        {
+          step: 5,
+          action: "validate-recovery",
+          detail: "Check /platform/buildz, the console session state, and fetch one committed artifact back through the API."
+        },
+        {
+          step: 6,
+          action: "retain-artifacts",
+          detail: "Keep the original volumes and the backup until the recovered stack is validated."
+        }
+      ],
+      notes: [
+        "plan-only",
+        "restoring with freshly generated secrets invalidates issued relay and task tokens and leaves the console holding the previous admin key",
+        "see repos/platform/docs/current/guides/backup-and-restore.md"
+      ]
+    };
+  }
   return {
     command: "selfhost:restore-plan",
     profile: profileName,
@@ -2088,11 +2192,23 @@ function backupValidateData(profileName, backupDir) {
   }
   const normalizedBackupDir = backupDir.replace(/\/+$/, "");
   const absoluteBackupDir = path.resolve(ROOT, normalizedBackupDir);
-  const checks = [
-    [".env", true],
-    ["postgres.sql", true],
-    ["compose.config.txt", false]
-  ];
+  // A stack-backup artifact identifies itself by its manifest. Checking it
+  // against the legacy `.env` + `postgres.sql` shape would report a complete,
+  // verified backup as broken.
+  const isStackBackup = fs.existsSync(path.join(absoluteBackupDir, "manifest.json"));
+  const checks = isStackBackup
+    ? [
+        ["manifest.json", true],
+        ["postgres.sql.gz", true],
+        ["artifacts.tar.gz", true],
+        ["gateway.tar.gz", true],
+        ["relay.tar.gz", true]
+      ]
+    : [
+        [".env", true],
+        ["postgres.sql", true],
+        ["compose.config.txt", false]
+      ];
   const files = checks.map(([name, required]) => {
     const filePath = path.join(absoluteBackupDir, name);
     if (!fs.existsSync(filePath)) {
@@ -2124,13 +2240,23 @@ function backupValidateData(profileName, backupDir) {
     backup_dir: normalizedBackupDir,
     files,
     blockers,
-    next: `corepack pnpm run selfhost:restore-plan -- --profile ${profileName} --backup-dir ${normalizedBackupDir}`,
-    notes: [
-      "non-destructive",
-      "checks file presence and size only",
-      "does not read or print .env secret values",
-      "compose.config.txt is recommended but non-blocking"
-    ]
+    next: isStackBackup
+      ? `node ${STACK_BACKUP_SCRIPT} verify --backup ${normalizedBackupDir} --deep`
+      : `corepack pnpm run selfhost:restore-plan -- --profile ${profileName} --backup-dir ${normalizedBackupDir}`,
+    notes: isStackBackup
+      ? [
+          "non-destructive",
+          "checks file presence and size only",
+          // Presence is not restorability, and saying so here keeps a green
+          // line from being mistaken for a verified backup.
+          `presence is not restorability: run 'node ${STACK_BACKUP_SCRIPT} verify --deep' to check checksums, artifact bytes and that the dump loads`
+        ]
+      : [
+          "non-destructive",
+          "checks file presence and size only",
+          "does not read or print .env secret values",
+          "compose.config.txt is recommended but non-blocking"
+        ]
   };
 }
 
