@@ -1,0 +1,29 @@
+release_id: v0.4.6
+created_at: 2026-08-06T08:53:38.330Z
+components:
+  protocol:
+    sha: f6ec3a4419638f095592c5c03ca2aaa6ea836de3
+    path: repos/protocol
+  client:
+    sha: b9adf9ef6dc0a8f90702735cc5a70b7ddb3ae29c
+    path: repos/client
+  platform:
+    sha: 38cc89e766801261ba07a4f4298a15b413443374
+    path: repos/platform
+  brand_site:
+    sha: ac8ea7be573b715bd1c9ad8b40397d7c19a1a374
+    path: repos/brand-site
+change_bundle: CHG-2026-200
+images:
+  rsp-platform: v0.4.6
+  rsp-relay: v0.4.6
+  rsp-gateway: v0.4.6
+packages:
+  "@delexec/contracts": 0.1.7
+  "@delexec/ops": 0.1.8
+notes: "A Call pins the contract it was made under (FR-014, M2 unit 1): approval
+  freezes the hotline's contract into a digest-carrying version, the binding
+  rides the signed task token and delivery metadata, and reads for a bound call
+  go to the pinned version rather than the catalog's current record. Rolled to
+  production 2026-08-06."
+manifest_sha256: ef3922a566e664fa468542f96a71a3d307073ed3f1e55396f4b6cd96dbc334bc

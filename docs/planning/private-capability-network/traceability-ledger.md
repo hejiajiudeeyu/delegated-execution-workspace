@@ -55,7 +55,7 @@ Created: 2026-07-31（Wave 0 产出）· 单一事实源 = `.trellis/tasks/07-17
 | FR-011 | 固定服务档位 Quick/Standard/Deep | protocol + platform | todo | A-05 已定各档验收窗口 |
 | FR-012 | 隐私与履约模式 | protocol | todo | 本阶段仅 supervised 可用 |
 | FR-013 | 示例输入输出 | protocol | partial | 模板 bundle 含示例；缺边界说明要求 |
-| FR-014 | 版本化：每次 Call 固定 version | protocol + platform | partial | 协议侧 `validateHotlineVersionRef` 已冻结（protocol `d2ad83b`）；平台无版本历史表 |
+| FR-014 | 版本化：每次 Call 固定 version | protocol + platform | **done** | 协议侧冻结版本文档 + 内容摘要 + 规范化 JSON（protocol `f6ec3a4`，contracts 0.1.7，19 例单测）；平台侧审批即发布、按内容幂等、Call 绑定先于计费与派发且不因重发 token 而升级、绑定随签名 token 与 `delivery_meta` 传递、已绑定调用一律读钉住的版本而非目录当前值（platform `7e7952d`，10 例集成）。版本记录被就地改写会报 `digest_mismatch` 而非默许；无 pin 的旧调用报「早于契约版本化」而不借用当前契约。浏览器实证：改契约后调用详情仍显示 v1 并标注「热线已更新到 v2」。生产已滚 **v0.4.6**（CHG-2026-200，`runtime matches release v0.4.6`）。**仍缺**：responder 尚未按钉住的契约校验自己的输出，结果签名也未覆盖版本——归 M3 交付校验 |
 | FR-015 | 启停与可用性等级 | platform | partial | admin enable/disable 存在；缺 always-on/scheduled/best-effort |
 | FR-016 | Stable/Preview (P1) | platform | todo | |
 | FR-070 | 导出 Hotline 包 | platform | todo | |
