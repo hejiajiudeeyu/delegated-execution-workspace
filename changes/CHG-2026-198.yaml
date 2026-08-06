@@ -1,0 +1,16 @@
+change_id: CHG-2026-198
+goal: certify v0.4.5 and put alerting into production
+protocol_sha: 71879fd103faed830b9c1ef0228809bede011f9a
+client_sha: b9adf9ef6dc0a8f90702735cc5a70b7ddb3ae29c
+platform_sha: a224c17c5eeed4dd13c1074fd6d9823165260183
+brand_site_sha: ac8ea7be573b715bd1c9ad8b40397d7c19a1a374
+owner: hejiajiudeeyu
+risk_level: medium
+affected_scope:
+  - platform
+  - console
+  - release
+  - production
+contracts_check: passed
+integration_check: passed
+notes: "Release cut and production roll for the alerting work certified in CHG-2026-197, which stays frozen at the code SHA it was verified against — the bundle validator refused an attempt to rewrite its platform_sha forward to this release commit, correctly: a certified combination is a record, not a mutable pointer. Both owner authorizations from 2026-08-06 executed here. (1) @delexec/contracts@0.1.6 published (publish run 31079360421), so source and npm agree again; the version was bumped rather than amending the published 0.1.5, since same-number-different-content is the trap this project has paid for. (2) Production rolled v0.4.4 -> v0.4.5: images run 31079433188 built all three images with the published-image smoke gate green — no repeat of the v0.4.4 lockfile failure, because platform-api's contracts range was already corrected to ^0.1.5 in CHG-2026-196 and 0.1.6 satisfies it. Deployed with both compose files per the runbook (plain `docker compose up -d` creates the Caddy edge production does not use and took the site down for ~2min on 2026-08-02). Verified live: /platform/buildz and /gateway/buildz both report release_id v0.4.5 git_sha a224c17, console asset index-B9FO9hfg.js, relay healthz 200, console 200, and `release-manifest check` reports **runtime matches release v0.4.5** with the relay probed through an SSH tunnel (it is not publicly reachable by design). releases/current.yaml promoted to v0.4.5, manifest sha256 5a8086906458. NOTE ON WHAT IS AND IS NOT LIVE: the alerting code is deployed but alerting itself is OFF until a webhook URL is saved in the console — the owner chose to configure their own push endpoint rather than hand the URL over. Until they do, production still has no outbound notification, which is the same state as before this round from the operator's point of view; the difference is that turning it on is now a form field instead of a development task. The liveness ping (the only cover for a platform outage) is likewise inert until its URL is set, and that is the field most worth filling: the 2026-07-04 incident this whole unit exists for would still go unnoticed without it."

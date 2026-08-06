@@ -1,0 +1,28 @@
+release_id: v0.4.5
+created_at: 2026-08-06T07:06:27.371Z
+components:
+  protocol:
+    sha: 71879fd103faed830b9c1ef0228809bede011f9a
+    path: repos/protocol
+  client:
+    sha: b9adf9ef6dc0a8f90702735cc5a70b7ddb3ae29c
+    path: repos/client
+  platform:
+    sha: a224c17c5eeed4dd13c1074fd6d9823165260183
+    path: repos/platform
+  brand_site:
+    sha: ac8ea7be573b715bd1c9ad8b40397d7c19a1a374
+    path: repos/brand-site
+change_bundle: CHG-2026-197
+images:
+  rsp-platform: v0.4.5
+  rsp-relay: v0.4.5
+  rsp-gateway: v0.4.5
+packages:
+  "@delexec/contracts": 0.1.6
+  "@delexec/ops": 0.1.8
+notes: "Alerts leave the process (FR-066): webhook delivery, open/repeat/close
+  semantics, visible delivery failures, and the liveness ping that is the only
+  cover for a platform outage. NFR-R05 met (offline detection 120s). Rolled to
+  production 2026-08-06."
+manifest_sha256: 5a80869064585671480391fcecb5c25def92c8cee5b1ab5f7e49b4aa9ca2db1b
