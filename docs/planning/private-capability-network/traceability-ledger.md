@@ -86,7 +86,7 @@ Created: 2026-07-31（Wave 0 产出）· 单一事实源 = `.trellis/tasks/07-17
 | FR-063 | 内容访问审计 | platform | todo | 通用审计存在，缺内容访问专项且不可静默删除 |
 | FR-064 | 争议处理 | platform | todo | |
 | FR-065 | 版本可见 | platform + workspace | partial | `/buildz` 已实现；调用详情页已呈现设备版本与最近心跳（未上报时显示"未上报"而非 0，platform `373ca64`）。**仍缺**：运行时组合与认证 manifest 的漂移在 console 里没有入口，只能靠 `release-manifest check` |
-| FR-066 | 告警 (P1) | platform | todo | **当前零告警**：2026-07-04 宕机 5.5h 靠撞见发现（PRD 未分配，本台账归 P1 运维）。相关教训：`/v1/admin/attention` 的卡住检测自交付起从未在真实数据上触发过（读了生产事件不存在的字段），v0.4.1 修复——"没有告警"曾等于"看不见"，不等于"没事"（platform `539e0e7`） |
+| FR-066 | 告警 (P1) | platform | **done**（代码侧） | 平台此前**零出站能力**（无 SMTP/webhook/任何依赖），一切靠人主动打开页面。现落地 webhook 投递（HMAC-SHA256 可选签名、5xx/超时重试、4xx 不重试）+ 首次/每 6h 重备/恢复各一次 + 按 (kind,target) 独立跟踪 + 投递失败在 console 可见；告警判定复用 `buildAttentionItems()`，与 console 同一份计算，不另立标准。**死人开关**：平台自身宕机无法自我告警——正是 2026-07-04 那次的形态——故另配 `liveness_url` 周期 GET，由外部监控在 ping 停止时报警；console 与 status 端点均显式声明 `platform_down` 不在 webhook 覆盖内。配置在 console 可改（E6 无需 SSH），密钥不回显。12 例集成全部对真实 HTTP 接收端。**浏览器实证闭环**：设备离线→签名告警自动送达→心跳恢复→「已恢复」自动送达（CHG-2026-197）。**待生产**：production 仍在 v0.4.4，尚无告警 |
 
 ## M4 第一方 Research Hotline
 
@@ -112,7 +112,7 @@ Created: 2026-07-31（Wave 0 产出）· 单一事实源 = `.trellis/tasks/07-17
 | NFR-R02 | 重启后状态与账本幂等恢复 | platform + client | partial | 快照 hydrate 存在；中断尝试现在能收口——journal 记录未闭合尝试，重启后签名上报，平台按 attempt_id 幂等退款（`f9a8c86`/`2fada76`，CHG-2026-191）。**仍缺**：非中断来源的孤儿 hold（如 responder 永不回来、hold 过期外的边角）仍无主动对账扫描（审计 D3.4） |
 | NFR-R03 | checksum 失败不得标 delivered | protocol + platform | **done** | 协议侧硬约束 + 平台侧 `CONTRACT_ARTIFACT_CHECKSUM_MISMATCH` 拒绝提交（platform `0b77672`）；两侧一致 |
 | NFR-R04 | hold/settle/refund exactly-once | protocol + platform | partial | 协议侧 settled/refunded 为终态、自迁移幂等（protocol `d2ad83b`）；对账路径按 attempt_id 幂等，且以计费轨 `state === held` 为结构性兜底——重复上报只退一次（platform `2fada76`）。**仍缺**：跨分录单事务与崩溃测试 |
-| NFR-R05 | 设备离线检测 ≤ 2 分钟 | platform | partial | 阈值存在，未按此数值校准 |
+| NFR-R05 | 设备离线检测 ≤ 2 分钟 | platform | **done** | `OFFLINE_THRESHOLD_S` 180s → **120s**（30s 心跳漏 4 拍），180s 无论下游多快都不可能满足 ≤2 分钟（platform `09aafb1`，CHG-2026-197） |
 | NFR-R06 | 无人值守完成率 ≥ 90% | 全体 | todo | M5 dogfood 度量 |
 
 ## 阶段退出证据 E0–E7
