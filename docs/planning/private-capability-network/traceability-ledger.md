@@ -51,7 +51,7 @@ Created: 2026-07-31（Wave 0 产出）· 单一事实源 = `.trellis/tasks/07-17
 
 | FR | 需求 | Owner | 状态 | 证据 |
 |---|---|---|---|---|
-| FR-010 | 声明 Hotline | protocol + platform | **done**（发布门） | 2026-08-06 生产审计发现真实缺口比记录的更尖锐：**一个热线可以完全不声明契约就被批准并调用**——唯一干过真活的 `local.mineru.pdf.parse.v1` 无 input/output schema、无示例、无限制说明。现落地发布门（platform `a2e32e9` + protocol `97bd4ad`，contracts 0.1.8）：审批时必须有两个 schema、每向至少一个可用示例、且必须声明「不适合做什么」，否则 `CONTRACT_HOTLINE_INCOMPLETE` 附逐项清单。已批准的不重新校验（否则会无声下线生产热线）。生产已滚 **v0.4.7**。**仍缺**：执行绑定（responder 按契约校验输出）归 M3 |
+| FR-010 | 声明 Hotline | protocol + platform | **done**（发布门） | 2026-08-06 生产审计发现真实缺口比记录的更尖锐：**一个热线可以完全不声明契约就被批准并调用**——唯一干过真活的 `local.mineru.pdf.parse.v1` 无 input/output schema、无示例、无限制说明。现落地发布门（platform `a2e32e9` + protocol `97bd4ad`，contracts 0.1.8）：审批时必须有两个 schema、每向至少一个可用示例、且必须声明「不适合做什么」，否则 `CONTRACT_HOTLINE_INCOMPLETE` 附逐项清单。已批准的不重新校验（否则会无声下线生产热线）。生产已滚 **v0.4.7**。2026-08-06 续：契约事实源改为**跟着 worker 走**——worker 以 `--contract` 自陈，客户端两条注册路径都携带（此前生产用的 `/controller/register` 连示例字段都没有）；平台**停止用模板默认值编造**未声明的 schema（生产曾把 PDF 解析器公开描述成 `{text}→{summary}` 文本摘要器），改以 `contract_declared` 直说（client `f4a3b3a` / ops 0.1.9，platform `7531e20`，生产 v0.4.8，CHG-2026-202）。**仍缺**：执行绑定（responder 按契约校验输出）归 M3；生产 MinerU 重新注册+重新审批待 owner（重提交会使其下线至审批） |
 | FR-011 | 固定服务档位 Quick/Standard/Deep | protocol + platform | todo | A-05 已定各档验收窗口 |
 | FR-012 | 隐私与履约模式 | protocol | todo | 本阶段仅 supervised 可用 |
 | FR-013 | 示例输入输出 | protocol + platform | **done** | 示例必须能通过**它自己声明的 schema**，失败时点名是哪一条（protocol `97bd4ad`，16 例单测；platform 8 例集成）。顺带修掉两个同形状问题：bootstrap 热线的示例只进模板包不进目录记录（夹具本身过不了自己的规则）；示例此前**根本没有统一信封**（真实提交 `{title, input}`、演示夹具 `{title, description, params}`）——两种形状正是从来无法校验的原因，现统一到真实数据在用的那个，brand-site 渲染留旧键回退（`aca1aa2`）。浏览器实证：批准一个空声明后 console 逐项列出五条缺失 |

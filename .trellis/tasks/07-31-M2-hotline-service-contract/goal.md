@@ -30,13 +30,17 @@
    生产审计发现真实缺口比预想尖锐：**热线可以完全不声明契约就被批准并调用**。落地发布门——审批（而非提交，设备仍须能注册）时校验两个 schema、每向至少一个可用示例、必须声明「不适合做什么」，且示例必须通过它自己的 schema；拒绝时返回逐项清单，console 渲染成列表而非分号长句。已批准的不重新校验。
    > 顺带修掉两个同形状问题：bootstrap 夹具的示例只进模板包不进目录记录；示例此前有两种信封（`{title, input}` vs `{title, description, params}`）——这正是从来无法校验的原因。
    > **本轮的直接后果**：`local.mineru.pdf.parse.v1` 继续跑，但**下次再批准会被拒**，直到它声明真契约。
-3. **服务档位 Quick / Standard / Deep**（FR-011，protocol + platform）
+3. 🟡 **让真实热线声明真契约**（client + platform，2026-08-06 owner 加入并拍板事实源）——**代码侧完成，生产收尾待 owner**（CHG-2026-202；client `f4a3b3a`、ops 0.1.9 已发 npm；platform `7531e20`，生产 **v0.4.8**）
+   owner 拍板两条：**契约跟着 worker 走**；**平台停止编造**。落地：worker 在实现旁边声明契约并以 `--contract` 作答（任何 process adapter 可实现，非 MinerU 专属），客户端问它、且声明胜过按 id 子串的猜测；`/controller/register`（生产实际用的那条路径，此前连示例字段都没有）改为携带完整契约；平台目录读取不再用模板默认值填补，并以 `contract_declared` 直说。生产实证：marketplace 不再把 PDF 解析器描述成文本摘要器。
+   > 设计上被自己测试抓到的一条：不实现 `--contract` 的 worker 也会打印可解析 JSON，会被误当契约——用 `contract_version` 作正向信号，**沉默必须与回答可区分**。
+   > **待 owner 的最后一步**：重新提交会无条件把热线置为 `disabled/pending`，而重新审批需要 operator 凭据（在 owner 的 console 会话里）。我不单方面做半步，否则 MinerU 会下线到不确定的时刻。设备将发送的载荷已按 `validateHotlineContract` 校验通过（4234 字节）。步骤：设备升到 ops 0.1.9 → 重新注册 → console 点批准，**一次坐下来做完**。
+4. **服务档位 Quick / Standard / Deep**（FR-011，protocol + platform）
    按 A-05：档位绑定验收窗（72h 默认 / 24h–7d 边界；Quick 24h、Standard 72h、Deep 7d），M2 只负责声明与快照进 Call，验收窗真正生效在 M3。
-4. **隐私与履约模式**（FR-012，protocol）
+5. **隐私与履约模式**（FR-012，protocol）
    本阶段仅 `supervised` 可用；声明其他模式即拒绝，而不是接受后无声地按 supervised 执行。
-5. **启停与可用性等级**（FR-015，platform）
+6. **启停与可用性等级**（FR-015，platform）
    `always-on` / `scheduled` / `best-effort`，与现有 admin enable/disable 合并为一个可用性模型。
-6. **导出 / 导入**（FR-070 / FR-071 / FR-072，platform）
+7. **导出 / 导入**（FR-070 / FR-071 / FR-072，platform）
    ExportBundle 显式剥离 secrets、私有 artifact、本地路径、access token 与质量历史（PRD 第 8 条规范化要求，须在导入工作开始前落定）；目标网络必须重新审批而非继承来源信任。
 
 **P1，本轮不做**：FR-016 Stable/Preview、FR-073 兼容性检查。二者都要先有稳定的版本对象（单元 1）才谈得上。

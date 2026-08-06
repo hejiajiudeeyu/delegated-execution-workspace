@@ -199,7 +199,7 @@ importers:
   repos/client:
     dependencies:
       '@delexec/contracts':
-        specifier: ^0.1.0
+        specifier: ^0.1.8
         version: link:../protocol/packages/contracts
       better-sqlite3:
         specifier: ^12.6.2
@@ -295,7 +295,7 @@ importers:
         specifier: 0.1.0
         version: link:../caller-skill-mcp-adapter
       '@delexec/contracts':
-        specifier: ^0.1.0
+        specifier: ^0.1.5
         version: link:../../../protocol/packages/contracts
       '@delexec/responder-controller':
         specifier: 0.1.0

@@ -1,0 +1,27 @@
+release_id: v0.4.8
+created_at: 2026-08-06T10:47:51.058Z
+components:
+  protocol:
+    sha: 97bd4adfb892726ece2def5e542c1ead836347f2
+    path: repos/protocol
+  client:
+    sha: f4a3b3a7799c8fd5aa2849c10112254f013d87d7
+    path: repos/client
+  platform:
+    sha: 7531e206840a903e11e8dc7e68243e6ea9cacb6a
+    path: repos/platform
+  brand_site:
+    sha: aca1aa2cdb8f55047fb3cb42dc235b1b4b01a95b
+    path: repos/brand-site
+change_bundle: CHG-2026-202
+images:
+  rsp-platform: v0.4.8
+  rsp-relay: v0.4.8
+  rsp-gateway: v0.4.8
+packages:
+  "@delexec/contracts": 0.1.8
+  "@delexec/ops": 0.1.9
+notes: A worker declares its own contract and both device registration paths
+  carry it; the platform stops inventing one for a hotline that declared none.
+  Rolled to production 2026-08-06.
+manifest_sha256: 500b810c3253940398d3537649b1120cd7547518ae12bc48a94eb6c8669d3e66
