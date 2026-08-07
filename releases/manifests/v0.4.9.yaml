@@ -1,0 +1,29 @@
+release_id: v0.4.9
+created_at: 2026-08-07T05:35:11.223Z
+components:
+  protocol:
+    sha: 97bd4adfb892726ece2def5e542c1ead836347f2
+    path: repos/protocol
+  client:
+    sha: f4a3b3a7799c8fd5aa2849c10112254f013d87d7
+    path: repos/client
+  platform:
+    sha: 73f3dc965e298273a46f03871996e3f9713a0e31
+    path: repos/platform
+  brand_site:
+    sha: aca1aa2cdb8f55047fb3cb42dc235b1b4b01a95b
+    path: repos/brand-site
+change_bundle: CHG-2026-203
+images:
+  rsp-platform: v0.4.9
+  rsp-relay: v0.4.9
+  rsp-gateway: v0.4.9
+packages:
+  "@delexec/contracts": 0.1.8
+  "@delexec/ops": 0.1.9
+notes: "The operator can end things: close an abandoned call (reason required,
+  refunds a held budget, never settles) and retire a gone device. Without these
+  the attention feed could never be empty and v0.4.5 alerting would have
+  repeated forever about calls nobody could close. Rolled to production
+  2026-08-07 and used to clear 11 rehearsal items."
+manifest_sha256: 4c15232ae84effaf36e9d7fc445f48dd0fba4e80713341309906e71351c9323c

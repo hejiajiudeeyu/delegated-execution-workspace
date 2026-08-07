@@ -32,12 +32,12 @@ Created: 2026-07-31（Wave 0 产出）· 单一事实源 = `.trellis/tasks/07-17
 | FR-003 | heartbeat 与在线状态 | platform + client | **done** | 心跳带 version + capacity 并在运营视图呈现；maintenance 粘性、陈旧心跳压过自报（platform `9f2aa49`）。客户端主动上报容量待接入运行时（记为 FR-036 邻项） |
 | FR-004 | Provider-managed execution | client | done | Platform 不持有 Provider 代码/模型/secrets（现架构即如此） |
 | FR-005 | 最小权限：只执行已注册 Hotline | client | partial | 无通用 shell 入口；缺文件/网络访问范围可配置（NFR-S02） |
-| FR-006 | 设备维护窗口 (P1) | platform | todo | |
+| FR-006 | 设备维护窗口 (P1) | platform | todo | 相邻能力已落：`POST /v2/admin/responders/:id/retire` 让已消失的设备停止永远上报为问题（platform `73f3dc9`，CHG-2026-203）|
 | FR-020 | 一次性结构化 Brief | protocol + client | partial | input schema 校验存在；缺档位与预算上限字段 |
 | FR-021 | 执行前 ACCEPTED/REJECTED | protocol + platform | partial | 协议侧 `rejected` 语义与"拒绝不得持有资金"校验已冻结（protocol `d2ad83b`）；平台路由未实现 |
 | FR-022 | 预算硬上限 | platform | partial | `max_charge_cents` hold 存在；缺档位绑定与超支阻断语义 |
 | FR-023 | 幂等提交 | platform | **done** | request_id 幂等 + hold 状态双重幂等（审计 D2.5 确认） |
-| FR-024 | 取消 | protocol + platform | partial | 协议侧 `canceled` 迁移已定义（已交付不可取消）；平台路由未实现 |
+| FR-024 | 取消 | protocol + platform | partial | 协议侧 `canceled` 迁移已定义（已交付不可取消）；**运营者收口已实现**：`POST /v1/admin/requests/:id/close` 必须写理由、有冻结资金则退款、**结构上永不结算**、已结算的明说而不悄悄冲正（platform `73f3dc9`，v0.4.9，11 例集成，CHG-2026-203）。**仍缺**：Caller 侧主动取消（本条 FR 的正题）|
 | FR-025 | 任务排队 (P1) | protocol + platform | partial | 协议侧 `queued`/`executing` 已区分（protocol `d2ad83b`）；平台未实现 |
 | FR-030 | 长任务状态 | protocol + platform | partial | **协议侧完成**：四轴 + 合法迁移 + 跨轴校验（protocol `d2ad83b`，34 例）；platform 侧实现未开始 |
 | FR-031 | 状态持久化 | platform | partial | 快照持久化存在；`postgres-persistence` 集成测试已恢复入套件（platform `9584fdf`） |
@@ -86,7 +86,7 @@ Created: 2026-07-31（Wave 0 产出）· 单一事实源 = `.trellis/tasks/07-17
 | FR-063 | 内容访问审计 | platform | todo | 通用审计存在，缺内容访问专项且不可静默删除 |
 | FR-064 | 争议处理 | platform | todo | |
 | FR-065 | 版本可见 | platform + workspace | partial | `/buildz` 已实现；调用详情页已呈现设备版本与最近心跳（未上报时显示"未上报"而非 0，platform `373ca64`）。**仍缺**：运行时组合与认证 manifest 的漂移在 console 里没有入口，只能靠 `release-manifest check` |
-| FR-066 | 告警 (P1) | platform | **done**（代码侧） | 平台此前**零出站能力**（无 SMTP/webhook/任何依赖），一切靠人主动打开页面。现落地 webhook 投递（HMAC-SHA256 可选签名、5xx/超时重试、4xx 不重试）+ 首次/每 6h 重备/恢复各一次 + 按 (kind,target) 独立跟踪 + 投递失败在 console 可见；告警判定复用 `buildAttentionItems()`，与 console 同一份计算，不另立标准。**死人开关**：平台自身宕机无法自我告警——正是 2026-07-04 那次的形态——故另配 `liveness_url` 周期 GET，由外部监控在 ping 停止时报警；console 与 status 端点均显式声明 `platform_down` 不在 webhook 覆盖内。配置在 console 可改（E6 无需 SSH），密钥不回显。12 例集成全部对真实 HTTP 接收端。**浏览器实证闭环**：设备离线→签名告警自动送达→心跳恢复→「已恢复」自动送达（CHG-2026-197）。生产已滚 v0.4.5（CHG-2026-198，`runtime matches release v0.4.5`）。**仍未真正生效**：webhook URL 与存活 ping URL 由 owner 在 console 填写后才开始告警——在此之前生产从运营者视角看仍是零告警 |
+| FR-066 | 告警 (P1) | platform | **done**（代码侧） | 平台此前**零出站能力**（无 SMTP/webhook/任何依赖），一切靠人主动打开页面。现落地 webhook 投递（HMAC-SHA256 可选签名、5xx/超时重试、4xx 不重试）+ 首次/每 6h 重备/恢复各一次 + 按 (kind,target) 独立跟踪 + 投递失败在 console 可见；告警判定复用 `buildAttentionItems()`，与 console 同一份计算，不另立标准。**死人开关**：平台自身宕机无法自我告警——正是 2026-07-04 那次的形态——故另配 `liveness_url` 周期 GET，由外部监控在 ping 停止时报警；console 与 status 端点均显式声明 `platform_down` 不在 webhook 覆盖内。配置在 console 可改（E6 无需 SSH），密钥不回显。12 例集成全部对真实 HTTP 接收端。**浏览器实证闭环**：设备离线→签名告警自动送达→心跳恢复→「已恢复」自动送达（CHG-2026-197）。生产已滚 v0.4.5（CHG-2026-198，`runtime matches release v0.4.5`）。**仍未真正生效**：webhook URL 与存活 ping URL 由 owner 在 console 填写后才开始告警——在此之前生产从运营者视角看仍是零告警。**2026-08-07 补一条关键事实**：开告警之前，生产待办常年 12 项且 11 项是六七月残留，而当时**没有任何 operator 动作能让它们闭合**——告警一开就会每 6 小时永远重播，「沉默即已解决」这条承诺会对所有条目一并作废。v0.4.9 补上收口动作并清理生产后，**待办 12 → 1 且剩下那项是真的**，告警基线才算干净（CHG-2026-203） |
 
 ## M4 第一方 Research Hotline
 
