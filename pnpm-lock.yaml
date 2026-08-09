@@ -508,6 +508,9 @@ importers:
       '@delexec/contracts':
         specifier: ^0.1.5
         version: link:../../../protocol/packages/contracts
+      '@delexec/runtime-utils':
+        specifier: 0.1.0
+        version: link:../runtime-utils
 
   repos/client/packages/runtime-utils: {}
 
