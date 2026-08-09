@@ -74,6 +74,8 @@
 
 - **contracts@0.1.9 发 npm**：批准（多选题）。单元 4+5 合并的协议批次——服务档位 / 隐私模式 / 履约模式。publish run 31299739306，npm `latest` 已是 0.1.9。
 - **本批（单元 4–11）结束时的 ops 发版与生产滚 v0.4.10+**：**预授权**（多选题，选「现在一并预授权」）。执行方按流程自行完成，并把 `release-manifest check` 结果报回。此授权仅限本批次收尾这两个动作。
+  - **已执行完毕（2026-08-09）**：`@delexec/ops` 0.1.10 发 npm（run 31308621769）；生产滚 **v0.4.10**（Images run 31308792480 四作业全绿含 published-image smoke；manifest v0.4.10 冻结并 promote；`test:release-gate` 端到端绿）。**回报的 check 结果：`runtime matches release v0.4.10`**。预授权至此用尽。
+- **D8.5 测试资源授权（2026-08-09）**：允许部署测试 hotline / 测试 responder / 测试 caller。据此建成 `tools/agent-callability-e2e.mjs`，把 plan §5 的退出口径从「论证」变成「实证」（24/24，五个真实进程 + Docker Postgres 计费 enforced）。
 
 ## 遗留待办指针（不在本轮范围）
 
