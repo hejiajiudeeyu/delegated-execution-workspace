@@ -79,6 +79,8 @@
 
 三条真实 workflow——MinerU 解析、私有证据检索、技术路线决策——**都能用同一份契约表达并通过校验，不依赖任何隐藏字段或专用 API**（PRD Wave 2 exit）。「可表达」指契约能声明它们，不要求 M4 的 Research Hotline 已实现。
 
+**plan-2026-08-09 §5 附加口径已达成（2026-08-09，owner 授权部署测试热线后实证）**：`tools/agent-callability-e2e.mjs`（`corepack pnpm run test:agent-callability-e2e`）对 5 个真实进程 + Docker Postgres（计费 enforced）跑通完整链路，**24/24 断言全过**：中文检索发现 → 读全契约（platform_catalog 源，含 not_recommended_for / 价格 / fulfillment_mode）→ 违约输入逐字段点名（TOO_SHORT / INVALID_ENUM_VALUE）→ 无同意被拒且拒绝携价 → 显式 `max_charge_cents` 同意 → confirm 热线 send 得 409 → 确认队列可见 → 人工确认 → 派发 → **签名 webhook 送达（COMPLETED，正文不含结果只含指针，携钉住的契约版本与 terms）** → 轮询兜底取回符合 output_schema 的结果 → 计费 hold+settle 恰好一次价（1000−120=880）。agent 全程只持 caller 凭据、只走 skill-adapter 表面（MCP 工具调用的同一 HTTP 真相面）；admin 凭据只出现在部署测试热线的运营者阶段。responder 与 agent 各自独立 DELEXEC_HOME、仅经带鉴权 relay 通信。**生产复跑待批末滚版 v0.4.10 后进行。**
+
 ## 台账
 
 进度写入 `docs/planning/private-capability-network/traceability-ledger.md` 的 M2 表，状态只能由证据推动，证据列为空即不得高于 `todo`。
