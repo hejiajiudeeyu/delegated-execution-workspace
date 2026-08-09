@@ -1,0 +1,28 @@
+release_id: v0.4.11
+created_at: 2026-08-09T13:09:05.844Z
+components:
+  protocol:
+    sha: 49a5d0acc8cfa510c5d76c8a86c9f371f9c3b7e0
+    path: repos/protocol
+  client:
+    sha: c14bbad7d1073bf83ddc374de58a54531bff29d6
+    path: repos/client
+  platform:
+    sha: 87647f73aba311f67614bae983ea597f018daef0
+    path: repos/platform
+  brand_site:
+    sha: aca1aa2cdb8f55047fb3cb42dc235b1b4b01a95b
+    path: repos/brand-site
+change_bundle: CHG-2026-215
+images:
+  rsp-platform: v0.4.11
+  rsp-relay: v0.4.11
+  rsp-gateway: v0.4.11
+packages:
+  "@delexec/contracts": 0.1.9
+  "@delexec/ops": 0.1.11
+notes: Updating a hotline's contract no longer takes it offline (CHG-2026-213),
+  and the fourth repo's CI is green for the first time since 2026-06-14
+  (CHG-2026-214). Together these remove the reason device re-registration had to
+  be paired with an immediate operator approval.
+manifest_sha256: 526e1b6c7e6fd8a1d8951a0996ed7eae619f00c378a965bd28398603511fc7ca

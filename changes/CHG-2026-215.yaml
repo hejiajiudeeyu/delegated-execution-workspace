@@ -1,0 +1,16 @@
+change_id: CHG-2026-215
+goal: certify and roll ops 0.1.11 / platform v0.4.11
+protocol_sha: 49a5d0acc8cfa510c5d76c8a86c9f371f9c3b7e0
+client_sha: c14bbad7d1073bf83ddc374de58a54531bff29d6
+platform_sha: 87647f73aba311f67614bae983ea597f018daef0
+brand_site_sha: aca1aa2cdb8f55047fb3cb42dc235b1b4b01a95b
+owner: hejiajiudeeyu
+risk_level: medium
+affected_scope:
+  - client
+  - platform
+  - release
+  - production
+contracts_check: passed
+integration_check: passed
+notes: "Releases CHG-2026-213 (updating a contract no longer takes the hotline offline) and CHG-2026-214 (the fourth repo's CI, green for the first time since 2026-06-14). Owner authorised on 2026-08-09 after the CI work; the earlier batch pre-authorisation had already been used up by CHG-2026-212, so this is a fresh, specific one. WHY THIS PARTICULAR ROLL MATTERS: CHG-2026-213 exists to let the owner re-register the production MinerU device without an outage, and that only becomes true once PRODUCTION has it. Until this roll, the fix was real in the repo and absent everywhere it counted. platform v0.4.11: a resubmission whose declaration hashes to the published version keeps its approval, so the device half of re-registration stops being the half that causes the outage. A rotated `responder_public_key_pem` — the key that verifies every result the hotline produces — still re-enters review, as do a redirected delivery address, a different device, a hotline approved before contract versioning existed (production's own MinerU is exactly that case, so it is NOT quietly grandfathered), and one an operator disabled on purpose. `submission_version` does not move for a no-op, because it rides in billing claims as `pricing_hint_version` and bumping it would invalidate consent already given for an unchanged price. @delexec/ops 0.1.11 (publish run 31314923292): `responder contract-check`, which shows a device which of its hotlines the platform is not publishing without anyone reading the public catalogue by hand; plus the supervisor honesty fix from the CI work — a service that failed to start no longer reports as started, `managed_services_started` carries `unhealthy`, and a non-serving service emits its own log tail. Images run 31314916151, all four jobs green including published-image-smoke. Manifest v0.4.11 frozen (sha256 526e1b6c7e6f) and promoted. `test:release-gate` green end to end — and for the first time in this project's recent history that claim is corroborated remotely rather than only locally: fourth-repo CI runs 31314203948 and 31314409460 both green across all six jobs. VERIFIED IN PRODUCTION: `release-manifest check https://callanything.xyz` reports `runtime matches release v0.4.11` across platform-api, transport-relay and the console gateway. WHAT THIS UNBLOCKS AND WHAT IT DOES NOT: the owner can now run `responder contract-check` then `responder register` on the MinerU machine without taking the hotline down, and approve in the console whenever convenient rather than in the same sitting. It does NOT re-register the device — that ops home is not on the machine this session ran on."
