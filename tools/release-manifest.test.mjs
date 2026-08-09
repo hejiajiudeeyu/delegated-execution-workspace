@@ -401,4 +401,53 @@ function manifestShaOf(root, releaseId) {
   assert.match(result.stderr, /usage/);
 }
 
+// a client-only release: same images, a combination name of its own
+//
+// A service reports the release_id baked into its IMAGE, so when only the npm
+// package moves, every service keeps reporting the old image tag while running
+// exactly what the manifest names. Comparing against the combination's name
+// read that as total drift; comparing against the declared image tag is both
+// correct and stricter.
+{
+  const root = makeFixture();
+  assert.equal(
+    run(root, ["generate", "v1.1.0-ops.2", "--images", "rsp-platform=v1.0.0,rsp-relay=v1.0.0,rsp-gateway=v1.0.0"]).status,
+    0
+  );
+  assert.equal(run(root, ["promote", "v1.1.0-ops.2"]).status, 0);
+  const sha = manifestShaOf(root, "v1.1.0-ops.2");
+
+  const { server, url } = await startFakeStack(withRelease(factsFor(), "v1.0.0", sha));
+  try {
+    const check = await runAsync(root, ["check", url]);
+    assert.equal(check.status, 0, check.stderr);
+    assert.match(check.stdout, /runtime matches release v1\.1\.0-ops\.2/);
+  } finally {
+    server.close();
+  }
+}
+
+// and the gate still catches an image the combination does not name
+{
+  const root = makeFixture();
+  assert.equal(
+    run(root, ["generate", "v1.1.0-ops.2", "--images", "rsp-platform=v1.0.0,rsp-relay=v1.0.0,rsp-gateway=v1.0.0"]).status,
+    0
+  );
+  assert.equal(run(root, ["promote", "v1.1.0-ops.2"]).status, 0);
+  const sha = manifestShaOf(root, "v1.1.0-ops.2");
+
+  const wrong = withRelease(factsFor(), "v1.0.0", sha);
+  wrong["/gateway/buildz"] = { ...wrong["/gateway/buildz"], release_id: "v0.9.0" };
+
+  const { server, url } = await startFakeStack(wrong);
+  try {
+    const check = await runAsync(root, ["check", url]);
+    assert.notEqual(check.status, 0);
+    assert.match(check.stderr, /release v0\.9\.0 vs manifest v1\.0\.0/);
+  } finally {
+    server.close();
+  }
+}
+
 console.log("[release-manifest.test] ok");

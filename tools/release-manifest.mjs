@@ -35,10 +35,30 @@ const SUBMODULES = Object.freeze({
 
 // Components the drift check probes. `path` is appended to the probed base url.
 const COMPONENTS = Object.freeze([
-  { component: "platform-api", path: "/platform/buildz" },
-  { component: "transport-relay", path: "/relay/buildz" },
-  { component: "platform-console-gateway", path: "/gateway/buildz" }
+  { component: "platform-api", path: "/platform/buildz", image: "rsp-platform" },
+  { component: "transport-relay", path: "/relay/buildz", image: "rsp-relay" },
+  { component: "platform-console-gateway", path: "/gateway/buildz", image: "rsp-gateway" }
 ]);
+
+/**
+ * What a running service should be reporting for this combination.
+ *
+ * A service reports the release_id baked in when its IMAGE was built, so the
+ * honest comparison is against the image tag this manifest declares — not the
+ * combination's name. They are usually the same string, and were always
+ * assumed to be, until a client-only release (same images, new npm package)
+ * needed a combination name of its own and every service instantly read as
+ * drifted while running exactly the images the manifest named.
+ *
+ * Comparing against the declared image is also STRICTER: it answers "is
+ * production running the image this combination certifies", which is the
+ * question the gate exists to ask.
+ */
+function expectedReleaseFor(manifest, component) {
+  const imageName = COMPONENTS.find((entry) => entry.component === component)?.image;
+  const declaredTag = imageName ? manifest.images?.[imageName] : null;
+  return declaredTag || manifest.release_id;
+}
 
 function fail(message) {
   console.error(`${TAG} ${message}`);
@@ -258,10 +278,11 @@ export function compareObserved(manifest, observed) {
     if (facts.component && facts.component !== entry.component) {
       problems.push(`${entry.component}: reports component ${facts.component}`);
     }
+    const expectedRelease = expectedReleaseFor(manifest, entry.component);
     if (!facts.release_id) {
       unknown.push(`${entry.component}: no release_id injected`);
-    } else if (facts.release_id !== manifest.release_id) {
-      problems.push(`${entry.component}: release ${facts.release_id} vs manifest ${manifest.release_id}`);
+    } else if (facts.release_id !== expectedRelease) {
+      problems.push(`${entry.component}: release ${facts.release_id} vs manifest ${expectedRelease}`);
     }
     if (facts.manifest_sha256 && facts.manifest_sha256 !== manifest.manifest_sha256) {
       problems.push(`${entry.component}: manifest hash mismatch`);
