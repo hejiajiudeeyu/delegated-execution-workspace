@@ -34,7 +34,9 @@
 3. 🟡 **让真实热线声明真契约**（client + platform，2026-08-06 owner 加入并拍板事实源）——**代码侧完成，生产收尾待 owner**（CHG-2026-202；client `f4a3b3a`、ops 0.1.9 已发 npm；platform `7531e20`，生产 **v0.4.8**）
    owner 拍板两条：**契约跟着 worker 走**；**平台停止编造**。落地：worker 在实现旁边声明契约并以 `--contract` 作答（任何 process adapter 可实现，非 MinerU 专属），客户端问它、且声明胜过按 id 子串的猜测；`/controller/register`（生产实际用的那条路径，此前连示例字段都没有）改为携带完整契约；平台目录读取不再用模板默认值填补，并以 `contract_declared` 直说。生产实证：marketplace 不再把 PDF 解析器描述成文本摘要器。
    > 设计上被自己测试抓到的一条：不实现 `--contract` 的 worker 也会打印可解析 JSON，会被误当契约——用 `contract_version` 作正向信号，**沉默必须与回答可区分**。
-   > **待 owner 的最后一步**：重新提交会无条件把热线置为 `disabled/pending`，而重新审批需要 operator 凭据（在 owner 的 console 会话里）。我不单方面做半步，否则 MinerU 会下线到不确定的时刻。设备将发送的载荷已按 `validateHotlineContract` 校验通过（4234 字节）。步骤：设备升到 ops 0.1.9 → 重新注册 → console 点批准，**一次坐下来做完**。
+   > ~~**待 owner 的最后一步**：重新提交会无条件把热线置为 `disabled/pending`……**一次坐下来做完**。~~
+   > **2026-08-09 修正（CHG-2026-213）**：owner 追问「responder agent 为什么不能自己完成注册」，查下去发现那不是引导问题而是**缺陷**——`submitCatalogHotline` 对**任何**重提交都硬置 `disabled/pending`，哪怕内容一字节没变。「必须一次坐下来做完」正是这个缺陷的症状。现已修：内容摘要与已发布版本相同即保持 enabled/approved（审批侧自 CHG-2026-200 起就是按摘要幂等的，提交侧只是没用同一个摘要）；签名公钥轮换、投递地址改向、换设备、以及**契约版本化之前批准的热线**（生产 MinerU 正是这一类，因此不会被悄悄放行）仍照常回 pending。另补 `delexec-ops responder contract-check`：对比 worker 自陈与平台已发布的那份，直接打印该跑的命令。
+   > **剩下的步骤**：在持有该设备的机器上跑 `responder contract-check` → `responder register`（**不再下线**）→ owner 有空时在 console 批准一次。生产设备的 ops home 不在本机（本机所有 `.delexec*` 与四层内的 `ops.config.json` 都指向 `127.0.0.1:8080` 本地开发，无 `mineru_mac_msanqn8p`）。
 4. ~~**服务档位 Quick / Standard / Deep**~~ ✅ **完成 2026-08-09**（CHG-2026-206，与单元 5 合为一个协议批次）
    三档 + A-05 验收窗（24h/72h/7d，边界 24h–7d），M2 只声明与快照进 Call；验收窗真正生效在 M3。承重断言：热线按新档位重新发布，在途 Call 的 terms 不动。
 5. ~~**隐私与履约模式**~~ ✅ **完成 2026-08-09**（CHG-2026-206；protocol `49a5d0a` + contracts 0.1.9 已发 npm + platform `74ab106`）
