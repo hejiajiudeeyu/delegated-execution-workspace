@@ -1,0 +1,14 @@
+change_id: CHG-2026-222
+goal: ops 0.1.15 — a metrics post must not destroy a task's error handling
+protocol_sha: 632368694b0cd1a978718085671ad2a09105e5d7
+client_sha: 8e2fa28ade23755a34e19a987d8d693ac6d51fd2
+platform_sha: a0ffaeb50406525817d4c0450d9a85355eea7f5e
+brand_site_sha: aca1aa2cdb8f55047fb3cb42dc235b1b4b01a95b
+owner: hejiajiudeeyu
+risk_level: low
+affected_scope:
+  - client
+  - release
+contracts_check: passed
+integration_check: passed
+notes: "CAUGHT BY CI, NOT LOCALLY, and worth recording as its own case because of how it presented: a client run where all 137 integration tests PASSED and the suite still failed, on an unhandled rejection thrown after the assertions. The local suite had gone green on the same code minutes earlier — the race only lost on the slower shared runner. This is the second time in three days that remote red carried information local green did not (CHG-2026-214 was the first, and the lesson written down there was that the local green is the thing that lies). THE BUG: finalizeTask awaited reportResponderMetric unguarded, immediately BELOW a postRequestLifecycleEvent call that is wrapped in try/catch with the comment that completion events are observational and must not invalidate result delivery. Two calls of the same category, adjacent, one protected and one not. THE CONSEQUENCE IS WORSE THAN A LOST METRIC: failTask calls finalizeTask. So when a task fails and the metrics endpoint is unreachable, the metric post throws while the runtime is handling the original failure, throws again on the way out of the catch block, and escapes as an unhandled rejection — carrying the original error away with it. The task's error handling is destroyed by the act of reporting the error. A platform that has gone away is enough to trigger it, which in production means a platform restart and in tests means a torn-down server. Regression test drives a responder at a port where nothing is listening and asserts the result is still delivered; red before the fix, and red in the same shape (1 failed test, 1 unhandled error). RELEASED IMMEDIATELY rather than batched: 0.1.14 is the version devices are told to install for M3 unit 1 (CHG-2026-221), and this is reachable from its ordinary failure path, so shipping the instruction without the fix would be knowingly pointing devices at it. Platform images unchanged, so the certified combination is v0.4.13-ops.0.1.15 rather than a new platform version — the same client-only shape CHG-2026-219 established, which release-manifest check now handles by comparing against the image tag the manifest declares rather than the combination's name. Client 162 unit + 138 integration. Publish run 31330161675."
