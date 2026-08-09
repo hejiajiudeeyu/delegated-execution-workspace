@@ -61,7 +61,10 @@
     CLI 不再替运营者签字（读价、缺 `--max-charge-cents` 即拒并报价）；MCP 路径的真正根因是 `send_request` **从不签发 task token**，远端热线改走 `/controller/remote-requests`；同意在 prepare 落定；平台三处失真修正（无 billing 归位 402、拒绝带价、同意校验排到存储检查之前）。
     原范围描述：
     MCP 路径补显式 billing 参数（含 `max_charge_cents` 上限）并传入 token 签发；CLI 路径去掉无条件 `billing.acknowledged = true`。「同意付费」是 agent 自动调用里最该显式设计的一环，现状一条路缺失、一条路失真。
-11. **caller 完成通知**（platform + client，D8.4）
+11. ~~**caller 完成通知**~~ ✅ **完成 2026-08-09**（CHG-2026-209；platform `d51e60a` + client `724d06c`）
+    由 **caller 凭据**注册（运营者面对「没有运营者凭据的 agent」毫无用处）；结果不进 payload，只给 request_id + 绑定的契约版本 + 取结果的 URL；投递不阻塞 responder 上报；一次调用只通知一次；平台不会发的事件名在注册时即拒。复用 `alerts.js` 投递骨架。轮询原样保留为兜底。
+    > **自我更正**：我曾建议本单元一并覆盖「待确认的 prepared request」，做不到——确认队列在调用方自己的 skill adapter 里，平台看不见 prepared request。那条通知属于客户端。
+    原范围描述：
     webhook 形态，复用 `alerts.js` 投递骨架（HMAC 签名 + 5xx 重试）；caller 注册完成回调 URL，轮询保留为兜底。解决「分钟级以上任务要么挂终端要么错过结果」。
 12. ~~**email 传输冻结**~~ ✅ **完成 2026-08-09**（CHG-2026-205；client `97b714a` + platform `743758a`）
     配置面标 deprecated（`deprecation` 块，支持的传输返回 null）；平台停发 `secondary_task_delivery(kind=email)`；代码保留不删，配置照旧可存，supervisor 启动与事后切换各警告一次。
