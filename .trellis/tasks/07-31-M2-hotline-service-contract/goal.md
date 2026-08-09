@@ -59,8 +59,9 @@
     MCP 路径补显式 billing 参数（含 `max_charge_cents` 上限）并传入 token 签发；CLI 路径去掉无条件 `billing.acknowledged = true`。「同意付费」是 agent 自动调用里最该显式设计的一环，现状一条路缺失、一条路失真。
 11. **caller 完成通知**（platform + client，D8.4）
     webhook 形态，复用 `alerts.js` 投递骨架（HMAC 签名 + 5xx 重试）；caller 注册完成回调 URL，轮询保留为兜底。解决「分钟级以上任务要么挂终端要么错过结果」。
-12. **email 传输冻结**（client + platform，D8.3）
-    配置面标 deprecated；平台停发 `secondary_task_delivery(kind=email)`；代码保留不删。
+12. ~~**email 传输冻结**~~ ✅ **完成 2026-08-09**（CHG-2026-205；client `97b714a` + platform `743758a`）
+    配置面标 deprecated（`deprecation` 块，支持的传输返回 null）；平台停发 `secondary_task_delivery(kind=email)`；代码保留不删，配置照旧可存，supervisor 启动与事后切换各警告一次。
+    > 动工才发现的事实：那个字段三个仓里**只有写、没有读**——它唯一的作用是为私有文档多公布一个邮箱地址。
 
 随行小项（不占单元，穿插做）：responder 侧 `EMAIL_MAX_ATTACHMENT_BYTES` 5MB 上限横切所有传输（含 artifact 通道，MinerU 大输出会被误判 `RESULT_ARTIFACT_TOO_LARGE`）的修复；console 审批页渲染契约（现为盲批，服务端字段已齐、零新增 API）；Marketplace 假分页与列表总数字段；文档漂移（aliyun 交接文档、npm @delexec/ops README）；备份定时化 + 异地。
 

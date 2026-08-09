@@ -71,7 +71,7 @@ Created: 2026-07-31（Wave 0 产出）· 单一事实源 = `.trellis/tasks/07-17
 | 9 | 填写校验升级（ajv / per-hotline 工具 / review 位） | client | todo | |
 | 10 | 付费同意语义 | client + platform | todo | |
 | 11 | caller 完成通知（webhook，D8.4） | platform + client | todo | |
-| 12 | email 传输冻结（D8.3） | client + platform | todo | |
+| 12 | email 传输冻结（D8.3） | client + platform | **done**（代码侧） | 平台此前给**每一次**「responder 登记过 delivery_email」的派发都写入 `secondary_task_delivery`，指向那个邮箱；而三个仓 grep 下来只有这一处写、**没有任何读**。也就是说它唯一的作用是为一份私有文档多公布一个投递地址，走的还是从未进过认证组合、从未有端到端证据的通路。现平台该字段恒为 null、`SECONDARY_TASK_DELIVERY_CONFIGURED` 事件一并去掉；新测试把「主投递路径没变」和「事件不再产生」放在一起断言，冻结第二条路不能顺手带走真的那条，并断言邮箱地址没有从信封别处漏出。客户端**冻结不等于删除**：配置照旧可存（半路配置的运营者不该被罚，已经跑在这条路上的部署应当被告知而不是被拦停），改变的是每个面都开始**回答**这个问题——`redactTransportConfig` 带 `deprecation` 块（支持的传输返回 null，是答案而不是缺席）、console 标注并说明原因、supervisor 启动时警告一次，运营者事后切过来再警告一次（那时启动警告早已滚过去）。部署文档中英双语标注冻结。client `97b714a`（1 例单测 + 既有 email 保存用例扩断言）+ platform `743758a`（1 例集成，改动前红）。CHG-2026-205。**解冻只需**：删掉 deprecation 块、还原一个对象字面量——传输包与其三套测试均原样保留 |
 
 ## M3 交付、验收与结算
 
