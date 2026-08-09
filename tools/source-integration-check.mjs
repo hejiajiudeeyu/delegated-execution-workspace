@@ -210,6 +210,62 @@ async function cleanupIntegration(relay) {
   cleanupLocalDockerPackages();
 }
 
+/**
+ * Everything you would want to look at when this fails, printed before the
+ * cleanup that deletes it.
+ *
+ * This check ran red in CI from 2026-06-14 to 2026-08-09 — 59 of 60 runs —
+ * and produced no diagnostic in any of them, because the ops home holding
+ * every service log is a temp directory the `finally` block removes. Two
+ * months of a red signal nobody could act on is worse than no signal: a red
+ * that never explains itself trains everyone to stop looking.
+ */
+function dumpDiagnostics(relay) {
+  const section = (title) => console.error(`\n===== ${title} =====`);
+  const tail = (text, lines = 60) => text.split("\n").slice(-lines).join("\n");
+
+  section("ops home");
+  console.error(opsHome);
+
+  const logsDir = path.join(opsHome, "logs");
+  if (fs.existsSync(logsDir)) {
+    for (const name of fs.readdirSync(logsDir).sort()) {
+      section(`service log: ${name}`);
+      try {
+        console.error(tail(fs.readFileSync(path.join(logsDir, name), "utf8")) || "(empty)");
+      } catch (error) {
+        console.error(`(unreadable: ${error.message})`);
+      }
+    }
+  } else {
+    // Itself a finding: no logs directory means the supervisor never got far
+    // enough to make one.
+    console.error("(no logs directory — the supervisor never wrote a service log)");
+  }
+
+  section("relay (started by this check)");
+  console.error(tail(relay?.readOutput?.() || "") || "(no output)");
+
+  section("docker compose ps");
+  const ps = spawnSync("docker", [
+    "compose", "-f", "deploy/platform/docker-compose.yml", "--env-file", "deploy/platform/.env", "ps"
+  ], { cwd: platformRoot, encoding: "utf8" });
+  console.error(ps.stdout || ps.stderr || "(unavailable)");
+
+  section("docker compose logs (platform-api)");
+  const logs = spawnSync("docker", [
+    "compose", "-f", "deploy/platform/docker-compose.yml", "--env-file", "deploy/platform/.env",
+    "logs", "--no-color", "--tail", "80", "platform-api"
+  ], { cwd: platformRoot, encoding: "utf8" });
+  console.error(logs.stdout || logs.stderr || "(unavailable)");
+
+  section("listening ports");
+  for (const port of integrationPorts) {
+    const listeners = spawnSync("lsof", ["-ti", `tcp:${port}`], { encoding: "utf8" });
+    console.error(`${port}: ${listeners.stdout.trim() || "(nothing listening)"}`);
+  }
+}
+
 try {
   if (!fs.existsSync(platformEnvPath)) {
     fs.copyFileSync(platformEnvExample, platformEnvPath);
@@ -314,6 +370,14 @@ try {
   }
 
   console.log("[source-integration-check] ok");
+} catch (error) {
+  // Before the finally block removes the ops home and stops the services.
+  try {
+    dumpDiagnostics(relay);
+  } catch (dumpError) {
+    console.error(`[source-integration-check] diagnostics unavailable: ${dumpError.message}`);
+  }
+  throw error;
 } finally {
   await cleanupIntegration(relay);
 }
