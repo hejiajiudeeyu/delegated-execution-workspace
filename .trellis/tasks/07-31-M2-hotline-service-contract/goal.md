@@ -57,7 +57,9 @@
    ajv 2020 取代自研浅层校验器（与发布门同一引擎同一配置）；review 位从 `fulfillment_mode` 推导，`confirm` 未确认即 409；`/caller/approvals` 断头代理**接通**——它此前指向的路由在任何版本里都不存在，console 那个视图一直返回 404；MCP 按契约投影 per-hotline prepare 工具，只取顶层且绝不新增契约没声明的约束。
    原范围描述：
    `prepare_request` 弃自研浅层校验器改用 ajv（契约 schema 即 2020-12 方言，contracts 包已依赖 ajv），嵌套/pattern/min-max 约束在 prepare 阶段就指名字段报错；MCP `tools/list` 按目录投影 per-hotline 工具定义（契约 `input_schema` 直接作 inputSchema），让 LLM host 原生参数校验生效；review 位从 `fulfillment_mode` 推导（单元 5 / D8.2）。
-10. **付费同意语义**（client + platform）
+10. ~~**付费同意语义**~~ ✅ **完成 2026-08-09**（CHG-2026-208；client `d237f07` + platform `57d1a88`；顺序上提到单元 6 之前，理由：它在退出证据链上，6 不在）
+    CLI 不再替运营者签字（读价、缺 `--max-charge-cents` 即拒并报价）；MCP 路径的真正根因是 `send_request` **从不签发 task token**，远端热线改走 `/controller/remote-requests`；同意在 prepare 落定；平台三处失真修正（无 billing 归位 402、拒绝带价、同意校验排到存储检查之前）。
+    原范围描述：
     MCP 路径补显式 billing 参数（含 `max_charge_cents` 上限）并传入 token 签发；CLI 路径去掉无条件 `billing.acknowledged = true`。「同意付费」是 agent 自动调用里最该显式设计的一环，现状一条路缺失、一条路失真。
 11. **caller 完成通知**（platform + client，D8.4）
     webhook 形态，复用 `alerts.js` 投递骨架（HMAC 签名 + 5xx 重试）；caller 注册完成回调 URL，轮询保留为兜底。解决「分钟级以上任务要么挂终端要么错过结果」。
