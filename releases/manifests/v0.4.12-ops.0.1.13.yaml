@@ -1,0 +1,26 @@
+release_id: v0.4.12-ops.0.1.13
+created_at: 2026-08-09T16:17:54.650Z
+components:
+  protocol:
+    sha: 49a5d0acc8cfa510c5d76c8a86c9f371f9c3b7e0
+    path: repos/protocol
+  client:
+    sha: 7eb498c235bed853a813f552bd10b5b4b6f09aa9
+    path: repos/client
+  platform:
+    sha: 0eb39e970c4b257d0e03df37c2d81932569b5423
+    path: repos/platform
+  brand_site:
+    sha: aca1aa2cdb8f55047fb3cb42dc235b1b4b01a95b
+    path: repos/brand-site
+change_bundle: CHG-2026-219
+images:
+  rsp-platform: v0.4.12
+  rsp-relay: v0.4.12
+  rsp-gateway: v0.4.12
+packages:
+  "@delexec/contracts": 0.1.9
+  "@delexec/ops": 0.1.13
+notes: "Client-only: the two bugs production found (path-prefix catalogue reads,
+  the worker's attachment declaration). Platform images unchanged from v0.4.12."
+manifest_sha256: 66b23ac9d7053b22938f656a8551d271d82a00c2b22f2189ed7f3f30c94abc65
