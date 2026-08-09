@@ -1,0 +1,28 @@
+release_id: v0.4.12
+created_at: 2026-08-09T14:05:23.512Z
+components:
+  protocol:
+    sha: 49a5d0acc8cfa510c5d76c8a86c9f371f9c3b7e0
+    path: repos/protocol
+  client:
+    sha: ef1571ee71e39aa6e12f8b691aff9317b833966a
+    path: repos/client
+  platform:
+    sha: 0eb39e970c4b257d0e03df37c2d81932569b5423
+    path: repos/platform
+  brand_site:
+    sha: aca1aa2cdb8f55047fb3cb42dc235b1b4b01a95b
+    path: repos/brand-site
+change_bundle: CHG-2026-217
+images:
+  rsp-platform: v0.4.12
+  rsp-relay: v0.4.12
+  rsp-gateway: v0.4.12
+packages:
+  "@delexec/contracts": 0.1.9
+  "@delexec/ops": 0.1.12
+notes: An operator can retire a hotline so a lost signing key stops burning its
+  id (CHG-2026-217), and a large result is no longer discarded because email
+  exists (CHG-2026-216). Cut to unblock rebuilding the production MinerU device,
+  whose signing key is gone.
+manifest_sha256: 12df34ff455f63b45485f80b6bf92725871a5ebd9ceb1491d8fc4c919616fc01

@@ -1,0 +1,16 @@
+change_id: CHG-2026-217
+goal: an operator can retire a hotline, so a lost signing key stops burning its id
+protocol_sha: 49a5d0acc8cfa510c5d76c8a86c9f371f9c3b7e0
+client_sha: ef1571ee71e39aa6e12f8b691aff9317b833966a
+platform_sha: 0eb39e970c4b257d0e03df37c2d81932569b5423
+brand_site_sha: aca1aa2cdb8f55047fb3cb42dc235b1b4b01a95b
+owner: hejiajiudeeyu
+risk_level: medium
+affected_scope:
+  - client
+  - platform
+  - release
+  - production
+contracts_check: passed
+integration_check: passed
+notes: "Came out of a direct operational need: the production MinerU device's Ed25519 signing key is gone, so the owner decided to scrap it and rebuild on this machine. Checking what that would take turned up a hole. Retiring a DEVICE (CHG-2026-203) disables its hotlines but leaves each one owned by it, and `submitCatalogHotline` refuses a different responder claiming an existing hotline id — correctly, because ids must not be seizable by whoever registers next. But nothing could end the claim. A device whose key is lost can never sign a result again, yet it held the id forever and the replacement got a 409: EVERY LOST DEVICE PERMANENTLY BURNED ITS HOTLINE IDS. The owner asked to 'delete the old one'; retirement is the same outcome without the loss — `POST /v2/admin/hotlines/:id/retire`, reason required like every other operator judgement, withdrawing the claim rather than deleting the record. THE REASON IT IS RETIREMENT AND NOT DELETION: calls already bound to the hotline keep the versions they pinned (CHG-2026-200), so a call made before the device was lost is still judged against the contract it actually agreed to — asserted by a test that binds a call, retires, re-registers under a new device, and checks the old call still resolves its pinned version with `integrity: verified`. The catalogue record and the device record both survive; the device simply stops claiming to serve it. A replacement device may then register under the id and lands pending/disabled like anything else, because approval does not travel with an id — a replacement device is a new thing to trust. The ownership guard still refuses a seizure while a claim stands, which has its own test. ALSO RELEASED HERE: CHG-2026-216, the inline artifact ceiling that was discarding finished executions whose bytes were headed for the artifact channel — shipped as @delexec/ops 0.1.12 because it lives in the responder runtime and only reaches a device when that device updates, which is the same step the MinerU rebuild needs. TESTS: platform 59 unit + 194 integration (4 new, red on the previous code); client 162 unit + 131 integration. Images run for v0.4.12 green including published-image-smoke; ops 0.1.12 publish run 31317367040. Manifest v0.4.12 frozen (sha256 12df34ff455f) and promoted."
