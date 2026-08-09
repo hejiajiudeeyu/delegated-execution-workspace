@@ -11,7 +11,7 @@ This repository is a synthetic monorepo superproject for cross-repo development 
 |---|---|
 | owner 拍过哪些板、授权了什么 | 同目录 `decisions.md` |
 | 每条需求做到哪一步、证据是什么 | `docs/planning/private-capability-network/traceability-ledger.md` |
-| 当前里程碑的交付单元与进度 | `.trellis/tasks/07-31-M2-hotline-service-contract/goal.md` |
+| 当前里程碑的交付单元与进度 | `.trellis/tasks/07-31-M3-delivery-acceptance-settlement/goal.md`（执行计划 `plan-2026-08-10.md`；M2 已于 2026-08-10 验收关账） |
 | 当前认证的跨仓组合 | `releases/current.yaml`（`node tools/release-manifest.mjs verify` 校验） |
 | 生产是否与认证组合一致 | `node tools/release-manifest.mjs check https://callanything.xyz`（relay 已带鉴权重开公网，`/relay/buildz` 可直测；2026-08-09 实测不带 override 全绿） |
 | console 为何要第三次重做 | `.trellis/tasks/07-15-replace-public-console-frontend/diagnosis-v0.2.0.md` |

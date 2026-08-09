@@ -34,11 +34,11 @@ Created: 2026-07-31（Wave 0 产出）· 单一事实源 = `.trellis/tasks/07-17
 | FR-005 | 最小权限：只执行已注册 Hotline | client | partial | 无通用 shell 入口；缺文件/网络访问范围可配置（NFR-S02） |
 | FR-006 | 设备维护窗口 (P1) | platform | todo | 相邻能力已落：`POST /v2/admin/responders/:id/retire` 让已消失的设备停止永远上报为问题（platform `73f3dc9`，CHG-2026-203）|
 | FR-020 | 一次性结构化 Brief | protocol + client | partial | input schema 校验存在；缺档位与预算上限字段 |
-| FR-021 | 执行前 ACCEPTED/REJECTED | protocol + platform | partial | 协议侧 `rejected` 语义与"拒绝不得持有资金"校验已冻结（protocol `d2ad83b`）；平台路由未实现 |
+| FR-021 | 执行前 ACCEPTED/REJECTED | protocol + platform | — | **行已迁至 M3 表**（M3 交付单元 5 交付它，证据落在那里）。本条在 M1 首次列表，保留指针以免读者以为它被删了 |
 | FR-022 | 预算硬上限 | platform | partial | `max_charge_cents` hold 存在；缺档位绑定与超支阻断语义 |
 | FR-023 | 幂等提交 | platform | **done** | request_id 幂等 + hold 状态双重幂等（审计 D2.5 确认） |
-| FR-024 | 取消 | protocol + platform | partial | 协议侧 `canceled` 迁移已定义（已交付不可取消）；**运营者收口已实现**：`POST /v1/admin/requests/:id/close` 必须写理由、有冻结资金则退款、**结构上永不结算**、已结算的明说而不悄悄冲正（platform `73f3dc9`，v0.4.9，11 例集成，CHG-2026-203）。**仍缺**：Caller 侧主动取消（本条 FR 的正题）|
-| FR-025 | 任务排队 (P1) | protocol + platform | partial | 协议侧 `queued`/`executing` 已区分（protocol `d2ad83b`）；平台未实现 |
+| FR-024 | 取消 | protocol + platform | — | **行已迁至 M3 表**（M3 交付单元 4 交付它，证据落在那里）。本条在 M1 首次列表，保留指针以免读者以为它被删了 |
+| FR-025 | 任务排队 (P1) | protocol + platform | — | **行已迁至 M3 表**（M3 交付单元 6 交付它，证据落在那里）。本条在 M1 首次列表，保留指针以免读者以为它被删了 |
 | FR-030 | 长任务状态 | protocol + platform | partial | **协议侧完成**：四轴 + 合法迁移 + 跨轴校验（protocol `d2ad83b`，34 例）；platform 侧实现未开始 |
 | FR-031 | 状态持久化 | platform | partial | 快照持久化存在；`postgres-persistence` 集成测试已恢复入套件（platform `9584fdf`） |
 | FR-032 | 输入 artifact | protocol + platform + client | **done** | ~~2026-08-01 曾据 `c920e9b` 记为 done（代码侧），系**记录错误**：那笔只做了输出方向，caller 不上传输入、responder 不下载输入，真实 PDF 只能内联~~。2026-08-02 补齐两头（client `86d1ac9`，6 例集成）：caller 以 `role=input` 上传、只传描述符；responder 执行前取回并校验，取不到即拒绝执行。**跨设备实跑已完成**：336919 字节 PDF 经 1498 字节信封跨设备，设备侧 sha256 与源一致（CHG-2026-192） |
@@ -81,13 +81,18 @@ Created: 2026-07-31（Wave 0 产出）· 单一事实源 = `.trellis/tasks/07-17
 
 ## M3 交付、验收与结算
 
+> FR-021 / FR-024 / FR-025 三条在 M1 表首次列出（当时判定「协议侧已冻结、平台侧未实现」），2026-08-10 随 M3 开工迁到此处——M3 交付单元 5/4/6 就是它们，证据该落在做它的里程碑下，而不是留在只记录了「尚未实现」的那张表里。
+
 | FR | 需求 | Owner | 状态 | 证据 |
 |---|---|---|---|---|
-| FR-040 | 自动交付校验 | protocol + platform | partial | Ed25519 签名 + 输出 checksum 已是最强防线；缺冻结 schema 校验与独立 Delivery Integrity 状态 |
+| FR-021 | 执行前 ACCEPTED/REJECTED（M3 单元 5） | protocol + platform | partial | 协议侧 `rejected` 语义与「拒绝不得持有资金」校验已冻结（protocol `d2ad83b`，`call-state.js` validateCallState 要求 rejected ⇒ settlement `none`）；平台路由未实现。**2026-08-10 勘察发现的硬冲突**：平台今天在签发 token 时就冻结资金（`applyBillingHoldIfNeeded`），而协议禁止 rejected 调用**持有或移动**资金——连"先 hold 再退"都不合法。因此本条不是补两条路由，而须先裁定冻结时机（见 plan-2026-08-10 单元 5 裁定点）。另：guardrail 失败与 token 过期拒绝（responder-runtime-core）现被包装成 COMPLETED-with-error，正是本条禁止的形状，一并收编 |
+| FR-024 | 取消（M3 单元 4） | protocol + platform | partial | 协议侧 `canceled` 迁移已定义（DELIVERED 转移表为空 ⇒ 已交付不可取消）；**运营者收口已实现**：`POST /v1/admin/requests/:id/close` 必须写理由、有冻结资金则退款、**结构上永不结算**、已结算的明说而不悄悄冲正（platform `73f3dc9`，v0.4.9，11 例集成，CHG-2026-203）。**仍缺**：Caller 侧主动取消（本条 FR 的正题）。**2026-08-10 勘察顺带发现的既有缺陷**（归本单元一并修）：CANCELED 之后到达的 COMPLETED 仍会追加，而 `projectExecutionState` 是 last-event-wins，于是一个已取消已退款的调用会被投影成 `delivered`——钱是安全的（held 闸），状态在撒谎；`TASK_TOKEN_EXPIRED` 退款后迟到的 COMPLETED 是同一形状 |
+| FR-025 | 任务排队 (P1)（M3 单元 6） | protocol + platform | partial | 协议侧 `queued`/`executing` 已区分且转移表齐全（protocol `d2ad83b`），**但全协议测试树对 QUEUED 零覆盖**（2026-08-10 grep 实证）；平台未实现，投影表 `EXECUTION_FROM_LEGACY_EVENT` 没有任何事件映射到 queued，而设备侧 workerConcurrency 默认 1、ack 时任务其实正在本地排队却被投影成 executing。**随行的真实问题**：三个独立 300s 时钟（caller `hard_timeout_s`、平台 `TOKEN_TTL_SECONDS` 兼资金 hold 过期、responder 热线 hard 180s）互不知情，2026-08-09 真实 MinerU（含模型加载约 4 分钟）第一次调用即被杀；派发信封根本不带 constraints，responder 侧 `task.constraints` 恒 null，`RESPONDER_MAX_HARD_TIMEOUT_S` 护栏在远程路径上形同虚设 |
+| FR-040 | 自动交付校验 | protocol + platform | partial | Ed25519 签名 + 输出 checksum 已是最强防线；缺冻结 schema 校验与独立 Delivery Integrity 状态。**2026-08-10 勘察补一条结构性事实**（决定本条怎么做）：正常调用路径上**平台从未收到结果包**——responder 的签名结果经 relay 直达 caller，平台只收 `POST /v1/requests/:id/events` 的裸终态事件并据此结钱。因此「平台按钉住的契约复核」不是加一次校验调用，而需要传输面改动（COMPLETED 事件携带结果包，带尺寸上限）。钉住的 `output_schema` 本身已可达（`boundHotlineVersionOf`），无需新存储面 |
 | FR-041 | Caller 接受触发结算 | platform | todo | 当前结算跟随执行完成，无验收门 |
 | FR-042 | 一次修订 | protocol + platform | todo | A-06 已定经济规则 |
 | FR-043 | 修订范围约束 | platform | todo | |
-| FR-044 | 验收窗口与自动接受 | platform | todo | A-05：72h 默认 / 24h–7d / 起点 = verified |
+| FR-044 | 验收窗口与自动接受 | platform | todo | A-05：**按档位** quick 24h / standard 72h / deep 7d，网络边界 24h–7d（协议侧 `SERVICE_TIER_ACCEPTANCE_WINDOW_S` 与 `ACCEPTANCE_WINDOW_BOUNDS_S` 已冻结，越界拒绝而非夹取），显式 `acceptance_window_s` 优先；起点 = verified delivery，一次修订后重开一次。窗口值自 M2（CHG-2026-206）起已随 Call 快照，**尚未有任何东西读它** |
 | FR-045 | 争议 | platform | todo | |
 | FR-046 | Operator 契约判断 | platform | todo | 只判履约，不裁真理 |
 | FR-050 | 预算预扣 | platform | **done** | hold 已实现；`rejected` 不产生 hold 待 FR-021 |
@@ -136,7 +141,7 @@ Created: 2026-07-31（Wave 0 产出）· 单一事实源 = `.trellis/tasks/07-17
 | ID | 标准 | 状态 | 当前事实（2026-07-31） |
 |---|---|---|---|
 | E0 | 事实一致 | **done** | 仓库/bundle/manifest/npm/镜像/**生产运行时** 六者一致：生产 2026-08-01 滚到 v0.3.0，漂移校验器对生产实测 **runtime matches release v0.3.0**（relay 因公网 403 走内网探测）。首次真实校验暴露并修正了 manifest 命名约束（见 ADR-002） |
-| E1 | MinerU ≥10 次真实任务、≥90% 无人值守、checksum 100% | partial | **2 次**真实跨设备任务，均无人值守完成、checksum 100%（CHG-2026-192）。设备=本机 Mac，平台+relay=生产 callanything.xyz。run1 v0.4.0：337KB PDF → 3248B markdown，16.3s；run2 v0.4.1：另一份 PDF → markdown + 2 图，三件 checksum 全过。**还差 8 次** |
+| E1 | MinerU ≥10 次真实任务、≥90% 无人值守、checksum 100% | partial | **3 次**真实跨设备任务，均无人值守完成、checksum 100%。设备=本机 Mac，平台+relay=生产 callanything.xyz。run1 v0.4.0：337KB PDF → 3248B markdown，16.3s；run2 v0.4.1：另一份 PDF → markdown + 2 图，三件 checksum 全过（二者 CHG-2026-192）；run3 v0.4.12（2026-08-09，本表第 80 行详录）：demo1.pdf 336,919 字节 → 51,648 字节 markdown + 20 图，**22 件 artifact 全部 committed**、共 1,020,441 字节，签名与钉版完整。**还差 7 次**。<br>**已知阻碍**（M3 计划 plan-2026-08-10 §3 列为止血项）：真实 MinerU 含模型加载约 4 分钟，而三个 300s 时钟（caller `hard_timeout_s`、平台 `TOKEN_TTL_SECONDS` 兼资金 hold 过期、responder 热线 hard 180s）会先杀掉调用——run3 的第一次尝试即因此 `TIMED_OUT`。剩余 7 次要在超时预算修好之后才跑得顺 |
 | E2 | 三条真实 Workflow 连续使用 | todo | 0 条 |
 | E3 | 接受/修订/自动接受/争议/结算/退款端到端证据 | todo | 仅有 hold→settle→refund 的旧路径证据 |
 | E4 | Operator 内容访问全部有理由与记录 | todo | 内容访问授权机制不存在 |

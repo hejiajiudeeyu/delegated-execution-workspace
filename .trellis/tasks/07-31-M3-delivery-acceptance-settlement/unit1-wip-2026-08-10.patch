@@ -1,0 +1,161 @@
+diff --git a/packages/contracts/src/hotline-contract.js b/packages/contracts/src/hotline-contract.js
+index b5bf532..265bb05 100644
+--- a/packages/contracts/src/hotline-contract.js
++++ b/packages/contracts/src/hotline-contract.js
+@@ -102,6 +102,111 @@ export function validateHotlineExamples(contract = {}) {
+   return { valid: errors.length === 0, errors };
+ }
+ 
++// ------------------------------------------------- delivery integrity (FR-040)
++//
++// Whether an output actually satisfies the contract the Call pinned.
++//
++// Until M3 `schema_valid` was whatever the executor put in its own result
++// object — the Responder asserted its work was valid and every other party
++// took the assertion at face value, including the platform, which then paid
++// for it. The one party being paid was the only party judging whether the work
++// was done. This is the check that can fail.
++//
++// Deliberately shared by both sides. The Responder runs it before signing so a
++// failure is caught where it can still be described honestly, and the platform
++// runs it again on the pinned contract, because "the Responder says it checked"
++// is the exact class of claim this replaces.
++
++export const DELIVERY_INTEGRITY_CODE = Object.freeze({
++  OUTPUT_SCHEMA_VIOLATION: 'output_schema_violation',
++  OUTPUT_MISSING: 'output_missing',
++  SCHEMA_UNUSABLE: 'output_schema_unusable',
++  REQUIRED_ARTIFACT_MISSING: 'required_artifact_missing'
++});
++
++/**
++ * Check a result's output against the output_schema of the contract version the
++ * Call is bound to.
++ *
++ * Returns `{ valid, errors }` where each error names the offending field, so a
++ * Responder can say what was wrong with its own output rather than only that
++ * something was.
++ *
++ * An error result is not judged against the output schema: a failure is not
++ * required to look like a success. It still has to BE a well-formed failure,
++ * which validateResultPackage already covers.
++ */
++export function validateDeliveredOutput(contract = {}, result = {}) {
++  const errors = [];
++  if (result?.status === 'error') {
++    return { valid: true, errors };
++  }
++
++  const schema = contract?.output_schema;
++  if (!isObject(schema)) {
++    // No declared output schema means nothing to check. Reporting this as a
++    // violation would fail every hotline published before the publication gate
++    // existed; reporting it as valid would be a lie. It is neither: the caller
++    // gets a lower integrity grade, decided by the platform.
++    return { valid: true, errors, unchecked: 'contract declares no output_schema' };
++  }
++
++  const compiled = compileSchema(schema);
++  if (!compiled.validate) {
++    errors.push({
++      field: null,
++      code: DELIVERY_INTEGRITY_CODE.SCHEMA_UNUSABLE,
++      message: `output_schema is not a usable JSON Schema: ${compiled.error}`
++    });
++    return { valid: false, errors };
++  }
++
++  if (!('output' in result) || result.output === null || result.output === undefined) {
++    errors.push({
++      field: null,
++      code: DELIVERY_INTEGRITY_CODE.OUTPUT_MISSING,
++      message: 'result claims success but carries no output to check'
++    });
++    return { valid: false, errors };
++  }
++
++  if (!compiled.validate(result.output)) {
++    for (const error of (compiled.validate.errors || []).slice(0, 10)) {
++      const field = (error.instancePath || '')
++        .split('/')
++        .filter(Boolean)
++        .join('.');
++      errors.push({
++        field: field || (error.params?.missingProperty ?? null),
++        code: DELIVERY_INTEGRITY_CODE.OUTPUT_SCHEMA_VIOLATION,
++        message: `${field || error.params?.missingProperty || 'output'} ${error.message}`
++      });
++    }
++  }
++
++  // A contract that declares required output attachments has not been
++  // delivered by a result that carries none, however well-formed its JSON is.
++  const requiredRoles = Array.isArray(contract?.output_attachments?.file_roles)
++    ? contract.output_attachments.file_roles.filter((role) => role?.required).map((role) => role.role)
++    : [];
++  if (requiredRoles.length > 0) {
++    const present = new Set(
++      (Array.isArray(result.artifacts) ? result.artifacts : []).map((artifact) => artifact?.role).filter(Boolean)
++    );
++    for (const role of requiredRoles) {
++      if (!present.has(role)) {
++        errors.push({
++          field: `artifacts.${role}`,
++          code: DELIVERY_INTEGRITY_CODE.REQUIRED_ARTIFACT_MISSING,
++          message: `contract requires an output artifact with role "${role}"`
++        });
++      }
++    }
++  }
++
++  return { valid: errors.length === 0, errors };
++}
++
+ // ------------------------------------ service tier, privacy, fulfillment mode
+ //
+ // FR-011 / FR-012 and owner decision D8.2, all three declared on the contract
+diff --git a/packages/contracts/src/index.js b/packages/contracts/src/index.js
+index 8eef984..1a4c0a4 100644
+--- a/packages/contracts/src/index.js
++++ b/packages/contracts/src/index.js
+@@ -67,6 +67,8 @@ export {
+   privacyModeOf,
+   serviceTermsOf,
+   serviceTierOf,
++  DELIVERY_INTEGRITY_CODE,
++  validateDeliveredOutput,
+   validateHotlineContract,
+   validateHotlineExamples,
+   validateHotlineServiceTerms
+@@ -527,6 +529,23 @@ export function validateBillingUsage(usage, pricingHint, billing, options = {})
+   return { valid: errors.length === 0, errors };
+ }
+ 
++/**
++ * The bytes a Responder signs.
++ *
++ * `hotline_version` joined this list in M3. A signed result used to say which
++ * hotline it came from but never which CONTRACT it claims to satisfy, so a
++ * result produced under v1 was cryptographically indistinguishable from one
++ * produced under v2 — and FR-040 has to judge an output against the contract
++ * the Call actually pinned. A signature that cannot name the promise it is
++ * keeping cannot be used to check whether the promise was kept.
++ *
++ * Additive on purpose: a key absent from the result is absent from the
++ * canonical form, so a result signed by a Responder that predates this still
++ * verifies byte-for-byte. It simply carries less to check, which is a lower
++ * integrity grade rather than an invalid signature — refusing to verify every
++ * older Responder would be this change breaking delivery in order to describe
++ * it better.
++ */
+ export function canonicalizeResultPackageForSignature(result = {}) {
+   const canonical = {};
+ 
+@@ -536,6 +555,7 @@ export function canonicalizeResultPackageForSignature(result = {}) {
+     'result_version',
+     'responder_id',
+     'hotline_id',
++    'hotline_version',
+     'verification',
+     'status',
+     'output',
