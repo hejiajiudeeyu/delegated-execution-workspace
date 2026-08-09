@@ -35,11 +35,11 @@
    owner 拍板两条：**契约跟着 worker 走**；**平台停止编造**。落地：worker 在实现旁边声明契约并以 `--contract` 作答（任何 process adapter 可实现，非 MinerU 专属），客户端问它、且声明胜过按 id 子串的猜测；`/controller/register`（生产实际用的那条路径，此前连示例字段都没有）改为携带完整契约；平台目录读取不再用模板默认值填补，并以 `contract_declared` 直说。生产实证：marketplace 不再把 PDF 解析器描述成文本摘要器。
    > 设计上被自己测试抓到的一条：不实现 `--contract` 的 worker 也会打印可解析 JSON，会被误当契约——用 `contract_version` 作正向信号，**沉默必须与回答可区分**。
    > **待 owner 的最后一步**：重新提交会无条件把热线置为 `disabled/pending`，而重新审批需要 operator 凭据（在 owner 的 console 会话里）。我不单方面做半步，否则 MinerU 会下线到不确定的时刻。设备将发送的载荷已按 `validateHotlineContract` 校验通过（4234 字节）。步骤：设备升到 ops 0.1.9 → 重新注册 → console 点批准，**一次坐下来做完**。
-4. **服务档位 Quick / Standard / Deep**（FR-011，protocol + platform）
-   按 A-05：档位绑定验收窗（72h 默认 / 24h–7d 边界；Quick 24h、Standard 72h、Deep 7d），M2 只负责声明与快照进 Call，验收窗真正生效在 M3。
-5. **隐私与履约模式**（FR-012，protocol）
-   本阶段仅 `supervised` 可用；声明其他模式即拒绝，而不是接受后无声地按 supervised 执行。
-   履约模式语义按 decisions.md **D8.2** 定为 `fulfillment_mode: auto | confirm`——契约声明该热线可机器直调还是需调用方人工确认；`prepare_request` 的 review 位（现为硬编码 `not_required`）从此字段推导，supervisor 现存 `/caller/approvals` 断头代理随之接通或删除。
+4. ~~**服务档位 Quick / Standard / Deep**~~ ✅ **完成 2026-08-09**（CHG-2026-206，与单元 5 合为一个协议批次）
+   三档 + A-05 验收窗（24h/72h/7d，边界 24h–7d），M2 只声明与快照进 Call；验收窗真正生效在 M3。承重断言：热线按新档位重新发布，在途 Call 的 terms 不动。
+5. ~~**隐私与履约模式**~~ ✅ **完成 2026-08-09**（CHG-2026-206；protocol `49a5d0a` + contracts 0.1.9 已发 npm + platform `74ab106`）
+   `sealed` **拒绝而非降级**，且与「不存在的模式」返回不同错误；`fulfillment_mode: auto | confirm`（D8.2）入契约与发布门。三字段全可选、默认值只在读取时解析绝不落盘（写进既有记录会移动内容摘要，已绑定的 Call 立刻 `digest_mismatch`）。
+   > **未做**：`prepare_request` 的 review 位仍硬编码，`/caller/approvals` 断头代理仍在——都归单元 9。
 6. **启停与可用性等级**（FR-015，platform）
    `always-on` / `scheduled` / `best-effort`，与现有 admin enable/disable 合并为一个可用性模型。
 7. **导出 / 导入**（FR-070 / FR-071 / FR-072，platform）
