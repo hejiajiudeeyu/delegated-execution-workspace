@@ -1,0 +1,28 @@
+release_id: v0.4.13
+created_at: 2026-08-09T18:31:37.491Z
+components:
+  protocol:
+    sha: 632368694b0cd1a978718085671ad2a09105e5d7
+    path: repos/protocol
+  client:
+    sha: e236d7a2b47a824fc6ff45fe2d3f30ced10c169b
+    path: repos/client
+  platform:
+    sha: a0ffaeb50406525817d4c0450d9a85355eea7f5e
+    path: repos/platform
+  brand_site:
+    sha: aca1aa2cdb8f55047fb3cb42dc235b1b4b01a95b
+    path: repos/brand-site
+change_bundle: CHG-2026-220
+images:
+  rsp-platform: v0.4.13
+  rsp-relay: v0.4.13
+  rsp-gateway: v0.4.13
+packages:
+  "@delexec/contracts": 0.1.10
+  "@delexec/ops": 0.1.14
+notes: "The platform grades a delivery against the contract the Call pinned
+  instead of trusting the responder's own schema_valid (M3 unit 1, FR-040).
+  Settlement is unchanged: a failed delivery still settles, and the acceptance
+  gate that makes settlement wait is the next unit."
+manifest_sha256: 4f9488a99cbecc7dc4174d2805d3c89dfc20532bbb3aa183c2735395f30f737a

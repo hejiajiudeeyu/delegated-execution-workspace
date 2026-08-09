@@ -17,14 +17,16 @@
 - 基础 compose 与 platform 仓 `deploy/public-stack/docker-compose.yml` 保持一致(2026-07-04 校验 diff 为空后同步);aliyun override 负责:钉每服务镜像 tag、服务只绑 localhost 端口(28080/28085/28090/25432)、禁用 caddy edge(host nginx 持有 80/443)
 - caddy edge 通过 profile `caddy-edge-disabled-on-aliyun` 禁用,不要在此主机启用
 
-## 当前版本(2026-08-09 起:v0.4.11)
+## 当前版本(2026-08-10 起:v0.4.13)
 
 | 服务 | 镜像 | 说明 |
 |------|------|------|
-| platform-console-gateway | `rsp-gateway:v0.4.11` | |
-| platform-api | `rsp-platform:v0.4.11` | |
-| relay | `rsp-relay:v0.4.11` | 启动日志应显示 `auth=required`;**已带鉴权重开公网**(D6.1),`/relay/buildz` 公网可直测 |
+| platform-console-gateway | `rsp-gateway:v0.4.13` | |
+| platform-api | `rsp-platform:v0.4.13` | |
+| relay | `rsp-relay:v0.4.13` | 启动日志应显示 `auth=required`;**已带鉴权重开公网**(D6.1),`/relay/buildz` 公网可直测 |
 | postgres | `postgres:16-alpine` | 数据卷 `public-stack-postgres-data` |
+
+> **2026-08-10(v0.4.13)**:同一个 ghcr `httpReadSeeker ... EOF` 又出现了一次,重跑 pull 即通,与下条记录一致——它是瞬时的,不是本次镜像的问题。滚版前的 `.env` 备份已按惯例留下。
 
 滚版方式不变(`.env` 的 `IMAGE_TAG` + 两个 -f 的 compose 调用);回滚 = 把 `IMAGE_TAG` 改回并重跑,`.env` 备份见部署目录 `.env.bak.*`(v0.4.10 滚版前的那份是 `.env.bak.20260809T105216`;v0.4.11 滚版前另有一份同日更晚的时间戳)。
 
