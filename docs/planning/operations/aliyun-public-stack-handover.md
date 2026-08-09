@@ -30,6 +30,25 @@
 
 > **2026-08-09 实测的一个坑**:`docker compose pull` 可能以 `httpReadSeeker: failed open ... EOF` 从 ghcr 失败(平台仓 release-process 归类为 `image_pull_failed`,属网络/registry 瞬时故障)。此时**容器未被重建、生产未受影响**,重跑 pull 即可;但注意 `.env` 的 `IMAGE_TAG` 此时已改,若就此放手,下次重启会拉一个本机没有的镜像——要么把 pull+up 做完,要么把 `.env` 改回去。
 
+### 镜像保留策略(2026-08-10 因磁盘告警补)
+
+**每次滚版都会在主机上留下约 1GB 镜像,而此前没有任何东西清理过。** 2026-08-09 21:20 阿里云云监控报 `/dev/vda3` 使用率 90.5%(`SystemDefault_acs_swas_diskusage_utilization`,连续 3 次 ≥90%)。查下来是 v0.1.1 以来**每一个版本的三个镜像都还在**——82 个镜像、11.3GB,其中只有 7 个在用。
+
+保留口径:**当前版本 + 回滚一档**。滚版后执行:
+
+```bash
+KEEP="v0.4.12|v0.4.11"   # 换成当前与上一个版本
+sudo docker images --format "{{.Repository}}:{{.Tag}}" | grep "rsp-" | grep -Ev ":($KEEP)$" | xargs -r sudo docker rmi
+sudo docker image prune -f
+sudo journalctl --vacuum-size=200M
+```
+
+2026-08-10 首次执行:清掉 50 个镜像 + 611M journal,**92% → 75%**,可用从 3.3G 回到 9.4G;三容器与 postgres 未重启,`release-manifest check` 复验通过。
+
+**绝不要**动 volume(`docker system prune --volumes` / `docker volume rm`)——postgres 数据在里面。也不要碰 `/home/admin/sub2api-deploy` 与 `cpa-*-backups`,那是另一套系统的数据。
+
+> **这条告警不是本平台发的,是阿里云云监控发的。** 本平台的告警(FR-066)看的是调用与设备状态,**不看宿主机磁盘**;真正对应「平台自己死了」的是 `liveness_url` 那条死人开关——而它至今没有配收件人。宿主机资源监控继续依赖阿里云侧,这是有意的边界,不是遗漏。
+
 验证口径:`node tools/release-manifest.mjs check https://callanything.xyz`(**不需要** `--component transport-relay=...` override,relay 公网可直测),应报 `runtime matches release v0.4.11`。
 
 ### 历史版本表(2026-08-01 起)
