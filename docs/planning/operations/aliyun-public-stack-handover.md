@@ -17,18 +17,20 @@
 - 基础 compose 与 platform 仓 `deploy/public-stack/docker-compose.yml` 保持一致(2026-07-04 校验 diff 为空后同步);aliyun override 负责:钉每服务镜像 tag、服务只绑 localhost 端口(28080/28085/28090/25432)、禁用 caddy edge(host nginx 持有 80/443)
 - caddy edge 通过 profile `caddy-edge-disabled-on-aliyun` 禁用,不要在此主机启用
 
-## 当前版本(2026-08-09 起:v0.4.10)
+## 当前版本(2026-08-09 起:v0.4.11)
 
 | 服务 | 镜像 | 说明 |
 |------|------|------|
-| platform-console-gateway | `rsp-gateway:v0.4.10` | |
-| platform-api | `rsp-platform:v0.4.10` | |
-| relay | `rsp-relay:v0.4.10` | 启动日志应显示 `auth=required`;**已带鉴权重开公网**(D6.1),`/relay/buildz` 公网可直测 |
+| platform-console-gateway | `rsp-gateway:v0.4.11` | |
+| platform-api | `rsp-platform:v0.4.11` | |
+| relay | `rsp-relay:v0.4.11` | 启动日志应显示 `auth=required`;**已带鉴权重开公网**(D6.1),`/relay/buildz` 公网可直测 |
 | postgres | `postgres:16-alpine` | 数据卷 `public-stack-postgres-data` |
 
-滚版方式不变(`.env` 的 `IMAGE_TAG` + 两个 -f 的 compose 调用);回滚 = 把 `IMAGE_TAG` 改回并重跑,`.env` 备份见部署目录 `.env.bak.*`(v0.4.10 滚版前的那份是 `.env.bak.20260809T105216`)。
+滚版方式不变(`.env` 的 `IMAGE_TAG` + 两个 -f 的 compose 调用);回滚 = 把 `IMAGE_TAG` 改回并重跑,`.env` 备份见部署目录 `.env.bak.*`(v0.4.10 滚版前的那份是 `.env.bak.20260809T105216`;v0.4.11 滚版前另有一份同日更晚的时间戳)。
 
-验证口径:`node tools/release-manifest.mjs check https://callanything.xyz`(**不需要** `--component transport-relay=...` override,relay 公网可直测),应报 `runtime matches release v0.4.10`。
+> **2026-08-09 实测的一个坑**:`docker compose pull` 可能以 `httpReadSeeker: failed open ... EOF` 从 ghcr 失败(平台仓 release-process 归类为 `image_pull_failed`,属网络/registry 瞬时故障)。此时**容器未被重建、生产未受影响**,重跑 pull 即可;但注意 `.env` 的 `IMAGE_TAG` 此时已改,若就此放手,下次重启会拉一个本机没有的镜像——要么把 pull+up 做完,要么把 `.env` 改回去。
+
+验证口径:`node tools/release-manifest.mjs check https://callanything.xyz`(**不需要** `--component transport-relay=...` override,relay 公网可直测),应报 `runtime matches release v0.4.11`。
 
 ### 历史版本表(2026-08-01 起)
 
