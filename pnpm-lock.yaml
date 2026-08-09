@@ -305,7 +305,7 @@ importers:
         specifier: 0.1.0
         version: link:../caller-skill-mcp-adapter
       '@delexec/contracts':
-        specifier: ^0.1.9
+        specifier: ^0.1.10
         version: link:../../../protocol/packages/contracts
       '@delexec/responder-controller':
         specifier: 0.1.0
@@ -506,7 +506,7 @@ importers:
         specifier: 0.1.0
         version: link:../artifact-client
       '@delexec/contracts':
-        specifier: ^0.1.5
+        specifier: ^0.1.10
         version: link:../../../protocol/packages/contracts
       '@delexec/runtime-utils':
         specifier: 0.1.0
@@ -572,7 +572,7 @@ importers:
         specifier: 0.1.0
         version: link:../../packages/build-info
       '@delexec/contracts':
-        specifier: ^0.1.9
+        specifier: ^0.1.10
         version: link:../../../protocol/packages/contracts
       '@delexec/postgres-store':
         specifier: 0.1.0
