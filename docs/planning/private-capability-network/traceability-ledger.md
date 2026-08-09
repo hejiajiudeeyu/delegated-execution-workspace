@@ -77,6 +77,8 @@ Created: 2026-07-31（Wave 0 产出）· 单一事实源 = `.trellis/tasks/07-17
 
 **四仓 CI 修复（2026-08-09，CHG-2026-214）**：CI 自 2026-06-14 起近 60 次里 59 次失败，每次只报 `timeout`——owner 发现并追问。**那个词是错的**：`@delexec/responder-runtime-core` import 了 `@delexec/runtime-utils` 却从未声明；本仓用 npm workspaces 扁平提升，Node 向上走能找到别人的副本，于是**本地靠布局的巧合解析成功**；四仓用 pnpm，严格布局只给已声明的依赖，responder 开机即 `ERR_MODULE_NOT_FOUND` 死掉。**说谎的是本地的绿，不是远端的红**——同一个未声明 import 也会让洁净房安装的发布包挂掉，所以这从来不是「CI 自己的问题」。而它之所以报成 `timeout`：两个「成功与失败对调用方无法区分」的等待函数——`waitForServiceHealth` 失败返回裸 `null` 且所有调用方都忽略，于是 responder 退出 8 秒后照样发 `managed_services_started`；`waitForRelay` 更严重，**成功与超时都返回 `undefined`**，第一段真去读它的代码把每个健康的 relay 都报成失败。三处已修，并新增 `check:declared-workspace-deps`（不需安装即可判定，进 `npm test`，对修复前的树精确点名该包）。**两个月的红没教会任何人任何事的原因**：集成检查的 ops home（装着全部服务日志）是 `finally` 会删掉的临时目录，任何一次运行都没留下诊断；现在失败时先打印全部服务日志/relay 输出/compose 状态/端口占用。补上之后**一次 CI 运行就定位到了根因**。run 31314203948 六作业全绿。**一条自我更正**：M2 整批我一路报「五件套全绿」，那是本地跑的；我从未打开 CI 页面，那些 bundle 全部是本地验证通过、远端红着的。
 
+**生产实证：真实 PDF 端到端（2026-08-09）**——设备重建后，用 MinerU 自带的 `demo1.pdf`（336,919 字节）对**生产**跑通一次完整调用：agent 中文检索发现 → 读到平台目录上的完整契约（含附件声明）→ prepare 通过契约校验 → PDF 经 **artifact 通道**上传（信封仅 1,938 字节，**PDF 不在里面**）→ 经带鉴权的公网 relay 派发 → 设备上真实 MinerU 解析 → 结果回传。产出 51,648 字节 markdown、131 个 block、20 张抽取图，**22 件 artifact 全部 committed**，共 1,020,441 字节；结果包带 Ed25519 签名；平台侧 execution=delivered、钉住 version 2、`integrity: verified`、service_terms 快照完整。**这是这张网络第一次在生产上把一次真实工作从发现走到交付。** 途中两条如实记录：①第一次调用 `TIMED_OUT`——caller 默认 `hard_timeout_s=300`，而真实 MinerU 解析（含模型加载）需要约 4 分钟；不是协议失败，是默认预算对真实 ML 负载太短，M3 排队/超时语义应当据此重估。②relay token 是 **receiver-scoped**，而 supervisor 只把**一个** `TRANSPORT_AUTH_TOKEN` 发给所有服务，caller 与 responder 因此无法共用——外部设备接鉴权 relay 时会撞上，本次是把 caller 与 responder 当作两个当事方分开跑才通的。
+
 ## M3 交付、验收与结算
 
 | FR | 需求 | Owner | 状态 | 证据 |
