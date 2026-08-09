@@ -40,8 +40,9 @@
 5. ~~**隐私与履约模式**~~ ✅ **完成 2026-08-09**（CHG-2026-206；protocol `49a5d0a` + contracts 0.1.9 已发 npm + platform `74ab106`）
    `sealed` **拒绝而非降级**，且与「不存在的模式」返回不同错误；`fulfillment_mode: auto | confirm`（D8.2）入契约与发布门。三字段全可选、默认值只在读取时解析绝不落盘（写进既有记录会移动内容摘要，已绑定的 Call 立刻 `digest_mismatch`）。
    > **未做**：`prepare_request` 的 review 位仍硬编码，`/caller/approvals` 断头代理仍在——都归单元 9。
-6. **启停与可用性等级**（FR-015，platform）
-   `always-on` / `scheduled` / `best-effort`，与现有 admin enable/disable 合并为一个可用性模型。
+6. ~~**启停与可用性等级**~~ ✅ **完成 2026-08-09**（CHG-2026-210；platform `7b9ab23`）
+   `availability_policy: always_on | scheduled | best_effort`，合并的不是字段而是**答案**：四态保持正交，投影给派生 `callable`/`callable_reason`，token 签发一道闸。默认 best_effort（保持现状，笔记本热线不因新默认被拒发）；maintenance 任何策略下不派发；失约进新告警项，既有 device_unavailable 基线不动；console 词汇 + 过滤。刻意不进冻结契约，无需协议发版。
+   原范围描述：`always-on` / `scheduled` / `best-effort`，与现有 admin enable/disable 合并为一个可用性模型。
 7. **导出 / 导入**（FR-070 / FR-071 / FR-072，platform）
    ExportBundle 显式剥离 secrets、私有 artifact、本地路径、access token 与质量历史（PRD 第 8 条规范化要求，须在导入工作开始前落定）；目标网络必须重新审批而非继承来源信任。
 
