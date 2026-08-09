@@ -187,8 +187,18 @@ async function main() {
   if (pg.status !== 0) {
     throw new Error(`docker run postgres failed: ${pg.stderr}`);
   }
+  // `-h 127.0.0.1` is load-bearing: it forces the readiness probe over TCP.
+  // Without it pg_isready uses the unix socket, and the postgres image's
+  // entrypoint answers on the socket while it is still initialising — it runs
+  // a temporary socket-only server for initdb, then SHUTS IT DOWN and starts
+  // the real one. So the probe went green, the platform connected, and the
+  // restart dropped the connection mid-migration as ECONNRESET. TCP is not
+  // listening until the real server is up, which is the thing being waited on.
   await waitFor(
-    () => spawnSync("docker", ["exec", PG_CONTAINER, "pg_isready", "-U", "croc"], { stdio: "ignore" }).status === 0,
+    () =>
+      spawnSync("docker", ["exec", PG_CONTAINER, "pg_isready", "-U", "croc", "-h", "127.0.0.1"], {
+        stdio: "ignore"
+      }).status === 0,
     { label: "postgres ready" }
   );
   assertThat("postgres_ready", true);
@@ -218,7 +228,9 @@ async function main() {
 
   // -------------------------------------------------------------- provisioning
   // Everything below until "the agent" is the OPERATOR deploying the test
-  // fixtures: the only place admin credentials appear.
+  // fixtures. Admin credentials appear here and in one operator-side check at
+  // the very end; the property this harness protects is that the AGENT never
+  // holds them, not that they are used exactly once.
   console.log("\n[phase] provisioning (operator)");
   const adminAuth = { Authorization: `Bearer ${ADMIN_KEY}` };
 
@@ -532,6 +544,20 @@ process.stdin.on("end", () => {
     "held_and_settled_exactly_the_price",
     balance.body.balance.credit_balance_cents === RECHARGE_CENTS - PRICE_CENTS,
     `${RECHARGE_CENTS} - ${PRICE_CENTS} = ${balance.body.balance.credit_balance_cents}`
+  );
+
+  // 9. THE PLATFORM REACHED ITS OWN VERDICT (FR-040, M3 unit 1). Every other
+  // assertion here would have passed before delivery integrity existed: the
+  // responder said COMPLETED, and the platform believed it and paid. This one
+  // checks that the platform validated the signed result against the contract
+  // version the Call pinned, and that "verified" means everything was checked
+  // rather than that nothing was.
+  const graded = await jsonRequest(platformUrl, `/v1/admin/requests/${requestId}`, { headers: adminAuth });
+  const integrity = graded.body?.state?.delivery_integrity;
+  assertThat(
+    "platform_verified_the_delivery_itself",
+    graded.status === 200 && integrity?.tracked === true && integrity?.value === "verified",
+    JSON.stringify(integrity ?? null)
   );
 }
 
