@@ -43,8 +43,9 @@
 6. ~~**启停与可用性等级**~~ ✅ **完成 2026-08-09**（CHG-2026-210；platform `7b9ab23`）
    `availability_policy: always_on | scheduled | best_effort`，合并的不是字段而是**答案**：四态保持正交，投影给派生 `callable`/`callable_reason`，token 签发一道闸。默认 best_effort（保持现状，笔记本热线不因新默认被拒发）；maintenance 任何策略下不派发；失约进新告警项，既有 device_unavailable 基线不动；console 词汇 + 过滤。刻意不进冻结契约，无需协议发版。
    原范围描述：`always-on` / `scheduled` / `best-effort`，与现有 admin enable/disable 合并为一个可用性模型。
-7. **导出 / 导入**（FR-070 / FR-071 / FR-072，platform）
-   ExportBundle 显式剥离 secrets、私有 artifact、本地路径、access token 与质量历史（PRD 第 8 条规范化要求，须在导入工作开始前落定）；目标网络必须重新审批而非继承来源信任。
+7. ~~**导出 / 导入**~~ ✅ **完成 2026-08-09**（CHG-2026-211；platform `5cbd9ac`）
+   ExportBundle **按白名单构造**（冻结契约字段 + 可用性声明）而非删键剥离；审计测试对字节逐禁项断言（凭据/设备身份/本地拓扑/联系邮箱/质量历史）。包不携带设备，导入必须点名目标网络已注册的 responder，结构性落 pending/disabled——重新审批不是 flag 而是唯一出路；篡改包按 `declaration_digest` 拒收。
+   原范围描述：ExportBundle 显式剥离 secrets、私有 artifact、本地路径、access token 与质量历史（PRD 第 8 条规范化要求，须在导入工作开始前落定）；目标网络必须重新审批而非继承来源信任。
 
 ### agent 可调性单元（2026-08-09 按 decisions.md D8.1 扩入）
 
