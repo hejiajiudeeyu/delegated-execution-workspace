@@ -53,7 +53,9 @@
    平台目录成为 caller 侧契约事实源，草稿降级为离线兜底；两个来源**整份择一，绝不逐字段拼**。返回体透传 `HOTLINE_VERSION_CONTRACT_FIELDS` 全量。平台不可达（502 可重试）与未声明契约（409）分开报，绝不伪装成 404。CJK 检索按整段 + 二元组保留，承重断言是「中文查询无命中即返回空」——改动前它返回 4 条无关热线。平台侧补上提交时存了、投影时丢了的附件声明。5 例 client 集成（对真实 platform-api）+ 1 例 platform 集成，改动前全红。
    > 顺带发现：匹配面此前只搜 `description`，而平台列表投影发的是 `summary`——平台热线除 id 与标题外不可检索。
    原范围描述：`read_hotline` / `prepare_request` 在无本地注册草稿时回落平台目录（`/v2/hotlines/:id` 详情已无鉴权含全量契约），把平台目录当契约事实源；`buildReadHotlineResponse` 透传 `HOTLINE_VERSION_CONTRACT_FIELDS` 全量（input/output examples、`not_recommended_for`、`limitations`、`pricing_hint`、附件声明——对 LLM 正确填写价值最高的字段恰是现在被丢弃的字段）；目录检索 tokenizer 修复纯中文查询被静默丢弃、退化为字典序前 N 条的缺陷。
-9. **填写校验升级**（client）
+9. ~~**填写校验升级**~~ ✅ **完成 2026-08-09**（CHG-2026-207；client `6c6b686`）
+   ajv 2020 取代自研浅层校验器（与发布门同一引擎同一配置）；review 位从 `fulfillment_mode` 推导，`confirm` 未确认即 409；`/caller/approvals` 断头代理**接通**——它此前指向的路由在任何版本里都不存在，console 那个视图一直返回 404；MCP 按契约投影 per-hotline prepare 工具，只取顶层且绝不新增契约没声明的约束。
+   原范围描述：
    `prepare_request` 弃自研浅层校验器改用 ajv（契约 schema 即 2020-12 方言，contracts 包已依赖 ajv），嵌套/pattern/min-max 约束在 prepare 阶段就指名字段报错；MCP `tools/list` 按目录投影 per-hotline 工具定义（契约 `input_schema` 直接作 inputSchema），让 LLM host 原生参数校验生效；review 位从 `fulfillment_mode` 推导（单元 5 / D8.2）。
 10. **付费同意语义**（client + platform）
     MCP 路径补显式 billing 参数（含 `max_charge_cents` 上限）并传入 token 签发；CLI 路径去掉无条件 `billing.acknowledged = true`。「同意付费」是 agent 自动调用里最该显式设计的一环，现状一条路缺失、一条路失真。

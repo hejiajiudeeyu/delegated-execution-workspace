@@ -269,11 +269,14 @@ importers:
   repos/client/apps/caller-skill-adapter:
     dependencies:
       '@delexec/contracts':
-        specifier: ^0.1.8
+        specifier: ^0.1.9
         version: link:../../../protocol/packages/contracts
       '@delexec/runtime-utils':
         specifier: 0.1.0
         version: link:../../packages/runtime-utils
+      ajv:
+        specifier: ^8.17.1
+        version: 8.18.0
 
   repos/client/apps/caller-skill-mcp-adapter:
     dependencies:
