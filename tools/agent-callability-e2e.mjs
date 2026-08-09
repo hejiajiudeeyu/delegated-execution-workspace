@@ -36,6 +36,7 @@ const ROOT = process.cwd();
 const HOTLINE_ID = "test.paper.qa.v1";
 const RESPONDER_ID = "responder_agent_e2e";
 const PRICE_CENTS = 120;
+const MAX_CHARGE_CENTS = 200;
 const RECHARGE_CENTS = 1000;
 const ADMIN_KEY = `sk_admin_agent_e2e_${crypto.randomBytes(8).toString("hex")}`;
 const RELAY_TOKEN = `relay_${crypto.randomBytes(12).toString("hex")}`;
@@ -456,7 +457,7 @@ process.stdin.on("end", () => {
     body: {
       hotline_id: HOTLINE_ID,
       input: { question: "这篇论文的核心贡献是什么？", style: "brief" },
-      billing: { max_charge_cents: 200 },
+      billing: { max_charge_cents: MAX_CHARGE_CENTS },
       agent_session_id: "agent_e2e"
     }
   });
@@ -464,7 +465,7 @@ process.stdin.on("end", () => {
     "prepared_with_explicit_consent",
     prepared.body?.status === "ready" &&
       prepared.body?.billing?.acknowledged === true &&
-      prepared.body?.billing?.max_charge_cents === 200 &&
+      prepared.body?.billing?.max_charge_cents === MAX_CHARGE_CENTS &&
       prepared.body?.review?.status === "pending",
     JSON.stringify({ status: prepared.body?.status, review: prepared.body?.review?.status })
   );
@@ -532,7 +533,36 @@ process.stdin.on("end", () => {
     report.body.result?.answer || ""
   );
 
-  // 8. THE MONEY MOVED — exactly the price, visible to the caller itself.
+  // 8. THE MONEY DID NOT MOVE YET (FR-041). Delivery used to settle: the
+  // responder reported COMPLETED and the platform paid in the same request,
+  // which meant the paid party both ended the work and released the money.
+  // Now a graded delivery only opens an acceptance window.
+  // The whole authorized ceiling (200) is still out of the balance, not the
+  // 120 the work actually cost: what is standing here is the HOLD, and
+  // settling is what would return the 80 difference. Asserting the difference
+  // rather than a state string means this cannot pass by the platform merely
+  // labelling something "held".
+  const beforeAcceptance = await jsonRequest(platformUrl, "/v1/tenants/me/balance", { headers: callerAuth });
+  assertThat(
+    "delivery_alone_does_not_release_the_budget",
+    beforeAcceptance.body?.balance?.credit_balance_cents === RECHARGE_CENTS - MAX_CHARGE_CENTS,
+    `still holding the full authorized ${MAX_CHARGE_CENTS}, not settled at ${PRICE_CENTS}: ${beforeAcceptance.body?.balance?.credit_balance_cents}`
+  );
+
+  // 9. THE AGENT ACCEPTS, through its own surface and with nothing but caller
+  // credentials — an acceptance gate only an operator shell can operate is not
+  // a gate the caller has.
+  const accepted = await jsonRequest(skillUrl, `/skills/caller/requests/${requestId}/accept`, {
+    method: "POST",
+    body: {}
+  });
+  assertThat(
+    "caller_accepted_through_its_own_surface",
+    accepted.status === 200 && accepted.body?.acceptance?.status === "accepted",
+    JSON.stringify(accepted.body?.acceptance || accepted.body)
+  );
+
+  // 10. AND ONLY THEN THE MONEY MOVED — exactly the price, once.
   const balance = await waitFor(
     async () => {
       const b = await jsonRequest(platformUrl, "/v1/tenants/me/balance", { headers: callerAuth });
@@ -541,12 +571,12 @@ process.stdin.on("end", () => {
     { label: "billing settled", timeoutMs: 30000 }
   );
   assertThat(
-    "held_and_settled_exactly_the_price",
+    "settled_exactly_the_price_after_acceptance",
     balance.body.balance.credit_balance_cents === RECHARGE_CENTS - PRICE_CENTS,
     `${RECHARGE_CENTS} - ${PRICE_CENTS} = ${balance.body.balance.credit_balance_cents}`
   );
 
-  // 9. THE PLATFORM REACHED ITS OWN VERDICT (FR-040, M3 unit 1). Every other
+  // 11. THE PLATFORM REACHED ITS OWN VERDICT (FR-040, M3 unit 1). Every other
   // assertion here would have passed before delivery integrity existed: the
   // responder said COMPLETED, and the platform believed it and paid. This one
   // checks that the platform validated the signed result against the contract
