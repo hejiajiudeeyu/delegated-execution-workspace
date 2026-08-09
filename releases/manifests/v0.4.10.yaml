@@ -1,0 +1,30 @@
+release_id: v0.4.10
+created_at: 2026-08-09T10:40:09.582Z
+components:
+  protocol:
+    sha: 49a5d0acc8cfa510c5d76c8a86c9f371f9c3b7e0
+    path: repos/protocol
+  client:
+    sha: a35e0d7402593f9992f5765bbf63b8582c653285
+    path: repos/client
+  platform:
+    sha: 6b29eb01110df5ec092f65e6ec598a82916c5cfb
+    path: repos/platform
+  brand_site:
+    sha: aca1aa2cdb8f55047fb3cb42dc235b1b4b01a95b
+    path: repos/brand-site
+change_bundle: CHG-2026-211
+images:
+  rsp-platform: v0.4.10
+  rsp-relay: v0.4.10
+  rsp-gateway: v0.4.10
+packages:
+  "@delexec/contracts": 0.1.9
+  "@delexec/ops": 0.1.10
+notes: "An agent can call a hotline it did not publish (M2 units 4-12): service
+  terms and availability policy on the contract, the whole declaration served to
+  an uncredentialed reader, billing refusals that carry the price,
+  caller-registered completion webhooks, and export/import that leaves
+  credentials and reputation behind. Exit-criterion chain proven live end to end
+  (tools/agent-callability-e2e.mjs, 24/24) before this roll."
+manifest_sha256: a10ebdf2dd43a0b4bdc473621d7589e7e08cc98072fe1d970e814b56122f6131

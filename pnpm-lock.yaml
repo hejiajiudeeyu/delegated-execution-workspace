@@ -305,7 +305,7 @@ importers:
         specifier: 0.1.0
         version: link:../caller-skill-mcp-adapter
       '@delexec/contracts':
-        specifier: ^0.1.5
+        specifier: ^0.1.9
         version: link:../../../protocol/packages/contracts
       '@delexec/responder-controller':
         specifier: 0.1.0

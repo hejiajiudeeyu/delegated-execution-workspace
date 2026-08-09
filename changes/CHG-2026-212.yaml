@@ -1,0 +1,16 @@
+change_id: CHG-2026-212
+goal: certify and roll the M2 batch — ops 0.1.10, platform v0.4.10
+protocol_sha: 49a5d0acc8cfa510c5d76c8a86c9f371f9c3b7e0
+client_sha: a35e0d7402593f9992f5765bbf63b8582c653285
+platform_sha: 6b29eb01110df5ec092f65e6ec598a82916c5cfb
+brand_site_sha: aca1aa2cdb8f55047fb3cb42dc235b1b4b01a95b
+owner: hejiajiudeeyu
+risk_level: medium
+affected_scope:
+  - client
+  - platform
+  - release
+  - production
+contracts_check: passed
+integration_check: passed
+notes: "Batch-end release for M2 units 4-12 (CHG-2026-204 through 211). Both outward-facing actions were PRE-AUTHORISED by the owner on 2026-08-09 (decisions.md D8 addendum, multiple choice: 'ops 可以预授权，生产滚版一并预授权'), with the standing condition that the release-manifest check result is reported back. @delexec/ops 0.1.10 (publish run 31308621769): units 8-11 all changed code that ships inside the ops bundle — the skill adapter's contract read and ajv validation, the MCP per-hotline projection, billing consent on both paths, the caller callback commands. The version bump also fixed a floor that the local symlinked node_modules hides: ops declared contracts ^0.1.5 while its bundled skill adapter imports FULFILLMENT_MODE and fulfillmentModeOf, which are 0.1.9 exports — the exact class of drift that only appears in a clean room, and the class that bit this project twice on 2026-08-05. Platform v0.4.10: tag pushed, Images workflow run 31308792480 built rsp-platform / rsp-relay / rsp-gateway and the published-image smoke passed in the same run, all four jobs green. Release note and both compatibility matrices call out the two previously-silent acceptances that are now refusals — an unconsented paid call (402 carrying the price, previously a generic 400) and an always_on hotline that is offline — and state that every hotline which declared no availability policy is best_effort and unchanged. Manifest v0.4.10 frozen (sha256 a10ebdf2dd43) and promoted to releases/current.yaml. BEFORE this roll, the plan's §5 exit criterion was proven live rather than argued: tools/agent-callability-e2e.mjs, 24/24 assertions, five real processes plus a Docker Postgres with billing enforced, agent and responder on separate DELEXEC_HOME directories talking only through the authenticated relay — discover in Chinese, read the whole contract, violations named by field, refusal carrying the price, explicit consent, confirm-mode human gate, dispatch, signed completion webhook carrying the pinned version and no result, schema-conforming result over the polling fallback, and billing held and settled exactly once at the price. HONEST NOTE ON THE VALIDATION: the fourth-repo source integration check failed once during unit 7's closeout with no captured detail and passed clean on re-run; recorded as a flake rather than a pass, and it has passed on every run since. STILL OPEN AND NOT MINE TO CLOSE: the production MinerU hotline still declares no contract, so a production replay of the exit chain cannot use it — that needs the owner's device re-registration (M2 unit 3's last step); and production alerting still has no webhook recipient."
