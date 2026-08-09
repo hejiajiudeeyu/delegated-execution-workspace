@@ -55,6 +55,21 @@
 - **验收后滚生产 v0.4.4**：同上批准。本地 seeded 栈浏览器实证通过后执行；镜像 run 31016488978（三镜像 + published-image 烟测全绿），生产 `/buildz` 报 v0.4.4，`release-manifest check` 报 runtime matches。
 - **ops@0.1.8 发 npm**：单独多选题批准（不发则 npm 装的设备在 v0.4.4 生产上无进度拍）。publish run 31016666317（第一次因两仓 lockfile 仍钉 contracts 0.1.4 在 CI 被拦，修复后重发），发布字节含叙述代码，CI 洁净房端到端过。
 
+## D8 下一轮拍板：M2 收尾 + agent 可调性（2026-08-09）
+
+背景：下阶段规划讨论。证据 = 规划文档复核 + 八路只读代码勘察（console / 首次调用动线 / 首次发布动线 / 契约机器可读性 / 传输层 / 检索规模 / 部署姿态 / 调用生命周期）。owner 以多选题拍板四项，均取推荐项：
+
+- **D8.1 下一轮主线 = M2 收尾 + agent 可调性**。M2 剩余单元（4–7）继续，并扩入「AI agent 能发现契约、读全契约、正确填写、显式同意付费、按契约判断是否需人工确认」的链路闭环（M2 goal.md 2026-08-09 增补的单元 8–12）。排序随之落定：M3 顺延至本轮后（勘察确认其缺口对单人自用可容忍、对开放他人全是硬伤，性质是"M3 未开工"而非"设计错了"）；onboarding 自助化（发布指南 / --contract 脚手架 / 发布者本地预检 / 引导性报错）显式排期在 M6 partner pilot 之前，而非继续沉默；检索规模问题挂起至热线达百条级（现网公开热线 1 条，公开目录端点无分页等缺口如实记录不动工）。
+- **D8.2 契约新增 `fulfillment_mode`（auto / confirm）**：一条热线可否机器直调、还是需调用方人工确认，由契约声明；`prepare_request` 的 review 位（现为硬编码 `not_required`）从契约推导。随 M2 单元 5（FR-012）一并落地；supervisor 现存 `/caller/approvals` → 不存在路由的断头代理接通或删除。此前该语义在协议层完全无法表达，属新决策而非补实现。
+- **D8.3 email 传输适配器（emailengine/gmail）冻结**：配置面标 deprecated，平台停发 `secondary_task_delivery(kind=email)`（消除半死路径被意外触发的风险）；代码保留不删。该传输面从未进认证组合与任何 e2e 证据。
+- **D8.4 caller 侧任务完成通知批准**：webhook 形态，复用 FR-066 告警投递骨架（HMAC 签名 + 重试）；caller 可注册完成回调，轮询保留为兜底。
+
+随行小项（不占交付单元，按 D2 默认推进）：responder 侧 `EMAIL_MAX_ATTACHMENT_BYTES` 5MB 上限横切所有传输（含 artifact 通道）的修复；console 审批页渲染契约（现为盲批，服务端字段已齐、零新增 API）、Marketplace 假分页、列表总数字段读错；MCP 目录检索 tokenizer 丢弃纯中文查询的静默退化；文档漂移（本仓 CLAUDE.md relay 行已修、aliyun 交接文档版本表停在 v0.3.0、npm @delexec/ops README 无 caller 内容）；备份定时化 + 异地。
+
+勘察随带的两条事实修正：①「relay 公网 403 需内网/隧道」已过时——实测 `/relay/buildz` 公网 200，`release-manifest check` 不带 override 全绿（relay 于 D6.1 授权后带鉴权重开，文档未随更）；②生产 console 探测到 `locked:true` 是「无活动会话」的常态语义，并非锁死（owner 口令在手，2026-08-05 已解锁使用过）。
+
+仍待 owner 的两个动作（本轮并行项，不阻塞开工）：生产 console【设置/告警】填 webhook URL 与存活 ping URL（在此之前告警代码在跑但没有收件人）；MinerU 设备升 ops 0.1.9 → 重注册 → 重审批（M2 单元 3 最后一步，一次坐下来做完）。
+
 ## 遗留待办指针（不在本轮范围）
 
 - Wave 0（架构基线 + M0 release manifest）按 `goal.md` 契约另行启动。

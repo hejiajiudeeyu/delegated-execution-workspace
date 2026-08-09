@@ -63,6 +63,16 @@ Created: 2026-07-31（Wave 0 产出）· 单一事实源 = `.trellis/tasks/07-17
 | FR-072 | 新网络重新验证 | platform | todo | |
 | FR-073 | 兼容性检查 (P1) | protocol + platform | todo | |
 
+### agent 可调性单元（2026-08-09 按 decisions.md D8.1 扩入 M2，不对应单条 FR）
+
+| 单元 | 内容 | Owner | 状态 | 证据 |
+|---|---|---|---|---|
+| 8 | agent 契约读取链路 | client (+platform 投影) | **done**（代码侧） | 此前 `read_hotline` / `prepare_request` 硬依赖本地注册草稿，而草稿由**注册方**在 responder 机器上写——纯 caller 机器上一份都没有，官方链路对所有热线一律 404；能走通的那条分支又恰好丢弃发布门刚强制写全的字段（示例、`not_recommended_for`、`limitations`、`pricing_hint`、附件声明）。现以平台目录为 caller 侧契约事实源（`GET /v2/hotlines/:id`，无鉴权，正是发布门校验过、Call 钉住的那份），草稿降级为离线兜底；两个来源**整份择一，绝不逐字段拼**（拼出来的契约没有任何人发布过——CHG-2026-202 的同形状失败）。返回体改为透传 `HOTLINE_VERSION_CONTRACT_FIELDS` 全量。失败模式刻意分开：平台不可达报 `HOTLINE_CONTRACT_SOURCE_UNAVAILABLE`（502 可重试）而非 404；未声明契约报 `HOTLINE_CONTRACT_NOT_DECLARED`（409）——生产热线今天正是这个状态。检索：纯中文查询此前 token 为空，走"无词"分支返回字典序前 N 条（测试中实测返回 4 条无关热线），现 CJK 按整段 + 二元组保留，承重断言是反向的那条（中文查询无命中即返回空）；匹配面此前只搜 `description`，而平台列表投影发的是 `summary`。平台侧补 `input_attachments`/`output_attachments`/`service_id` 进公开详情投影——提交时存了、投影时丢了，caller 只能靠被拒绝才知道要传 PDF。client `fb9bee5`（5 例集成，**对真实 platform-api**，改动前 5 例全红）+ platform `18f51d6`（1 例集成，同样改动前红）。CHG-2026-204。**未做**：ajv 校验、MCP per-hotline 工具投影、review 位推导（单元 9 / 5）；**未发 npm、未滚生产**（改动在 `@delexec/ops` 已发布字节内，但后续单元改同一批文件，整批结束一次发版） |
+| 9 | 填写校验升级（ajv / per-hotline 工具 / review 位） | client | todo | |
+| 10 | 付费同意语义 | client + platform | todo | |
+| 11 | caller 完成通知（webhook，D8.4） | platform + client | todo | |
+| 12 | email 传输冻结（D8.3） | client + platform | todo | |
+
 ## M3 交付、验收与结算
 
 | FR | 需求 | Owner | 状态 | 证据 |

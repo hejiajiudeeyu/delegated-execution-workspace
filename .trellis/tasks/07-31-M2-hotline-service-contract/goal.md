@@ -1,7 +1,8 @@
 # M2 最小 Hotline 服务契约 — 入口条件与交付单元
 
 父任务：`../07-17-call-anything-private-capability-network-mvp/prd.md`（Wave 2）
-状态：**已激活**（2026-08-06，可用性冲刺三单元完成后按 decisions.md D7 进入）
+状态：**已激活**（2026-08-06，可用性冲刺三单元完成后按 decisions.md D7 进入；2026-08-09 按 D8.1 扩入 agent 可调性单元 8–12）
+执行计划：**`plan-2026-08-09.md`**（执行顺序、文件锚点、验收口径、授权点——执行会话从它开工）
 
 ## 入口条件
 
@@ -38,10 +39,30 @@
    按 A-05：档位绑定验收窗（72h 默认 / 24h–7d 边界；Quick 24h、Standard 72h、Deep 7d），M2 只负责声明与快照进 Call，验收窗真正生效在 M3。
 5. **隐私与履约模式**（FR-012，protocol）
    本阶段仅 `supervised` 可用；声明其他模式即拒绝，而不是接受后无声地按 supervised 执行。
+   履约模式语义按 decisions.md **D8.2** 定为 `fulfillment_mode: auto | confirm`——契约声明该热线可机器直调还是需调用方人工确认；`prepare_request` 的 review 位（现为硬编码 `not_required`）从此字段推导，supervisor 现存 `/caller/approvals` 断头代理随之接通或删除。
 6. **启停与可用性等级**（FR-015，platform）
    `always-on` / `scheduled` / `best-effort`，与现有 admin enable/disable 合并为一个可用性模型。
 7. **导出 / 导入**（FR-070 / FR-071 / FR-072，platform）
    ExportBundle 显式剥离 secrets、私有 artifact、本地路径、access token 与质量历史（PRD 第 8 条规范化要求，须在导入工作开始前落定）；目标网络必须重新审批而非继承来源信任。
+
+### agent 可调性单元（2026-08-09 按 decisions.md D8.1 扩入）
+
+背景：契约本体经单元 1–3 已强（发布门 + 冻结版本 + 调用钉版），但 2026-08-09 八路勘察确认「AI agent 读契约并调用」的官方链路断在中间：MCP `read_hotline` 无本地草稿即 404（读不到远端契约）、返回体恰好丢弃发布门强制写全的字段、input 校验只有客户端浅层自研一层、付费调用 MCP 路径不可用而 CLI 路径把同意硬置 true。M4 的 Research Hotline 就是要被 agent 调的，这条链路是它的前置。
+
+8. ~~**agent 契约读取链路**~~ ✅ **完成 2026-08-09**（CHG-2026-204；client `fb9bee5` + platform `18f51d6`，未发 npm、未滚生产）
+   平台目录成为 caller 侧契约事实源，草稿降级为离线兜底；两个来源**整份择一，绝不逐字段拼**。返回体透传 `HOTLINE_VERSION_CONTRACT_FIELDS` 全量。平台不可达（502 可重试）与未声明契约（409）分开报，绝不伪装成 404。CJK 检索按整段 + 二元组保留，承重断言是「中文查询无命中即返回空」——改动前它返回 4 条无关热线。平台侧补上提交时存了、投影时丢了的附件声明。5 例 client 集成（对真实 platform-api）+ 1 例 platform 集成，改动前全红。
+   > 顺带发现：匹配面此前只搜 `description`，而平台列表投影发的是 `summary`——平台热线除 id 与标题外不可检索。
+   原范围描述：`read_hotline` / `prepare_request` 在无本地注册草稿时回落平台目录（`/v2/hotlines/:id` 详情已无鉴权含全量契约），把平台目录当契约事实源；`buildReadHotlineResponse` 透传 `HOTLINE_VERSION_CONTRACT_FIELDS` 全量（input/output examples、`not_recommended_for`、`limitations`、`pricing_hint`、附件声明——对 LLM 正确填写价值最高的字段恰是现在被丢弃的字段）；目录检索 tokenizer 修复纯中文查询被静默丢弃、退化为字典序前 N 条的缺陷。
+9. **填写校验升级**（client）
+   `prepare_request` 弃自研浅层校验器改用 ajv（契约 schema 即 2020-12 方言，contracts 包已依赖 ajv），嵌套/pattern/min-max 约束在 prepare 阶段就指名字段报错；MCP `tools/list` 按目录投影 per-hotline 工具定义（契约 `input_schema` 直接作 inputSchema），让 LLM host 原生参数校验生效；review 位从 `fulfillment_mode` 推导（单元 5 / D8.2）。
+10. **付费同意语义**（client + platform）
+    MCP 路径补显式 billing 参数（含 `max_charge_cents` 上限）并传入 token 签发；CLI 路径去掉无条件 `billing.acknowledged = true`。「同意付费」是 agent 自动调用里最该显式设计的一环，现状一条路缺失、一条路失真。
+11. **caller 完成通知**（platform + client，D8.4）
+    webhook 形态，复用 `alerts.js` 投递骨架（HMAC 签名 + 5xx 重试）；caller 注册完成回调 URL，轮询保留为兜底。解决「分钟级以上任务要么挂终端要么错过结果」。
+12. **email 传输冻结**（client + platform，D8.3）
+    配置面标 deprecated；平台停发 `secondary_task_delivery(kind=email)`；代码保留不删。
+
+随行小项（不占单元，穿插做）：responder 侧 `EMAIL_MAX_ATTACHMENT_BYTES` 5MB 上限横切所有传输（含 artifact 通道，MinerU 大输出会被误判 `RESULT_ARTIFACT_TOO_LARGE`）的修复；console 审批页渲染契约（现为盲批，服务端字段已齐、零新增 API）；Marketplace 假分页与列表总数字段；文档漂移（aliyun 交接文档、npm @delexec/ops README）；备份定时化 + 异地。
 
 **P1，本轮不做**：FR-016 Stable/Preview、FR-073 兼容性检查。二者都要先有稳定的版本对象（单元 1）才谈得上。
 

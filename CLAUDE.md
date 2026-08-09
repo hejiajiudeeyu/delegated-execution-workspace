@@ -11,9 +11,9 @@ This repository is a synthetic monorepo superproject for cross-repo development 
 |---|---|
 | owner 拍过哪些板、授权了什么 | 同目录 `decisions.md` |
 | 每条需求做到哪一步、证据是什么 | `docs/planning/private-capability-network/traceability-ledger.md` |
-| 当前里程碑的交付单元与进度 | `.trellis/tasks/07-31-M1-public-cross-device-runtime/goal.md` |
+| 当前里程碑的交付单元与进度 | `.trellis/tasks/07-31-M2-hotline-service-contract/goal.md` |
 | 当前认证的跨仓组合 | `releases/current.yaml`（`node tools/release-manifest.mjs verify` 校验） |
-| 生产是否与认证组合一致 | `node tools/release-manifest.mjs check https://callanything.xyz --component transport-relay=http://127.0.0.1:28090/buildz`（relay 公网 403，需内网/隧道） |
+| 生产是否与认证组合一致 | `node tools/release-manifest.mjs check https://callanything.xyz`（relay 已带鉴权重开公网，`/relay/buildz` 可直测；2026-08-09 实测不带 override 全绿） |
 | console 为何要第三次重做 | `.trellis/tasks/07-15-replace-public-console-frontend/diagnosis-v0.2.0.md` |
 
 **已作废，不要照着做**：根目录 `LOOP.md`（公网 marketplace 闭环，2026-07-31 归档）、`docs/planning/roadmap-2026H2.md` 的阶段表、`docs/planning/product-audit/P0.5-economic-closure-implementation.md`（Marketplace 版经济闭环蓝图，PRD 明令不照搬）。这些文档看起来仍然合理，但方向已变。
