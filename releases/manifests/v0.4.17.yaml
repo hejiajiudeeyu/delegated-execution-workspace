@@ -1,0 +1,28 @@
+release_id: v0.4.17
+created_at: 2026-08-10T14:56:47.357Z
+components:
+  protocol:
+    sha: 36d85181e367fe18591d468aa49016e544808611
+    path: repos/protocol
+  client:
+    sha: 06fdf3ae93359417406be999d397ff4757dffc45
+    path: repos/client
+  platform:
+    sha: ffd8456fee45cd9b889a1fe7f0aa441f4efa8976
+    path: repos/platform
+  brand_site:
+    sha: aca1aa2cdb8f55047fb3cb42dc235b1b4b01a95b
+    path: repos/brand-site
+change_bundle: CHG-2026-236
+images:
+  rsp-platform: v0.4.17
+  rsp-relay: v0.4.17
+  rsp-gateway: v0.4.17
+packages:
+  "@delexec/contracts": 0.1.11
+  "@delexec/ops": 0.1.20
+notes: The responder decides before executing and the hold moves with that
+  decision (FR-021); a call is judged by its own execution budget (FR-025); an
+  operator states a reason before reading someone's content, recorded where
+  ordinary traffic cannot evict it (FR-062/063).
+manifest_sha256: 0ea9ad4c360297b2c371c6069d53d03c5882f6fb03d40cf35b8a8db01c07953d

@@ -1,0 +1,15 @@
+change_id: CHG-2026-236
+goal: certify platform v0.4.17 in production (FR-021, FR-025, FR-062/063)
+protocol_sha: 36d85181e367fe18591d468aa49016e544808611
+client_sha: 06fdf3ae93359417406be999d397ff4757dffc45
+platform_sha: ffd8456fee45cd9b889a1fe7f0aa441f4efa8976
+brand_site_sha: aca1aa2cdb8f55047fb3cb42dc235b1b4b01a95b
+owner: hejiajiudeeyu
+risk_level: medium
+affected_scope:
+  - platform
+  - release
+  - production
+contracts_check: passed
+integration_check: passed
+notes: "Rolls M3 units 5 and 6-first-half and the content-access gate to production. Owner authorised the batch. THE ONE BEHAVIOUR OPERATORS MUST KNOW: a paid call no longer reserves its budget when the caller asks for it. Between token issue and the responder acknowledging, nothing is held \u2014 so a caller can ask for more work than it can pay for and finds out at acceptance. That is the deliberate cost of FR-021, which the protocol forces: a rejected call must hold no funds and MOVE none, which makes hold-then-refund unrepresentable rather than merely wasteful. Deployed responders are unaffected because ACKED counts as taking the task on, and the network's one real device sends it. ALSO LIVE: a call is judged by its own execution_budget_s frozen into the Call rather than by one global number (needs contracts 0.1.11, published earlier today); and an operator must state a reason from a fixed list before downloading another party's artifact bytes, recorded in a log that ordinary traffic cannot evict and that reports what it had to drop. Scripted operator downloads need x-content-access-reason; callers and responders reading their own calls are unaffected. VERIFIED IN PRODUCTION: release-manifest check reports runtime matches release v0.4.17 across platform-api, transport-relay and the console gateway. The one real hotline is enabled, approved and callable after the roll. Manifest v0.4.17 frozen (sha256 0ea9ad4c3602) and promoted. WHAT PRODUCTION STILL HAS NO EVIDENCE FOR: the money half of the acceptance gate. local.mineru.pdf.parse.v1 declares no pricing_hint, so the settlement axis honestly reports its calls as unbilled. hold to accept to settle is proven only by tools/settlement-lifecycle-e2e.mjs (23/23, real Postgres, billing enforced, including a replay phase asserting no call holds, debits or refunds twice). Proving it in production needs a priced hotline."
