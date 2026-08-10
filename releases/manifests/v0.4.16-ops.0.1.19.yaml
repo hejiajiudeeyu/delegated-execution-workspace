@@ -1,0 +1,26 @@
+release_id: v0.4.16-ops.0.1.19
+created_at: 2026-08-10T10:22:57.325Z
+components:
+  protocol:
+    sha: 4a48ef7f5a6878150267a5232df56be2934fd47b
+    path: repos/protocol
+  client:
+    sha: 299bc3d85a43038c56cecd61764590bf2490c355
+    path: repos/client
+  platform:
+    sha: 21d1f85f07c25526f124c5d1845b3b17893af698
+    path: repos/platform
+  brand_site:
+    sha: aca1aa2cdb8f55047fb3cb42dc235b1b4b01a95b
+    path: repos/brand-site
+change_bundle: CHG-2026-230
+images:
+  rsp-platform: v0.4.16
+  rsp-relay: v0.4.16
+  rsp-gateway: v0.4.16
+packages:
+  "@delexec/contracts": 0.1.10
+  "@delexec/ops": 0.1.19
+notes: The caller advertises the inbox it polls, and the agent surface can
+  attach the file a contract asks for. Platform images unchanged from v0.4.16.
+manifest_sha256: edaa1dc8438109f681ff789e39f0fcb6b46c0a2a013fccf490d36279be1ecd67
