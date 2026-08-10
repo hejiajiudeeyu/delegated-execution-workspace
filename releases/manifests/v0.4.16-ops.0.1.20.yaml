@@ -1,0 +1,27 @@
+release_id: v0.4.16-ops.0.1.20
+created_at: 2026-08-10T12:44:04.318Z
+components:
+  protocol:
+    sha: 4a48ef7f5a6878150267a5232df56be2934fd47b
+    path: repos/protocol
+  client:
+    sha: 6333884faa979eb06ba37080312a8e4e7e1f5cae
+    path: repos/client
+  platform:
+    sha: 21d1f85f07c25526f124c5d1845b3b17893af698
+    path: repos/platform
+  brand_site:
+    sha: aca1aa2cdb8f55047fb3cb42dc235b1b4b01a95b
+    path: repos/brand-site
+change_bundle: CHG-2026-231
+images:
+  rsp-platform: v0.4.16
+  rsp-relay: v0.4.16
+  rsp-gateway: v0.4.16
+packages:
+  "@delexec/contracts": 0.1.10
+  "@delexec/ops": 0.1.20
+notes: A published hotline routes through the platform even when this device
+  serves it (owner ruling), and the agent surface can attach a file. Platform
+  images unchanged from v0.4.16.
+manifest_sha256: a322a68fda1307f997d70262456cf34d12d6f72e99660e79b16514b95971bd49
