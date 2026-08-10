@@ -136,6 +136,7 @@
     "test:mcp-golden-four": "node tools/mcp-golden-four.test.mjs",
     "test:agent-e2e": "AUTO_APPROVE=true python3 tools/agent-e2e/agent-e2e-test.py",
     "test:agent-callability-e2e": "node tools/agent-callability-e2e.mjs",
+    "test:settlement-lifecycle-e2e": "node tools/settlement-lifecycle-e2e.mjs",
     "test:paid-call-e2e": "node tools/paid-call-e2e.mjs",
     "test:paid-call-e2e:unit": "node tools/paid-call-e2e.test.mjs",
     "ci": "corepack pnpm run test:release-gate",
