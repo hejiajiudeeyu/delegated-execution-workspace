@@ -1,0 +1,28 @@
+release_id: v0.4.15
+created_at: 2026-08-10T07:09:23.692Z
+components:
+  protocol:
+    sha: 4a48ef7f5a6878150267a5232df56be2934fd47b
+    path: repos/protocol
+  client:
+    sha: edffd092c88c28f22af9c14c4b5e5ef8ea86cabc
+    path: repos/client
+  platform:
+    sha: 22b3f4048ff385f41889d8d9c387522cd7edc3ee
+    path: repos/platform
+  brand_site:
+    sha: aca1aa2cdb8f55047fb3cb42dc235b1b4b01a95b
+    path: repos/brand-site
+change_bundle: CHG-2026-226
+images:
+  rsp-platform: v0.4.15
+  rsp-relay: v0.4.15
+  rsp-gateway: v0.4.15
+packages:
+  "@delexec/contracts": 0.1.10
+  "@delexec/ops": 0.1.17
+notes: "One revision and dispute (M3 unit 3), plus deadlines sized for real work
+  (M3 unit 6 timeout half): the held budget stops expiring on TOKEN_TTL_SECONDS,
+  the dispatch envelope carries the caller's deadline, and hotline defaults move
+  from 60s/180s to 300s/1800s."
+manifest_sha256: 25cc62b138d69dc00e79c9f7542315793574f0b0c106655386977c1f220699c4

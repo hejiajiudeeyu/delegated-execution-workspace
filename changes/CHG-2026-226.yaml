@@ -1,0 +1,17 @@
+change_id: CHG-2026-226
+goal: certify and roll v0.4.15 / ops 0.1.17 — revision, dispute, and deadlines sized for real work
+protocol_sha: 4a48ef7f5a6878150267a5232df56be2934fd47b
+client_sha: edffd092c88c28f22af9c14c4b5e5ef8ea86cabc
+platform_sha: 22b3f4048ff385f41889d8d9c387522cd7edc3ee
+brand_site_sha: aca1aa2cdb8f55047fb3cb42dc235b1b4b01a95b
+owner: hejiajiudeeyu
+risk_level: medium
+affected_scope:
+  - protocol
+  - client
+  - platform
+  - release
+  - production
+contracts_check: passed
+integration_check: passed
+notes: "Releases CHG-2026-225 (M3 unit 3: one revision and dispute) together with the timeout half of unit 6. Contracts moves only in tests — the queued/executing table has existed since M1 with zero test coverage anywhere, and unit 6 is the platform's first consumer, so it got pinned before anything relied on it; the table turned out correct, so this is coverage rather than a fix and no npm release was needed. WHY THE TIMEOUT WORK SHIPPED WITH IT: it is the precondition for M3 having any production evidence at all. Three clocks were set for an RPC and the network's only real hotline needs about four minutes on a cold model, so every unit of M3 was provable locally and unprovable where it counts. (1) heldBillingExpiresAt used TOKEN_TTL_SECONDS — the token's lifetime bounds how long an envelope may sit unclaimed, which is a different question from how long real work may run, and sharing one number refunded a call and synthesised a FAILED WHILE IT WAS STILL EXECUTING. It has its own budget now (EXECUTION_BUDGET_S, default 1800s) measured from the responder's last signal rather than from the moment money was held, because a responder reporting progress has not disappeared. (2) The dispatch envelope never carried constraints, so task.constraints was null on every remote call and two things built to use it were dead on the only path that matters: the RESPONDER_MAX_HARD_TIMEOUT_S guardrail had nothing to check, and an executor wanting to stop cleanly short of the deadline had no deadline. (3) A QUESTION THAT COULD NOT COME UP BEFORE, now that a caller's deadline actually arrives: whose machine is it. resolveAdapterTimeouts takes the SMALLER of caller and device — a caller may give up early, which is its own business, but may not help itself to more of the operator's machine than the operator offered. Exported so the rule has tests including the negative one. (4) Defaults moved on both sides, 60s/180s to 300s/1800s, because a ceiling nobody can reach is the same bug from the other side; the hard timeout is a backstop against a hung worker rather than a promise, since SOFT_TIMEOUT already makes a slow job visible without killing it. TESTS: protocol 46 unit in call-state (7 new for queued); client 167 unit + 139 integration; platform 59 unit + 220 integration. M2 exit harness 27/27. Images run for v0.4.15 green; ops 0.1.17 publish run 31364456891 green. VERIFIED IN PRODUCTION: release-manifest check reports runtime matches release v0.4.15. STILL NOT DONE: the production MinerU device is not running its supervisor and its hotline is still configured 60s/180s, which after the precedence fix is now the binding ceiling — so the device needs both an ops upgrade and a timeout raise before a real call can go end to end through delivery grading and the acceptance gate."
