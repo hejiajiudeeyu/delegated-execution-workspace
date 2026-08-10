@@ -1,0 +1,15 @@
+change_id: CHG-2026-234
+goal: publish contracts 0.1.11 and consume it in the platform
+protocol_sha: 36d85181e367fe18591d468aa49016e544808611
+client_sha: 06fdf3ae93359417406be999d397ff4757dffc45
+platform_sha: be364b7c5e15bf09f17d624562137f7364d34ada
+brand_site_sha: aca1aa2cdb8f55047fb3cb42dc235b1b4b01a95b
+owner: hejiajiudeeyu
+risk_level: low
+affected_scope:
+  - protocol
+  - platform
+  - release
+contracts_check: passed
+integration_check: passed
+notes: "Publishes the protocol half of CHG-2026-233 and lets the platform consume it. @delexec/contracts 0.1.11 (publish run 31393470670) carries execution_budget_s. CI CAUGHT THE ORDERING, and local green did not - again, and for the same structural reason as CHG-2026-220: the platform resolves @delexec/contracts from npm, while locally it resolves through the workspace link to source. So a platform commit consuming a protocol field that is not yet published passes every local suite and fails on a clean runner, with the field simply undefined. Two tests failed exactly that way (the frozen service_terms snapshot missing a key, and the budget resolving to undefined instead of 1800). This is the third time this session that remote red carried information local green did not, and it is worth stating plainly that the local pass is the misleading one. The dependency floor moves to ^0.1.11 in the same commit as the lockfile, because a floor that understates what the code imports is what produced M2's 'does not provide an export named' failures. Platform CI green on the follow-up commit. NOT RELEASED BEYOND NPM: no image, no production roll. Production runs v0.4.16, which predates both the contract-declared budget and unit 5's hold-on-acceptance."

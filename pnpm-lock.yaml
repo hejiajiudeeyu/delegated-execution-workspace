@@ -572,7 +572,7 @@ importers:
         specifier: 0.1.0
         version: link:../../packages/build-info
       '@delexec/contracts':
-        specifier: ^0.1.10
+        specifier: ^0.1.11
         version: link:../../../protocol/packages/contracts
       '@delexec/postgres-store':
         specifier: 0.1.0
