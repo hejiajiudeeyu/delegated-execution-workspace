@@ -1,0 +1,14 @@
+change_id: CHG-2026-228
+goal: a caller gets its own relay inbox, not everyone's
+protocol_sha: 4a48ef7f5a6878150267a5232df56be2934fd47b
+client_sha: 3342b957d0ca5da7b2f637cbc9f5e9a2f99c34f8
+platform_sha: 384fd8cde24e4c0a1f5255b1f69ed8944b7f020e
+brand_site_sha: aca1aa2cdb8f55047fb3cb42dc235b1b4b01a95b
+owner: hejiajiudeeyu
+risk_level: medium
+affected_scope:
+  - client
+  - platform
+contracts_check: passed
+integration_check: passed
+notes: "Closes the last thing standing between M3 and production evidence, and a latent cross-caller leak that was hiding behind it. TWO DEFECTS IN ONE PLACE, neither visible while this network had exactly one caller. Relay tokens are receiver-scoped and minting one is admin-only - correctly, since handing out inbox access is an operator action and not something a party does for itself. But the ops supervisor hands every service it starts the SAME token, so a caller polling its own inbox with a token scoped to the responder gets 403 on every attempt. That is what had been blocking a real production call end to end. AND THE INBOX ITSELF WAS SHARED: TRANSPORT_RECEIVER was the literal string 'caller-controller' for every install, so on a relay serving more than one caller, one caller polls the mailbox another caller's results were delivered to. Nobody hit it because nobody has been second, and the PRD's direction (M6 partner pilot) is precisely to make there be a second. POST /v1/callers/me/relay-inbox returns the caller's receiver, a token scoped to exactly it, and the result-delivery address a responder should use. The receiver is DERIVED FROM THE AUTHENTICATED CALLER rather than accepted from the request, so asking for a token is not a way to ask for someone else's inbox - a test sends a request naming a different receiver and asserts the platform ignores it. The relay admin token stays on platform-api and never appears in the response; asserted too. An unconfigured relay answers 503 rather than minting nothing quietly. The supervisor asks once, before the caller starts, and ONLY against a relay it does not manage itself - against its own relay it holds the admin token and there is one party, so nothing is gained by the round trip. Best effort throughout: an older platform has no such route, and a platform unreachable at boot must not stop a device from serving, so in both cases the caller falls back to exactly its previous behaviour rather than failing to start. TESTS: platform 59 unit + 229 integration (3 new); client 167 unit + 140 integration. M2 exit harness 27/27. NOT RELEASED. CONTEXT WORTH KEEPING: this was found while investigating why the production MinerU device could not complete a call, after an incident earlier the same day in which a test run reconfigured that device through a supervisor listening on a fixed port (see the ops home-guard commit). Both are the same root shape - identity assumed from a well-known name rather than established."
