@@ -1,0 +1,28 @@
+release_id: v0.4.14
+created_at: 2026-08-10T06:18:26.956Z
+components:
+  protocol:
+    sha: 632368694b0cd1a978718085671ad2a09105e5d7
+    path: repos/protocol
+  client:
+    sha: cc38b5340fee459b8ecae8c90c932b83cfce7651
+    path: repos/client
+  platform:
+    sha: 068d40c5abc898ad88e9919ad616b93eba66f14a
+    path: repos/platform
+  brand_site:
+    sha: aca1aa2cdb8f55047fb3cb42dc235b1b4b01a95b
+    path: repos/brand-site
+change_bundle: CHG-2026-224
+images:
+  rsp-platform: v0.4.14
+  rsp-relay: v0.4.14
+  rsp-gateway: v0.4.14
+packages:
+  "@delexec/contracts": 0.1.10
+  "@delexec/ops": 0.1.16
+notes: Settlement waits for the caller (M3 unit 2, FR-041/FR-044). A COMPLETED
+  report opens an acceptance window instead of releasing the budget; only an
+  explicit acceptance or an expired window settles, and the clock starts at
+  verified delivery.
+manifest_sha256: 357cde97c10bf22a743e736240319cfaa031d52523db39d2f6804da37f4f83ed

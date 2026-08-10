@@ -1,0 +1,16 @@
+change_id: CHG-2026-224
+goal: certify and roll platform v0.4.14 / ops 0.1.16 (the acceptance gate)
+protocol_sha: 632368694b0cd1a978718085671ad2a09105e5d7
+client_sha: cc38b5340fee459b8ecae8c90c932b83cfce7651
+platform_sha: 068d40c5abc898ad88e9919ad616b93eba66f14a
+brand_site_sha: aca1aa2cdb8f55047fb3cb42dc235b1b4b01a95b
+owner: hejiajiudeeyu
+risk_level: medium
+affected_scope:
+  - client
+  - platform
+  - release
+  - production
+contracts_check: passed
+integration_check: passed
+notes: "Releases CHG-2026-223 (M3 unit 2, the acceptance gate) and the console vocabulary fix that had been sitting unreleased on platform main since earlier the same day. Owner authorised the roll directly after being shown both were pending. WHY THIS ROLL MATTERS MORE THAN MOST: until production has it, the platform still releases money the moment the paid party says it is done. CHG-2026-220 gave delivery a verdict and CHG-2026-223 gave the caller a position from which to act on it, but neither changes anything where money actually moves until the images carry it. THE ONE BEHAVIOUR CHANGE OPERATORS WILL NOTICE: a delivered call now holds its budget until it is accepted or its window expires — up to seven days. That state is normal rather than stranded, and `funds_held_after_end` was taught the difference in the same change; without that, every healthy awaiting-acceptance call would have raised an alert every renotify period, which is how an operator learns to ignore the feed. Calls delivered before this release are not back-filled with a window: their acceptance axis says it opened before the gate existed rather than inventing a decision nobody made. THE CONSOLE FIX RODE ALONG, which is why the asset fingerprint moved to index-22mbhgyk.js: the console described delivery_integrity as 'whether the checksum matches', which was true while the axis was a placeholder and understated a contract violation badly once v0.4.13 made it a verdict. The four grades now render in the same language as every other axis, and a tracked axis shows the reason it carries — for a failed delivery the reason IS the finding, and it was being dropped because the row only rendered reasons for untracked axes. RELEASE ORDER: no contracts release was needed (the acceptance axis was frozen in M1), so this is images then npm. Images run 31361154493 green; @delexec/ops 0.1.16 publish run 31361177451 green. VERIFIED IN PRODUCTION: `release-manifest check https://callanything.xyz` reports `runtime matches release v0.4.14` across platform-api, transport-relay and the console gateway, all three on git 068d40c5abc8. Manifest v0.4.14 frozen (sha256 357cde97c10b) and promoted. NOT DONE: the production MinerU device still runs an older ops, so no real production call has yet gone through delivery grading or the acceptance gate end to end; that needs the device updated and its supervisor restarted."
