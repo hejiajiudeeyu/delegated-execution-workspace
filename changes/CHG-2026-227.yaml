@@ -1,0 +1,14 @@
+change_id: CHG-2026-227
+goal: the caller ends its own call (M3 unit 4, FR-024)
+protocol_sha: 4a48ef7f5a6878150267a5232df56be2934fd47b
+client_sha: 366a90cc66c0548c8dd40fd0d6d8aba1bb487d7d
+platform_sha: 25c3dad68e90dce6c9d68a10dea8e7a4933be7a0
+brand_site_sha: aca1aa2cdb8f55047fb3cb42dc235b1b4b01a95b
+owner: hejiajiudeeyu
+risk_level: low
+affected_scope:
+  - client
+  - platform
+contracts_check: passed
+integration_check: passed
+notes: "Fourth delivery unit of M3, and the third in a row that needed no protocol release — the canceled transition and DELIVERED's empty transition list were frozen in M1. THE GAP: the operator has been able to end a call since v0.4.9 (CHG-2026-203) and the caller could not, so the party who started a call and is paying for it had to ask someone holding an operator credential to stop it. POST /v1/requests/:id/cancel is the admin close skeleton with caller auth and an ownership check — reason required, refuses a call that already ended, refunds only a held budget, and STRUCTURALLY CANNOT SETTLE, because ending a call is not evidence that anything was delivered. A delivered call is refused by name with a hint pointing at revision or dispute: work already done cannot be un-asked, which is exactly why the protocol gives DELIVERED an empty transition list. THE DEFECT IT HAD TO FIX ALONG THE WAY, flagged during the 2026-08-10 recon and now closed: projectExecutionState read the event log backwards and returned the last mapped event, so a COMPLETED arriving after a cancel reported a refunded, CANCELED call as 'delivered'. The money was never at risk — every billing path guards on state === 'held' and a canceled call has already been refunded — but the state was lying, and since M3 unit 2 that same shape would open an acceptance window on a call nobody can accept. The identical bug covered a late COMPLETED after a TASK_TOKEN_EXPIRED refund; one fix closes both. A terminal projection now sticks, while the late event is still recorded, because it happened and dropping it would hide a responder reporting completion for work that was called off. CLIENT: cancel_request on the caller skill surface, same reasoning as accept_delivery in CHG-2026-223 — a decision only performable from an operator shell is not a decision the caller has. TESTS: platform 59 unit + 226 integration (6 new, all red before); client 167 unit + 139 integration. M2 exit harness 27/27. NOT RELEASED. ONE OPERATIONAL NOTE WORTH KEEPING: 14 client integration tests failed spuriously mid-session because the production MinerU device's supervisor was left running and holds port 8091, which the skill-adapter tests also bind. Fixed ports in a parallel suite are a standing trap here — the earlier ops-cli bootstrap flake in this same session had the same cause."
