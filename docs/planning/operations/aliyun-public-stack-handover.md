@@ -17,14 +17,16 @@
 - 基础 compose 与 platform 仓 `deploy/public-stack/docker-compose.yml` 保持一致(2026-07-04 校验 diff 为空后同步);aliyun override 负责:钉每服务镜像 tag、服务只绑 localhost 端口(28080/28085/28090/25432)、禁用 caddy edge(host nginx 持有 80/443)
 - caddy edge 通过 profile `caddy-edge-disabled-on-aliyun` 禁用,不要在此主机启用
 
-## 当前版本(2026-08-10 起:v0.4.15)
+## 当前版本(2026-08-10 起:v0.4.16)
 
 | 服务 | 镜像 | 说明 |
 |------|------|------|
-| platform-console-gateway | `rsp-gateway:v0.4.15` | |
-| platform-api | `rsp-platform:v0.4.15` | |
-| relay | `rsp-relay:v0.4.15` | 启动日志应显示 `auth=required`;**已带鉴权重开公网**(D6.1),`/relay/buildz` 公网可直测 |
+| platform-console-gateway | `rsp-gateway:v0.4.16` | |
+| platform-api | `rsp-platform:v0.4.16` | |
+| relay | `rsp-relay:v0.4.16` | 启动日志应显示 `auth=required`;**已带鉴权重开公网**(D6.1),`/relay/buildz` 公网可直测 |
 | postgres | `postgres:16-alpine` | 数据卷 `public-stack-postgres-data` |
+
+> **2026-08-10(v0.4.16)**:同一个 ghcr `httpReadSeeker ... EOF` 第三次出现,但**这次行为与上面记的不同**——pull 在最后一层失败,而 `docker compose up -d` 仍然重建了容器,生产正确起在 v0.4.16。也就是说「pull 失败⇒容器未被重建」不是可以依赖的推论:**一律用 `/buildz` 确认实际在跑什么**,并把 pull 补跑完整,否则下次重启会去拉一个本机缺层的镜像。
 
 > **2026-08-10(v0.4.13)**:同一个 ghcr `httpReadSeeker ... EOF` 又出现了一次,重跑 pull 即通,与下条记录一致——它是瞬时的,不是本次镜像的问题。滚版前的 `.env` 备份已按惯例留下。
 

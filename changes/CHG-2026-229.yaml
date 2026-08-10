@@ -1,0 +1,16 @@
+change_id: CHG-2026-229
+goal: certify platform v0.4.16 in production (caller cancel, caller relay inbox)
+protocol_sha: 4a48ef7f5a6878150267a5232df56be2934fd47b
+client_sha: 6b042c1cf9b3d374a361cc708e6d8d7aac756709
+platform_sha: 21d1f85f07c25526f124c5d1845b3b17893af698
+brand_site_sha: aca1aa2cdb8f55047fb3cb42dc235b1b4b01a95b
+owner: hejiajiudeeyu
+risk_level: medium
+affected_scope:
+  - client
+  - platform
+  - release
+  - production
+contracts_check: passed
+integration_check: passed
+notes: "Certifies platform v0.4.16 and the production roll that carried CHG-2026-227 (caller-side cancel, FR-024) and CHG-2026-228 (a caller's own relay inbox). VERIFIED IN PRODUCTION: release-manifest check reports runtime matches release v0.4.16 across platform-api, transport-relay and the console gateway. THE ghcr TRANSIENT HIT AGAIN and behaved differently this time, which is worth recording because the handover note says containers are untouched when it fires: the pull failed on the last layer but 'docker compose up -d' still recreated the containers, and production came up on v0.4.16 correctly. The pull was re-run afterwards to completion so a later restart does not reach for a layer this host does not have. Verify with /buildz rather than assuming either outcome. WHAT THIS COMBINATION STILL CANNOT DO, and why the next bundle matters: the caller relay-inbox work shipped in halves. v0.4.16 + ops 0.1.18 gave the caller its own inbox to POLL, and the 403 loop that had blocked every production call does stop \u2014 verified on the real device. But the address the caller ADVERTISES to responders was still the old shared literal, so the first real call after the roll reached SENT and then TIMED_OUT holding no result: the signed package was delivered to a mailbox nobody was reading. Fixed in client 6b042c1 (advertised address now comes from the same answer the receiver does), which is unreleased at the time of this bundle and needs ops 0.1.19. The shape is worth keeping: the bug was in neither half, it was in shipping one of them. A private inbox nobody is told about is indistinguishable from a broken network, and it fails later and more confusingly than never having moved."

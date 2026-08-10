@@ -1,0 +1,27 @@
+release_id: v0.4.16
+created_at: 2026-08-10T08:50:17.456Z
+components:
+  protocol:
+    sha: 4a48ef7f5a6878150267a5232df56be2934fd47b
+    path: repos/protocol
+  client:
+    sha: 43d119e288a3626a5d46c4e6dd298a45a490704f
+    path: repos/client
+  platform:
+    sha: 21d1f85f07c25526f124c5d1845b3b17893af698
+    path: repos/platform
+  brand_site:
+    sha: aca1aa2cdb8f55047fb3cb42dc235b1b4b01a95b
+    path: repos/brand-site
+change_bundle: CHG-2026-229
+images:
+  rsp-platform: v0.4.16
+  rsp-relay: v0.4.16
+  rsp-gateway: v0.4.16
+packages:
+  "@delexec/contracts": 0.1.10
+  "@delexec/ops": 0.1.18
+notes: A caller gets its own relay inbox and a token scoped to it, replacing one
+  shared mailbox name and one token handed to every service; plus caller-side
+  cancel and a terminal execution projection that no longer un-cancels itself.
+manifest_sha256: 77ba0a3370fcf16378aaf0cdf292ca289d4f4048846651cd0d6f9ce27fd88dde
