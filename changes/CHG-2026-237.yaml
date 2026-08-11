@@ -1,0 +1,14 @@
+change_id: CHG-2026-237
+goal: queued is a state the platform can say (M3 unit 6, FR-025)
+protocol_sha: 36d85181e367fe18591d468aa49016e544808611
+client_sha: a67479dc3fe8914a2d01b003782d20382a12868b
+platform_sha: 496479b79087dd7fc45c2e4b03e073ef399fe515
+brand_site_sha: aca1aa2cdb8f55047fb3cb42dc235b1b4b01a95b
+owner: hejiajiudeeyu
+risk_level: medium
+affected_scope:
+  - client
+  - platform
+contracts_check: passed
+integration_check: passed
+notes: "The second half of M3 unit 6, and with it all six units are delivered. WHAT WAS WRONG: ACKED projected to 'executing', and ACK never meant that \u2014 it means the device acknowledged RECEIPT. Worker concurrency defaults to 1, so a second task acks and then sits in a local queue behind the first while every clock runs against it: the caller's hard timeout, the execution budget, the billing hold. The platform reported waiting as execution because it had no word for waiting. The states and their transition table have existed in the protocol since M1 and gained test coverage earlier in M3; nothing emitted or projected them. PLATFORM: QUEUED and EXECUTION_STARTED are accepted on the events route and projected onto the execution axis; ACKED now reads as `accepted`, and 'executing' requires the device to say so. They are LIFECYCLE, not observation, and that distinction is load-bearing \u2014 the protocol states that observational events must never feed the execution projection, so a device cannot claim it started by sending a PROGRESS beat labelled 'executing'. Asserted directly: a progress beat leaves the axis at `accepted`. CLIENT: the responder posts QUEUED when the task enters its local queue and EXECUTION_STARTED when a worker slot actually picks it up. Best-effort, like every other report about a task \u2014 a call must not fail because the platform did not hear where it was. A CHANGE IN WHAT HISTORY REPORTS, named rather than buried: a call that only ever acked now reads `accepted` instead of `executing`. That is the more truthful of the two, since an ack never established that work had begun, and nothing keys on the value \u2014 the attention feed and every billing path test for delivered, failed or timed_out. It changes what an operator is told, not what the platform does. Three progress-event tests moved with it; each was asserting that observations do not disturb the execution axis, and each now asserts it against a value that means something. TESTS: platform 59 unit + 246 integration (3 new); client 167 unit + 141 integration. Both harnesses green: agent-callability 27/27 and settlement-lifecycle 23/23. NOT RELEASED: production runs v0.4.17 and npm has @delexec/ops 0.1.20; this is the first unreleased work since that roll."
