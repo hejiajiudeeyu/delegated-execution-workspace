@@ -1,0 +1,14 @@
+change_id: CHG-2026-238
+goal: the execution budget survives from declaration to both deadlines (FR-025)
+protocol_sha: 36d85181e367fe18591d468aa49016e544808611
+client_sha: cc0725e0940e1283e2ef87ae4fb91ffa5b459538
+platform_sha: e6ff5023b18b4b84babf5fe98cf580dd645b4fee
+brand_site_sha: aca1aa2cdb8f55047fb3cb42dc235b1b4b01a95b
+owner: hejiajiudeeyu
+risk_level: medium
+affected_scope:
+  - client
+  - platform
+contracts_check: passed
+integration_check: passed
+notes: "Closes the three-clocks problem from both ends, and fixes a broken link found while doing it. THE BROKEN LINK: execution_budget_s went into the frozen contract (CHG-2026-233) and into the Call, and a publisher who declared it would still have watched it vanish \u2014 the submission normalizer carries service terms forward through a hardcoded list of four and the budget was not on it. Declared upstream, dropped downstream: the same shape as a document hotline's attachment declaration (CHG-2026-218), a caller's advertised inbox address (CHG-2026-230) and input artifacts on the agent surface, each of which reached production before anyone noticed. Two tests now pin the chain end to end rather than the field in isolation \u2014 a declared budget is readable on the public detail before a caller commits to anything and lands in the Call it will be judged by, and a resubmission silent about it keeps it, which is also what leaves the content digest alone. THE CALLER'S END: the caller sized its own hard timeout from constraints.max_hard_timeout_s, which is template metadata \u2014 outside the frozen contract, outside the digest, never read by the platform. The platform expires a held budget against execution_budget_s. Two parties disagreeing about when a call is over is the exact shape of the bug that killed the first real production parse: one side gives up while the other still considers the work live, or waits on a call the other already refunded. The caller now reads the same number, falling back to the template field only for a contract that predates it. A NOTE ON HOW THE SECOND TEST WAS WRITTEN: the first version changed display_name to force a resubmission and failed, which was the test being wrong rather than the code \u2014 changing a name is not a silent resubmission, and the hotline correctly re-entered review. TESTS: platform 59 unit + 248 integration (2 new); client 167 unit + 141 integration; agent-callability harness 27/27. NOT RELEASED: production runs v0.4.17 with @delexec/ops 0.1.20."
