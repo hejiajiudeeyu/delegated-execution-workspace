@@ -30,6 +30,8 @@
 
 > **2026-08-10(v0.4.13)**:同一个 ghcr `httpReadSeeker ... EOF` 又出现了一次,重跑 pull 即通,与下条记录一致——它是瞬时的,不是本次镜像的问题。滚版前的 `.env` 备份已按惯例留下。
 
+> **2026-08-13 边缘体积上限**:主机 nginx 此前**没有** `client_max_body_size`,取 nginx 默认 1 MB,于是 artifact 通道上任何超过 1 MB 的文档都被边缘 413 掉——而 platform-api 自己的 `ARTIFACT_MAX_BYTES` 是 64 MB。边缘拒绝返回的是 HTML,调用方解析不了,客户端最终报成一个无信息且**错标为可重试**的失败。现已在 `location ^~ /platform/` 加 `client_max_body_size 64m` 与平台对齐(备份 `callanything.xyz.bak.*`)。**判断依据**:让对 artifact 大小有意见的那一方(平台)表达意见,并用结构化错误表达。
+
 滚版方式不变(`.env` 的 `IMAGE_TAG` + 两个 -f 的 compose 调用);回滚 = 把 `IMAGE_TAG` 改回并重跑,`.env` 备份见部署目录 `.env.bak.*`(v0.4.10 滚版前的那份是 `.env.bak.20260809T105216`;v0.4.11 滚版前另有一份同日更晚的时间戳)。
 
 > **2026-08-09 实测的一个坑**:`docker compose pull` 可能以 `httpReadSeeker: failed open ... EOF` 从 ghcr 失败(平台仓 release-process 归类为 `image_pull_failed`,属网络/registry 瞬时故障)。此时**容器未被重建、生产未受影响**,重跑 pull 即可;但注意 `.env` 的 `IMAGE_TAG` 此时已改,若就此放手,下次重启会拉一个本机没有的镜像——要么把 pull+up 做完,要么把 `.env` 改回去。
