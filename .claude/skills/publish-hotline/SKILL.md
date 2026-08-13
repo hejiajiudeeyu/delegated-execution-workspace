@@ -135,12 +135,19 @@ web page. And a 404 from the right prefix usually means the wrong id: the
 published MinerU hotline is `local.mineru.pdf.parse.v1`, not
 `mineru.pdf.parse.v1`.
 
-`contract-check` answers a narrower question than its `in_sync` reads like. It
-diffs six fields — the two schemas, the two example sets, `not_recommended_for`,
-`limitations` — and nothing else. Service terms and attachment declarations are
-outside its comparison, so it will call a hotline in sync while the tier it
-publishes is not the tier the worker declared. Read the middle `curl` yourself
-and compare it to the worker's `--contract` output; that is the real check.
+`contract-check` is only as good as the version installed. Before 0.1.23 it
+compared six fields — the two schemas, the two example sets,
+`not_recommended_for`, `limitations` — leaving service terms and attachment
+declarations outside its comparison entirely, and it compared them by
+serialization, so the platform's own key order read as drift on every field
+while all of them were identical. Against the production device it called the
+MinerU hotline drifted on all six and told the operator to re-register a
+declaration that was already correct. From 0.1.23 it compares by value and
+includes the service terms and both attachment declarations, so `in_sync` means
+what it says. Check `delexec-ops --version` before trusting either answer.
+
+Service terms are compared only where the worker declared one: silence is a
+request for the platform's default, not a disagreement with it.
 
 Then make one real call and check the platform's own verdict — not the
 responder's claim about itself:
@@ -198,20 +205,23 @@ DELEXEC_HOME=~/.delexec-<device> delexec-ops add-hotline   --hotline-id my.thing
 refreshes it. Check `show-draft`, not the worker, when a gate error will not go
 away.
 
-**`service_tier` sets two clocks, not one — and today the CLI drops it.** The
-tier drives the acceptance window (quick 24h / standard 72h / deep 7d) *and* the
-execution budget (5m / 30m / 4h), and every clock in the system derives from
-that number, so a real ML load on a cold model needs `execution_budget_s`
-declared explicitly. The platform accepts all three service-term fields and
-freezes them into the version. `delexec-ops` does not send them: it reads them
-off the worker into the contract profile and then drops them before the draft,
-so a worker declaring `quick` publishes as `standard`, with a 1800 s budget and
-a 72 h window nobody chose. Editing the draft by hand does not help either,
-though `draft_meta.editable` lists the fields. Until the client is fixed, read
-the published `service_tier` and `execution_budget_s` back from
-`/v2/hotlines/:id` after every approval and treat a mismatch as unpublished.
-Out-of-bounds values, when they do reach the platform, are **refused, not
-clamped**: a budget quietly moved is a promise quietly changed.
+**`service_tier` sets two clocks, not one.** The tier drives the acceptance
+window (quick 24h / standard 72h / deep 7d) *and* the execution budget
+(5m / 30m / 4h), and every clock in the system derives from that number, so a
+real ML load on a cold model needs `execution_budget_s` declared explicitly.
+Out-of-bounds values are **refused, not clamped**: a budget quietly moved is a
+promise quietly changed.
+
+Anything before 0.1.23 does not send them. The CLI read all three off the worker
+into the contract profile and then dropped them before the draft, so a worker
+declaring `quick` published as `standard` — a 1800 s budget and a 72 h window
+nobody chose — and editing the draft by hand did not help either, though
+`draft_meta.editable` lists the fields. It is not hypothetical: the production
+`local.echo.priced.v1` is published that way now, on a hotline where the
+acceptance window is what governs when money settles. Repairing one is a
+re-registration and a fresh approval, because the corrected declaration moves
+the digest. Read the published `service_tier` and `execution_budget_s` back from
+the catalogue after every approval on any older client.
 
 **A priced hotline needs consent that names the listing.** The caller must send
 `billing.max_charge_cents`, and the consent must also name `pricing_hint_version`
