@@ -30,7 +30,10 @@ A process-adapter worker is a program that:
 const CONTRACT = {
   contract_version: 1,                    // ← the positive signal; see the trap below
   input_schema:  { type: "object", required: ["text"], additionalProperties: false,
-                   properties: { text: { type: "string", minLength: 1 } } },
+                   properties: { text: { type: "string", minLength: 1,
+                     // Every input field needs one. A field a caller cannot fill
+                     // in from the contract alone is a field nobody can call.
+                     description: "The passage to shorten. Paste the whole thing." } } },
   output_schema: { type: "object", required: ["summary"], additionalProperties: false,
                    properties: { summary: { type: "string" } } },
   input_examples:  [{ title: "A request",  input:  { text: "..." } }],
@@ -64,8 +67,17 @@ permanent failure learns nothing and pays twice in time.
 
 ## 2. What the publication gate will refuse
 
-Approval fails with `CONTRACT_HOTLINE_INCOMPLETE` and an itemised list unless
-the declaration has:
+There are two gates, and the first one is on your own machine.
+
+`submit-review` refuses locally with `HOTLINE_INPUT_GUIDANCE_REQUIRED`, naming
+the fields, unless **every property in `input_schema.properties` carries a
+caller-facing `description`**. Reusing the phrasing the old guessing template
+wrote — "source text", "optional task context", "instruction for the hotline" —
+is refused as well: those exact strings are on a denylist, because they are what
+the machine used to say when nobody had said anything.
+
+Then approval fails with `CONTRACT_HOTLINE_INCOMPLETE` and an itemised list
+unless the declaration has:
 
 - **both** `input_schema` and `output_schema`
 - **at least one worked example in each direction**, and each example must pass
@@ -84,9 +96,17 @@ DELEXEC_HOME=~/.delexec-<device> delexec-ops add-hotline \
 DELEXEC_HOME=~/.delexec-<device> delexec-ops submit-review --hotline-id my.thing.v1
 ```
 
-Then the operator approves it — in the console, or
-`POST /v2/admin/hotlines/:id/approve` with a reason. Approval is what freezes
-version 1 and its content digest.
+Then the operator approves **two** things — in the console, or with a reason via:
+
+```bash
+POST /v2/admin/hotlines/:hotline_id/approve
+POST /v2/admin/responders/:responder_id/approve     # a new device is pending too
+```
+
+Approving the hotline is what freezes version 1 and its content digest. But the
+catalogue publishes an entry only when its responder is routable as well, so a
+first device that approves only the hotline gets `catalog_visibility: "hidden"`
+and a `/v2/hotlines/:id` that 404s — approved, frozen, and invisible.
 
 ## 4. Verify it is actually callable
 
@@ -96,8 +116,8 @@ Publishing is not the same as being callable. Check all three:
 # the device's own view of what the platform is missing
 DELEXEC_HOME=~/.delexec-<device> delexec-ops responder contract-check
 
-# what the platform actually published
-curl -s https://<platform>/platform/v2/hotlines/my.thing.v1 | jq '{input_schema, not_recommended_for, execution_budget_s, pricing_hint}'
+# what the platform actually published (no /platform prefix, and no credential needed)
+curl -s https://<platform>/v2/hotlines/my.thing.v1 | jq '{input_schema, not_recommended_for, service_tier, execution_budget_s, pricing_hint}'
 
 # what an AGENT sees — the surface that matters
 curl -s http://127.0.0.1:8091/skills/caller/hotlines/my.thing.v1 | jq '{contract_source, local_only, pricing_hint}'
@@ -105,6 +125,13 @@ curl -s http://127.0.0.1:8091/skills/caller/hotlines/my.thing.v1 | jq '{contract
 
 `contract_source` must be `platform_catalog`. If it is a local draft, the agent
 is reading something the network never published.
+
+`contract-check` answers a narrower question than its `in_sync` reads like. It
+diffs six fields — the two schemas, the two example sets, `not_recommended_for`,
+`limitations` — and nothing else. Service terms and attachment declarations are
+outside its comparison, so it will call a hotline in sync while the tier it
+publishes is not the tier the worker declared. Read the middle `curl` yourself
+and compare it to the worker's `--contract` output; that is the real check.
 
 Then make one real call and check the platform's own verdict — not the
 responder's claim about itself:
@@ -116,6 +143,13 @@ GET /v1/admin/requests/:id → state.delivery_integrity.value == "verified"
 `verified` means the output was checked against the contract this call pinned
 and everything was checkable. `unchecked` means something could not be judged —
 read `reason`, it names what.
+
+Do not read `delexec-ops call-hotline`'s own exit as that verdict. While the
+device is running its caller controller polls the relay inbox every 250 ms, and
+the CLI's own pull then finds an empty inbox and blocks until it prints a bare
+`[delexec-ops] timeout` — on calls the platform recorded as `delivered` and
+`verified` a second after they were placed. The call worked; the command
+narrating it did not. Take the request id and ask the platform.
 
 ## The traps
 
@@ -138,11 +172,36 @@ tells a caller a file is required and how to send it. A hotline that needs a PDF
 and does not say so is uncallable by anyone who reads only the contract — which
 is every agent.
 
-**`service_tier` sets two clocks, not one.** It drives the acceptance window
-(quick 24h / standard 72h / deep 7d) *and* the execution budget (5m / 30m / 4h).
-Declare `execution_budget_s` explicitly if the work needs longer than its tier
-implies — a real ML load on a cold model can take minutes, and every clock in
-the system derives from this number. Out-of-bounds values are **refused, not
+**A registration draft outranks the worker that made it.** `add-hotline` writes
+`~/.delexec-<device>/hotline-registration-drafts/<id>.registration.json` from the
+worker's declaration once, and every later `add-hotline` for the same id reuses
+that file instead of re-reading the worker. So the ordinary repair loop — the
+gate names a missing field, you fix the worker, you re-register — fails with the
+identical error, and nothing says why. Delete the draft to make the worker
+authoritative again:
+
+```bash
+DELEXEC_HOME=~/.delexec-<device> delexec-ops remove-hotline --hotline-id my.thing.v1
+DELEXEC_HOME=~/.delexec-<device> delexec-ops add-hotline   --hotline-id my.thing.v1 ...
+```
+
+`remove-hotline` deletes the draft with the entry; `add-hotline` alone never
+refreshes it. Check `show-draft`, not the worker, when a gate error will not go
+away.
+
+**`service_tier` sets two clocks, not one — and today the CLI drops it.** The
+tier drives the acceptance window (quick 24h / standard 72h / deep 7d) *and* the
+execution budget (5m / 30m / 4h), and every clock in the system derives from
+that number, so a real ML load on a cold model needs `execution_budget_s`
+declared explicitly. The platform accepts all three service-term fields and
+freezes them into the version. `delexec-ops` does not send them: it reads them
+off the worker into the contract profile and then drops them before the draft,
+so a worker declaring `quick` publishes as `standard`, with a 1800 s budget and
+a 72 h window nobody chose. Editing the draft by hand does not help either,
+though `draft_meta.editable` lists the fields. Until the client is fixed, read
+the published `service_tier` and `execution_budget_s` back from
+`/v2/hotlines/:id` after every approval and treat a mismatch as unpublished.
+Out-of-bounds values, when they do reach the platform, are **refused, not
 clamped**: a budget quietly moved is a promise quietly changed.
 
 **A priced hotline needs consent that names the listing.** The caller must send
@@ -150,17 +209,32 @@ clamped**: a budget quietly moved is a promise quietly changed.
 and `trust_tier_seen` — agreeing to "20 PTS" without saying which listing said 20
 is not agreement to anything checkable. The platform refuses otherwise.
 
+None of that is exercised by the local stack. `BILLING_ENFORCEMENT` is unset in
+`repos/platform/deploy/platform/.env`, so a fixed-price hotline called locally
+settles as `none` with the reason "这次调用没有计费" and the caller is never
+charged. A green local run says the call works, not that the price does. Use
+`tools/paid-call-e2e.mjs`, which brings up its own Postgres with enforcement on.
+
 **Resubmission: the digest decides.** A resubmission whose declaration hashes to
 the published version keeps its approval. Anything that moves the digest —
 including a changed display name — re-enters review, correctly. Silence about a
 field carries it forward rather than clearing it.
 
 **Never run a test suite while a device is running.** The supervisor binds fixed
-ports (8079/8081/8091). On 2026-08-10 a test run reconfigured a production
-device through one: five fixture hotlines written in and the real hotline
-downgraded to `local_only`. The CLI now refuses on a `DELEXEC_HOME` mismatch,
-but that guard does not cover tests talking HTTP to 8091 directly. Stop the
-device first, every time.
+ports (8079/8081/8090/8091/8092). On 2026-08-10 a test run reconfigured a
+production device through one: five fixture hotlines written in and the real
+hotline downgraded to `local_only`. The CLI now refuses on a `DELEXEC_HOME`
+mismatch, but that guard does not cover tests talking HTTP to 8091 directly.
+Stop the device first, every time.
+
+Stopping it is manual. There is no `delexec-ops stop` — `start` has no opposite —
+and `pnpm run dev:local:down` does not do it either: `dev:local:up` lets
+`bootstrap` start the real device, then starts its own supervisor and relay on
+the same ports, where they die of `EADDRINUSE`, and it is *those* dead pids that
+`down` records and later kills. It removes the platform containers and leaves a
+fully live device orphaned on every port. Check with
+`lsof -nP -iTCP -sTCP:LISTEN | grep 807` and kill the supervisor pid yourself;
+its children go with it.
 
 ## Where the truth actually lives
 
@@ -169,5 +243,7 @@ This file goes stale; those do not.
 - publication gate and contract validation — `repos/protocol/packages/contracts/src/hotline-contract.js`
 - what a frozen version contains — `HOTLINE_VERSION_CONTRACT_FIELDS` in `repos/protocol/packages/contracts/src/call-state.js`
 - tier defaults and bounds — `repos/protocol/docs/current/spec/defaults-v0.1.md` §6.1–6.3
+- the client-side gate and what actually reaches the platform — `validateHotlineRegistrationDraft`, `buildHotlineRegistrationDraft` and `buildHotlineOnboardingBody` in `repos/client/apps/ops/src/config.js`
+- the service-term fields the platform will store — `SERVICE_TERM_FIELDS` in `repos/platform/apps/platform-api/src/server.js`
 - a real worker, end to end — `repos/client/apps/ops/src/mineru-hotline-worker.js`
 - the whole path exercised — `tools/agent-callability-e2e.mjs`
