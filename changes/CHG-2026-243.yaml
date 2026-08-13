@@ -1,0 +1,13 @@
+change_id: CHG-2026-243
+goal: E3 and E4 were wrong about what exists; E4 now has production evidence
+protocol_sha: 36d85181e367fe18591d468aa49016e544808611
+client_sha: 25a4db25f8b7bed4b12bd4515dded7947ba33acb
+platform_sha: 2f07ae2396fddc7aad3b81c3e0464d7073101026
+brand_site_sha: aca1aa2cdb8f55047fb3cb42dc235b1b4b01a95b
+owner: hejiajiudeeyu
+risk_level: low
+affected_scope:
+  - production
+contracts_check: passed
+integration_check: passed
+notes: "Two exit rows were wrong about what exists, and one of them was cheap to finish. E3 said 'only the old hold-to-settle-to-refund path has evidence'. It had been out of date since the settlement-lifecycle harness landed: six flows driven end to end by a separate process against a real platform with real Postgres and billing enforced, 23/23, including the clause the exit criterion names separately \u2014 zero duplicate money events asserted by counting ledger rows per request and then actively REPLAYING the paths most likely to move money twice. Plus production: a real priced call went 980 -> 930 (the authorized ceiling held) -> 960 after acceptance, exactly the price and exactly once. Marked done. E4 said 'the content access authorization mechanism does not exist'. It shipped in v0.4.17. What it lacked was production evidence, which is now taken: reading a committed artifact from a real call was refused 403 without a reason (and the refusal named both the header and the acceptable reasons), served 200 with `delivery_verification`, and left exactly one content.accessed record carrying the byte count, the reason and the actor, with dropped_count 0. Marked done. WHAT REMAINS IS NOT ENGINEERING. E2 (three real workflows running continuously through one network) and E5 (three real technical-route decisions, two follow-on actions, one repeat use) are satisfied by the owner USING the network, not by anything that can be built for them. The PRD says so directly: the stage is complete only when the system is the preferred path for sustained real work, not when a checklist is ticked or a demo runs once. MinerU is the one of the three workflows an agent can drive; private-evidence retrieval and technical-route decisions require the owner's own questions. Manufacturing three decisions to fill the row is precisely the one-time demo the PRD excludes."
