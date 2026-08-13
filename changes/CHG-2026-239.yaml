@@ -1,0 +1,16 @@
+change_id: CHG-2026-239
+goal: certify platform v0.4.18 in production — the last of M3 goes live
+protocol_sha: 36d85181e367fe18591d468aa49016e544808611
+client_sha: bfaffa7c958ff72c07229285ae95085d1bca11ed
+platform_sha: 2f07ae2396fddc7aad3b81c3e0464d7073101026
+brand_site_sha: aca1aa2cdb8f55047fb3cb42dc235b1b4b01a95b
+owner: hejiajiudeeyu
+risk_level: medium
+affected_scope:
+  - client
+  - platform
+  - release
+  - production
+contracts_check: passed
+integration_check: passed
+notes: "Rolls the last of M3's six units to production. With this, everything M3 built is live. QUEUED AND EXECUTION_STARTED are real lifecycle events. ACKED projected to `executing` and never meant that \u2014 an ack means the device acknowledged RECEIPT, and with worker concurrency defaulting to 1 a second task acks and then waits behind the first while the caller's timeout, the execution budget and the billing hold all run against it. The platform reported waiting as execution because it had no word for waiting. `ACKED` now reads as `accepted` and `executing` requires the device to claim it \u2014 and it cannot claim it with a PROGRESS beat, because the protocol forbids observations from feeding the execution projection. A CHANGE IN WHAT HISTORY REPORTS, named rather than buried: a call that only ever acked now reads `accepted` instead of `executing`. That is the more truthful of the two, since an ack never established that work had begun, and nothing keys on the value \u2014 the attention feed and every billing path test for delivered, failed or timed_out. It changes what an operator is told, not what the platform does. ALSO LIVE: a declared execution_budget_s now survives submission. It had reached the frozen contract and the Call, but the submission normalizer carried service terms forward through a hardcoded list that did not include it, so a publisher who declared it would have watched it vanish \u2014 the third time 'declared upstream, dropped downstream' has reached production in this project, after a document hotline's attachment declaration and a caller's advertised inbox address. The tests pin the chain now rather than the field. And the caller sizes its own hard timeout by the same number the platform judges the call by, instead of by template metadata the platform never reads: two parties disagreeing about when a call is over is the exact shape of the bug that killed the first real production parse. VERIFIED IN PRODUCTION: release-manifest check reports runtime matches release v0.4.18. Manifest frozen (sha256 87bc83a1bc49) and promoted. Images run green; @delexec/ops 0.1.21 published (run 31676037638). WHAT STILL HAS NO PRODUCTION EVIDENCE: the money half of the acceptance gate. local.mineru.pdf.parse.v1 declares no pricing_hint, so its calls are honestly reported as unbilled and hold-to-accept-to-settle is proven only by tools/settlement-lifecycle-e2e.mjs (23/23, real Postgres, billing enforced, with a replay phase asserting no call holds, debits or refunds twice). Proving it in production needs a priced hotline, which is an owner action. E1 also still needs 6 more real calls."

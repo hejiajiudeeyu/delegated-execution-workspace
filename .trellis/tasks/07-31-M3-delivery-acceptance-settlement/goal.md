@@ -97,7 +97,7 @@
 
 accept、revision、auto-accept、dispute、settle、refund **全部有端到端证据**，且**零重复资金事件**、**零无理由内容访问**（PRD Wave 3 exit）。
 
-**2026-08-11 状态**：六条流程与两条性质**机制上全部成立**——`tools/settlement-lifecycle-e2e.mjs` 23/23（真 Postgres、计费 enforced、含主动重放阶段），内容访问有闸有专项审计。**唯一缺口是「钱那一半的生产证据」**：网络上唯一的真热线不计费，所以 hold→accept→settle 在生产上从未真的动过钱。这需要一条计费的真实热线，属 owner 动作。
+**2026-08-12 状态**：**六个单元建成的东西全部在生产上运行**（v0.4.18 + contracts 0.1.11 + ops 0.1.21，`runtime matches release v0.4.18`）。六条流程与两条性质**机制上全部成立**——`tools/settlement-lifecycle-e2e.mjs` 23/23（真 Postgres、计费 enforced、含主动重放阶段），内容访问有闸有专项审计。**唯一缺口是「钱那一半的生产证据」**：网络上唯一的真热线不计费，所以 hold→accept→settle 在生产上从未真的动过钱。这需要一条计费的真实热线，属 owner 动作。
 
 ## 台账
 
