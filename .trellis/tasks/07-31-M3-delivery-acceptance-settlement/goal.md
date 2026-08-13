@@ -55,7 +55,8 @@
 
 - ~~**FR-062/063 内容访问授权与审计**~~ ✅ **完成 2026-08-11**（CHG-2026-235 + 236，生产 v0.4.17）
 - ~~**退出证据 harness**~~ ✅ `tools/settlement-lifecycle-e2e.mjs`（23/23，真 Postgres + 计费 enforced，含重放阶段断言无调用会 hold/debit/refund 两次）
-- **仍缺**：钱那一半的**生产**证据——`local.mineru.pdf.parse.v1` 未声明 `pricing_hint`，是免费热线；需要一条计费的真实热线（owner 动作）。E1 还差 6 次真实调用。
+- ~~**钱那一半的生产证据**~~ ✅ **完成 2026-08-13**：部署计费热线 `local.echo.priced.v1`（20 PTS，owner 授权），生产上跑通「拒绝携价 → 显式同意 → 交付后仍 held → 接受 → 恰好扣 20」，账本 `hold -50 / refund +30 / debit 0`。**M3 退出条件至此全部有证据。**
+- ~~旧记录~~：钱那一半的**生产**证据——`local.mineru.pdf.parse.v1` 未声明 `pricing_hint`，是免费热线；需要一条计费的真实热线（owner 动作）。E1 还差 6 次真实调用。
 
 ### 原始范围描述（存档）
    FAILED 照旧立即退款；COMPLETED 只开验收窗；能结算的只有显式 accept 与到期自动接受。时钟起点 = verified delivery。窗口长度只读 Call 的 terms 快照。自动接受沿用懒评估（本服务无调度器）。caller-skill-adapter 增 `accept_delivery`——只有拿运营者 shell 才能做的接受不算调用方拥有接受权。

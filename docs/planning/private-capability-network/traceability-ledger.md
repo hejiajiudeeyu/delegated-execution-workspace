@@ -113,6 +113,10 @@ Created: 2026-07-31（Wave 0 产出）· 单一事实源 = `.trellis/tasks/07-17
 > **这次证不到的两件事，如实记录**：①`delivery_integrity` 的值没有直接读到（本机没有生产 admin 凭据）——但 `openAcceptanceWindow` 结构上要求 `request.delivery_integrity` 已存在才会开窗，窗开了即说明判定跑过；②**钱的那一半没有生产证据**：`local.mineru.pdf.parse.v1` 未声明 `pricing_hint`，是免费热线，settlement 轴如实报「这次调用没有计费」。hold→accept→settle 的资金闭环目前只有 `tools/agent-callability-e2e.mjs` 的实证（Docker Postgres、计费 enforced）。要在生产上证它，需要一条计费的真实热线。
 > **让这次成为可能的裁定（owner，2026-08-10）**：平台上已发布的热线，在本设备恰好也服务它时**仍应经平台调用**。在此之前设备解析出自己的副本并走本地派发——不签 token、不取投递元数据、不传输入 artifact、**完全不碰平台**，因而没有交付判定、没有验收窗、没有结算。M3 单元 1–4 在一台自己服务该热线的机器上原本永远测不出来。
 
+**M3 钱那一半的生产实证（2026-08-13，`req_cd22fb3b-bec8-4600-9722-4f89f771ee75`，生产 v0.4.18 + ops 源码，owner 授权部署计费热线）**：此前 hold→accept→settle 只有本地 harness 的实证，因为网络上唯一的真热线不计费。现部署 `local.echo.priced.v1`（20 PTS/次、确定性回声 worker——**它的目的是钱的证据而不是活的证据**），生产计费为 `enforced`。全程只经 agent 的 skill 表面、只持 caller 凭据：
+> **未同意付费即被拒且拒绝携价**（`BILLING_CONSENT_REQUIRED`，附 `pricing_hint`——agent 不必猜要同意多少）→ 显式 `max_charge_cents: 50` 同意 → 派发 → 交付。**交付之后**：`delivery_integrity: verified`（FR-040 第一次在生产上被直接读到）、`acceptance: pending`（窗口 72h，standard 档默认）、`settlement: **held**`，余额 1000 → 950——**冻结的是授权上限 50，不是成交价 20；责任方上报 COMPLETED 释放了零**。→ 经 `POST /skills/caller/requests/:id/accept` 由调用方接受 → 余额 980。账本三行：`hold -50` / `refund +30`（退回授权上限中未用掉的部分）/ `debit 0`（记账标记）。**恰好一次、恰好成交价。**
+> **这次部署当场挖出三处「声明了却到不了平台」**（CHG-2026-240）：①②付费同意需要的 `submission_version` 与 `trust_tier` 被 adapter 自己的投影丢掉，且 `resolveCatalogTarget` 先问本地 supervisor（本地副本没有平台侧事实）——**经 agent 表面的付费调用对真实平台热线一次都成功不了**；③worker 声明的 `service_tier: quick` 在两处显式字段清单里被丢，发布出来是 `standard`——档位决定验收窗与执行预算，发布者的声明悄悄变成了别人的默认值。这是同一形状的第四、五次（前有文档热线的附件声明、调用方对外声明的信箱地址）。
+
 ## M4 第一方 Research Hotline
 
 | 需求 | Owner | 状态 | 备注 |
