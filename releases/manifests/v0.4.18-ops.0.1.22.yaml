@@ -1,0 +1,27 @@
+release_id: v0.4.18-ops.0.1.22
+created_at: 2026-08-13T07:55:12.625Z
+components:
+  protocol:
+    sha: 36d85181e367fe18591d468aa49016e544808611
+    path: repos/protocol
+  client:
+    sha: 25a4db25f8b7bed4b12bd4515dded7947ba33acb
+    path: repos/client
+  platform:
+    sha: 2f07ae2396fddc7aad3b81c3e0464d7073101026
+    path: repos/platform
+  brand_site:
+    sha: aca1aa2cdb8f55047fb3cb42dc235b1b4b01a95b
+    path: repos/brand-site
+change_bundle: CHG-2026-241
+images:
+  rsp-platform: v0.4.18
+  rsp-relay: v0.4.18
+  rsp-gateway: v0.4.18
+packages:
+  "@delexec/contracts": 0.1.11
+  "@delexec/ops": 0.1.22
+notes: "Client-only: the fields a price consent has to name, and the worker's
+  declared service terms, now reach the platform. Verified on the published
+  bytes with a real priced call. Platform images unchanged from v0.4.18."
+manifest_sha256: 6fdd3071599f37985f7c4a08ed94f645fd0a1b278859fd5d632a616939651b25

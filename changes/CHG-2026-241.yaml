@@ -1,0 +1,15 @@
+change_id: CHG-2026-241
+goal: publish ops 0.1.22 and re-prove the money path on the published bytes
+protocol_sha: 36d85181e367fe18591d468aa49016e544808611
+client_sha: 25a4db25f8b7bed4b12bd4515dded7947ba33acb
+platform_sha: 2f07ae2396fddc7aad3b81c3e0464d7073101026
+brand_site_sha: aca1aa2cdb8f55047fb3cb42dc235b1b4b01a95b
+owner: hejiajiudeeyu
+risk_level: low
+affected_scope:
+  - client
+  - release
+  - production
+contracts_check: passed
+integration_check: passed
+notes: "Publishes the three fixes CHG-2026-240 found, and re-proves the money path on the published bytes rather than on repository source. WHY A RELEASE OF ITS OWN: the acceptance gate's production evidence was produced by running the device from source. That proves the code is right; it does not prove anything a device can install. Anyone running `npm i -g @delexec/ops` was still getting 0.1.21, in which every paid call through the agent surface is refused against a real deployment. Publishing is what makes the proof transferable \u2014 the same reason CHG-2026-219 was cut on its own. VERIFIED ON THE PUBLISHED BYTES: @delexec/ops 0.1.22 installed globally, device restarted, and a second real priced call driven entirely through the agent surface (req_1fa34b7e-016f-4567-a971-8510b6fe8fc3). Balance 980 -> 930 on delivery \u2014 the authorized ceiling of 50 held, not the 20 the work cost \u2014 then 960 after the caller accepted through its own surface. Exactly the price, exactly once, identical to the run from source. Platform images unchanged from v0.4.18, so the combination is v0.4.18-ops.0.1.22 rather than a new platform version: a client-only combination still has to be a named, frozen combination or release-manifest check has nothing to compare production against. Production reports runtime matches it. THE PRICED FIXTURE STAYS UP: local.echo.priced.v1 (20 PTS, deterministic echo) remains published in production as the standing way to exercise the money path without a four-minute model load. It can be withdrawn with POST /v2/admin/hotlines/:id/retire, which frees the id without deleting the record and leaves calls already bound to it judged against the contract they agreed to."
