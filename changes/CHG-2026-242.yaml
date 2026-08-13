@@ -1,0 +1,13 @@
+change_id: CHG-2026-242
+goal: E1 reaches 10/10, and the edge stops capping every document at 1 MB
+protocol_sha: 36d85181e367fe18591d468aa49016e544808611
+client_sha: 25a4db25f8b7bed4b12bd4515dded7947ba33acb
+platform_sha: 2f07ae2396fddc7aad3b81c3e0464d7073101026
+brand_site_sha: aca1aa2cdb8f55047fb3cb42dc235b1b4b01a95b
+owner: hejiajiudeeyu
+risk_level: low
+affected_scope:
+  - production
+contracts_check: passed
+integration_check: passed
+notes: "E1 reaches 10/10, and the last batch is the part worth reading. SIX CALLS ON FOUR DIFFERENT DOCUMENTS (337KB to 1.8MB), 6/6 SUCCEEDED unattended \u2014 and every one of them read `delivered / verified / pending` on production's own four axes before the caller accepted through the agent surface. That makes this batch the first evidence of M3 unit 1 (delivery grading) and unit 2 (the acceptance gate) under a REAL ML workload rather than a fixture: a four-minute parse, a 22-artifact result, a signed package graded against the contract the Call pinned. Run 6 and run 10 are the same document and produced byte-identical output, which incidentally pins execution determinism. THE LIMIT THAT ONLY A REAL DOCUMENT COULD FIND: the host nginx never set client_max_body_size, so it took nginx's 1 MB default while platform-api allows 64 MB. Every document over a megabyte was refused before the platform saw it \u2014 on a network whose one real hotline parses documents. Nobody had hit it because the only PDF that had ever succeeded was 337 KB. The refusal was worse than the limit: nginx answers 413 with HTML the caller cannot parse, so the client surfaced `caller_input_artifact_upload_failed` with retryable:true \u2014 uninformative, and wrongly promising that a retry might work. The edge now matches the platform at 64m, so the party with an opinion about artifact size is the one that expresses it, in an error the caller can read. Verified by uploading the 1,808,096-byte PDF end to end. WHAT E1 NOW MEANS: unattended completion 10/10 = 100% against the >=90% bar, checksum verified per artifact through the channel with no failures, and the three hard blockers found along the way (three uncoordinated 300s clocks, a receiver-scoped relay token shared by every service, and a device short-circuiting past the platform for a hotline it also served) are all fixed and released rather than worked around. The ledger's E1 row was rewritten rather than appended to: it had accumulated into a wall that still opened with '4 real cross-device tasks' while claiming done, and carried resolved blockers in the present tense. A truth-source that is wrong about what exists is worse than one that is merely incomplete."
