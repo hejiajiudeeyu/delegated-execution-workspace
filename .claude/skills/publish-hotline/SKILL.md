@@ -116,8 +116,8 @@ Publishing is not the same as being callable. Check all three:
 # the device's own view of what the platform is missing
 DELEXEC_HOME=~/.delexec-<device> delexec-ops responder contract-check
 
-# what the platform actually published (no /platform prefix, and no credential needed)
-curl -s https://<platform>/v2/hotlines/my.thing.v1 | jq '{input_schema, not_recommended_for, service_tier, execution_budget_s, pricing_hint}'
+# what the platform actually published (no credential needed)
+curl -s <platform-api>/v2/hotlines/my.thing.v1 | jq '{input_schema, not_recommended_for, service_tier, execution_budget_s, pricing_hint}'
 
 # what an AGENT sees — the surface that matters
 curl -s http://127.0.0.1:8091/skills/caller/hotlines/my.thing.v1 | jq '{contract_source, local_only, pricing_hint}'
@@ -125,6 +125,15 @@ curl -s http://127.0.0.1:8091/skills/caller/hotlines/my.thing.v1 | jq '{contract
 
 `contract_source` must be `platform_catalog`. If it is a local draft, the agent
 is reading something the network never published.
+
+`<platform-api>` is whatever the device has in `platform.base_url`, prefix
+included — `https://callanything.xyz/platform` in production, and the bare
+`http://127.0.0.1:8080` on a local stack, where platform-api is exposed
+directly. Get it wrong on production and the edge answers 200 with the brand
+site's HTML, so a check that only reads the status code passes while reading a
+web page. And a 404 from the right prefix usually means the wrong id: the
+published MinerU hotline is `local.mineru.pdf.parse.v1`, not
+`mineru.pdf.parse.v1`.
 
 `contract-check` answers a narrower question than its `in_sync` reads like. It
 diffs six fields — the two schemas, the two example sets, `not_recommended_for`,
