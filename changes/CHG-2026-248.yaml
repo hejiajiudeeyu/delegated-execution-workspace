@@ -1,0 +1,13 @@
+change_id: CHG-2026-248
+goal: the architecture truth source predated the architecture, and its English version was in Chinese
+protocol_sha: fba16a511e055762e894406b5b25614ddcb11b37
+client_sha: 875ec303c1addac1eb2830fb098da60783767edc
+platform_sha: 2f07ae2396fddc7aad3b81c3e0464d7073101026
+brand_site_sha: aca1aa2cdb8f55047fb3cb42dc235b1b4b01a95b
+owner: hejiajiudeeyu
+risk_level: low
+affected_scope:
+  - protocol
+notes: "The protocol's CODE is not stale — packages/contracts last changed 2026-08-10 and its recent commits are exactly the current feature set. Its architecture SPEC is another matter. docs/current/spec/architecture.md had not been touched since 2026-04-01, days after the initial split from the monorepo, and across 739 lines it mentioned service_tier, execution_budget_s, acceptance_window_s, delivery_integrity, settlement, trust_tier and pricing_hint exactly zero times each — every one of them now load-bearing. It also predated the 2026-07-31 turn to a single-operator selfhost network, listed paths as truth sources that do not exist in this repository, and pointed at integration-playbook.md as a sibling long after it moved to guides/. THE BILINGUAL PAIR WAS BROKEN TOO: architecture.md is the English file by its own cross-link and was written in Chinese, and the two files had drifted 887 lines apart, so there was no English version at all. Rewritten, with the Chinese as the single source and the English as a real rendering of it. Deliberately shorter: the old file carried full contract and result-package field tables, which is why it rotted — it duplicated the details that move. The new one states invariants and points at the runtime for the rest, including a section on its own maintenance saying so. One invariant is new and is the lesson of the last four bugs: a declaration has to reach the catalogue, worker -> draft -> submission -> frozen version -> catalogue, where a field dropped at any hop raises no error; it points at tools/contract-conformance.mjs (CHG-2026-247) as the assertion. ON WHETHER THE ARCHITECTURE ITSELF IS SOUND, which is what prompted this: the evidence says yes. Every bug found this week had the same shape — everyone agreed what should be true and the code failed to carry it. A wrong model produces disagreement about what should be true; this produced agreement plus dropped fields. No structural change is proposed. Also removes docs/templates/hotlines/local.summary.v1/, an empty directory left by the rename in CHG-2026-004."
+contracts_check: passed
+integration_check: passed
