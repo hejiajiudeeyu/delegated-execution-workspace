@@ -17,7 +17,7 @@ Created: 2026-07-31（Wave 0 产出）· 单一事实源 = `.trellis/tasks/07-17
 |---|---|---|---|---|
 | FR-080 | 统一 release manifest | workspace | **done** | `releases/manifests/2026-07-31-selfhost-baseline.yaml` + `tools/release-manifest.mjs`（ADR-002） |
 | FR-081 | 组合认证：只有过 gate 的组合可标 current | workspace | **done** | `releases/current.yaml` 指针 + `test:release-gate` 链含 `release:manifest:verify` |
-| FR-082 | 生产版本探测 | platform | **done** | 生产已滚 v0.3.0，`/platform/buildz` 与 `/gateway/buildz` 实测上报 `release_id=v0.3.0`、`git_sha=9b8abda`、console 资产指纹 `index-DoU8e5Gd.js`；`release-manifest check` 对生产报 **runtime matches release v0.3.0** |
+| FR-082 | 生产版本探测 | platform | **done** | 2026-08-16 实测：`/platform/buildz`、`/relay/buildz`、`/gateway/buildz` 三个组件均上报 `release_id=v0.4.18`、`git_sha=2f07ae2396fd`，console 资产指纹 `index-DzxyXhuC.js`；`release-manifest check https://callanything.xyz` 报 **runtime matches release v0.4.18-ops.0.1.23**（首次取证于 v0.3.0，能力本身自那时起未变，此处为刷新而非重新认定） |
 | FR-083 | 状态漂移阻断 | workspace | **done** | `release-manifest check` 阻断漂移；"服务无法自陈"报 undetermined 而非通过（`tools/release-manifest.test.mjs` 16 例） |
 | FR-084 | 回滚记录 | workspace | **partial** | manifest 不可变 ⇒ 回滚必产生新 release_id；专门的回滚记录字段待 M5 |
 
