@@ -94,6 +94,37 @@ function tryFetchSha(repoPath, sha, retries = 3) {
   return last;
 }
 
+/**
+ * Whether a SHA can be PROVEN not to exist — anywhere, local or origin.
+ *
+ * The distinction this draws is the whole point of it. A commit that exists
+ * locally and not on origin is real work somebody forgot to push, and a bundle
+ * recording it must stay as it is until they do. A SHA that exists nowhere was
+ * never a commit at all — on 2026-08-13 one was written into a bundle by
+ * expanding a short hash by hand, which produced a plausible 40 characters
+ * naming nothing. Only the second kind may be corrected in a frozen bundle.
+ *
+ * Absence is only ever claimed from evidence: with the reachability bypass on,
+ * or with origin unreachable, nothing is provable and this answers no.
+ */
+export function shaIsProvablyAbsent(repoPath, sha) {
+  if (shouldSkip()) {
+    return { absent: false, reason: "origin reachability is skipped, so absence cannot be proven" };
+  }
+  if (shaExistsLocally(repoPath, sha)) {
+    return { absent: false, reason: "the SHA is a commit in the local clone" };
+  }
+  const refreshed = fetchRemoteRefs(repoPath);
+  if (!refreshed.ok) {
+    return { absent: false, reason: `origin is unreachable (${refreshed.stderr || "fetch failed"}), so absence cannot be proven` };
+  }
+  const fetched = tryFetchSha(repoPath, sha, 1);
+  if (fetched.ok) {
+    return { absent: false, reason: "origin served this object when asked for it directly" };
+  }
+  return { absent: true, reason: fetched?.stderr || "origin has no such object" };
+}
+
 export function isOriginReachable(repoPath, sha) {
   if (shouldSkip()) {
     return { ok: true, skipped: true };

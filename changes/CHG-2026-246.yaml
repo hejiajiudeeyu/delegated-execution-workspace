@@ -1,0 +1,13 @@
+change_id: CHG-2026-246
+goal: CHG-2026-244 recorded a SHA that never existed, and the ledger's own remedy could not clear it
+protocol_sha: 36d85181e367fe18591d468aa49016e544808611
+client_sha: 94e75579fa332d56eb039fadc1211ab27cb205c3
+platform_sha: 2f07ae2396fddc7aad3b81c3e0464d7073101026
+brand_site_sha: aca1aa2cdb8f55047fb3cb42dc235b1b4b01a95b
+owner: hejiajiudeeyu
+risk_level: low
+affected_scope:
+  - workspace
+notes: "CHG-2026-244 was written with client_sha 8c893de0a0bfec70bd0e35e34fa41ee5b5f0a7fe, which names no commit anywhere. It was produced by expanding the short hash 8c893de by hand instead of resolving it; the real commit is 8c893de3c5d38fdfa2cb190551ca080258a9ff60. HOW IT GOT PAST THE GATE: every validation run behind that bundle used SKIP_ORIGIN_REACHABILITY=1, because nothing had been pushed yet, and origin reachability is the only check that would have noticed the SHA naming nothing. The bundle was then recorded contracts_check=passed / integration_check=passed on the strength of a run in which the deciding check did not execute. THE LEDGER COULD NOT FIX ITSELF. A bundle that is passed/passed in HEAD is frozen and the documented remedy is to open a new CHG rather than edit it — but reachability is checked over every bundle in changes/, frozen ones included, so the phantom SHA would have failed check:bundles forever no matter how many new bundles were opened. The two rules had no intersection for this case. WHAT CHANGED: a frozen SHA may now be rewritten in exactly one situation — its recorded value can be PROVEN to name no commit, locally or on origin, and the replacement is that same short hash expanded properly (they must agree on at least 7 characters). Freezing exists to stop a certified combination being quietly re-pointed at different work, and both halves of that are preserved: a SHA that exists still cannot be rewritten, and a phantom cannot be used as a doorway to some other commit. Absence is only ever claimed from evidence — with the bypass on, or origin unreachable, the correction is refused rather than taken on trust. Separately, a bundle that is new or modified may no longer be recorded passed/passed by a run that skipped reachability; it must be re-run clean or left pending. That is the guard the original mistake needed. tools/validate-change-bundle.test.mjs covers all five behaviours and is wired into test:bundles and test:deployability-operations. CHG-2026-244's client_sha is corrected to the real commit under the new rule; its notes and its claims are unchanged and were never wrong."
+contracts_check: passed
+integration_check: passed

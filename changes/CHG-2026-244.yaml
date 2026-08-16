@@ -1,7 +1,7 @@
 change_id: CHG-2026-244
 goal: a from-zero hotline publication walked into three client bugs; the skill and the CLI both now tell the truth
 protocol_sha: 36d85181e367fe18591d468aa49016e544808611
-client_sha: 8c893de0a0bfec70bd0e35e34fa41ee5b5f0a7fe
+client_sha: 8c893de3c5d38fdfa2cb190551ca080258a9ff60
 platform_sha: 2f07ae2396fddc7aad3b81c3e0464d7073101026
 brand_site_sha: aca1aa2cdb8f55047fb3cb42dc235b1b4b01a95b
 owner: hejiajiudeeyu

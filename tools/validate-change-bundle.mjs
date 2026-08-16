@@ -2,7 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { execFileSync, spawnSync } from "node:child_process";
 import YAML from "yaml";
-import { assertOriginReachable } from "./lib/origin-reachable.mjs";
+import { assertOriginReachable, shaIsProvablyAbsent } from "./lib/origin-reachable.mjs";
 
 const FROZEN_FIELDS = ["change_id", "protocol_sha", "client_sha", "platform_sha"];
 const SKIPPED = process.env.SKIP_ORIGIN_REACHABILITY === "1" || process.env.OFFLINE === "1";
@@ -13,6 +13,18 @@ function readHeadVersion(relPath) {
     return null;
   }
   return result.stdout;
+}
+
+// Git's own default abbreviation, and the length of every short hash a person
+// copies out of `git log --oneline`.
+const SHORT_HASH_LENGTH = 7;
+
+function commonPrefixLength(left, right) {
+  let index = 0;
+  while (index < left.length && index < right.length && left[index] === right[index]) {
+    index += 1;
+  }
+  return index;
 }
 
 function isFrozen(body) {
@@ -67,6 +79,17 @@ if (files.length === 0) {
 // Additionally, any bundle that was already passed/passed in HEAD is frozen:
 // its change_id and SHA fields may not be rewritten in the working tree.
 // The fix for a mistake in a frozen bundle is to open a new CHG, not edit it.
+//
+// With one exception, which exists because the two rules above collided: a
+// frozen bundle recording a SHA that exists NOWHERE — not locally, not on
+// origin — can never satisfy the reachability rule below, and opening a new
+// CHG does not clear it, because reachability is checked over every bundle in
+// the directory. Freezing protects a certified combination from being quietly
+// re-pointed at different work; a SHA that was never a commit is not a
+// certified fact, it is a typo. So a frozen SHA may be corrected exactly when
+// its recorded value can be PROVEN absent, which needs origin reachable and
+// the bypass off. Record the correction in a new CHG anyway: the edit fixes
+// the ledger, the new bundle says why it was wrong.
 
 for (const file of files) {
   if (file.toLowerCase().includes("template")) {
@@ -87,6 +110,13 @@ for (const file of files) {
 
   const relPath = path.posix.join("changes", file);
   const headText = readHeadVersion(relPath);
+  if (!headText && SKIPPED && isFrozen(body)) {
+    console.error(
+      `[validate-change-bundle] ${file} is new and recorded as passed/passed, but origin reachability was skipped in this run. Re-run without SKIP_ORIGIN_REACHABILITY/OFFLINE before recording it, or leave the checks pending.`
+    );
+    process.exit(1);
+  }
+
   if (headText) {
     let headBody;
     try {
@@ -96,13 +126,47 @@ for (const file of files) {
     }
     if (headBody && isFrozen(headBody)) {
       for (const frozenField of FROZEN_FIELDS) {
-        if (headBody[frozenField] !== body[frozenField]) {
+        if (headBody[frozenField] === body[frozenField]) {
+          continue;
+        }
+        const submodulePath = submoduleMap[frozenField];
+        const phantom = submodulePath
+          ? shaIsProvablyAbsent(path.join(ROOT, submodulePath), headBody[frozenField])
+          : { absent: false, reason: "change_id is not a SHA" };
+        if (!phantom.absent) {
           console.error(
-            `[validate-change-bundle] ${file} is frozen (contracts_check=passed, integration_check=passed in HEAD); ${frozenField} must not be rewritten from ${headBody[frozenField]} to ${body[frozenField]}. Open a new CHG instead.`
+            `[validate-change-bundle] ${file} is frozen (contracts_check=passed, integration_check=passed in HEAD); ${frozenField} must not be rewritten from ${headBody[frozenField]} to ${body[frozenField]}. Open a new CHG instead. (${phantom.reason})`
           );
           process.exit(1);
         }
+        // Proving the old value absent licenses a correction, not a free hand.
+        // Without this the exception would be a way to re-point a certified
+        // combination at different work by first writing a SHA that names
+        // nothing. The correction has to be the same short hash, expanded
+        // properly — which is the mistake this exception exists for. Anything
+        // else is a different claim and belongs in a new CHG.
+        const sharedPrefix = commonPrefixLength(String(headBody[frozenField]), String(body[frozenField]));
+        if (sharedPrefix < SHORT_HASH_LENGTH) {
+          console.error(
+            `[validate-change-bundle] ${file} ${frozenField} names no commit anywhere, but ${body[frozenField]} is not it expanded correctly — they agree on ${sharedPrefix} characters, fewer than the ${SHORT_HASH_LENGTH} of a short hash. Correcting a mistyped SHA is allowed; re-pointing a frozen bundle at other work is not. Open a new CHG.`
+          );
+          process.exit(1);
+        }
+        console.warn(
+          `[validate-change-bundle] ${file} ${frozenField} corrected from ${headBody[frozenField]}, which names no commit anywhere (${phantom.reason}), to ${body[frozenField]}`
+        );
       }
+    }
+
+    // A bundle claims passed/passed on the strength of a validation run. This
+    // one was skipped, so it cannot be the run that earns the claim — which is
+    // exactly how a hand-expanded SHA reached a frozen bundle: every check that
+    // would have caught it was bypassed, and the bundle was written green.
+    if (SKIPPED && isFrozen(body) && headText !== fs.readFileSync(fullPath, "utf8")) {
+      console.error(
+        `[validate-change-bundle] ${file} is recorded as passed/passed but origin reachability was skipped in this run. Re-run without SKIP_ORIGIN_REACHABILITY/OFFLINE before recording it, or leave the checks pending.`
+      );
+      process.exit(1);
     }
   }
 
