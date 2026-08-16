@@ -1,0 +1,31 @@
+release_id: v0.4.18-ops.0.1.23
+created_at: 2026-08-16T05:37:31.732Z
+components:
+  protocol:
+    sha: 36d85181e367fe18591d468aa49016e544808611
+    path: repos/protocol
+  client:
+    sha: 94e75579fa332d56eb039fadc1211ab27cb205c3
+    path: repos/client
+  platform:
+    sha: 2f07ae2396fddc7aad3b81c3e0464d7073101026
+    path: repos/platform
+  brand_site:
+    sha: aca1aa2cdb8f55047fb3cb42dc235b1b4b01a95b
+    path: repos/brand-site
+change_bundle: CHG-2026-245
+images:
+  rsp-platform: v0.4.18
+  rsp-relay: v0.4.18
+  rsp-gateway: v0.4.18
+packages:
+  "@delexec/contracts": 0.1.11
+  "@delexec/ops": 0.1.23
+notes: "Client-only: the CLI now carries a worker's declared service terms all
+  the way to the catalogue, a corrected worker can overwrite its own
+  registration draft, call-hotline stops reporting failure on calls that
+  succeeded, and contract-check compares by value over the fields that matter.
+  Proven on production: local.echo.priced.v1 declared quick and was published
+  standard; it now publishes quick with a 300 s budget and a 24 h acceptance
+  window. Platform images unchanged from v0.4.18."
+manifest_sha256: 1b2712db626f3d4d55538db04b5a5cc309661808930a94532c431d49b812c0ac
