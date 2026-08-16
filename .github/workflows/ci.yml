@@ -112,6 +112,16 @@ jobs:
           node-version: 22
           cache: pnpm
       - run: pnpm install --no-frozen-lockfile
+      # contract-conformance boots the real platform-api in-process and drives
+      # the real ops CLI; both resolve their own workspace packages (e.g.
+      # @delexec/billing-store) from their repo's node_modules, which the
+      # workspace pnpm install deliberately does not provide.
+      - name: Install platform dependencies
+        run: npm ci --no-audit --no-fund
+        working-directory: repos/platform
+      - name: Install client dependencies
+        run: npm ci --no-audit --no-fund
+        working-directory: repos/client
       - run: node tools/check-boundaries.mjs
       - run: node tools/contracts-check.mjs
 
