@@ -77,6 +77,13 @@
   - **已执行完毕（2026-08-09）**：`@delexec/ops` 0.1.10 发 npm（run 31308621769）；生产滚 **v0.4.10**（Images run 31308792480 四作业全绿含 published-image smoke；manifest v0.4.10 冻结并 promote；`test:release-gate` 端到端绿）。**回报的 check 结果：`runtime matches release v0.4.10`**。预授权至此用尽。
 - **D8.5 测试资源授权（2026-08-09）**：允许部署测试 hotline / 测试 responder / 测试 caller。据此建成 `tools/agent-callability-e2e.mjs`，把 plan §5 的退出口径从「论证」变成「实证」（24/24，五个真实进程 + Docker Postgres 计费 enforced）。
 
+## D9 M3 验收关账与下一轮主线（2026-08-16）
+
+- **M3 验收关账**。口径：退出条件（accept / revision / auto-accept / dispute / settle / refund 端到端证据 + 零重复资金事件 + 零无理由内容访问）全部有证据——E3 `tools/settlement-lifecycle-e2e.mjs` 23/23 + 生产计费调用（恰好一次、恰好成交价），E4 生产实证（无理由 403 / 带理由 200 / 恰好一条审计），E1 10/10 无人值守 100%。本次验收会话四路复核：五件套本地全绿（conformance 报 16 字段全达目录）、`release-manifest check` 对生产全绿（`runtime matches release v0.4.18-ops.0.1.24`）、M3 证据台账逐条复核、四仓 CI（见下一条，修复后为准）。
+- **验收发现并当场处置：四仓 CI 自 conformance 门禁落地（`6aba4dc`，CHG-2026-247）起三连红**——contracts-check 作业从不安装子仓依赖，conformance 在 CI 起不动真 platform-api（`ERR_MODULE_NOT_FOUND: @delexec/billing-store`），本地绿 CI 红，CHG-2026-214 同形状重演；CHG-2026-247~249 的 `contracts_check: passed` 是本地口径。owner 拍板当场修（workspace `e2ece30`，作业内对 repos/platform 与 repos/client 各补 `npm ci`）；**该批验收以修复后的 CI 绿为准**。
+- **挂账清单**（随关账携带，不阻塞）：①「failed 交付到期不自动接受」待 owner 追认（M3 单元 2 自行拍的）；②capacity 入流（心跳不发 `max_concurrent`/`in_flight`）；③FR-021 客户端侧未主动调 accept/reject 路由；④FR-046 Operator 裁决 / FR-064 争议处理 todo；⑤NFR-R04 跨分录单事务与崩溃测试、FR-055 账本完整追溯 partial；⑥告警收件人未配（owner 待办）。
+- **下一轮主线 = M4 第一方 Research Hotline**（多选题拍板，候选含 M3 长尾 / onboarding+console / 运维硬化）。理由：E2/E5 只有 M4 能解，PRD 完成定义是「系统成为真实工作流的首选路径」。拟议稿 `.trellis/tasks/08-16-M4-first-party-research-hotline/goal.md`，激活前须落 A-08 ADR + 建 research 私仓 + owner 答三个开工决策。
+
 ## 遗留待办指针（不在本轮范围）
 
 - Wave 0（架构基线 + M0 release manifest）按 `goal.md` 契约另行启动。

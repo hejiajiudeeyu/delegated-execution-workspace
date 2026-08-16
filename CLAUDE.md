@@ -11,7 +11,7 @@ This repository is a synthetic monorepo superproject for cross-repo development 
 |---|---|
 | owner 拍过哪些板、授权了什么 | 同目录 `decisions.md` |
 | 每条需求做到哪一步、证据是什么 | `docs/planning/private-capability-network/traceability-ledger.md` |
-| 当前里程碑的交付单元与进度 | `.trellis/tasks/07-31-M3-delivery-acceptance-settlement/goal.md`（执行计划 `plan-2026-08-10.md`；M2 已于 2026-08-10 验收关账） |
+| 当前里程碑的交付单元与进度 | `.trellis/tasks/08-16-M4-first-party-research-hotline/goal.md`（**拟议待激活**：A-08 ADR + research 私仓 + 三个开工决策；M3 已于 2026-08-16 验收关账，挂账清单见 decisions.md D9） |
 | 当前认证的跨仓组合 | `releases/current.yaml`（`node tools/release-manifest.mjs verify` 校验） |
 | 生产是否与认证组合一致 | `node tools/release-manifest.mjs check https://callanything.xyz`（relay 已带鉴权重开公网，`/relay/buildz` 可直测；2026-08-09 实测不带 override 全绿） |
 | 怎么把一个本地程序做成 hotline | `.claude/skills/publish-hotline/SKILL.md`（skill，可直接唤起） |

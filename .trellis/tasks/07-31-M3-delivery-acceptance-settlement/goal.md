@@ -1,7 +1,7 @@
 # M3 交付、验收与结算 — 入口条件与交付单元
 
 父任务：`../07-17-call-anything-private-capability-network-mvp/prd.md`（Wave 3）
-状态：**已激活**（2026-08-10，M2 十二单元全部交付并认证后按 owner 放行进入）
+状态：**已验收关账**（2026-08-16，owner 验收；激活于 2026-08-10。验收记录与挂账清单见 `../07-17-call-anything-private-capability-network-mvp/decisions.md` D9）
 
 ## 入口条件
 
