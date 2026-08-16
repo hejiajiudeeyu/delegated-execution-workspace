@@ -1,0 +1,28 @@
+release_id: v0.4.18-ops.0.1.24
+created_at: 2026-08-16T07:59:43.325Z
+components:
+  protocol:
+    sha: fba16a511e055762e894406b5b25614ddcb11b37
+    path: repos/protocol
+  client:
+    sha: c6f489e5d1096d22bbfe4f8a0d9ab9027ebf3383
+    path: repos/client
+  platform:
+    sha: 2f07ae2396fddc7aad3b81c3e0464d7073101026
+    path: repos/platform
+  brand_site:
+    sha: aca1aa2cdb8f55047fb3cb42dc235b1b4b01a95b
+    path: repos/brand-site
+change_bundle: CHG-2026-249
+images:
+  rsp-platform: v0.4.18
+  rsp-relay: v0.4.18
+  rsp-gateway: v0.4.18
+packages:
+  "@delexec/contracts": 0.1.11
+  "@delexec/ops": 0.1.24
+notes: Client-only. A worker can now declare fulfillment_mode and privacy_mode,
+  so a hotline requiring human confirmation before a machine calls it is
+  published as requiring it rather than as auto. Also carries the protocol
+  architecture spec rewrite (docs only). Platform images unchanged from v0.4.18.
+manifest_sha256: 255b637b112cc89bc21d3ecd999aa19f82cffbc439322ee49c66034a3acce0a2

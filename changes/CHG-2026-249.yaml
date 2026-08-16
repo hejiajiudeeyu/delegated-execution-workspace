@@ -1,0 +1,14 @@
+change_id: CHG-2026-249
+goal: ship the fulfillment_mode fix to devices, and certify the combination that carries it
+protocol_sha: fba16a511e055762e894406b5b25614ddcb11b37
+client_sha: c6f489e5d1096d22bbfe4f8a0d9ab9027ebf3383
+platform_sha: 2f07ae2396fddc7aad3b81c3e0464d7073101026
+brand_site_sha: aca1aa2cdb8f55047fb3cb42dc235b1b4b01a95b
+owner: hejiajiudeeyu
+risk_level: medium
+affected_scope:
+  - client
+  - workspace
+notes: "@delexec/ops 0.1.24 published (GitHub Actions run 31935161667; registry latest=0.1.24 at 2026-08-16T07:59:00Z). It carries the fix from CHG-2026-247: privacy_mode and fulfillment_mode were frozen contract fields no worker could declare, because the CLI neither read them off a declaration nor sent them. fulfillment_mode is the one that matters — `confirm` is the publisher requiring the calling side to confirm before a machine proceeds, and every device was publishing `auto` instead, so agents reading the contract called without the confirmation the publisher required. Until this was published the fix existed only in source. Also certifies v0.4.18-ops.0.1.24, which additionally carries the protocol architecture spec rewrite (CHG-2026-248, docs only, no package change). Platform images are unchanged from v0.4.18, which is why this is a client-only combination with a name of its own. Drift check against production is green: platform-api, transport-relay and platform-console-gateway all report release_id=v0.4.18 at git 2f07ae2396fd, which is what the manifest declares they should. NOT DONE HERE: no device has 0.1.24 installed yet — the local operator machine and any responder must run `npm install -g @delexec/ops@0.1.24` (note npm may serve a cached ETARGET for a freshly published version; `npm cache clean --force` clears it). No existing published hotline declares fulfillment_mode, so nothing in the catalogue is wrong today; the fix is what makes declaring it possible."
+contracts_check: passed
+integration_check: passed
