@@ -18,6 +18,7 @@
     "check:boundaries": "node tools/check-boundaries.mjs",
     "check:bundles": "node tools/validate-change-bundle.mjs",
     "test:contracts": "node tools/contracts-check.mjs",
+    "test:contract-conformance": "node tools/contract-conformance.mjs",
     "test:integration": "node tools/source-integration-check.mjs",
     "dev:platform": "docker compose -f repos/platform/deploy/platform/docker-compose.yml --env-file repos/platform/deploy/platform/.env up -d --build",
     "dev:platform:down": "docker compose -f repos/platform/deploy/platform/docker-compose.yml --env-file repos/platform/deploy/platform/.env down -v",

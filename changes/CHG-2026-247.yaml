@@ -1,0 +1,14 @@
+change_id: CHG-2026-247
+goal: assert the property instead of fixing the fifth instance — every field a worker declares must reach the catalogue
+protocol_sha: 36d85181e367fe18591d468aa49016e544808611
+client_sha: 875ec303c1addac1eb2830fb098da60783767edc
+platform_sha: 2f07ae2396fddc7aad3b81c3e0464d7073101026
+brand_site_sha: aca1aa2cdb8f55047fb3cb42dc235b1b4b01a95b
+owner: hejiajiudeeyu
+risk_level: medium
+affected_scope:
+  - workspace
+  - client
+notes: "Four bugs in this repository have had the same shape: a field the worker declared, dropped somewhere downstream, silently, with the catalogue looking complete. input_attachments hardcoded null in the draft builder (2026-08-09), the two fields a price consent must name dropped by the adapter's catalogue projection (0.1.22), the service tier overwritten by a guessed default (0.1.22), and the service terms dropped again by the draft builder and the submission body (0.1.23) — that last one live in production on a priced hotline. Fixing them one field at a time is not a defense: it asks whoever adds the next contract field to remember four call sites, and the fix ships when somebody notices in production. tools/contract-conformance.mjs asserts the property. It drives the real ops CLI against a real platform-api, end to end — register, submit, approve, read the public catalogue — with a worker that declares everything a worker can declare, and compares what comes out with what went in. The field list is HOTLINE_VERSION_CONTRACT_FIELDS from the protocol itself, so a field added there is covered the moment it exists: it must be declared and proven carried, or classified as not-worker-declarable (with the reason a worker must not decide it, e.g. pricing_hint), or as unprovable-today (privacy_mode: one supported value, identical to the default, so a published value cannot be told apart from a defaulted one). A new protocol field fails this check until somebody classifies it. Values are deliberately non-default and not round, because a field carried by accident proves nothing — the first draft of the check passed 17 fields including two the client never sent, purely because the declared values happened to equal the platform's defaults. IT FOUND ONE ON ITS FIRST RUN: privacy_mode and fulfillment_mode were readable from no worker and sent by nothing. fulfillment_mode is the load-bearing one — `confirm` is the publisher saying a machine may not call this hotline on its own, and the catalogue was answering `auto`, so agents called without the confirmation the publisher required. Fixed in client 875ec30 at the same three call sites as the service terms. Verified by stashing the fix and watching the check fail on exactly that field. Wired into tools/contracts-check.mjs, so it runs as part of the required cross-repo validation rather than on request."
+contracts_check: passed
+integration_check: passed
