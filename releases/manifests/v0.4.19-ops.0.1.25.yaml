@@ -1,0 +1,29 @@
+release_id: v0.4.19-ops.0.1.25
+created_at: 2026-08-18T09:20:00.089Z
+components:
+  protocol:
+    sha: fba16a511e055762e894406b5b25614ddcb11b37
+    path: repos/protocol
+  client:
+    sha: f7f393cb6f05e68fe4177d018c4a82d66d01e3c8
+    path: repos/client
+  platform:
+    sha: 90ad5cfe8415262e7f0e59aac1b8389868d8d211
+    path: repos/platform
+  brand_site:
+    sha: aca1aa2cdb8f55047fb3cb42dc235b1b4b01a95b
+    path: repos/brand-site
+change_bundle: CHG-2026-251
+images:
+  rsp-platform: v0.4.19
+  rsp-relay: v0.4.19
+  rsp-gateway: v0.4.19
+packages:
+  "@delexec/contracts": 0.1.11
+  "@delexec/ops": 0.1.25
+notes: A device can renew its own relay inbox credential instead of needing a
+  shell on the platform host, and an expired credential stops being outvoted by
+  a fresh heartbeat. Platform adds POST /v1/responders/me/relay-inbox; the
+  client renews at start and in flight and stops retrying a 401 four times a
+  second.
+manifest_sha256: 491036160f2943892efebbaea18ccc832b6499f099ff7e8c771869701d2129aa

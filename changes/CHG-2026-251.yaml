@@ -1,0 +1,15 @@
+change_id: CHG-2026-251
+goal: ship the inbox-renewal fix to devices and to the platform, and certify the combination that carries it
+protocol_sha: fba16a511e055762e894406b5b25614ddcb11b37
+client_sha: f7f393cb6f05e68fe4177d018c4a82d66d01e3c8
+platform_sha: 90ad5cfe8415262e7f0e59aac1b8389868d8d211
+brand_site_sha: aca1aa2cdb8f55047fb3cb42dc235b1b4b01a95b
+owner: hejiajiudeeyu
+risk_level: medium
+affected_scope:
+  - platform
+  - client
+  - workspace
+notes: "Release of CHG-2026-250, which until now existed only in source: platform v0.4.19 images (Images run 32120540619 on tag v0.4.19; Published Images Smoke run 32120904635 green against ghcr v0.4.19) and @delexec/ops 0.1.25 (Publish run 32120547576; registry latest=0.1.25). Together they close the hole a from-zero walkthrough hit on 2026-08-18: a device whose relay receiver token expired kept heartbeating while every inbox poll answered 401, and the only repair was a shell on the platform host. Platform side ships POST /v1/responders/me/relay-inbox and lets an expired credential outrank a fresh heartbeat; client side renews at start and in flight and stops retrying a 401 four times a second. CHECKED BEFORE PUBLISHING, BECAUSE THE FAILURE MODE HAS PRECEDENT: @delexec/ops pins its workspace siblings at an exact 0.1.0 and three of the four packages this change touches are not on the registry at all, so a naive reading says a clean install of 0.1.25 would import a renewRelayInboxCredential that does not exist — the same clean-room-vs-hoisting shape as CHG-2026-214. It does not: ops declares bundledDependencies and a prepack that vendors the workspace copies into the tarball. Verified rather than assumed — npm pack was run and the tarball opened, and all five sites carry the change (runtime-utils renewRelayInboxCredential, responder-runtime-core INBOX_UNAUTHORIZED_RETRY_MS, transport-relay-http RelayAuthError, responder-controller wiring, supervisor renewResponderRelayInbox). No support package needed publishing. Validation: four-repo five-command suite green with origin reachability ENFORCED; platform 261 tests plus test:service:packages / test:deploy:config / test:release:docs at the new version; client 183 unit + 144 integration at the new version; CI green on all three repos (workspace 32119749657 six jobs, platform 32120540600, client 32119325055). NOT DONE HERE: production is NOT rolled — callanything.xyz still runs v0.4.18 at git 2f07ae2396fd, so `release-manifest check` against it will now report drift against this manifest, correctly and on purpose. The production device also still holds the receiver token hand-minted over SSH on 2026-08-18 (expires 2026-09-17) and still runs ops 0.1.24; neither the platform route nor the client renewal is in effect on production until the stack is rolled and the device upgraded. Items 4 and 5 of issues/0002 (expiry pre-warning in attention, delexec-ops doctor surfacing this) remain open."
+contracts_check: passed
+integration_check: passed
